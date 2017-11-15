@@ -25,8 +25,7 @@ class TableController extends Controller {
             echo "no table found";
             exit();
         } else {
-            $tableId = $tableNameArr[0]['table_id'];
-            $tableId = "`$tableId`";
+            $tableId = (string)$tableNameArr[0]['table_id'];
             $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
