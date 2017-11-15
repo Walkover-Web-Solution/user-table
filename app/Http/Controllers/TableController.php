@@ -25,6 +25,8 @@ class TableController extends Controller {
             echo "no table found";
             exit();
         } else {
+            print_r($tableNameArr);
+            die;
             $tableId = $tableNameArr[0]['table_id'];
             echo "this is table id ".$tableId;
             $allTabs = \DB::table($tableId)
