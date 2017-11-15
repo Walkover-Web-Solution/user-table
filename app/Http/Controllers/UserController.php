@@ -337,8 +337,6 @@ class UserController extends Controller {
         session()->put('teams', $teams);
         
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
-        print_r($tableLst);
-        die("all done");
         
         return view('showTable', array(
                 'allTables' => $tableLst,
