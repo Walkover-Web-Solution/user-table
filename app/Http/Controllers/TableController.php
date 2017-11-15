@@ -19,23 +19,18 @@ class TableController extends Controller {
 
     public function loadSelectedTable($tableName) {
         $tableNameArr = team_table_mapping::getUserTablesNameById($tableName);
-        print_r($tableNameArr->toArray());
-        echo "<br>";
         $tableNameArr = json_decode(json_encode($tableNameArr), true);
         $userTableName = $tableNameArr[0]['table_name'];
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            print_r($tableNameArr);
-            $tableId = (string)$tableNameArr[0]['table_id'];
-            echo "this is table id ".$tableId;
+            $tableId = $tableNameArr[0]['table_id'];
+            $tableId = "`$tableId`";
             $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
             $allTabs = json_decode(json_encode($allTabs), true);
-            print_r($allTabs);
-            die;
             $data = Tabs::getTabsByTableId($tableId);
             $data = json_decode(json_encode($data), true);
 
