@@ -26,6 +26,7 @@ class TableController extends Controller {
             exit();
         } else {
             $tableId = $tableNameArr[0]['table_id'];
+            $tableId = "`$tableId`";
             $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
