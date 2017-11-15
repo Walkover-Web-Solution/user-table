@@ -26,8 +26,9 @@ class TableController extends Controller {
             exit();
         } else {
             $tableId = $tableNameArr[0]['table_id'];
+            $tableId = '`'.$tableId.'`';
             echo "this is table id ".$tableId;
-            $allTabs = \DB::table(`$tableId`)
+            $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
             $allTabs = json_decode(json_encode($allTabs), true);
