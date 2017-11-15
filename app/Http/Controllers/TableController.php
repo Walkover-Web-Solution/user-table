@@ -19,6 +19,8 @@ class TableController extends Controller {
 
     public function loadSelectedTable($tableName) {
         $tableNameArr = team_table_mapping::getUserTablesNameById($tableName);
+        print_r($tableNameArr->toArray());
+        echo "<br>";
         $tableNameArr = json_decode(json_encode($tableNameArr), true);
         $userTableName = $tableNameArr[0]['table_name'];
         if (empty($tableNameArr[0]['table_id'])) {
