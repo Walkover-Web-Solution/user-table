@@ -27,10 +27,13 @@ class TableController extends Controller {
         } else {
             $tableId = $tableNameArr[0]['table_id'];
             $tableId = "`$tableId`";
+            echo "this is table id ".$tableId;
             $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
             $allTabs = json_decode(json_encode($allTabs), true);
+            print_r($allTabs);
+            die;
             $data = Tabs::getTabsByTableId($tableId);
             $data = json_decode(json_encode($data), true);
 
