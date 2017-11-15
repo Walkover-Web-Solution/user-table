@@ -26,7 +26,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Create New Table IN 
                     <?php 
-                    $teamArr = Session::get('teams');
+                    $teamArr = Session::get('team_array');
                     ?>
                     {{ Form::select('teamName', [$teamArr]) }}
                     </div>
