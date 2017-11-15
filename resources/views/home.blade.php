@@ -23,8 +23,8 @@
             <ul class="nav navbar-right user_dropdown">
                 <!-- Authentication Links -->
                 @guest
-                <li><a href="https://viasocket.com/login?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/">Login</a></li>
-                <li><a href="https://viasocket.com/singup?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/">Register</a></li>
+                <li><a href="https://viasocket.com/login?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/socketlogin">Login</a></li>
+                <li><a href="https://viasocket.com/singup?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/socketlogin">Register</a></li>
                 @else
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
