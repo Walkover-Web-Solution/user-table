@@ -308,7 +308,7 @@ class UserController extends Controller {
             $paramArr['table_name'] = $userTableName;
             $paramArr['table_id'] = "`$tableName`";
             $paramArr['team_id'] = "`$teamId`";
-            $paramArr['table_structure'] = "`$structureDataJson`";
+            $paramArr['table_structure'] = $structureDataJson;
             $paramArr['auth'] = $randomAuth;
             print_r($paramArr);
             $response = team_table_mapping::makeNewTableEntry($paramArr);
@@ -330,12 +330,14 @@ class UserController extends Controller {
         
         foreach($teams as $teamId => $teamName){
             $teamNameArr[] = $teamName;
-            $teamIdArr[] = $teamId;
+            $teamIdArr[] = "`$teamId`";
         }
         session()->put('teamNames', $teamNameArr);
         session()->put('teams', $teams);
         
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
+        print_r($tableLst);
+        die("all done");
         
         return view('showTable', array(
                 'allTables' => $tableLst,
