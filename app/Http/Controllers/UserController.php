@@ -274,6 +274,7 @@ class UserController extends Controller {
     }
 
     public function createTable(Request $request) {
+        $randomAuth = str_random(15);
         $data = $request->input('tableData');
         $structureDataAr = array();
         foreach($data as $key => $value){
@@ -308,6 +309,7 @@ class UserController extends Controller {
             $paramArr['table_id'] = $tableName;
             $paramArr['team_id'] = $teamId;
             $paramArr['table_structure'] = $structureDataJson;
+            $paramArr['auth'] = $randomAuth;
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             
             #insert table structure in table
