@@ -306,11 +306,13 @@ class UserController extends Controller {
             $arr['msg'] = "Table Successfully created";
             // Make entry of table in team table mapping & store table structure
             $paramArr['table_name'] = $userTableName;
-            $paramArr['table_id'] = $tableName;
-            $paramArr['team_id'] = $teamId;
+            $paramArr['table_id'] = "`$tableName`";
+            $paramArr['team_id'] = "`$teamId`";
             $paramArr['table_structure'] = $structureDataJson;
             $paramArr['auth'] = $randomAuth;
+            print_r($paramArr);
             $response = team_table_mapping::makeNewTableEntry($paramArr);
+            dd($response);
             
             #insert table structure in table
             return response()->json($arr);
