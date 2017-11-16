@@ -179,7 +179,6 @@ class UserController extends Controller {
             }
             else{
                 $tableId = $tableNameArr[0]['table_id'];
-                $tableId = "`$tableId`";
             }
         }
         $appliedFilters = json_decode($request->filter);
