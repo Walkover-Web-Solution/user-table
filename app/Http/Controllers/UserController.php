@@ -331,7 +331,7 @@ class UserController extends Controller {
         
         foreach($teams as $teamId => $teamName){
             $teamNameArr[] = $teamName;
-            $teamIdArr[] = "`$teamId`";
+            $teamIdArr[] = $teamId;
         }
         session()->put('teamNames', $teamNameArr);
         session()->put('teams', $teams);
