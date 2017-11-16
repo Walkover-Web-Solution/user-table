@@ -311,9 +311,7 @@ class UserController extends Controller {
             $paramArr['team_id'] = $teamId;
             $paramArr['table_structure'] = $structureDataJson;
             $paramArr['auth'] = $randomAuth;
-            print_r($paramArr);
             $response = team_table_mapping::makeNewTableEntry($paramArr);
-            dd($response);
             
             #insert table structure in table
             return response()->json($arr);
