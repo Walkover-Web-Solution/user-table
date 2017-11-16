@@ -11,6 +11,6 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = ['createTable'];
+    protected $except = ['createTable','filter'];
     
 }
