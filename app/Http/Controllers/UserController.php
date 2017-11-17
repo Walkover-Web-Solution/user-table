@@ -32,44 +32,44 @@ class UserController extends Controller {
         }
     }
 
-    # create user
+//    # create user
+//    public function add(Request $request) {
+//        //dd($request->userdata);
+//        //$requestObj = json_decode($request->userdata);
+//        $requestObj = $request->userdata;
+//
+//        $currentDate = date('Y-m-d H:i');
+//        $errors = array();
+//        if (!isset($requestObj['username']))
+//            return response(json_encode(array('error' => 'username is required')), 400)->header('Content-Type', 'application/json');
+//
+//        $data = $requestObj;
+//        $username = $requestObj['username'];
+//
+//        if (count($errors))
+//            return response(json_encode(array('error' => $errors)), 400)->header('Content-Type', 'application/json');
+//
+//        $res = Users::updateOrCreate(
+//                        ['username' => $username]
+//                        , $data
+//        );
+//
+//        // Remove password from response
+//        unset($res['password']);
+//
+//
+//        $lastInsertId = \DB::getPdo()->lastInsertId();
+//
+//        // send data to webhook on update
+//        if (!$lastInsertId) {
+//            $data = (array) Users::getUserDetails($username);
+//            $status = Utility::postToWebhook($data);
+//        }
+//
+//
+//        return response(json_encode(array('message' => 'user added/updated successfully', 'data' => $res)), 200)->header('Content-Type', 'application/json');
+//    }
 
-    public function add(Request $request) {
-        //dd($request->userdata);
-        //$requestObj = json_decode($request->userdata);
-        $requestObj = $request->userdata;
-
-        $currentDate = date('Y-m-d H:i');
-        $errors = array();
-        if (!isset($requestObj['username']))
-            return response(json_encode(array('error' => 'username is required')), 400)->header('Content-Type', 'application/json');
-
-        $data = $requestObj;
-        $username = $requestObj['username'];
-
-        if (count($errors))
-            return response(json_encode(array('error' => $errors)), 400)->header('Content-Type', 'application/json');
-
-        $res = Users::updateOrCreate(
-                        ['username' => $username]
-                        , $data
-        );
-
-        // Remove password from response
-        unset($res['password']);
-
-
-        $lastInsertId = \DB::getPdo()->lastInsertId();
-
-        // send data to webhook on update
-        if (!$lastInsertId) {
-            $data = (array) Users::getUserDetails($username);
-            $status = Utility::postToWebhook($data);
-        }
-
-
-        return response(json_encode(array('message' => 'user added/updated successfully', 'data' => $res)), 200)->header('Content-Type', 'application/json');
-    }
 
     public function getDetailsOfId($id) {
         $data = Users::find($id);
@@ -322,7 +322,6 @@ class UserController extends Controller {
 
     public function getUserAllTables() {
         $teams = session()->get('team_array');
-//        $teams = array('50' => 'VIPIN' , '51' => 'KADAMB' , 'vipinsharmakadambkaluskar9039367' => 'RahulSir');
         $teamIdArr = array();
         $teamNameArr = array();
         
@@ -334,10 +333,22 @@ class UserController extends Controller {
         session()->put('teams', $teams);
         
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
+        $table_incr_id_arr = array();
+        
+        foreach($tableLst as $key=>$value){
+            $table_incr_id_arr[] = $value['id'];            
+        }
+        $data = json_decode(json_encode(team_table_mapping::getTableSourcesByTableIncrId($table_incr_id_arr)),true);
+        
+        $source_arr = array();
+        foreach($data as $key =>$value){
+            $source_arr[$value['table_incr_id']][] = $value['source'];
+        }
         
         return view('showTable', array(
                 'allTables' => $tableLst,
-                'teamsArr' => $teams
+                'teamsArr' => $teams,
+                'source_arr' => $source_arr
         ));
         
     }
@@ -347,20 +358,28 @@ class UserController extends Controller {
         $team_ids = $request->input('team_ids');
         $team_id_array = explode(',', $team_ids);
         $table_data = $this->getUserTablesByTeamId($team_id_array);
-        $response_arr = array();
+        $table_array = array();
         $count = 0;
         foreach($table_data as $key=>$value){
-            $response_arr[$count]['team_id'] = $value['team_id'];
-            $response_arr[$count]['table_id'] = $value['table_id'];
-            $response_arr[$count]['table_name'] = $value['table_name'];
-            $response_arr[$count]['structure'] = $value['table_structure'];
+            $table_array[$value['team_id']][$count]['table_id'] = $value['table_id'];
+            $table_array[$value['team_id']][$count]['table_name'] = $value['table_name'];
+            $table_array[$value['team_id']][$count]['structure'] = $value['table_structure'];
+            $table_array[$value['team_id']][$count]['auth'] = $value['auth'];
             $count++;
         }
-        return response()->json(array('teams' =>$response_arr));
+        $response_arr = array();
+        $count = 0;
+        foreach($table_array as $team_id => $table_data){
+            $response_arr[$count]['team_id'] = $team_id;
+            $response_arr[$count]['tables'] = $table_data;
+            $count++;
+            
+        }
+        return response()->json($response_arr);
     }
     function getUserTablesByTeamId($teamIdArr){
         $tableLst = team_table_mapping::getUserTablesByTeam($teamIdArr);
-        $tableLst = json_decode( json_encode($tableLst), true);
+        $tableLst = json_decode(json_encode($tableLst), true);
         return $tableLst;
     }
 

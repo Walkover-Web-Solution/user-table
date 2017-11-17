@@ -39,6 +39,12 @@ Route::get('/createTable', function(){
 
 # for creating user table in database
 Route::post('/createTable', 'UserController@createTable');
+
+# for Configure user table in database
+Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
+
+# for alter user table in database
+Route::post('/configureTable', 'TableController@configureSelectedTable');
         
 Route::get('/home/{tab}', 'HomeController@filterTab');
 Route::get('/user_data/{id}', 'UserController@getDetailsOfUserById');
@@ -53,7 +59,8 @@ Route::post('/filter/save', 'UserController@saveFilter');
 Route::get('/search/{tab}/{query}', 'UserController@getSearchedData');
 
 # to create or add user
-Route::post('/add_update', 'UserController@add');
+Route::post('/add_update', 'TableController@add');
+Route::get('/add_update', 'TableController@add');
 
 Route::get('/profile','UserController@getKey')->name('profile');
 

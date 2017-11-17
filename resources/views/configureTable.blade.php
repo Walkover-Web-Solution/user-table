@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>userTABLE Mockup</title>
+    <title>Configure Table </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap core CSS -->
@@ -17,6 +17,24 @@
 </head>
 
 <body>
+    <?php
+//    print_r($tableData);
+//    die;
+//    echo "<br>";
+//    echo "<br>";
+//    echo "<br>";
+//    echo $tableData[0]['table_name'];
+    $tableStructureArr = json_decode($tableData[0]['table_structure'],TRUE); 
+//    print_r($tableStruarr);
+//    foreach($tableStruarr as $key => $value){
+//        echo $key;
+//        echo "<br>";
+//        print_r($value);
+//        echo "<br>";
+//        echo "<br>";
+//    }
+//    die;
+    ?>
 
     <div class="container">
         <div class="row">
@@ -24,13 +42,9 @@
             <!--  new field form -->
             <div class="col-md-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Create New Table IN 
-                    <?php 
-                    $teamArr = Session::get('teams');
-                    ?>
-                    {{ Form::select('teamName', [$teamArr]) }}
+                    <div class="panel-heading">Configure 
                     </div>
-                    <div class="panel-heading">Enter Table Name : <input type="text" id="tableName" name="tableName"></div>
+                    <div class="panel-heading">Table Name :   <label>{{$tableData[0]['table_name']}}</label></div>
                     <div class="panel-body">
 
                         <form class="">
@@ -41,15 +55,36 @@
             <div class="form-group col-xs-3">
                 Type
             </div>
-            <div class="form-group col-xs-3">
+<!--            <div class="form-group col-xs-3">
                 Unique
-            </div>
+            </div>-->
             <div class="form-group col-xs-3">
                Default value
             </div>
         </div>
-                            <div id="tableField">
-
+                            <div id="tableStructure">
+                                <span style="display: none" id="tableId">{{$tableData[0]['id']}}</span>
+                                @foreach($tableStructureArr as $key => $value)
+                                <div class="row" id="column_"`+i+`>
+                                    <div class="form-group col-xs-3">
+                                        <label>{{$key}}</label>
+                                        @if($value['unique'] == 'true')
+                                            <span>(Unique)</span>
+                                        @endif
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label>{{$value['type']}}</label>
+                                    </div>
+<!--                                    <div class="form-group col-xs-3">
+                                        <label></label>
+                                    </div>-->
+                                    <div class="form-group col-xs-3">
+                                       <label>{{$value['value']}}</label>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div id="tableFieldRow">
                             </div>
 
                             <!-- <div class="form-group">
@@ -59,7 +94,7 @@
                         </form>
                         
                         <div class="form-group">
-                            <button class="btn btn-md btn-success" onclick="addRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
+                            <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
                             <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-plus"></i> Create</button>
                         </div>
                     </div>
@@ -88,39 +123,41 @@
         </div>
     </div>
 
-    <script src="js/functions.js"></script>
+    <!--<script src="js/functions.js"></script>-->
+    <script src="{{ asset('js/functions.js') }}"></script>
 </body>
 
 </html>
 <script type="text/javascript">
-    var tableData= [];
+    var tableData1= [];
 
     function createTable(){
-       $("#tableField .row").each(function(idx) {           
+       $("#tableFieldRow .row").each(function(idx) {           
            var name = $('.name', $(this)).val();
            var type = $('.type', $(this)).val();
            var unique = $('.unique', $(this)).prop("checked");
            var value = $('.value', $(this)).val();
            console.log(name,type,unique,value);
            
-           tableData[idx].name = name;
-           tableData[idx].type = type;           
-           tableData[idx].unique = unique;           
-           tableData[idx].value = value;           
+           tableData1[idx].name = name;
+           tableData1[idx].type = type;           
+           tableData1[idx].unique = unique;           
+           tableData1[idx].value = value;           
        });
-       var tableName = $("#tableName").val();
-       var teamId = $('select[name=teamName]').val();
-
-       console.log(tableData);
+       var tableId = $("#tableId").text();
+       console.log(tableId);
+       console.log(tableData1,tableId );
        $.ajax({
-                    url: '/createTable',
+                    url: '/configureTable',
                     type: 'POST',
-                    data: {tableData:tableData,tableName:tableName,teamId:teamId},
+                    data: {tableData:tableData1,tableId:tableId},
                     dataType: 'json',
                     success: function(info){
                         alert(info.msg);
-                        window.location.href = "/tables";                    }
+                            location.reload();
+                    }
 
                 });
     }
+    
 </script>

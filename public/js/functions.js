@@ -304,7 +304,7 @@ function addRow(check) {
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
             <div class="form-group col-xs-3">
-                <select class="form-control type" onchange="onSelectOption(value)">` + lists + ` </select>
+                <select class="form-control type" >` + lists + ` </select>
             </div>
             <div class="form-group col-xs-3">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
@@ -317,6 +317,38 @@ function addRow(check) {
     tableData.push(obj);
     console.log(tableData);
     return $('#tableField').append(formGrp);
+    
+};
+function addMoreRow(check) {
+    
+    var obj1 = {        
+        name: '',
+        type:'',
+        unique:'',
+        value: '',
+    }
+    var lists = '';
+//    var tableData = [];
+    lists += '<option value="">Select Field Type</option>';
+    for (i = 0; i <= optionList.length - 1; i++) {
+        lists += '<option value="' + optionList[i] + '">' + optionList[i] + '</option>'
+    }
+
+    var formGrp = `<div class="row" id="column_"`+i+`>
+            <div class="form-group col-xs-3">
+                <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
+            </div>
+            <div class="form-group col-xs-3">
+                <select class="form-control type" >` + lists + ` </select>
+            </div>
+            <div class="form-group col-xs-3">
+                <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
+            </div>
+        </div>`;
+    formGrp += '';
+    tableData1.push(obj1);
+    console.log(tableData1);
+    return $('#tableFieldRow').append(formGrp);
     
 };
 
@@ -410,6 +442,7 @@ function showDiv(id) {
 
 $(document).ready(function() {
     addRow(true);
+    addMoreRow(true);
     $('#right_panel').hide();
     var title = $('#right_panel .title');
 });

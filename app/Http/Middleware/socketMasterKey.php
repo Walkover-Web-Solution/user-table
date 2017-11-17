@@ -16,7 +16,7 @@ class socketMasterKey
     public function handle($request, Closure $next)
     {
         if ($request->header('Authorization') != 'QIgd3CpnvadlzLp6dsV4') {
-            return response()->json(array('error' => 'You need proper authorization.'));
+            return response()->json(array('error' => 'You need proper authorization.'),401);
         }
         return $next($request);
     }

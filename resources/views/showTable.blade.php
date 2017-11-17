@@ -26,7 +26,7 @@
 <body>
 
     <div class="container">
-        <div class="col-xs-4">
+        <div class="col-xs-3">
             <div class="card card-new cp" onclick="location.href='/createTable'">
                 <div>
                     <div class="center-block text-center">
@@ -38,13 +38,16 @@
             </div>
         </div>
         @foreach($allTables as $key=>$val)
-        <div class="col-xs-4">
+        <div class="col-xs-3">
             <div class="card">
-                <div>
-                    <h1>{{$val['table_name']}}</h1>
+                <div class="text-center">
+                    <a style="font-size: 30px;" href="/tables/{{$val['id']}}" target="_blank">
+                        <span>{{$val['table_name']}}</span>
+                    </a>
                     <div class="center-block text-center">
-                        <button class="btn btn-primary btn-sm" onclick="location.href='/tables/{{$val['id']}}'">Configure</button>
-                        <button class="btn btn-default btn-sm">2 sources</button>
+                        <button class="btn btn-primary btn-sm" onclick="location.href='/configure/{{$val['id']}}'">Configure</button>
+                        <button class="btn btn-default btn-sm" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
+                        
                     </div>
                 </div>
             </div>

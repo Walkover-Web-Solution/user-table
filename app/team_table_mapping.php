@@ -1,34 +1,124 @@
 <?php
 
 namespace App;
+
 use Illuminate\Database\Eloquent\Model;
 
-class team_table_mapping extends Model
-{
+class team_table_mapping extends Model {
+
     protected $table = 'team_table_mapping';
-    protected $fillable = ['id','table_name','table_id','team_id'];
-    
-    
-    public static function getUserTablesByTeam($teamIdArr){
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id'];
+
+    public static function getUserTablesByTeam($teamIdArr) {
 //        $userDefaultTeamId = 50;
-        $data =  \DB::table('team_table_mappings')
-                  ->select('*')
-                  ->whereIn('team_id',$teamIdArr)
-                   ->get();
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->whereIn('team_id', $teamIdArr)
+                ->get();
         return $data;
     }
-    
-    public static function makeNewTableEntry($paramArr){
-        $data =  \DB::table('team_table_mappings')
-                  ->insert($paramArr);
+
+    public static function makeNewTableEntry($paramArr) {
+        $data = \DB::table('team_table_mappings')
+                ->insert($paramArr);
         return $data;
     }
-    
-    public static function getUserTablesNameById($tableId){
-        $data =  \DB::table('team_table_mappings')
-                  ->select('*')
-                  ->where('id',$tableId)
-                   ->get();
+
+    public static function getTableSourcesByTableIncrId($team_incr_id_arr) {
+        $data = \DB::table('user_data_source')
+                ->select('*')
+                ->whereIn('table_incr_id', $team_incr_id_arr)
+                ->get();
         return $data;
     }
+
+    public static function getUserTablesNameById($tableId) {
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->where('id', $tableId)
+                ->get();
+        return $data;
+    }
+
+    public static function getTableByAuth($auth) {
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->wherein('auth', $auth)
+                ->get();
+        return $data;
+    }
+
+    public static function makeNewEntryForSource($table_incr_id, $dataSource) {
+        $match_this = array('table_incr_id' => $table_incr_id, 'source' => $dataSource);
+        $exists = \DB::table('user_data_source')->where($match_this)->get();
+        $exists = json_decode(json_encode($exists), true);
+
+        if ($exists) {
+            echo "Working as required";
+        } else {
+            \DB::table('user_data_source')
+                    ->insert(array('table_incr_id' => $table_incr_id, 'source' => $dataSource));
+        }
+        return True;
+    }
+
+    public static function makeNewEntryInTable($table_name, $input_param, $structure) {
+        $data = 0;
+        $unique_key = '';
+        $structure = json_decode($structure, TRUE);
+
+        foreach ($input_param as $key => $value) {
+            if ($structure[$key]['unique'] == 'true') {
+                $unique_key = $key;
+                break;
+            }
+        }
+        if (empty($unique_key) || empty($input_param[$key])) {
+            return array('error' => 'unique_key_not_found');
+        }
+        $response = \DB::table($table_name)
+                ->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->get();
+
+
+        $response = json_decode(json_encode($response));
+
+        if (empty($response)) {
+            $data = \DB::table($table_name)
+                    ->insert($input_param);
+        } else {
+            $update_data = array();
+            foreach ($input_param as $key => $value) {
+                if ($structure[$key]['type'] != 'airthmatic number') {
+                    if (!empty($input_param[$key])) {
+                        $update_data[$key] = $input_param[$key];
+                    }
+                } else {
+                    if (!empty($input_param[$key])) {
+                        $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')'); //$input_param[$key];
+                    }
+                }
+            }
+
+
+            $data = \DB::table($table_name)
+                    ->where($unique_key, $input_param[$unique_key])
+                    ->update($update_data);
+        }
+        $log_table = 'log' . substr($table_name, 4);
+        \DB::table($log_table)
+                ->insert($input_param);
+        return array('success' => 'data_updated');
+    }
+
+    public static function updateTableStructure($paramArr) {
+        $tableAutoIncId = $paramArr['id'];
+        $tableStructure = $paramArr['table_structure'];
+        $data = \DB::table('team_table_mappings')
+                ->where('id', $tableAutoIncId)
+                ->update(['table_structure' => $tableStructure]);
+        return $data;
+    }
+
 }

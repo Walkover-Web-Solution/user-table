@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\QueryException;
 
 class TableController extends Controller {
 
@@ -128,6 +129,95 @@ class TableController extends Controller {
         $data = $users->get();
 
         return $data;
+    }
+
+    public function add(Request $request) {
+        $input_data = $request->all();
+        $table_auth = $request->header('Auth-Key');
+        $response = team_table_mapping::getTableByAuth(array($table_auth));
+        $response = json_decode(json_encode($response), true);
+        if (empty($response)) {
+            return response()->json(array('error' => 'authorization_failure'), 401);
+        }
+        $incoming_data = $request->all();
+        $table_incr_id = $response[0]['id'];
+        $dataSource = $incoming_data['socket_data_source'];
+        unset($incoming_data['socket_data_source']);
+        $table_name = $response[0]['table_id'];
+        $table_structure = $response[0]['table_structure'];
+        $response = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
+        if (isset($response['error'])) {
+            return response()->json($response, 400);
+        } else {
+            team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
+            return response()->json($response);
+        }
+    }
+
+    public function loadSelectedTableStructure($tableName) {
+        $tableNameArr = team_table_mapping::getUserTablesNameById($tableName);
+        $tableNameArr = json_decode(json_encode($tableNameArr), true);
+        return view('configureTable', array(
+            'tableData' => $tableNameArr));
+    }
+
+    public function configureSelectedTable(Request $request) {
+        $tableData = $request->input('tableData');
+        if (empty($tableData)) {
+            $arr['msg'] = "Nothing to added, Please add atleast one column";
+            return response()->json($arr);
+        }
+        $tableId = $request->input('tableId');
+        $tableNameArr = team_table_mapping::getUserTablesNameById($tableId);
+        $tableNameArr = json_decode(json_encode($tableNameArr), true);
+
+        $tableStructure = json_decode($tableNameArr[0]['table_structure'], TRUE);
+
+        foreach ($tableData as $key => $value) {
+            if (empty($value['name'])) {
+                $arr['msg'] = "Name Can't be empty";
+                return response()->json($arr);
+            }
+            if (empty($value['type'])) {
+                $arr['msg'] = "type Can't be empty";
+                return response()->json($arr);
+            }
+            $tableStructure[$value['name']] = array('type' => $value['type'], 'unique' => 'false', 'value' => $value['value']);
+        }
+        $tableStructure = json_encode($tableStructure);
+
+        $tableName = $tableNameArr[0]['table_id'];
+        $tableAutoIncId = $tableNameArr[0]['id'];
+        $logTableName = "log_" . $tableNameArr[0]['table_name'] . "_" . $tableNameArr[0]['team_id'];
+
+
+        if (Schema::hasTable($tableName)) {
+            try {
+                Schema::table($tableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $key => $value) {
+                        $table->string($value['name']);
+                    }
+                });
+                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $key => $value) {
+                        $table->string($value['name']);
+                    }
+                });
+                $paramArr['id'] = $tableAutoIncId;
+                $paramArr['table_structure'] = $tableStructure;
+                $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
+            } catch (\Illuminate\Database\QueryException $ex) {
+//                dd($ex->getMessage());
+                $arr['msg'] = "Error in updation";
+                return response()->json($arr);
+            }
+
+            $arr['msg'] = "Table Updated Successfuly";
+            return response()->json($arr);
+        } else {
+            $arr['msg'] = "Table Not Found";
+            return response()->json($arr);
+        }
     }
 
 }
