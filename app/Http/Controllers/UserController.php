@@ -289,6 +289,7 @@ class UserController extends Controller {
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) use ($data) {
                 $table->increments('id');
+                $table->charset = 'utf8';
                 $table->collation = 'utf8_unicode_ci';
                 foreach ($data as $key => $value) {
                     $table->string($value['name']);
