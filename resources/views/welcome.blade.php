@@ -72,8 +72,9 @@
                 <a href="{{ url('/tables') }}">Home</a>
                 @else
                 <!--<a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Login</a>-->
-                <a href="https://viasocket.com/login?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/socketlogin">Login</a>
-                <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Register</a>
+                <a href="https://viasocket.com/login?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Login</a>
+                <!--<a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Register</a>-->
+                <a href="https://viasocket.com/signup?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Register</a>
                 @endauth
             </div>
             @endif
