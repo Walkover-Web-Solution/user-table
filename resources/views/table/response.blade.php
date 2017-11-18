@@ -10,13 +10,14 @@
         </tr>
     </thead>
     <tbody id="all_users">
-        <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}')">
+        <!--<tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}')">-->
+            <tr data-toggle="modal" data-target="#edit_user">
             <td></td>
             @foreach($val as $k => $colValue)
             @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')
             <td>
                 @foreach(explode(',', $structure[$k]['value']) as $info)
-                <input type="radio" onchange="updateData(this, 'radio_button')"  name="{{$val['id']}}"value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
+                <input type="radio" onchange="updateData(this, 'radio_button')"  name="{{$k}}:_:{{$val['id']}}" value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
                 @endforeach
             </td>
             @elseif(isset($structure[$k]) and $structure[$k]['type'] == 'dropdown')
