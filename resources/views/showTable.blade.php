@@ -27,7 +27,7 @@
 
     <div class="container">
         <div class="col-xs-3">
-            <div class="card card-new cp" onclick="location.href='/createTable'">
+            <div class="card card-new cp" onclick="location.href='{{ route('createTable') }}'">
                 <div>
                     <div class="center-block text-center">
                          <i class="glyphicon glyphicon-plus"></i>
