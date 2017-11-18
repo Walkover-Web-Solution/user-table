@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
 class UserController extends Controller {
 
     public function __construct() {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function getSearchedData($tab, $query) {
