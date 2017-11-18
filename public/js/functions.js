@@ -327,7 +327,8 @@ function addMoreRow(check) {
         value: '',
     }
     var lists = '';
-//    var tableData = [];
+    var tableData = [];
+    var tableData1 = [];
     lists += '<option value="">Select Field Type</option>';
     for (i = 0; i <= optionList.length - 1; i++) {
         lists += '<option value="' + optionList[i] + '">' + optionList[i] + '</option>'
