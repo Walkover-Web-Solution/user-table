@@ -121,6 +121,7 @@ document.getElementById('logout-form').submit();">
     <script src="{{asset('js/functions.js')}}"></script>
     <script type="text/javascript">
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
+        console.log("We are here boss",API_BASE_URL);
         var activeTab = '{{$activeTab}}';
     </script>
     <!-- inline scripts -->
