@@ -293,7 +293,7 @@ function addRow(check) {
         value: '',
     }
     var lists = '';
-//    var tableData = [];
+    var tableData = [];
     lists += '<option value="">Select Field Type</option>';
     for (i = 0; i <= optionList.length - 1; i++) {
         lists += '<option value="' + optionList[i] + '">' + optionList[i] + '</option>'
@@ -315,7 +315,6 @@ function addRow(check) {
         </div>`;
     formGrp += '';
     tableData.push(obj);
-    console.log(tableData);
     return $('#tableField').append(formGrp);
     
 };
@@ -347,7 +346,6 @@ function addMoreRow(check) {
         </div>`;
     formGrp += '';
     tableData1.push(obj1);
-    console.log(tableData1);
     return $('#tableFieldRow').append(formGrp);
     
 };
