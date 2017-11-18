@@ -64,7 +64,7 @@
 
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
-    var API_BASE_URL = '127.0.0.1:8000'
+    var API_BASE_URL = '{{env('API_BASE_URL')}}';
             function updateData(ths, method){
             if (method == 'radio_button'){
                 var key_name = $(ths).attr('name');
