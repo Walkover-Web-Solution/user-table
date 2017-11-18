@@ -207,7 +207,7 @@ document.getElementById('logout-form').submit();">
                 // console.log('blur');
                 // console.log('start interval after 20s');
                 window.setTimeout(function() {
-                    startInterval();
+                    //startInterval();
                 }, 20000);
             });
         });

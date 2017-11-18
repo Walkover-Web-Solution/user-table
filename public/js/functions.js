@@ -246,8 +246,8 @@ function watchOnchange(ele) {
 
 function startInterval() {
     myInterval = setInterval(function() {
-        console.log(activeTab)
-        getTabDetails(activeTab)
+       // console.log(activeTab)
+        //getTabDetails(activeTab)
     }, interval);
 }
 
