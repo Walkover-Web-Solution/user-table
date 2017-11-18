@@ -67,14 +67,14 @@
     <body>
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/tables') }}">Home</a>
-                    @else
-                        <a href="https://viasocket.com/login?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/socketlogin">Login</a>
-                        <a href="https://viasocket.com/signup?token_required=true&redirect_uri=https://contact-crm-test.herokuapp.com/socketlogin">Register</a>
-                    @endauth
-                </div>
+            <div class="top-right links">
+                @auth
+                <a href="{{ url('/tables') }}">Home</a>
+                @else
+                <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Login</a>
+                <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Register</a>
+                @endauth
+            </div>
             @endif
 
             <div class="content">
@@ -82,13 +82,13 @@
                     Contact UI
                 </div>
 
-<!--                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>-->
+                <!--                <div class="links">
+                                    <a href="https://laravel.com/docs">Documentation</a>
+                                    <a href="https://laracasts.com">Laracasts</a>
+                                    <a href="https://laravel-news.com">News</a>
+                                    <a href="https://forge.laravel.com">Forge</a>
+                                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                                </div>-->
             </div>
         </div>
     </body>
