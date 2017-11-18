@@ -121,4 +121,11 @@ class team_table_mapping extends Model {
         return $data;
     }
 
+    public static function updateTableData($paramArr){
+        $data = \DB::table($paramArr['table'])
+                ->where($paramArr['where_key'],$paramArr['where_value'])
+                ->update($paramArr['update']);
+        return $data;
+}
+
 }

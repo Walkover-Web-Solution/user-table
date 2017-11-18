@@ -22,6 +22,7 @@ class TableController extends Controller {
         $tableNameArr = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNameArr), true);
         $userTableName = $tableNameArr[0]['table_name'];
+        $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']),true),TRUE);
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
@@ -42,7 +43,8 @@ class TableController extends Controller {
                 'allTabs' => $allTabs,
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
-                'filters' => $filters));
+                'filters' => $filters,
+                'structure' => $userTableStructure));
         }
     }
 
@@ -217,6 +219,30 @@ class TableController extends Controller {
         } else {
             $arr['msg'] = "Table Not Found";
             return response()->json($arr);
+        }
+    }
+    
+    public function updateEntry(Request $request){
+        
+        $update_details = $request->all();
+        if(!isset($update_details['table_id'])){
+            return response()->json(array('error' => 'Invalid table id'));
+        }
+        $tableNameArr = team_table_mapping::getUserTablesNameById($update_details['table_id']);
+        $tableNameArr = json_decode(json_encode($tableNameArr), true);
+                
+        $tableName = $tableNameArr[0]['table_id'];
+        $param['table'] = $tableName;
+        $param['where_key'] = 'id' ;
+        $param['where_value'] = $update_details['row_id'];
+        
+        $param['update'] = array($update_details['coloumn_name'] => $update_details['new_value']);
+        $response = team_table_mapping::updateTableData($param);
+        if($response == 1){
+            return response()->json(array('msg' => 'Data updated'));
+        }
+        else{
+            return response()->json(array('msg' => 'Data couldnot be updated'));
         }
     }
 
