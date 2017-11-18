@@ -41,11 +41,11 @@
         <div class="col-xs-3">
             <div class="card">
                 <div class="text-center">
-                    <a style="font-size: 30px;" href="/tables/{{$val['id']}}" target="_blank">
+                    <a style="font-size: 30px;" href="tables/{{$val['id']}}" target="_blank">
                         <span>{{$val['table_name']}}</span>
                     </a>
                     <div class="center-block text-center">
-                        <button class="btn btn-primary btn-sm" onclick="location.href='/configure/{{$val['id']}}'">Configure</button>
+                        <button class="btn btn-primary btn-sm" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
                         <button class="btn btn-default btn-sm" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
                         
                     </div>

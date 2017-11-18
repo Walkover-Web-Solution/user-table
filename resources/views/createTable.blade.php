@@ -113,13 +113,13 @@
 
        console.log(tableData);
        $.ajax({
-                    url: '/createTable',
+                    url: 'createTable',
                     type: 'POST',
                     data: {tableData:tableData,tableName:tableName,teamId:teamId},
                     dataType: 'json',
                     success: function(info){
                         alert(info.msg);
-                        window.location.href = "/tables";                    }
+                        window.location.href = "tables";                    }
 
                 });
     }

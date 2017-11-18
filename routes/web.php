@@ -57,10 +57,9 @@ Route::post('/configureTable', 'TableController@configureSelectedTable');
 //  'as' => '',
 //  'uses' => 'Auth\LoginController@login'
 //]);
-//Route::post('logout', [
-//  'as' => 'logout',
-//  'uses' => 'Auth\LoginController@logout'
-//]);
+Route::post('logout', [
+  'uses' => 'Auth\LoginController@logout'
+])->name('logout');
 //
 //// Password Reset Routes...
 //Route::post('password/email', [
