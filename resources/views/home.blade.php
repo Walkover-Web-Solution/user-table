@@ -121,7 +121,6 @@ document.getElementById('logout-form').submit();">
     <script src="{{asset('js/functions.js')}}"></script>
     <script type="text/javascript">
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
-        console.log("We are here boss",API_BASE_URL);
         var activeTab = '{{$activeTab}}';
     </script>
     <!-- inline scripts -->
@@ -181,10 +180,11 @@ document.getElementById('logout-form').submit();">
                 console.log(obj);
                 var tableId = {{ collect(request()->segments())->last() }}
                 console.log("this is my table Id",tableId);
+                console.log("We are here boss",API_BASE_URL);
                 $.ajax({
                     type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
                     dataType: 'json', // Set datatype - affects Accept header
-                    url: "filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+                    url: API_BASE_URL+"/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
                     data: {'filter':JSON.stringify(obj),'tab':tabName,'tableId':tableId}, // Some data e.g. Valid JSON as a string
                     success: function (data) { 
                         console.log(data);
