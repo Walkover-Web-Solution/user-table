@@ -34,7 +34,7 @@ Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelec
 # For create table view
 Route::get('/createTable', function(){
     return view('createTable');
-});
+})->name('createTable');;
 
 # for creating user table in database
 Route::post('/createTable', 'UserController@createTable');
