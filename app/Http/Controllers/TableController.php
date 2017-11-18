@@ -98,7 +98,8 @@ class TableController extends Controller {
                 return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
             } else {
                 return view('table.response', array(
-                    'allTabs' => $data
+                    'allTabs' => $data,
+                    'tableId' => $tableId
                 ));
             }
         }
