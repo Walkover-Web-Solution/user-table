@@ -10,7 +10,6 @@
         </tr>
     </thead>
     <tbody id="all_users">
-        <!--<tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}')">-->
             <tr data-toggle="modal" data-target="#edit_user">
             <td></td>
             @foreach($val as $k => $colValue)
@@ -35,7 +34,6 @@
     </tbody>
     @endif
     @if($key!=0)
-    <!--<tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}')">-->
     <tr data-toggle="modal" data-target="#edit_user">
         <td></td>
         @foreach($val as $k => $colValue)
