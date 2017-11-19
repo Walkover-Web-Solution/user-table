@@ -103,10 +103,10 @@
            var value = $('.value', $(this)).val();
            console.log(name,type,unique,value);
            
-           tableData[idx].name = name;
-           tableData[idx].type = type;           
-           tableData[idx].unique = unique;           
-           tableData[idx].value = value;           
+           tableData[idx] = {'name':name,'type':type,'unique':unique,'value':value};
+//           tableData[idx].type = type;           
+//           tableData[idx].unique = unique;           
+//           tableData[idx].value = value;           
        });
        var tableName = $("#tableName").val();
        var teamId = $('select[name=teamName]').val();

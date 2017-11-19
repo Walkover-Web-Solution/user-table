@@ -129,6 +129,9 @@
 
 </html>
 <script type="text/javascript">
+        var API_BASE_URL = '{{env('API_BASE_URL')}}';
+</script>
+<script type="text/javascript">
     var tableData1= [];
 
     function createTable(){
@@ -137,18 +140,13 @@
            var type = $('.type', $(this)).val();
            var unique = $('.unique', $(this)).prop("checked");
            var value = $('.value', $(this)).val();
-           console.log(name,type,unique,value);
            
-           tableData1[idx].name = name;
-           tableData1[idx].type = type;           
-           tableData1[idx].unique = unique;           
-           tableData1[idx].value = value;           
+           tableData1[idx] = {'name':name,'type':type,'unique':unique,'value':value};           
        });
        var tableId = $("#tableId").text();
-       console.log(tableId);
-       console.log(tableData1,tableId );
+       console.log(tableId,API_BASE_URL);
        $.ajax({
-                    url: '/configureTable',
+                    url: API_BASE_URL+'/configureTable',
                     type: 'POST',
                     data: {tableData:tableData1,tableId:tableId},
                     dataType: 'json',

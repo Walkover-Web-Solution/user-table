@@ -19,7 +19,7 @@ Route::get('/login', function () {
     return view('welcome');
 })->name('login');
 
-Route::get('/tables', 'UserController@getUserAllTables')->name('tables');
+Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
 Route::get('socketlogin', 'LoginController@login');
 Route::get('unauthorised', function () {
     return view('unauthorised');
@@ -37,7 +37,7 @@ Route::get('/createTable', function(){
 })->name('createTable');;
 
 # for creating user table in database
-Route::post('/createTable', 'UserController@createTable');
+Route::post('/createTable', 'TableController@createTable');
 
 # for Configure user table in database
 Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
