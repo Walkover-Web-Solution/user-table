@@ -77,18 +77,40 @@
                         <li class="active">
                             <div class="form-check">
                                 <label class="form-check-label">
+                                    @if(isset($activeTabFilter[$k]))
                                     <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="...">{{$k}}</label>
+                                           onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
+                                    @else
+                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
+                                           onclick="showDiv('condition_{{$k}}')" aria-label="...">
+                                    @endif
+                                    {{$k}}</label>
                             </div>
-                            <div id="condition_{{$k}}" class="hide filter-option">
+                            @if(isset($activeTabFilter[$k]))
+                                <div id="condition_{{$k}}" class="filter-option">
+                            @else
+                                <div id="condition_{{$k}}" class="hide filter-option">
+                            @endif
                                 @foreach($filter as $key =>$option)
                                 <div class="form-check">
                                     <label class="form-check-label radio-label">
+                                        @if(isset($activeTabFilter[$k][$key]))
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                               onclick="showFilterInputText(this,'{{$k}}')" type="radio"
+                                               aria-label="..." checked="checked">
+                                        @else
                                         <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
                                                onclick="showFilterInputText(this,'{{$k}}')" type="radio"
-                                               aria-label="...">{{$key}}
+                                               aria-label="...">
+                                        @endif
+                                        {{$key}}
+                                        @if(isset($activeTabFilter[$k][$key]))
+                                        <input class="form-check-input filterinput{{$k}} form-control"
+                                               name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                        @else
                                         <input class="form-check-input filterinput{{$k}} form-control"
                                                name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text">
+                                        @endif
                                     </label>
                                 </div>
                                 @endforeach

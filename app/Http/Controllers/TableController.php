@@ -175,18 +175,28 @@ class TableController extends Controller {
             $tableIdMain = $tableNameArr[0]['table_id'];
             $data = Tabs::getTabsByTableId($tableIdMain);
             $data = json_decode(json_encode($data), true);
-//            $alltabs = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
+            if($tabName == "All")
+            {
+                $tabArray = array();
+            }
+            else{
+                $tabSql = Tabs::where([['tab_name', $tabName],['table_id', $tableIdMain]])->first(['query'])->toArray();
+                $tabArray = json_decode($tabSql['query'],true);
+            }
+            
             $tabData = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
             $tabData = json_decode(json_encode($tabData), true);
             $filters = Tables::getFiltrableData($tableIdMain);
-
+            
+            //print_r($filters);die;
             return view('home', array(
                 'activeTab' => $tabName,
                 'tabs' => $data,
                 'allTabs' => $tabData,
                 'tableId' => $tableId,
                 'userTableName' => $userTableName,
-                'filters' => $filters));
+                'filters' => $filters,
+                'activeTabFilter'=>$tabArray));
         }
     }
 
