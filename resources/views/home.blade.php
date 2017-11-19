@@ -121,6 +121,7 @@
 <script type="text/javascript">
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
     var activeTab = '{{$activeTab}}';
+    var tableId = '{{$tableId}}';
 </script>
 <!-- inline scripts -->
 <script>
@@ -169,8 +170,6 @@
                 }
             });
             console.log(obj);
-            var tableId = '{{ collect(request()->segments())->last() }}';
-            console.log("this is my table Id", tableId, API_BASE_URL, 'sd');
             $.ajax({
             type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
                 dataType: 'json', // Set datatype - affects Accept header
@@ -186,11 +185,11 @@
         });
         $(".form-check-input").on('keyup', function() {
             clearInterval(myInterval);
-            var tableId = '{{ collect(request()->segments())->last() }}';
+            //var tableId = '{{ collect(request()->segments())->last() }}';
             // console.log('clear interval');
             if (globaltimeout != null) clearTimeout(globaltimeout);
             globaltimeout = setTimeout(function() {
-            makeFilterJsonData(tableId);
+                makeFilterJsonData(tableId);
             }, 600);
         })
 
@@ -201,11 +200,13 @@
         });
     });
     function SaveAsNew(state) {
-    if (state) {
-    $('#saveAsInput').show();
-    } else {
-    $('#saveAsInput').hide();
-    }
+        if (state) {
+            $('#saveAsInput').val('');
+            $('#saveAsInput').show();
+        } else {
+            $('#saveAsInput').hide();
+            $('#saveAsInput').val(activeTab);
+        }
     }
 
 </script>
