@@ -112,6 +112,6 @@ Route::get('/add_update', 'TableController@add');
 
 Route::get('/profile','UserController@getKey')->name('profile');
 
-Route::get('/getTables', 'UserController@getAllTablesForSocket')->middleware(['socketMasterKey']);
+Route::get('/getTables', 'TableController@getAllTablesForSocket')->middleware(['socketMasterKey']);
 
 Route::post('/update', 'TableController@updateEntry');
