@@ -10,7 +10,7 @@
         </tr>
     </thead>
     <tbody id="all_users">
-            <tr data-toggle="modal">
+            <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
             <td></td>
             @foreach($val as $k => $colValue)
             @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')
@@ -34,7 +34,7 @@
     </tbody>
     @endif
     @if($key!=0)
-    <tr data-toggle="modal">
+    <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
         <td></td>
         @foreach($val as $k => $colValue)
         @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')

@@ -121,20 +121,22 @@ function applyFilterData(jsonObject,tableId) {
     });
 }
 
-function getUserDetails(id) {
+function getUserDetails(id,tableId) {
     //console.log(results[index]);
     if (id) {
         //selectedRow = index;
         $.ajax({
             type: 'GET', // Use GET
-            url: API_BASE_URL + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            url: API_BASE_URL +'/table/'+tableId+ "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             //   headers: { 'token': tokenKey },
             success: function(res) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
+                var authKey = res.authKey;
                 var editForm = '';
                 if (val) {
-                    $("#eId").val(val.username);
+                    $("#eId").val(val.id);
+                    $('#tokenKey').val(authKey);
 
                     var i = 0;
                     for (var k in val) {
@@ -181,15 +183,17 @@ function editUserData() {
     clearInterval(myInterval);
     // console.log('stop interval')
     id = $("#eId").val();
+    var authKey = $("#tokenKey").val();
     var obj;
     var jsonDoc = {};
     var fieldChange = false;
     //console.log('in edit user details')
     var editUserDetailsForm = $("#editUserDetails .form-control")
-    jsonDoc['username'] = id;
+    //jsonDoc['id'] = id;
+    jsonDoc['socket_data_source']='';
     editUserDetailsForm.each(function() {
             fieldChange = $(this).attr('data-change');
-            if (fieldChange) {
+            //if (fieldChange) {
                 dataid = $(this).attr('dataid');
                 val = $(this).val();
                 if (dataid == 'follow_up_date') {
@@ -203,16 +207,20 @@ function editUserData() {
                 }
                 // console.log(dataid,val)
                 jsonDoc[dataid] = val;
-            }
+            //}
         })
         //console.log(jsonDoc);
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    jsonDoc['_token']=CSRF_TOKEN;
     obj = jsonDoc;
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         dataType: 'json', // Set datatype - affects Accept header
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: { _token: CSRF_TOKEN, userdata: obj }, // Some data e.g. Valid JSON as a string
+        data: jsonDoc, // Some data e.g. Valid JSON as a string
+        beforeSend: function (xhr){
+            xhr.setRequestHeader('Auth-Key', authKey); 
+        },
         success: function(data) {
             //console.log("success");
             ALL_USERS[selectedRow] = data.data;

@@ -276,6 +276,7 @@
 
                 <div class="modal-footer">
                     <input type="hidden" id="eId"/>
+                    <input type="hidden" id="tokenKey"/>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData()">
                         Save

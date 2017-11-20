@@ -79,12 +79,24 @@ class UserController extends Controller {
         return response(json_encode(array('message' => 'project added successfully', 'data' => $data)), 200)->header('Content-Type', 'application/json');
     }
 
-    public function getDetailsOfUserById($id) {
-        $data = Users::find($id);
-        $colDetails = Users::getColumnDetails();
+    public function getDetailsOfUserById($tableId,$id) {
+        //$tableId = $request->tableId;
+        $tableNameArr = team_table_mapping::getUserTablesNameById($tableId);
+        $tableNameArr = json_decode(json_encode($tableNameArr), true);
+        //$userTableName = $tableNameArr[0]['table_name'];
+        //print_r($tableNameArr[0]);die;
+        if (empty($tableNameArr[0]['table_id'])) {
+            echo "no table found";
+            exit();
+        } else {
+            $data = \DB::table($tableNameArr[0]['table_id'])->selectRaw('*')->where('id',$id)->first();
+        }
+        //$data = Users::find($id);
+        $colDetails = json_decode($tableNameArr[0]['table_structure'],true); //Users::getColumnDetails();
+        //print_r($colDetails);die;
         return response(
                         json_encode(
-                                array('data' => $data, 'colDetails' => $colDetails)
+                                array('data' => $data, 'colDetails' => $colDetails,'authKey'=>$tableNameArr[0]['auth'])
                         ), 200
                 )->header('Content-Type', 'application/json');
     }

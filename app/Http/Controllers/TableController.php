@@ -272,6 +272,7 @@ class TableController extends Controller {
         $table_incr_id = $response[0]['id'];
         $dataSource = $incoming_data['socket_data_source'];
         unset($incoming_data['socket_data_source']);
+        unset($incoming_data['_token']);
         $table_name = $response[0]['table_id'];
         $table_structure = $response[0]['table_structure'];
         $response = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);

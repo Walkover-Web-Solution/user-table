@@ -95,7 +95,7 @@ Route::post('logout', [
 
         
 //Route::get('/home/{tab}', 'HomeController@filterTab');
-//Route::get('/user_data/{id}', 'UserController@getDetailsOfUserById');
+Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
 #serach by filters
 //Route::post('/filter', 'UserController@applyFilters');
 Route::post('/filter', 'TableController@applyFilters');
