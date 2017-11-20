@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class team_table_mapping extends Model {
 
-    protected $table = 'team_table_mapping';
+    protected $table = 'team_table_mappings';
     protected $fillable = ['id', 'table_name', 'table_id', 'team_id'];
 
     public static function getUserTablesByTeam($teamIdArr) {
