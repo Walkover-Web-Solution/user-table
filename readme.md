@@ -15,27 +15,34 @@ Heroku
 heroku git:clone -a contacts-apis
 cd contacts-apis
 
+
+ENV Setup
+=============
+Copy 
+  .env.example => .env 
+
+Generate key for Laravel
+-------------------
+  docker-compose exec php php artisan key:generate
+
+
 Docker
 =========
 
 get logged in into docker bash (use `docker login` command)
 Then run docker composer scripts.
 
- docker-compose up
+  docker-compose up
 
 Docker will start Msg91-panel at localhost:8080
 
 Update Composer & Migrate DB
 -----------------
 
-docker-compose exec php composer update
-docker-compose exec php php artisan migrate:status
-docker-compose exec php php artisan migrate
+  docker-compose exec php composer update
+  docker-compose exec php php artisan migrate:status
+  docker-compose exec php php artisan migrate
 
-
-Generate key for Laravel
--------------------
-docker-compose exec php php artisan key:generate
 
 
 MSG91 &copy; 2017
