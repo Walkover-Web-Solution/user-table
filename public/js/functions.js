@@ -284,7 +284,7 @@ function searchKeyword(event, query) {
     if (!q) {
         return false;
     }
-    $.get(API_BASE_URL + "/search/" + activeTab + "/" + q, function(response) {
+    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
         $('#response').html(response);
 
     })

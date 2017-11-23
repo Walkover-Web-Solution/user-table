@@ -8,6 +8,7 @@ use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class TableController extends Controller {
 
@@ -189,7 +190,7 @@ class TableController extends Controller {
 
     public function applyFilters(Request $request) {
         $req = (array) ($request->filter);
-        
+
         $tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
@@ -356,4 +357,41 @@ class TableController extends Controller {
             return response()->json(array('msg' => 'Data couldnot be updated'));
         }
     }
+
+    public function getSearchedData($tableId, $query) {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+        $userTableName = $tableNameArr[0]['table_name'];
+        $tableID = $tableNameArr[0]['table_id'];
+        $tableStructure = $tableNameArr[0]['table_structure'];
+        $userTableStructure = json_decode(json_decode(json_encode($tableStructure), true), TRUE);
+
+        if (empty($tableID)) {
+            echo "no table found";
+            exit();
+        } else {
+           // echo $tableID;
+            $users = \DB::table($tableID)->selectRaw('*');
+            $count = 0;
+            foreach ($userTableStructure as $key => $value) {
+                if ($count == 0) {
+                    $users->where($key, 'LIKE', '%' . $query . '%');
+                } else {
+                    $users->orWhere($key, 'LIKE', '%' . $query . '%');
+                }
+                $count++;
+            }
+            //$users->orWhere("ddfdfdf", 'LIKE', '%' . $query . '%');
+            $data= $users->get();
+            if (request()->wantsJson()) {
+                return ['body' => $data];
+            } else {
+                return view('table.response', array(
+                    'allTabs' => $data->toArray(),
+                    'tableId'=>$tableID
+                ));
+            }
+        }
+    }
+
 }

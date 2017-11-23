@@ -53,7 +53,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::post('/filter/save', 'UserController@saveFilter');
 
     # search in active table
-    Route::get('/search/{tab}/{query}', 'UserController@getSearchedData');
+    Route::get('/search/{tableId}/{query}', 'TableController@getSearchedData');
     Route::get('/profile', 'UserController@getKey')->name('profile');
 
     Route::get('/getTables', 'TableController@getAllTablesForSocket')->middleware(['socketMasterKey']);
