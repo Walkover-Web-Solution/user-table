@@ -5,8 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
-{
+class User extends Authenticatable {
+
     use Notifiable;
 
     /**
@@ -16,7 +16,7 @@ class User extends Authenticatable
      */
     protected $table = 'users';
     protected $fillable = [
-        'first_name','last_name', 'email', 'password','api_token','id'
+        'first_name', 'last_name', 'email', 'password', 'api_token', 'id'
     ];
 
     /**
@@ -25,14 +25,15 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token','api_token'
+        'password', 'remember_token', 'api_token'
     ];
-    
+
     public function team() {
         return $this->hasMany('App\UserTeamMapping', 'user_id', 'id');
     }
-    
-    public static function userWithTeams(){
-       return User::with('team.teamDetail')->get();
+
+    public static function userWithTeams() {
+        return User::with('team.teamDetail')->get();
     }
+
 }

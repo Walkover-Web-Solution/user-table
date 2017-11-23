@@ -2,10 +2,7 @@
 
 namespace App;
 
-use App\Classes\Utility;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Schema;
 
 class Tables extends Model
 {
@@ -103,7 +100,6 @@ class Tables extends Model
             }
 
             else if (isset($req[$paramName]->contains)) {
-                //dd($req[$paramName]->contains);
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->contains.'%');
             }
             else if (isset($req[$paramName]->not_contains)) {
@@ -135,4 +131,3 @@ class Tables extends Model
     }
     
 }
-

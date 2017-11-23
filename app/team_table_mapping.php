@@ -10,7 +10,6 @@ class team_table_mapping extends Model {
     protected $fillable = ['id', 'table_name', 'table_id', 'team_id'];
 
     public static function getUserTablesByTeam($teamIdArr) {
-//        $userDefaultTeamId = 50;
         $data = \DB::table('team_table_mappings')
                 ->select('*')
                 ->whereIn('team_id', $teamIdArr)
@@ -51,9 +50,9 @@ class team_table_mapping extends Model {
     public static function makeNewEntryForSource($table_incr_id, $dataSource) {
         $match_this = array('table_incr_id' => $table_incr_id, 'source' => $dataSource);
         $exists = \DB::table('user_data_source')->where($match_this)->get();
-        $exists = json_decode(json_encode($exists), true);
+        $existsArr = json_decode(json_encode($exists), true);
 
-        if ($exists) {
+        if ($existsArr) {
             echo "Working as required";
         } else {
             \DB::table('user_data_source')
@@ -62,10 +61,10 @@ class team_table_mapping extends Model {
         return True;
     }
 
-    public static function makeNewEntryInTable($table_name, $input_param, $structure) {
+    public static function makeNewEntryInTable($table_name, $input_param, $structureJson) {
         $data = 0;
         $unique_key = '';
-        $structure = json_decode($structure, TRUE);
+        $structure = json_decode($structureJson, TRUE);
 
         foreach ($input_param as $key => $value) {
             if ($structure[$key]['unique'] == 'true') {
@@ -76,13 +75,13 @@ class team_table_mapping extends Model {
         if (empty($unique_key) || empty($input_param[$key])) {
             return array('error' => 'unique_key_not_found');
         }
-        $response = \DB::table($table_name)
+        $responseObj = \DB::table($table_name)
                 ->select('*')
                 ->where($unique_key, $input_param[$unique_key])
                 ->get();
 
 
-        $response = json_decode(json_encode($response));
+        $response = json_decode(json_encode($responseObj));
 
         if (empty($response)) {
             $data = \DB::table($table_name)
@@ -96,11 +95,10 @@ class team_table_mapping extends Model {
                     }
                 } else {
                     if (!empty($input_param[$key])) {
-                        $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')'); //$input_param[$key];
+                        $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')');
                     }
                 }
             }
-
 
             $data = \DB::table($table_name)
                     ->where($unique_key, $input_param[$unique_key])
@@ -121,11 +119,11 @@ class team_table_mapping extends Model {
         return $data;
     }
 
-    public static function updateTableData($paramArr){
+    public static function updateTableData($paramArr) {
         $data = \DB::table($paramArr['table'])
-                ->where($paramArr['where_key'],$paramArr['where_value'])
+                ->where($paramArr['where_key'], $paramArr['where_value'])
                 ->update($paramArr['update']);
         return $data;
-}
+    }
 
 }
