@@ -7,14 +7,15 @@
     <ul id="tablist">
         <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li>
         <li role="presentation">
-            <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All
+            <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All ({{$allTabCount}})
             </a>
         </li>
-        @foreach($tabs as $tab => $tabDetail)
-        @foreach($tabDetail as $tabName)
+  @foreach($arrTabCount as $tabDetail)
+        @foreach($tabDetail as $tabName => $tabCount)
+       
         <li role="presentation">
             <!--<a href="{{ collect(request()->segments())->last() }}/{{$tabName}}">{{$tabName}}-->
-            <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}}
+            <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>
         </li>
         @endforeach

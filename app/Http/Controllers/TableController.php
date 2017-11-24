@@ -174,11 +174,25 @@ class TableController extends Controller {
             $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
             $tabData = json_decode(json_encode($tabDataJson), true);
             $filters = Tables::getFiltrableData($tableIdMain);
-
+            if (!empty($tabs)) {
+                foreach ($tabs as $val) {
+                    $tab_name = $val['tab_name'];
+                    $tabCountData = Tables::TabDataBySavedFilter($tableIdMain, $tab_name);
+                    $tabCount = count($tabCountData);
+                    if (empty($tabCount)) {
+                        $arrTabCount[] = array($tab_name => $tabCount);
+                    }
+                }
+            } else {
+                $arrTabCount = array();
+            }
+            $allTabCount = count($tabData);
             return view('home', array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
                 'allTabs' => $tabData,
+                'allTabCount' => $allTabCount,
+                'arrTabCount' => $arrTabCount,
                 'tableId' => $tableId,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
@@ -380,12 +394,12 @@ class TableController extends Controller {
                 }
                 $count++;
             }
-            $data= $users->get();
+            $data = $users->get();
             $results = $array = json_decode(json_encode($data), True);
-            
+
             return view('table.response', array(
                 'allTabs' => $results,
-                'tableId'=>$tableID
+                'tableId' => $tableID
             ));
         }
     }
