@@ -370,7 +370,6 @@ class TableController extends Controller {
             echo "no table found";
             exit();
         } else {
-           // echo $tableID;
             $users = \DB::table($tableID)->selectRaw('*');
             $count = 0;
             foreach ($userTableStructure as $key => $value) {
@@ -381,16 +380,13 @@ class TableController extends Controller {
                 }
                 $count++;
             }
-            //$users->orWhere("ddfdfdf", 'LIKE', '%' . $query . '%');
             $data= $users->get();
-            if (request()->wantsJson()) {
-                return ['body' => $data];
-            } else {
-                return view('table.response', array(
-                    'allTabs' => $data->toArray(),
-                    'tableId'=>$tableID
-                ));
-            }
+            $results = $array = json_decode(json_encode($data), True);
+            
+            return view('table.response', array(
+                'allTabs' => $results,
+                'tableId'=>$tableID
+            ));
         }
     }
 
