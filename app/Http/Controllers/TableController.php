@@ -146,9 +146,9 @@ class TableController extends Controller {
                     $tab_name = $val['tab_name'];
                     $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
                     $tabCount = count($tabCountData);
-                    if (empty($tabCount)) {
+                    //if (empty($tabCount)) {
                         $arrTabCount[] = array($tab_name => $tabCount);
-                    }
+                    //}
                 }
             } else {
                 $arrTabCount = array();
