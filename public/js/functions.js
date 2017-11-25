@@ -6,7 +6,7 @@ var COL_FIELD = {};
 var selectedRow = '';
 var myInterval;
 var interval = 3000; // after every 3s
-var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date'];
+var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date','my teammates'];
 var checkList = [{
     name: 'Unique',
     priority: ['high', 'medium', 'low']
