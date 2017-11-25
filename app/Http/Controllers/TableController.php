@@ -141,11 +141,26 @@ class TableController extends Controller {
             $tabs = json_decode(json_encode($data), true);
 
             $filters = Tables::getFiltrableData($tableId);
+            if (!empty($tabs)) {
+                foreach ($tabs as $val) {
+                    $tab_name = $val['tab_name'];
+                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
+                    $tabCount = count($tabCountData);
+                    if (empty($tabCount)) {
+                        $arrTabCount[] = array($tab_name => $tabCount);
+                    }
+                }
+            } else {
+                $arrTabCount = array();
+            }
+            $allTabCount = count($allTabsData);
 
             return view('home', array(
                 'activeTab' => 'All',
                 'tabs' => $tabs,
                 'allTabs' => $allTabsData,
+                'allTabCount' => $allTabCount,
+                'arrTabCount' => $arrTabCount,
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
