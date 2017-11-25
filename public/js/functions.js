@@ -287,8 +287,7 @@ function searchKeyword(event, query) {
     $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
         $('#response').html(response);
 
-    })
-
+    });
 }
 
 // add new field row
