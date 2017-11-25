@@ -177,6 +177,10 @@ class TableController extends Controller {
             exit();
         } else {
             $tableIdMain = $tableNameArr[0]['table_id'];
+            $allTabs = \DB::table($tableIdMain)
+                    ->select('*')
+                    ->get();
+            $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableIdMain);
             $tabs = json_decode(json_encode($data), true);
             if ($tabName == "All") {
@@ -200,7 +204,7 @@ class TableController extends Controller {
             } else {
                 $arrTabCount = array();
             }
-            $allTabCount = count($tabData);
+            $allTabCount = count($allTabsData);
             return view('home', array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
