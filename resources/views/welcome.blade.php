@@ -56,7 +56,7 @@
                     @if (Route::has('login'))
                     <div class="top-right links">
                         @auth
-                        <a href="{{ url('/tables') }}">Home</a>
+                        <a href="{{ url('/tables') }}" class="lg-btn btn btn-default navbar-btn pull-right">Home</a>
                         @else
                         <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="lg-btn btn btn-default navbar-btn pull-right">Login</a>
                         <!--<a href="https://viasocket.com/login?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Login</a>-->
