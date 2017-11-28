@@ -8,18 +8,18 @@ var myInterval;
 var interval = 3000; // after every 3s
 var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date'];
 var checkList = [{
-    name: 'Unique',
-    priority: ['high', 'medium', 'low']
-}];
+        name: 'Unique',
+        priority: ['high', 'medium', 'low']
+    }];
 var numberList = [];
 var dateList = ['relative', 'normal'];
 var customTypes = ['dropdown', 'radio button', 'checkbox']
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -34,7 +34,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 //var API_BASE_URL = "http://localhost:8000";
 //var tokenKey = localStorage.getItem('token');
 //var tokenKey = getUrlParameter('token');
-$('body').on('focus', ".calendar_cls", function() {
+$('body').on('focus', ".calendar_cls", function () {
     $(this).datepicker();
 });
 
@@ -42,7 +42,7 @@ function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
 
-    user_data.forEach(function(val, index) {
+    user_data.forEach(function (val, index) {
 
         userDetails += `<tr data-toggle="modal" data-target="#edit_user" onclick = "getUserDetails('` + index + `')" >
         <td></td>`
@@ -86,7 +86,7 @@ function makeFilterJsonData(tableId) {
     var filterChecked = [];
     var jsonObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
-    filterCheckedElement.each(function() {
+    filterCheckedElement.each(function () {
         dataid = $(this).attr('dataid');
         filterChecked.push($(this).attr('dataid'));
         var radioButton = $("#condition_" + dataid + " input:checked");
@@ -97,10 +97,10 @@ function makeFilterJsonData(tableId) {
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
     })
-    applyFilterData(jsonObject,tableId);
+    applyFilterData(jsonObject, tableId);
 }
 
-function applyFilterData(jsonObject,tableId) {
+function applyFilterData(jsonObject, tableId) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -113,23 +113,23 @@ function applyFilterData(jsonObject,tableId) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: { 'filter': obj, 'tab': 'All' ,'tableId' : tableId}, // Some data e.g. Valid JSON as a string
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
-        success: function(data) {
+        success: function (data) {
             $('#response').html(data);
         }
     });
 }
 
-function getUserDetails(id,tableId) {
+function getUserDetails(id, tableId) {
     //console.log(results[index]);
     if (id) {
         //selectedRow = index;
         $.ajax({
             type: 'GET', // Use GET
-            url: API_BASE_URL +'/table/'+tableId+ "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             //   headers: { 'token': tokenKey },
-            success: function(res) {
+            success: function (res) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
@@ -141,7 +141,9 @@ function getUserDetails(id,tableId) {
                     var i = 0;
                     for (var k in val) {
                         //console.log(k);
-                        if (k === 'id') { continue; }
+                        if (k === 'id') {
+                            continue;
+                        }
                         var currentField = COL_FIELD[k];
                         i++;
                         if (!currentField) {
@@ -190,38 +192,38 @@ function editUserData() {
     //console.log('in edit user details')
     var editUserDetailsForm = $("#editUserDetails .form-control")
     //jsonDoc['id'] = id;
-    jsonDoc['socket_data_source']='';
-    editUserDetailsForm.each(function() {
-            fieldChange = $(this).attr('data-change');
-            //if (fieldChange) {
-                dataid = $(this).attr('dataid');
-                val = $(this).val();
-                if (dataid == 'follow_up_date') {
-                    if (!val) {
-                        var date = new Date();
-                        val = date.toLocaleDateString();
-                        val = val.split('/');
-                        val = val[2] + "/" + val[1] + "/" + val[0];
-                        //console.log(val);
-                    }
-                }
-                // console.log(dataid,val)
-                jsonDoc[dataid] = val;
-            //}
-        })
-        //console.log(jsonDoc);
+    jsonDoc['socket_data_source'] = '';
+    editUserDetailsForm.each(function () {
+        fieldChange = $(this).attr('data-change');
+        //if (fieldChange) {
+        dataid = $(this).attr('dataid');
+        val = $(this).val();
+        if (dataid == 'follow_up_date') {
+            if (!val) {
+                var date = new Date();
+                val = date.toLocaleDateString();
+                val = val.split('/');
+                val = val[2] + "/" + val[1] + "/" + val[0];
+                //console.log(val);
+            }
+        }
+        // console.log(dataid,val)
+        jsonDoc[dataid] = val;
+        //}
+    })
+    //console.log(jsonDoc);
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    jsonDoc['_token']=CSRF_TOKEN;
+    jsonDoc['_token'] = CSRF_TOKEN;
     obj = jsonDoc;
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         dataType: 'json', // Set datatype - affects Accept header
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
         data: jsonDoc, // Some data e.g. Valid JSON as a string
-        beforeSend: function (xhr){
+        beforeSend: function (xhr) {
             xhr.setRequestHeader('Auth-Key', authKey);
         },
-        success: function(data) {
+        success: function (data) {
             //console.log("success");
             ALL_USERS[selectedRow] = data.data;
             console.log(data)
@@ -235,12 +237,12 @@ function editUserData() {
 
 function initFilterSlider() {
     //open the lateral panel
-    $('.cd-btn').on('click', function(event) {
+    $('.cd-btn').on('click', function (event) {
         event.preventDefault();
         $('.cd-panel').addClass('is-visible');
     });
     //clode the lateral panel
-    $('.cd-panel').on('click', function(event) {
+    $('.cd-panel').on('click', function (event) {
         if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
             $('.cd-panel').removeClass('is-visible');
             event.preventDefault();
@@ -253,8 +255,8 @@ function watchOnchange(ele) {
 }
 
 function startInterval() {
-    myInterval = setInterval(function() {
-       // console.log(activeTab)
+    myInterval = setInterval(function () {
+        // console.log(activeTab)
         //getTabDetails(activeTab)
     }, interval);
 }
@@ -284,7 +286,7 @@ function searchKeyword(event, query) {
     if (!q) {
         return false;
     }
-    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
+    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
         $('#response').html(response);
 
     });
@@ -295,8 +297,8 @@ function addRow(check) {
 
     var obj = {
         name: '',
-        type:'',
-        unique:'',
+        type: '',
+        unique: '',
         value: '',
     }
     var lists = '';
@@ -306,7 +308,7 @@ function addRow(check) {
         lists += '<option value="' + optionList[i] + '">' + optionList[i] + '</option>'
     }
 
-    var formGrp = `<div class="row" id="column_"`+i+`>
+    var formGrp = `<div class="row" id="column_"` + i + `>
             <div class="form-group col-xs-3">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
@@ -327,13 +329,14 @@ function addRow(check) {
     tableData.push(obj);
     return $('#tableField').append(formGrp);
 
-};
+}
+;
 function addMoreRow(check) {
 
     var obj1 = {
         name: '',
-        type:'',
-        unique:'',
+        type: '',
+        unique: '',
         value: '',
     }
     var lists = '';
@@ -344,12 +347,15 @@ function addMoreRow(check) {
         lists += '<option value="' + optionList[i] + '">' + optionList[i] + '</option>'
     }
 
-    var formGrp = `<div class="row" id="column_"`+i+`>
+    var formGrp = `<div class="row" id="column_"` + i + `>
             <div class="form-group col-xs-3">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
+            </div>
+    <div class="form-group col-xs-2">
+                <input type="text" class="form-control order" name="fieldOrder" placeholder="Enter Field Order">
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
@@ -359,7 +365,8 @@ function addMoreRow(check) {
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
 
-};
+}
+;
 
 
 // on select field type
@@ -391,13 +398,13 @@ function onSelectOption(val) {
 function onTypeText() {
     $('.title').text('Choose One Option');
     var html = '';
-    $.each(checkList, function(idx, val) {
+    $.each(checkList, function (idx, val) {
         html += `<div class="checkbox">
             <label>
             <input type="checkbox" class="" onclick="showDiv('` + val.name + `')">` + val.name + `</label>
         </div>
         <div id="` + val.name + `" class="hide more-option">`;
-        $.each(val.priority, function(indx) {
+        $.each(val.priority, function (indx) {
             html += `<div class="form-check">
                 <label class="form-check-label radio-label">
                     <input class="" name="priority" type="radio"> ` + val.priority[indx] + `
@@ -420,12 +427,13 @@ function createSelectElement(arr) {
     }
     var formGrp = `<select class="form-control">` + lists + ` </select>`;
     return formGrp;
-};
+}
+;
 
 
 // radioType behavior on checkbox
 function radioBehavior() {
-    $(".chkbx").change(function() {
+    $(".chkbx").change(function () {
         $(".chkbx").prop('checked', false);
         $(this).prop('checked', true);
     });
@@ -449,7 +457,7 @@ function showDiv(id) {
     $("#" + id).toggleClass('hide');
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     addRow(true);
     addMoreRow(true);
     $('#right_panel').hide();
