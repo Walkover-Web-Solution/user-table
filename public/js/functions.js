@@ -219,7 +219,7 @@ function editUserData() {
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
         data: jsonDoc, // Some data e.g. Valid JSON as a string
         beforeSend: function (xhr){
-            xhr.setRequestHeader('Auth-Key', authKey); 
+            xhr.setRequestHeader('Auth-Key', authKey);
         },
         success: function(data) {
             //console.log("success");
@@ -272,7 +272,7 @@ function hideHeader() {
 
 function addSearchBar(val) {
     return val = `<form class="search-form pull-right" action="" name="queryForm" class="navbar-form navbar-left" onSubmit="searchKeyword(event, query.value)">
-        <label for="searchInput"><i class="fa fa-search"></i></label> 
+        <label for="searchInput"><i class="fa fa-search"></i></label>
         <input type="text" name="query" class="form-control" placeholder="Search for..." aria-label="Search for..." id="searchInput">
         </form>`
 }
@@ -292,8 +292,8 @@ function searchKeyword(event, query) {
 
 // add new field row
 function addRow(check) {
-    
-    var obj = {        
+
+    var obj = {
         name: '',
         type:'',
         unique:'',
@@ -310,10 +310,13 @@ function addRow(check) {
             <div class="form-group col-xs-3">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
+                <input type="text" class="form-control order" name="fieldOrder" placeholder="Enter Field Order">
+            </div>
+            <div class="form-group col-xs-2">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
             <div class="form-group col-xs-3">
@@ -323,11 +326,11 @@ function addRow(check) {
     formGrp += '';
     tableData.push(obj);
     return $('#tableField').append(formGrp);
-    
+
 };
 function addMoreRow(check) {
-    
-    var obj1 = {        
+
+    var obj1 = {
         name: '',
         type:'',
         unique:'',
@@ -355,7 +358,7 @@ function addMoreRow(check) {
     formGrp += '';
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
-    
+
 };
 
 
@@ -410,7 +413,7 @@ function onTypeText() {
 function createSelectElement(arr) {
     var arrList = arr;
     $('.title').text('Choose One Option');
-    
+
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
         lists += `<option value="">` + arrList[i] + `</option>`
@@ -452,4 +455,3 @@ $(document).ready(function() {
     $('#right_panel').hide();
     var title = $('#right_panel .title');
 });
-
