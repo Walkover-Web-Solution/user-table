@@ -2,10 +2,12 @@
 <html lang="en">
 
 <head>
-    <title>userTABLE</title>
+    <title>userTABLE. Collect. Analyze. Automate.</title>
     <meta charset="utf-8">
+    <meta name="description" content="userTABLE is a dynamic table to collect all your user data, manage them and do marketing automation.">
+    <meta name="keywords" content="Contact CRM, saas CRM, user management.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="favico.png" />
+    <link rel="icon" type="image/png" href="favicon.png" />
 
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
