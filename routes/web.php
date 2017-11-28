@@ -10,62 +10,44 @@
   | contains the "web" middleware group. Now create something great!
   |
  */
-Route::group(['middleware' => ['web']], function() {
-    Route::get('/', function () {
-        return view('welcome');
-    });
-    Route::get('/login', function () {
-        return view('welcome');
-    })->name('login');
 
-    Route::get('socketlogin', 'LoginController@login');
-    Route::get('unauthorised', function () {
-        return view('unauthorised');
-    })->name('unauthorised');
-
-    Route::post('logout', [
-        'uses' => 'Auth\LoginController@logout'
-    ])->name('logout');
+Route::get('/', function () {
+    return view('welcome');
 });
 
-Route::group(['middleware' => ['web', 'auth']], function() {
-    Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
-    # To Show table data
-    Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
-    # Route for saved filters
-    Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTableFilterData');
-    # For create table view
-    Route::get('/createTable', function() {
-        return view('createTable');
-    })->name('createTable');
-    # for creating user table in database
-    Route::post('/createTable', 'TableController@createTable');
-    # for Configure user table in database
-    Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
-    # for alter user table in database
-    Route::post('/configureTable', 'TableController@configureSelectedTable');
+Route::get('/login', function () {
+    return view('welcome');
+})->name('login');
 
-    Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
-    #serach by filters
-    Route::post('/filter', 'TableController@applyFilters');
+Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
+Route::get('socketlogin', 'LoginController@login');
+Route::get('unauthorised', function () {
+    return view('unauthorised');
+})->name('unauthorised');
 
-    #save filter
-    Route::post('/filter/save', 'UserController@saveFilter');
+# To Show table data
+Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
 
-    # search in active table
-    Route::get('/search/{tableId}/{query}', 'TableController@getSearchedData');
-    Route::get('/profile', 'UserController@getKey')->name('profile');
+# Route for saved filters
+Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTableFilterData');
 
-    Route::get('/getTables', 'TableController@getAllTablesForSocket')->middleware(['socketMasterKey']);
+# For create table view
+Route::get('/createTable', function(){
+    return view('createTable');
+})->name('createTable');;
 
-    Route::post('/update', 'TableController@updateEntry');
-});
+# for creating user table in database
+Route::post('/createTable', 'TableController@createTable');
 
-# to create or add user
-Route::post('/add_update', 'TableController@add');
-Route::get('/add_update', 'TableController@add');
+# for Configure user table in database
+Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
+
+# for alter user table in database
+Route::post('/configureTable', 'TableController@configureSelectedTable');
+
 
 //Auth::routes();
+
 // Authentication Routes...
 //Route::get('login', [
 //  'as' => 'login',
@@ -75,6 +57,9 @@ Route::get('/add_update', 'TableController@add');
 //  'as' => '',
 //  'uses' => 'Auth\LoginController@login'
 //]);
+Route::post('logout', [
+  'uses' => 'Auth\LoginController@logout'
+])->name('logout');
 //
 //// Password Reset Routes...
 //Route::post('password/email', [
@@ -103,5 +88,36 @@ Route::get('/add_update', 'TableController@add');
 //  'as' => '',
 //  'uses' => 'Auth\RegisterController@register'
 //]);
+
 //Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+        
 //Route::get('/home/{tab}', 'HomeController@filterTab');
+Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
+#serach by filters
+//Route::post('/filter', 'UserController@applyFilters');
+
+Route::post('/filter', 'TableController@applyFilters');
+//Route::post('/getUserDetail/{authToken}', 'LoginController@getUserDetail');
+
+#code for relative date and time
+Route::post('/dateDiff1', 'TableController@dateDiff1');
+//Route::get('/dateDiff1', 'TableController@dateDiff1');
+
+#save filter
+Route::post('/filter/save', 'UserController@saveFilter');
+
+# search in active table
+Route::get('/search/{tab}/{query}', 'UserController@getSearchedData');
+
+# to create or add user
+Route::post('/add_update', 'TableController@add');
+Route::get('/add_update', 'TableController@add');
+
+Route::get('/profile','UserController@getKey')->name('profile');
+
+Route::get('/getTables', 'TableController@getAllTablesForSocket')->middleware(['socketMasterKey']);
+
+Route::post('/update', 'TableController@updateEntry');
