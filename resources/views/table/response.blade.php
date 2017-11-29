@@ -1,3 +1,5 @@
+<?php use App\Http\Controllers\TableController;
+?>
 <table class="table basic table-bordred">
     @foreach($allTabs as $key=>$val)
     @if($key==0)
@@ -12,7 +14,9 @@
     <tbody id="all_users">
             <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
             <td></td>
-            @foreach($val as $k => $colValue)
+            
+			@foreach($val as $k => $colValue)
+			
             @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')
             <td>
                 @foreach(explode(',', $structure[$k]['value']) as $info)
@@ -27,9 +31,19 @@
                 </select>   
             </td>
             @else
-            <td>{{$colValue}}</td>
+				@if($k == 'date')					 
+						<td id='id_' title='{{$val['date'][1]}}'>{{$val['date'][0]}} </td>				
+				@else
+					   <td id='id_{{$k}}'>{{$colValue}}</td>
+				@endif
+		 
             @endif
+			
             @endforeach
+			
+				
+            
+           
         </tr>
     </tbody>
     @endif
@@ -51,7 +65,13 @@
             </select>   
         </td>
         @else
-        <td>{{$colValue}}</td>
+			    @if($k == 'date')					 
+						<td id='id_' title='{{$val['date'][1]}}'>{{$val['date'][0]}} </td>				
+				@else
+					   <td id='id_{{$k}}'>{{$colValue}}</td>
+				@endif
+		
+       
         @endif
 
         @endforeach
