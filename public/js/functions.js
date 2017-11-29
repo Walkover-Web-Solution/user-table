@@ -121,60 +121,6 @@ function applyFilterData(jsonObject,tableId) {
     });
 }
 
-function relativeDT(date) {
-/*
-var  now = new Date();
-   var current = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate()+ ' '+now.getHours()+':'+now.getMinutes()+':'+now.getSeconds();
-var previous = date;
-
-		var msPerMinute = 60 * 1000;
-    var msPerHour = msPerMinute * 60;
-    var msPerDay = msPerHour * 24;
-    var msPerMonth = msPerDay * 30;
-    var msPerYear = msPerDay * 365;
-    
-    var elapsed = current - previous;
-    
-    if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago';   
-    }
-    
-    else if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
-    }
-    
-    else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago';   
-    }
-
-    else if (elapsed < msPerMonth) {
-         return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';   
-    }
-    
-    else if (elapsed < msPerYear) {
-         return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';   
-    }
-    
-    else {
-         return 'approximately ' 
-	
-*/
-	 $.ajax({
-            type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-			url: "/dateDiff1", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-			data: { 'date': date}, 
-			 headers:
-			{
-				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-			},
-            success: function(data) {
-				$(".demoo").text(data+' ago');
-				
-			}
-	 });
-	 
-}
-
 function getUserDetails(id,tableId) {
     //console.log(results[index]);
     if (id) {
@@ -209,13 +155,6 @@ function getUserDetails(id,tableId) {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                                 if (currentField && currentField.type !== 'enum') {
                                     editForm += createInputElement(val[k], k, cls);
-									if(k == 'date')
-									{
-										var date = val[k];
-										var relativeDate = relativeDT(date);
-										//alert(relativeDate);
-									  editForm +=`<span class="demoo"></span>`;
-									}
                                 } else {
                                     editForm += createSelectElement(currentField, val[k], k);									
                                 }
@@ -224,10 +163,8 @@ function getUserDetails(id,tableId) {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                                 if (currentField && currentField.type !== 'enum') {
                                     editForm += createInputElement(val[k], k, cls);
-									
                                 } else {
                                     editForm += createSelectElement(currentField, val[k], k);
-									
                                 }
                                 editForm += '</div></div>';
                             }
@@ -242,23 +179,7 @@ function getUserDetails(id,tableId) {
     }
 }
 
-
-function userinfo(authToken) {
-
-    //alert(authToken);
-	
-	$.ajax({
-        type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-        url: API_BASE_URL + "/getUserDetail", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: { 'authToken': authToken}, // Some data e.g. Valid JSON as a string
-        // headers: { 'token': tokenKey },
-        success: function(data) {
-            alert(data);
-        }
-    });
-}
 function editUserData() {
-		
     clearInterval(myInterval);
     // console.log('stop interval')
     id = $("#eId").val();
@@ -275,10 +196,6 @@ function editUserData() {
             //if (fieldChange) {
                 dataid = $(this).attr('dataid');
                 val = $(this).val();
-				
-				
-				
-				//alert(val);
                 if (dataid == 'follow_up_date') {
                     if (!val) {
                         var date = new Date();
@@ -292,13 +209,8 @@ function editUserData() {
                 jsonDoc[dataid] = val;
             //}
         })
-
-		//var info = userinfo(authKey);
-
         //console.log(jsonDoc);
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-	
-	
     jsonDoc['_token']=CSRF_TOKEN;
     obj = jsonDoc;
     $.ajax({
@@ -307,34 +219,15 @@ function editUserData() {
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
         data: jsonDoc, // Some data e.g. Valid JSON as a string
         beforeSend: function (xhr){
-			//alert(authKey);
-			//alert('testafter');
             xhr.setRequestHeader('Auth-Key', authKey); 
-			
         },
         success: function(data) {
             //console.log("success");
-			
             ALL_USERS[selectedRow] = data.data;
             console.log(data)
 
             //startInterval();
             console.log('start interval');
-			 
-			 
-
-			 
-			/*$.ajax({
-				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-				dataType: 'json', // Set datatype - affects Accept header
-				url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-				data: jsonDoc, // Some data e.g. Valid JSON as a string
-				success: function(data) {
-                        				
-				}
-			});	 
-			*/
-
         },
         // contentType: "application/json"
     });
@@ -391,11 +284,10 @@ function searchKeyword(event, query) {
     if (!q) {
         return false;
     }
-    $.get(API_BASE_URL + "/search/" + activeTab + "/" + q, function(response) {
+    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
         $('#response').html(response);
 
-    })
-
+    });
 }
 
 // add new field row
@@ -418,10 +310,13 @@ function addRow(check) {
             <div class="form-group col-xs-3">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
+                <input type="text" class="form-control order" name="fieldOrder" placeholder="Enter Field Order">
+            </div>
+            <div class="form-group col-xs-2">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
             <div class="form-group col-xs-3">
@@ -559,5 +454,4 @@ $(document).ready(function() {
     addMoreRow(true);
     $('#right_panel').hide();
     var title = $('#right_panel .title');
-
 });

@@ -19,8 +19,6 @@ class Utility
   public static $records = "id,created_at,username, CONCAT(firstname, ' ', lastname) AS name, email,contact,purpose,industry,comment,status,follow_up_date,
                               true_client,assign_to,won_or_lost,source,city,country,utm_source,utm_campaign,reference,updated_at";
 
-  
-
   public static function postToWebhook($data){
       $client = new \GuzzleHttp\Client();
       $flowId =  env('FLOW_ID');

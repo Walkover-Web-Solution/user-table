@@ -54,10 +54,10 @@ class LoginController extends Controller {
         $client = new GuzzleHttp\Client();
         $request = $client->get(env('SOCKET_API_URL') . '/teams.json', ['headers' => ['Authorization' => $authToken]]);
         $response = $request->getBody()->getContents();
-        $team_response = json_decode($response, true);
-        $team_response = $team_response['teams'];
+        $team_response_arr = json_decode($response, true);
+        $team_response = $team_response_arr['teams'];
         $team_array = array();
-        foreach ($team_response as $key => $value) {
+        foreach ($team_response as $value) {
             $team_array[$value['id']] = $value['name'];
         }
         session()->put('team_array', $team_array);

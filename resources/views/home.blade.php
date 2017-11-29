@@ -254,8 +254,6 @@
                 <textarea placeholder="Desicrption"></textarea>
             </div>
             <div class="modal-footer">
-			<input type="hidden" name="_token" id="csrf-token" value="{{ Session::token() }}" />
-
                 <button type="button" class="cancel" data-dismiss="modal">Close</button>
                 <button type="button" class="add-project" data-dismiss="modal">Save</button>
             </div>
@@ -266,11 +264,6 @@
 
 <!-- Modal -->
 <div id="edit_user" class="modal fade" role="dialog">
-<?php 
-// echo '<pre>';
-//print_r($_SESSION);
-//die;
-?>
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
@@ -285,14 +278,6 @@
                 <div class="modal-footer">
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
-					
-					<!--<input type="hidden" id="uid" value="" />
-                    <input type="hidden" id="useremail"/>
-					<input type="hidden" id="userfname"/>
-                    <input type="hidden" id="userlname"/>-->
-
-					<input type="hidden" id="hdnval" name="hdnval" value="hidden value" />
-					
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData()">
                         Save
