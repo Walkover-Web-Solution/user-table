@@ -83,13 +83,34 @@
         </section>
     </header>
 
-    <section class="gray-bg" id="features">
+<!--     <section class="gray-bg" id="">
         <div class="container text-center">
             <div class="row">
                 <div class="col-xs-12">
                     <h3>WHAT’S ON THE TABLE</h3>
                 </div>
             </div>
+
+        </div>
+    </section> -->
+
+    <section class="" id="glimpse-sec">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-xs-12 heading">
+                    <h3>Collect all your user data here</h3>
+                    <p>Ex. Signup date, total purchase, feature used, source or anything.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <figure>
+                        <img src="./img/glimpse.png" class="img-responsive" alt="Image">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="features">
             <div class="row">
                 <div class="col-md-4 col-sm-12">
                     <figure><img src="./img/data.png" alt="segregated data"></figure>
@@ -108,22 +129,6 @@
                 </div>
             </div>
         </div>
-    </section>
-
-    <section class="" id="glimpse-sec">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-xs-12">
-                    <h3>In A Glimpse</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <figure>
-                        <img src="./img/glimpse.png" class="img-responsive" alt="Image">
-                    </figure>
-                </div>
-            </div>
         </div>
     </section>
 
