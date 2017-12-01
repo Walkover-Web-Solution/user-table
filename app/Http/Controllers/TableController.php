@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\TableStructure;
 
 class TableController extends Controller {
 
@@ -313,7 +315,6 @@ class TableController extends Controller {
         $tableNameArr = json_decode(json_encode($tableNames), true);
         return view('configureTable', array('tableData' => $tableNameArr));
     }
-
     public function configureSelectedTable(Request $request)
     {
         $tableData = $request->input('tableData');
@@ -326,12 +327,12 @@ class TableController extends Controller {
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-        $tableStructure = json_decode($tableNameArr[0]['table_structure'], TRUE);
-
-        foreach($tableData as $key => $value)
-        {
-            if(empty($value['name']))
-            {
+        
+        $id = $tableNameArr[0]['id'];
+        //$tableStructure = json_decode($tableNameArr[0]['table_structure'], TRUE);
+        $tableStructure = array();
+        foreach ($tableData as $key => $value) {
+            if (empty($value['name'])) {
                 $arr['msg'] = "Name Can't be empty";
                 return response()->json($arr);
             }
@@ -346,18 +347,29 @@ class TableController extends Controller {
         }
 
         $tableStructure = json_encode($tableStructure);
+
+            $defaultValeArray = explode(',', $value['value']);
+            $arr_tojson = json_encode($defaultValeArray);
+            $tableStructure[] = array(
+                'table_id' => $id,
+                'column_name' => $value['name'],
+                'column_type_id' => $value['type'],
+                'default_value' =>$arr_tojson,
+                'is_unique' => 0,
+                'created_at' =>  Carbon::now()->toDateTimeString(),
+                'updated_at' =>  Carbon::now()->toDateTimeString()
+            );
+        }
+        //$tableStructure = json_encode($tableStructure);
+        TableStructure::insert($tableStructure);
         $tableName = $tableNameArr[0]['table_id'];
         $tableAutoIncId = $tableNameArr[0]['id'];
         $logTableName = "log_" . $tableNameArr[0]['table_name'] . "_" . $tableNameArr[0]['team_id'];
 
-        if(Schema::hasTable($tableName))
-        {
-            try
-            {
-                Schema::table($tableName, function (Blueprint $table) use ($tableData)
-                {
-                    foreach($tableData as $key => $value)
-                    {
+        if (Schema::hasTable($tableName)) {
+            try {
+                Schema::table($tableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $key => $value) {
                         $table->string($value['name']);
                     }
                 });

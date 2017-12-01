@@ -11,17 +11,17 @@
   |
  */
 Route::group(['middleware' => ['web']], function() {
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/login', function () {
-    return view('welcome');
-})->name('login');
+    Route::get('/', function () {
+        return view('welcome');
+    });
+    Route::get('/login', function () {
+        return view('welcome');
+    })->name('login');
 
-Route::get('socketlogin', 'LoginController@login');
-Route::get('unauthorised', function () {
-    return view('unauthorised');
-})->name('unauthorised');
+    Route::get('socketlogin', 'LoginController@login');
+    Route::get('unauthorised', function () {
+        return view('unauthorised');
+    })->name('unauthorised');
 
     Route::post('logout', [
         'uses' => 'Auth\LoginController@logout'
@@ -29,21 +29,22 @@ Route::get('unauthorised', function () {
 });
 
 Route::group(['middleware' => ['web', 'auth']], function() {
+    Route::get('/getOptionList','ConfigureTable@getOptionList');
     Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
 # To Show table data
-Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
+    Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
 # Route for saved filters
-Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTableFilterData');
+    Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTableFilterData');
 # For create table view
     Route::get('/createTable', function() {
-    return view('createTable');
+        return view('createTable');
     })->name('createTable');
 # for creating user table in database
-Route::post('/createTable', 'TableController@createTable');
+    Route::post('/createTable', 'TableController@createTable');
 # for Configure user table in database
-Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
+    Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
 # for alter user table in database
-Route::post('/configureTable', 'TableController@configureSelectedTable');
+    Route::post('/configureTable', 'TableController@configureSelectedTable');
 
     Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
     #serach by filters
