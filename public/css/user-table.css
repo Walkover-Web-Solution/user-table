@@ -342,8 +342,7 @@ footer a.und {
 
 .signup-btn {
     margin-left: 10px;
-    background: #412684;
-    border-color: #8b72ca;
+    border-color: #fff;
 }
 
 .signup-btn:hover {
@@ -415,6 +414,14 @@ footer a.und {
     margin-bottom: 12px;
 }
 
+.navbar-btn {
+    color: #fff;
+    transition: all 0.3s ease;
+}
+.links .navbar-btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
 @media only screen and (min-width: 993px) {
     .modal.in .modal-dialog {
         transform: translate(0, 45%);

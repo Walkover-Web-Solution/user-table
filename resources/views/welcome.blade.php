@@ -58,10 +58,10 @@
                     @if (Route::has('login'))
                     <div class="top-right links">
                         @auth
-                        <a href="{{ url('/tables') }}" class="typeform-share link signup-btn lg-btn btn btn-default navbar-btn pull-right">Home</a>
+                        <a href="{{ url('/tables') }}" class="navbar-btn typeform-share link signup-btn btn pull-right">Home</a>
                         @else
-                        <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin" class="typeform-share link signup-btn lg-btn btn btn-default navbar-btn pull-right">Sign up</a>
-                        <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="lg-btn btn btn-default navbar-btn pull-right">Log in</a>
+                        <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin" class="navbar-btn typeform-share link signup-btn btn pull-right">Sign up</a>
+                        <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="navbar-btn btn pull-right">Log in</a>
                         <!--<a href="https://viasocket.com/login?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Login</a>-->
                         <!--<a href="https://viasocket.com/signup?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Register</a>-->
                         @endauth
