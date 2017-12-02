@@ -99,7 +99,7 @@
 
                         <div class="form-group">
                             <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
-                            <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
+                            <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button> 
                         </div>
                     </div>
                     <div class="panel-body">

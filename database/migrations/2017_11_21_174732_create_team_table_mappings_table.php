@@ -20,7 +20,7 @@ class CreateTeamTableMappingsTable extends Migration {
 			$table->string('team_id', 60)->nullable();
 			$table->text('table_structure', 65535)->nullable();
 			$table->string('auth', 20)->nullable()->default('');
-			$table->string('auth', 200)->nullable()->default('');
+			$table->string('socket_api', 200)->nullable()->default('');
 		});
 	}
 

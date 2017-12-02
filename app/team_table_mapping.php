@@ -110,7 +110,7 @@ class team_table_mapping extends Model {
         return array('success' => 'data_updated');
     }
 
-    public static function updateTableStructure($paramArr) {
+    public static function updateTableStructure($paramArr) { 
         $tableAutoIncId = $paramArr['id'];
         $tableStructure = $paramArr['table_structure'];
         $socketApi = $paramArr['socketApi'];

@@ -98,7 +98,7 @@ class TableController extends Controller {
             'teamsArr' => $teams,
             'source_arr' => $source_arr
         ));
-    }
+    } 
 
     public function getAllTablesForSocket(Request $request) {
 

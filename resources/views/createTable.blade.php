@@ -133,6 +133,6 @@
                 window.location.href = "tables";
             }
 
-        });
+        }); 
     }
 </script>
