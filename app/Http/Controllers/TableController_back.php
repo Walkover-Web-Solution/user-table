@@ -30,11 +30,8 @@ class TableController extends Controller {
             return response()->json($arr);
         }
         $teamId = $request->input('teamId');
-
-        $socketApi = $request->input('socketApi');
-        $tableName = "main_".$userTableName.'_'.$teamId;
-        $logTableName = "log_".$userTableName.'_'.$teamId;
-
+        $tableName = "main_" . $userTableName . '_' . $teamId;
+        $logTableName = "log_" . $userTableName . '_' . $teamId;
         $tableData = '';
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) use ($data) {
@@ -61,7 +58,6 @@ class TableController extends Controller {
             $paramArr['table_id'] = $tableName;
             $paramArr['team_id'] = $teamId;
             $paramArr['auth'] = $randomAuth;
-            $paramArr['socket_api'] = $socketApi;
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
             foreach ($resp['data'] as $key => $value) {
@@ -107,7 +103,7 @@ class TableController extends Controller {
             'teamsArr' => $teams,
             'source_arr' => $source_arr
         ));
-    } 
+    }
 
     public function getAllTablesForSocket(Request $request) {
 
@@ -318,8 +314,7 @@ class TableController extends Controller {
         }
     }
 
-    public function loadSelectedTableStructure($tableName)
-    {
+    public function loadSelectedTableStructure($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr[0]['id']);
@@ -332,15 +327,14 @@ class TableController extends Controller {
     //{"firstname":{"type":"3","unique":"false","value":null}}
     public function configureSelectedTable(Request $request) {
         $tableData = $request->input('tableData');
-
         if (empty($tableData)) {
             $arr['msg'] = "Nothing to added, Please add atleast one column";
             return response()->json($arr);
         }
-
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
+
         $tableAutoIncId = $tableNameArr[0]['id'];
         $resp = TableStructure::validateStructure($tableData, $tableAutoIncId);
         TableStructure::insertTableStructure($resp['data']);
@@ -354,31 +348,20 @@ class TableController extends Controller {
                         $table->string($value['name']);
                     }
                 });
-
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData)
-                {
-                    foreach($tableData as $key => $value)
-                    {
+                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $key => $value) {
                         $table->string($value['name']);
                     }
                 });
-
-                $paramArr['id'] = $tableAutoIncId;
-                $paramArr['table_structure'] = $tableStructure;
-                $paramArr['socketApi'] = $request->input('socketApi');
-                $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
-            }
-            catch (\Illuminate\Database\QueryException $ex)
-            {
+            } catch (\Illuminate\Database\QueryException $ex) {
+//                dd($ex->getMessage());
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
             }
 
             $arr['msg'] = "Table Updated Successfuly";
             return response()->json($arr);
-        }
-        else
-        {
+        } else {
             $arr['msg'] = "Table Not Found";
             return response()->json($arr);
         }
