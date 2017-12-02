@@ -362,7 +362,6 @@ class TableController extends Controller {
                         $table->string($value['name']);
                     }
                 });
-<<<<<<< 92040782bf73030df2c8212bacbdf843eed5f286
 
                 $paramArr['id'] = $tableAutoIncId;
                 $paramArr['table_structure'] = $tableStructure;
@@ -372,10 +371,6 @@ class TableController extends Controller {
             catch (\Illuminate\Database\QueryException $ex)
             {
                 // dd($ex->getMessage());
-=======
-            } catch (\Illuminate\Database\QueryException $ex) {
-//                dd($ex->getMessage());
->>>>>>> dynamic structure
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
             }
@@ -426,7 +421,6 @@ class TableController extends Controller {
         } else {
             $users = \DB::table($tableID)->selectRaw('*');
             $count = 0;
-
             foreach ($userTableStructure as $key => $value) {
                 if ($count == 0) {
                     $users->where($key, 'LIKE', '%' . $query . '%');
@@ -435,7 +429,6 @@ class TableController extends Controller {
                 }
                 $count++;
             }
-
             $data = $users->get();
             $results = $array = json_decode(json_encode($data), True);
 

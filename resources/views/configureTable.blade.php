@@ -45,12 +45,8 @@
                             </div>
                             <div id="tableStructure">
                                 <span style="display: none" id="tableId">{{$tableData[0]['id']}}</span>
-<<<<<<< 92040782bf73030df2c8212bacbdf843eed5f286
                                 @php ($i = 1)
-                                @foreach($tableStructureArr as $key => $value)
-=======
                                 @foreach($structure as $key => $value)
->>>>>>> dynamic structure
                                 <div class="row" id="column_"`+i+`>
                                     <div class="form-group col-xs-3">
                                         <label>{{$value['column_name']}}</label>
