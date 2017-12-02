@@ -29,6 +29,7 @@ class TableController extends Controller {
         $structureDataJson = json_encode($structureDataAr);
         $userTableName = $request->input('tableName');
         $teamId = $request->input('teamId');
+        $socketApi = $request->input('socketApi');
         $tableName = "main_".$userTableName.'_'.$teamId;
         $logTableName = "log_".$userTableName.'_'.$teamId;
         $tableData = '';
@@ -68,6 +69,7 @@ class TableController extends Controller {
             $paramArr['team_id'] = $teamId;
             $paramArr['table_structure'] = $structureDataJson;
             $paramArr['auth'] = $randomAuth;
+            $paramArr['socket_api'] = $socketApi;
             $response = team_table_mapping::makeNewTableEntry($paramArr);
 
             #insert table structure in table
@@ -320,67 +322,86 @@ class TableController extends Controller {
         }
     }
 
-    public function loadSelectedTableStructure($tableName) {
+    public function loadSelectedTableStructure($tableName)
+    {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-        return view('configureTable', array(
-            'tableData' => $tableNameArr));
+        return view('configureTable', array('tableData' => $tableNameArr));
     }
 
-    public function configureSelectedTable(Request $request) {
+    public function configureSelectedTable(Request $request)
+    {
         $tableData = $request->input('tableData');
+
         if (empty($tableData)) {
             $arr['msg'] = "Nothing to added, Please add atleast one column";
             return response()->json($arr);
         }
+
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-
         $tableStructure = json_decode($tableNameArr[0]['table_structure'], TRUE);
 
-        foreach ($tableData as $key => $value) {
-            if (empty($value['name'])) {
+        foreach($tableData as $key => $value)
+        {
+            if(empty($value['name']))
+            {
                 $arr['msg'] = "Name Can't be empty";
                 return response()->json($arr);
             }
-            if (empty($value['type'])) {
+
+            if(empty($value['type']))
+            {
                 $arr['msg'] = "type Can't be empty";
                 return response()->json($arr);
             }
+
             $tableStructure[$value['name']] = array('type' => $value['type'], 'unique' => 'false', 'value' => $value['value']);
         }
-        $tableStructure = json_encode($tableStructure);
 
+        $tableStructure = json_encode($tableStructure);
         $tableName = $tableNameArr[0]['table_id'];
         $tableAutoIncId = $tableNameArr[0]['id'];
         $logTableName = "log_" . $tableNameArr[0]['table_name'] . "_" . $tableNameArr[0]['team_id'];
 
+        if(Schema::hasTable($tableName))
+        {
+            try
+            {
+                Schema::table($tableName, function (Blueprint $table) use ($tableData)
+                {
+                    foreach($tableData as $key => $value)
+                    {
+                        $table->string($value['name']);
+                    }
+                });
 
-        if (Schema::hasTable($tableName)) {
-            try {
-                Schema::table($tableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $key => $value) {
+                Schema::table($logTableName, function (Blueprint $table) use ($tableData)
+                {
+                    foreach($tableData as $key => $value)
+                    {
                         $table->string($value['name']);
                     }
                 });
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $key => $value) {
-                        $table->string($value['name']);
-                    }
-                });
+
                 $paramArr['id'] = $tableAutoIncId;
                 $paramArr['table_structure'] = $tableStructure;
+                $paramArr['socketApi'] = $request->input('socketApi');
                 $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
-            } catch (\Illuminate\Database\QueryException $ex) {
-//                dd($ex->getMessage());
+            }
+            catch (\Illuminate\Database\QueryException $ex)
+            {
+                // dd($ex->getMessage());
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
             }
 
             $arr['msg'] = "Table Updated Successfuly";
             return response()->json($arr);
-        } else {
+        }
+        else
+        {
             $arr['msg'] = "Table Not Found";
             return response()->json($arr);
         }

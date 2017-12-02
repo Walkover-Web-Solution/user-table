@@ -310,11 +310,11 @@ function addRow(check) {
             <div class="form-group col-xs-3">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-2">
+            <div class="form-group col-xs-3">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
-            <div class="form-group col-xs-2">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="Enter Field Order">
+            <div class="form-group col-xs-1">
+                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-2">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
@@ -350,6 +350,12 @@ function addMoreRow(check) {
             </div>
             <div class="form-group col-xs-3">
                 <select class="form-control type" >` + lists + ` </select>
+            </div>
+            <div class="form-group col-xs-1">
+                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
+            </div>
+            <div class="form-group col-xs-2">
+                <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value"></textarea>

@@ -38,11 +38,11 @@
                                 <div class="form-group col-xs-3">
                                     Name
                                 </div>
-                                <div class="form-group col-xs-2">
+                                <div class="form-group col-xs-3">
                                     Type
                                 </div>
-                                <div class="form-group col-xs-2">
-                                    Order
+                                <div class="form-group col-xs-1">
+                                    Sequence
                                 </div>
                                 <div class="form-group col-xs-2">
                                     Unique
@@ -66,7 +66,13 @@
                             <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-plus"></i> Create</button>
                         </div>
                     </div>
-
+                    <hr>
+                    <div class="panel-body">
+                        <label class="col-md-12">Socket API</label>
+                        <div class="form-group col-md-5">
+                            <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="">
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -114,12 +120,13 @@
        });
        var tableName = $("#tableName").val();
        var teamId = $('select[name=teamName]').val();
+       var socketApi = $("#socketApi").val();
 
        console.log(tableData);
        $.ajax({
             url: 'createTable',
             type: 'POST',
-            data: {tableData:tableData,tableName:tableName,teamId:teamId},
+            data: {tableData:tableData,tableName:tableName,teamId:teamId, socketApi:socketApi},
             dataType: 'json',
             success: function(info){
                 alert(info.msg);
