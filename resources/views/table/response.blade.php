@@ -13,15 +13,16 @@
             <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
             <td></td>
 			@foreach($val as $k => $colValue)
-            @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')
+            @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
             <td>
                 @foreach(explode(',', $structure[$k]['value']) as $info)
                 <input type="radio" onchange="updateData(this, 'radio_button')"  name="{{$k}}:_:{{$val['id']}}" value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
                 @endforeach
             </td>
-            @elseif(isset($structure[$k]) and $structure[$k]['type'] == 'dropdown')
+            @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
             <td><select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
-                    @foreach(explode(',', $structure[$k]['value']) as $info)
+                    <?php $options = json_decode($structure[$k]['value'],true);?>
+                    @foreach($options['options'] as $info)
                     <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
                     @endforeach
                 </select>   
@@ -37,17 +38,18 @@
     <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
         <td></td>
         @foreach($val as $k => $colValue)
-        @if(isset($structure[$k]) and $structure[$k]['type'] == 'radio button')
+        @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <td>
             @foreach(explode(',', $structure[$k]['value']) as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}" value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
             @endforeach
         </td>
-        @elseif(isset($structure[$k]) and $structure[$k]['type'] == 'dropdown')
+        @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
         <td><select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
-                @foreach(explode(',', $structure[$k]['value']) as $info)
-                <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif  >{{$info}}</option>
-                @endforeach
+               <?php $options = json_decode($structure[$k]['value'],true);?>
+                    @foreach($options['options'] as $info)
+                    <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
+                    @endforeach
             </select>   
         </td>
         @else
