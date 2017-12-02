@@ -14,8 +14,9 @@
             <td></td>
 			@foreach($val as $k => $colValue)
             @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
+             <?php $options = json_decode($structure[$k]['value'],true);?>
             <td>
-                @foreach(explode(',', $structure[$k]['value']) as $info)
+                @foreach($options['options'] as $info)
                 <input type="radio" onchange="updateData(this, 'radio_button')"  name="{{$k}}:_:{{$val['id']}}" value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
                 @endforeach
             </td>
@@ -39,8 +40,9 @@
         <td></td>
         @foreach($val as $k => $colValue)
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
+        <?php $options = json_decode($structure[$k]['value'],true);?>
         <td>
-            @foreach(explode(',', $structure[$k]['value']) as $info)
+            @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}" value="{{$info}}" @if($info == $colValue) checked @endif >{{$info}}<br>
             @endforeach
         </td>

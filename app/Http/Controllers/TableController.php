@@ -364,7 +364,6 @@ class TableController extends Controller {
                 });
 
                 $paramArr['id'] = $tableAutoIncId;
-                $paramArr['table_structure'] = $tableStructure;
                 $paramArr['socketApi'] = $request->input('socketApi');
                 $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
             }
