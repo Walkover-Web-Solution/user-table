@@ -102,6 +102,9 @@
 
 </html>
 <script type="text/javascript">
+        var API_BASE_URL = '{{env('API_BASE_URL')}}';
+</script>
+<script type="text/javascript">
     var tableData= [];
 
     function createTable(){

@@ -7,6 +7,7 @@ use App\Tabs;
 use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\TableStructure;
 
 class UserController extends Controller {
 
@@ -22,7 +23,7 @@ class UserController extends Controller {
             $data = \DB::table($tableNameArr[0]['table_id'])->selectRaw('*')->where('id', $id)->first();
         }
         
-        $colDetails = json_decode($tableNameArr[0]['table_structure'], true);
+        $colDetails = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
 
         return response(
                         json_encode(

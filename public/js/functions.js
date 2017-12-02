@@ -155,7 +155,8 @@ function getUserDetails(id, tableId) {
                             if (i % 2) {
                                 editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                                if (currentField && currentField.type !== 'enum') {
+                                
+                                if (currentField && currentField.column_type_id !== 6) {
                                     editForm += createInputElement(val[k], k, cls);
                                 } else {
                                     editForm += createSelectElement(currentField, val[k], k);
@@ -163,7 +164,7 @@ function getUserDetails(id, tableId) {
                                 editForm += '</div>';
                             } else {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                                if (currentField && currentField.type !== 'enum') {
+                                if (currentField && currentField.column_type_id !== 6) {
                                     editForm += createInputElement(val[k], k, cls);
                                 } else {
                                     editForm += createSelectElement(currentField, val[k], k);
@@ -210,8 +211,7 @@ function editUserData() {
         // console.log(dataid,val)
         jsonDoc[dataid] = val;
         //}
-    })
-    //console.log(jsonDoc);
+    });
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     jsonDoc['_token'] = CSRF_TOKEN;
     obj = jsonDoc;
@@ -298,7 +298,7 @@ function getOptionList() {
         setTimeout(function () {
             addRow(true);
             addMoreRow(true);
-        }, 3000);
+        }, 300);
 
     });
 }
@@ -429,18 +429,22 @@ function onTypeText() {
 }
 
 //  create select option
-function createSelectElement(arr) {
-    var arrList = arr;
+function createSelectElement(arr,selected,k) {
+    var arrList = arr['value_arr']['options'];
     $('.title').text('Choose One Option');
 
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
-        lists += `<option value="">` + arrList[i] + `</option>`
+          if (arrList[i] == selected) {
+            lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
+        } else {
+            lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
+        }
+        
     }
-    var formGrp = `<select class="form-control">` + lists + ` </select>`;
+    var formGrp = `<select class="form-control" id="`+k+`" dataid="`+k+`" name="`+k+`">` + lists + ` </select>`;
     return formGrp;
-}
-;
+};
 
 
 // radioType behavior on checkbox

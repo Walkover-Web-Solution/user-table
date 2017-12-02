@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use App\TableStructure;
 
 class TableController extends Controller {
@@ -18,14 +17,18 @@ class TableController extends Controller {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
         $data = $this->aasort($data1, "order"); // Array sort by abhishek jain
+        $resp = TableStructure::validateStructure($data);
 
-        $structureDataAr = array();
-        foreach ($data as $key => $value) {
-            $structureDataAr[$value['name']] = array('type' => $value['type'], 'unique' => $value['unique'], 'value' => $value['value']);
+        if (!empty($resp['error'])) {
+            return response()->json($resp);
         }
 
-        $structureDataJson = json_encode($structureDataAr);
         $userTableName = $request->input('tableName');
+        if (empty($userTableName)) {
+            $arr['msg'] = "Table Name Can't be empty";
+            $arr['error'] = TRUE;
+            return response()->json($arr);
+        }
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
@@ -57,12 +60,16 @@ class TableController extends Controller {
             $paramArr['table_name'] = $userTableName;
             $paramArr['table_id'] = $tableName;
             $paramArr['team_id'] = $teamId;
-            $paramArr['table_structure'] = $structureDataJson;
             $paramArr['auth'] = $randomAuth;
             $paramArr['socket_api'] = $socketApi;
             $response = team_table_mapping::makeNewTableEntry($paramArr);
-
+            $autoIncId = $response->id;
+            foreach ($resp['data'] as $key => $value) {
+                $value['table_id'] = $autoIncId;
+                $resp['data'][$key] = $value;
+            }
             #insert table structure in table
+            TableStructure::insertTableStructure($resp['data']);
             return response()->json($arr);
         } else {
             $arr['msg'] = "Table already exists. Please use different table name";
@@ -136,7 +143,7 @@ class TableController extends Controller {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']), true), TRUE);
+        $userTableStructure = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
@@ -180,6 +187,7 @@ class TableController extends Controller {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $userTableName = $tableNameArr[0]['table_name'];
+        $userTableStructure = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
@@ -222,6 +230,7 @@ class TableController extends Controller {
                 'tableId' => $tableId,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
+                'structure' => $userTableStructure,
                 'activeTabFilter' => $tabArray));
         }
     }
@@ -299,7 +308,7 @@ class TableController extends Controller {
         unset($incoming_data['socket_data_source']);
         unset($incoming_data['_token']);
         $table_name = $response[0]['table_id'];
-        $table_structure = $response[0]['table_structure'];
+        $table_structure = TableStructure::formatTableStructureData($response[0]['table_structure']);
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
         if (isset($teamData['error'])) {
             return response()->json($teamData, 400);
@@ -313,10 +322,15 @@ class TableController extends Controller {
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-        return view('configureTable', array('tableData' => $tableNameArr));
+        $tableStructure = TableStructure::withColumns($tableNameArr[0]['id']);
+
+        return view('configureTable', array(
+            'tableData' => $tableNameArr,
+            'structure' => $tableStructure));
     }
-    public function configureSelectedTable(Request $request)
-    {
+
+    //{"firstname":{"type":"3","unique":"false","value":null}}
+    public function configureSelectedTable(Request $request) {
         $tableData = $request->input('tableData');
 
         if (empty($tableData)) {
@@ -327,43 +341,10 @@ class TableController extends Controller {
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-        
-        $id = $tableNameArr[0]['id'];
-        //$tableStructure = json_decode($tableNameArr[0]['table_structure'], TRUE);
-        $tableStructure = array();
-        foreach ($tableData as $key => $value) {
-            if (empty($value['name'])) {
-                $arr['msg'] = "Name Can't be empty";
-                return response()->json($arr);
-            }
-
-            if(empty($value['type']))
-            {
-                $arr['msg'] = "type Can't be empty";
-                return response()->json($arr);
-            }
-
-            $tableStructure[$value['name']] = array('type' => $value['type'], 'unique' => 'false', 'value' => $value['value']);
-        }
-
-        $tableStructure = json_encode($tableStructure);
-
-            $defaultValeArray = explode(',', $value['value']);
-            $arr_tojson = json_encode($defaultValeArray);
-            $tableStructure[] = array(
-                'table_id' => $id,
-                'column_name' => $value['name'],
-                'column_type_id' => $value['type'],
-                'default_value' =>$arr_tojson,
-                'is_unique' => 0,
-                'created_at' =>  Carbon::now()->toDateTimeString(),
-                'updated_at' =>  Carbon::now()->toDateTimeString()
-            );
-        }
-        //$tableStructure = json_encode($tableStructure);
-        TableStructure::insert($tableStructure);
-        $tableName = $tableNameArr[0]['table_id'];
         $tableAutoIncId = $tableNameArr[0]['id'];
+        $resp = TableStructure::validateStructure($tableData, $tableAutoIncId);
+        TableStructure::insertTableStructure($resp['data']);
+        $tableName = $tableNameArr[0]['table_id'];
         $logTableName = "log_" . $tableNameArr[0]['table_name'] . "_" . $tableNameArr[0]['team_id'];
 
         if (Schema::hasTable($tableName)) {
@@ -381,6 +362,7 @@ class TableController extends Controller {
                         $table->string($value['name']);
                     }
                 });
+<<<<<<< 92040782bf73030df2c8212bacbdf843eed5f286
 
                 $paramArr['id'] = $tableAutoIncId;
                 $paramArr['table_structure'] = $tableStructure;
@@ -390,6 +372,10 @@ class TableController extends Controller {
             catch (\Illuminate\Database\QueryException $ex)
             {
                 // dd($ex->getMessage());
+=======
+            } catch (\Illuminate\Database\QueryException $ex) {
+//                dd($ex->getMessage());
+>>>>>>> dynamic structure
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
             }
@@ -430,17 +416,17 @@ class TableController extends Controller {
     public function getSearchedData($tableId, $query) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_name'];
+        //$userTableName = $tableNameArr[0]['table_name'];
         $tableID = $tableNameArr[0]['table_id'];
         $tableStructure = $tableNameArr[0]['table_structure'];
-        $userTableStructure = json_decode(json_decode(json_encode($tableStructure), true), TRUE);
-
+        $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
             exit();
         } else {
             $users = \DB::table($tableID)->selectRaw('*');
             $count = 0;
+
             foreach ($userTableStructure as $key => $value) {
                 if ($count == 0) {
                     $users->where($key, 'LIKE', '%' . $query . '%');
@@ -449,6 +435,7 @@ class TableController extends Controller {
                 }
                 $count++;
             }
+
             $data = $users->get();
             $results = $array = json_decode(json_encode($data), True);
 
