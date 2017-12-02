@@ -13,7 +13,7 @@
   @foreach($arrTabCount as $tabDetail)
         @foreach($tabDetail as $tabName => $tabCount)
        
-        <li role="presentation">
+	   <li role="presentation">
             <!--<a href="{{ collect(request()->segments())->last() }}/{{$tabName}}">{{$tabName}}-->
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>

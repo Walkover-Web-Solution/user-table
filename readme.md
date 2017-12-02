@@ -21,10 +21,6 @@ ENV Setup
 Copy 
   .env.example => .env 
 
-Generate key for Laravel
--------------------
-  docker-compose exec php php artisan key:generate
-
 
 Docker
 =========
@@ -36,12 +32,19 @@ Then run docker composer scripts.
 
 Docker will start Msg91-panel at localhost:8080
 
+
+Generate key for Laravel
+-------------------
+  docker-compose exec php php artisan key:generate
+
+
 Update Composer & Migrate DB
 -----------------
 
-  docker-compose exec php composer update
+  docker-compose exec php composer install
   docker-compose exec php php artisan migrate:status
   docker-compose exec php php artisan migrate
+  docker-compose exec php composer update
 
 
 

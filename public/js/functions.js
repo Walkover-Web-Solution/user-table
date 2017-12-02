@@ -6,7 +6,7 @@ var COL_FIELD = {};
 var selectedRow = '';
 var myInterval;
 var interval = 3000; // after every 3s
-var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date','my teammates'];
+var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date'];
 var checkList = [{
     name: 'Unique',
     priority: ['high', 'medium', 'low']
@@ -156,7 +156,7 @@ function getUserDetails(id,tableId) {
                                 if (currentField && currentField.type !== 'enum') {
                                     editForm += createInputElement(val[k], k, cls);
                                 } else {
-                                    editForm += createSelectElement(currentField, val[k], k);
+                                    editForm += createSelectElement(currentField, val[k], k);									
                                 }
                                 editForm += '</div>';
                             } else {
@@ -219,7 +219,7 @@ function editUserData() {
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
         data: jsonDoc, // Some data e.g. Valid JSON as a string
         beforeSend: function (xhr){
-            xhr.setRequestHeader('Auth-Key', authKey);
+            xhr.setRequestHeader('Auth-Key', authKey); 
         },
         success: function(data) {
             //console.log("success");
@@ -272,7 +272,7 @@ function hideHeader() {
 
 function addSearchBar(val) {
     return val = `<form class="search-form pull-right" action="" name="queryForm" class="navbar-form navbar-left" onSubmit="searchKeyword(event, query.value)">
-        <label for="searchInput"><i class="fa fa-search"></i></label>
+        <label for="searchInput"><i class="fa fa-search"></i></label> 
         <input type="text" name="query" class="form-control" placeholder="Search for..." aria-label="Search for..." id="searchInput">
         </form>`
 }
@@ -292,8 +292,8 @@ function searchKeyword(event, query) {
 
 // add new field row
 function addRow(check) {
-
-    var obj = {
+    
+    var obj = {        
         name: '',
         type:'',
         unique:'',
@@ -326,11 +326,11 @@ function addRow(check) {
     formGrp += '';
     tableData.push(obj);
     return $('#tableField').append(formGrp);
-
+    
 };
 function addMoreRow(check) {
-
-    var obj1 = {
+    
+    var obj1 = {        
         name: '',
         type:'',
         unique:'',
@@ -364,7 +364,7 @@ function addMoreRow(check) {
     formGrp += '';
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
-
+    
 };
 
 
@@ -419,7 +419,7 @@ function onTypeText() {
 function createSelectElement(arr) {
     var arrList = arr;
     $('.title').text('Choose One Option');
-
+    
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
         lists += `<option value="">` + arrList[i] + `</option>`

@@ -12,57 +12,45 @@ use Illuminate\Support\Facades\DB;
 
 class TableController extends Controller {
 
-    public function createTable(Request $request)
-    {
+    public function createTable(Request $request) {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
-
-        $data = $this->aasort($data1,"order"); // Array sort by abhishek jain
+        $data = $this->aasort($data1, "order"); // Array sort by abhishek jain
 
         $structureDataAr = array();
-
-        foreach($data as $key => $value)
-        {
-            $structureDataAr[$value['name']] = array('type' => $value['type'],'unique' => $value['unique'],'value' => $value['value']);
+        foreach ($data as $key => $value) {
+            $structureDataAr[$value['name']] = array('type' => $value['type'], 'unique' => $value['unique'], 'value' => $value['value']);
         }
 
         $structureDataJson = json_encode($structureDataAr);
         $userTableName = $request->input('tableName');
         $teamId = $request->input('teamId');
+
         $socketApi = $request->input('socketApi');
         $tableName = "main_".$userTableName.'_'.$teamId;
         $logTableName = "log_".$userTableName.'_'.$teamId;
-        $tableData = '';
 
-        if(!Schema::hasTable($tableName))
-        {
-            Schema::create($tableName, function (Blueprint $table) use ($data)
-            {
+        $tableData = '';
+        if (!Schema::hasTable($tableName)) {
+            Schema::create($tableName, function (Blueprint $table) use ($data) {
                 $table->increments('id');
                 $table->charset = 'utf8';
                 $table->collation = 'utf8_unicode_ci';
-                foreach ($data as $key => $value)
-                {
+                foreach ($data as $key => $value) {
                     $table->string($value['name']);
-
-                    if($value['unique'] == 'true')
-                    {
+                    if ($value['unique'] == 'true') {
                         $table->unique($value['name']);
                     }
                 }
             });
-
-            Schema::create($logTableName, function (Blueprint $table) use ($data)
-            {
+            Schema::create($logTableName, function (Blueprint $table) use ($data) {
                 $table->increments('id');
-                foreach ($data as $key => $value)
-                {
+                foreach ($data as $key => $value) {
                     $table->string($value['name']);
                 }
             });
 
             $arr['msg'] = "Table Successfully created";
-
             // Make entry of table in team table mapping & store table structure
             $paramArr['table_name'] = $userTableName;
             $paramArr['table_id'] = $tableName;
@@ -74,9 +62,7 @@ class TableController extends Controller {
 
             #insert table structure in table
             return response()->json($arr);
-        }
-        else
-        {
+        } else {
             $arr['msg'] = "Table already exists. Please use different table name";
             return response()->json($arr);
         }
@@ -169,7 +155,6 @@ class TableController extends Controller {
                     $tabCount = count($tabCountData);
 
                     $arrTabCount[] = array($tab_name => $tabCount);
-
                 }
             } else {
                 $arrTabCount = array();
@@ -462,19 +447,16 @@ class TableController extends Controller {
         }
     }
 
-    function aasort(&$array, $key)
-    {
-        $sorter=array();
-        $ret=array();
+    function aasort(&$array, $key) {
+        $sorter = array();
+        $ret = array();
         reset($array);
-        foreach ($array as $ii => $va)
-        {
-            $sorter[$ii]=$va[$key];
+        foreach ($array as $ii => $va) {
+            $sorter[$ii] = $va[$key];
         }
         asort($sorter);
-        foreach ($sorter as $ii => $va)
-        {
-            $ret[$ii]=$array[$ii];
+        foreach ($sorter as $ii => $va) {
+            $ret[$ii] = $array[$ii];
         }
         $array = array_values($ret);
         return $array;

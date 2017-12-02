@@ -47,7 +47,6 @@ class LoginController extends Controller {
         $request = $client->get(env('SOCKET_API_URL') . '/users/profile.json', ['headers' => ['Authorization' => $authToken]]);
 
         $response = $request->getBody()->getContents();
-
         return $user = json_decode($response, true);
     }
 
