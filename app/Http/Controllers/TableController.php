@@ -477,7 +477,9 @@ class TableController extends Controller {
         
         $member_array = array(0=>array('email'=>'','name'=>'No One'));
         foreach($team_response_arr['memberships'] as $member){
-            $member_array[] = $member['user'];
+            $email = $member['user']['email'];
+            $name = $member['user']['first_name']." ".$member['user']['last_name'];
+            $member_array[] = array('email'=>$email,'name'=>$name);
         }
         return $member_array;
     }
