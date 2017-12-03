@@ -61,6 +61,7 @@ class LoginController extends Controller {
             $team_array[$value['id']] = $value['name'];
         }
         session()->put('team_array', $team_array);
+        session()->put('socket_token', $authToken);
         return TRUE;
     }
 

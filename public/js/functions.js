@@ -155,7 +155,7 @@ function getUserDetails(id, tableId) {
                             if (i % 2) {
                                 editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                                
+
                                 if (currentField && currentField.column_type_id !== 6) {
                                     editForm += createInputElement(val[k], k, cls);
                                 } else {
@@ -293,13 +293,17 @@ function searchKeyword(event, query) {
     });
 }
 function getOptionList() {
-    $.get(API_BASE_URL + "/getOptionList/", function (response) {
-        optionList = response;
-        setTimeout(function () {
-            addRow(true);
-            addMoreRow(true);
-        }, 300);
-
+    $.ajax({
+        type: 'GET', 
+        dataType: 'json', 
+        url: API_BASE_URL + "/getOptionList",
+        success: function (response) {
+            optionList = response;
+            setTimeout(function () {
+                addRow(true);
+                addMoreRow(true);
+            }, 300);
+        }
     });
 }
 // add new field row
@@ -339,8 +343,9 @@ function addRow(check) {
     tableData.push(obj);
     return $('#tableField').append(formGrp);
 
-};
-function addMoreRow(check) { 
+}
+;
+function addMoreRow(check) {
 
     var obj1 = {
         name: '',
@@ -376,7 +381,8 @@ function addMoreRow(check) {
     formGrp += '';
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
-};
+}
+;
 
 
 // on select field type
@@ -427,22 +433,23 @@ function onTypeText() {
 }
 
 //  create select option
-function createSelectElement(arr,selected,k) {
+function createSelectElement(arr, selected, k) {
     var arrList = arr['value_arr']['options'];
     $('.title').text('Choose One Option');
 
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
-          if (arrList[i] == selected) {
+        if (arrList[i] == selected) {
             lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
         } else {
             lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
         }
-        
+
     }
-    var formGrp = `<select class="form-control" id="`+k+`" dataid="`+k+`" name="`+k+`">` + lists + ` </select>`;
+    var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
     return formGrp;
-};
+}
+;
 
 
 // radioType behavior on checkbox

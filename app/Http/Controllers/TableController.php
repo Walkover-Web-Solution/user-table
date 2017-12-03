@@ -10,6 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use App\TableStructure;
+use GuzzleHttp;
 
 class TableController extends Controller {
 
@@ -169,7 +170,8 @@ class TableController extends Controller {
                 $arrTabCount = array();
             }
             $allTabCount = count($allTabsData);
-
+            $teamId = $tableNameArr[0]['team_id'];
+            $teammates = $this->getTeamMembers($teamId);
             return view('home', array(
                 'activeTab' => 'All',
                 'tabs' => $tabs,
@@ -179,7 +181,9 @@ class TableController extends Controller {
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
-                'structure' => $userTableStructure));
+                'structure' => $userTableStructure,
+                'teammates' => $teammates)
+            );
         }
     }
 
@@ -221,6 +225,9 @@ class TableController extends Controller {
                 $arrTabCount = array();
             }
             $allTabCount = count($allTabsData);
+            $teamId = $tableNameArr[0]['team_id'];
+            $teammates = $this->getTeamMembers($teamId);
+            
             return view('home', array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
@@ -231,6 +238,7 @@ class TableController extends Controller {
                 'userTableName' => $userTableName,
                 'filters' => $filters,
                 'structure' => $userTableStructure,
+                'teammates' => $teammates,
                 'activeTabFilter' => $tabArray));
         }
     }
@@ -253,9 +261,14 @@ class TableController extends Controller {
             if (request()->wantsJson()) {
                 return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
             } else {
+                
+                $teamId = $tableNameArr[0]['team_id'];
+                $teammates = $this->getTeamMembers($teamId);
+                
                 return view('table.response', array(
                     'allTabs' => $data,
-                    'tableId' => $tableId
+                    'tableId' => $tableId,
+                    'teammates' => $teammates
                 ));
             }
         }
@@ -431,10 +444,12 @@ class TableController extends Controller {
 
             $data = $users->get();
             $results = $array = json_decode(json_encode($data), True);
-
+            $teamId = $tableNameArr[0]['team_id'];
+            $teammates = $this->getTeamMembers($teamId);
             return view('table.response', array(
                 'allTabs' => $results,
-                'tableId' => $tableID
+                'tableId' => $tableID,
+                'teammates' => $teammates
             ));
         }
     }
@@ -452,6 +467,20 @@ class TableController extends Controller {
         }
         $array = array_values($ret);
         return $array;
+    }
+    public function getTeamMembers($teamId) {
+        $authToken = session()->get('socket_token');
+        $client = new GuzzleHttp\Client();
+        $request = $client->get(env('SOCKET_API_URL') . '/teams/'.$teamId.'/memberships.json', ['headers' => ['Authorization' => $authToken]]);
+        $response = $request->getBody()->getContents();
+        $team_response_arr = json_decode($response, true);
+        
+        $member_array = array(0=>array('email'=>''));
+        foreach($team_response_arr['memberships'] as $member){
+            //print_r($member['user']);
+            $member_array[] = $member['user'];
+        }
+        return $member_array;
     }
 
 }
