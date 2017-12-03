@@ -119,7 +119,7 @@
                     key_name = key_name.split(":_:");
                     coloumn_name = key_name[0];
                     row_id = key_name[1];
-                    new_value = $(ths).find(":selected").text();
+                    new_value = $(ths).find(":selected").val();
         }
         else if(method == 'checkbox'){
                 var key_name = $(ths).attr('class');
