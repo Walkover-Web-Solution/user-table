@@ -475,9 +475,8 @@ class TableController extends Controller {
         $response = $request->getBody()->getContents();
         $team_response_arr = json_decode($response, true);
         
-        $member_array = array(0=>array('email'=>''));
+        $member_array = array(0=>array('email'=>'','name'=>'No One'));
         foreach($team_response_arr['memberships'] as $member){
-            //print_r($member['user']);
             $member_array[] = $member['user'];
         }
         return $member_array;

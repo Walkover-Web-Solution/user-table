@@ -33,7 +33,7 @@
         <td>
             <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
-                        <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >{{$team['email']}}</option>
+                        <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach
             </select>   
         </td>
@@ -74,7 +74,7 @@
         <td>
             <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
-                        <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >{{$team['email']}}</option>
+                        <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach
             </select>   
         </td>
