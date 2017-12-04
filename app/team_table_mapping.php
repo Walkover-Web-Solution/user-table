@@ -8,7 +8,7 @@ use App\TableStructure;
 class team_table_mapping extends Model {
 
     protected $table = 'team_table_mappings';
-    protected $fillable = ['id', 'table_name', 'table_id', 'team_id'];
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id','auth','socket_api'];
     public $timestamps = false;
 
     public function tableStructure() {
