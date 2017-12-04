@@ -55,7 +55,7 @@ class team_table_mapping extends Model {
         $existsArr = json_decode(json_encode($exists), true);
 
         if ($existsArr) {
-            echo "Working as required";
+            //echo "Working as required";
         } else {
             \DB::table('user_data_source')
                     ->insert(array('table_incr_id' => $table_incr_id, 'source' => $dataSource));
