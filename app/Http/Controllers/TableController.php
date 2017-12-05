@@ -43,9 +43,10 @@ class TableController extends Controller {
                 $table->charset = 'utf8';
                 $table->collation = 'utf8_unicode_ci';
                 foreach ($data as $key => $value) {
-                    $table->string($value['name']);
                     if ($value['unique'] == 'true') {
-                        $table->unique($value['name']);
+                        $table->string($value['name'])->unique($value['name']);
+                    }else{
+                        $table->string($value['name'])->nullable(true);
                     }
                 }
             });
