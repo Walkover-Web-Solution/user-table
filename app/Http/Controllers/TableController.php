@@ -43,6 +43,7 @@ class TableController extends Controller {
                 $table->charset = 'utf8';
                 $table->collation = 'utf8_unicode_ci';
                 foreach ($data as $key => $value) {
+                    $value['name'] = preg_replace('/\s+/', '_', $value['name']);
                     if ($value['unique'] == 'true') {
                         $table->string($value['name'])->unique($value['name']);
                     }else{

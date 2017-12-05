@@ -25,6 +25,7 @@ class TableStructure extends Model {
     public static function validateStructure($tableData, $tableAutoIncId = 0) {
         $tableStructure = array();
         foreach ($tableData as $key => $value) {
+            $value['name'] = preg_replace('/\s+/', '_', $value['name']);
             if (empty($value['name'])) {
                 $arr['msg'] = "Name Can't be empty";
                 $arr['error'] = TRUE;
