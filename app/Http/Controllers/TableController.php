@@ -55,7 +55,7 @@ class TableController extends Controller {
                 $table->increments('id');
                 foreach ($data as $key => $value) {
                     $value['name'] = preg_replace('/\s+/', '_', $value['name']);
-                    $table->string($value['name']);
+                    $table->string($value['name'])->nullable();
                 }
             });
 
