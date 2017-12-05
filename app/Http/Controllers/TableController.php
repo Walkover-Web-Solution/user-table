@@ -46,7 +46,7 @@ class TableController extends Controller {
                     if ($value['unique'] == 'true') {
                         $table->string($value['name'])->unique($value['name']);
                     }else{
-                        $table->string($value['name'])->nullable(true);
+                        $table->string($value['name'])->nullable();
                     }
                 }
             });
