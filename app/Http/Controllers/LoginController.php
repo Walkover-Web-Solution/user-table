@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use App\Viasocket;
 
 class LoginController extends Controller {
 
@@ -43,17 +43,12 @@ class LoginController extends Controller {
     }
 
     public function getUserDetail($authToken) {
-        $client = new GuzzleHttp\Client();
-        $request = $client->get(env('SOCKET_API_URL') . '/users/profile.json', ['headers' => ['Authorization' => $authToken]]);
-
-        $response = $request->getBody()->getContents();
+        $response = Viasocket::getUserProfile($authToken);
         return $user = json_decode($response, true);
     }
 
     public function getUserTeam($authToken) {
-        $client = new GuzzleHttp\Client();
-        $request = $client->get(env('SOCKET_API_URL') . '/teams.json', ['headers' => ['Authorization' => $authToken]]);
-        $response = $request->getBody()->getContents();
+        $response = Viasocket::getUserTeam($authToken);
         $team_response_arr = json_decode($response, true);
         $team_response = $team_response_arr['teams'];
         $team_array = array();

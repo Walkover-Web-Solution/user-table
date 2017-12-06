@@ -12,7 +12,6 @@ use App\TableStructure;
 class UserController extends Controller {
 
     public function getDetailsOfUserById($tableId, $id) {
-        //$tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         
@@ -80,49 +79,6 @@ class UserController extends Controller {
             return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
         }
     }
-
-    # to start crone job
-/*
-    public function startJob() {
-        $allTabs = Tabs::tabsWithWebhookUrls();  // get all the tabs
-
-        foreach ($allTabs as $tab) {
-            $currentUsersList = (array) Tabs::getListOfUsers($tab);
-            $oldUsersList = (array) TabUsers::getOldUsersList($tab);
-            $curDateTime = date('Y-m-d H:i:s');
-
-            if (isset($currentUsersList['users_list']))
-                $currentUsersList = explode(',', $currentUsersList['users_list']);
-            if (isset($oldUsersList['users_list']))
-                $oldUsersList = explode(',', $oldUsersList['users_list']);
-
-            $newUsrsList = array_diff($currentUsersList, $oldUsersList);
-
-            $newDetails = array();
-            foreach ($newUsrsList as $newUser) {
-                $userData = (array) Users::getUserDetails($newUser);
-                //Utility::sendToWebhook($tab,$userData);
-                array_push($newDetails, $userData);
-            }
-            //$newDetails =  json_encode($newDetails);
-            // print_r($newDetails);
-            if (count($newDetails)) {
-                Utility::sendToWebhook($tab, $newDetails);
-
-                //update the tabs_users list
-                $update = array(
-                    'tab_name' => $tab,
-                    'users_list' => implode(",", $currentUsersList),
-                    'updated_at' => $curDateTime
-                );
-                TabUsers::updateOrCreate(
-                        ['tab_name' => $tab]
-                        , $update);
-            }
-        }
-        return response(json_encode(array('message' => 'crone run successful')), 200)->header('Content-Type', 'application/json');
-    }
-*/
 
     # logout api
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use App\TableStructure;
 use GuzzleHttp;
+use App\Viasocket;
 
 class TableController extends Controller {
 
@@ -33,8 +34,8 @@ class TableController extends Controller {
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
-        $tableName = "main_".$userTableName.'_'.$teamId;
-        $logTableName = "log_".$userTableName.'_'.$teamId;
+        $tableName = "main_" . $userTableName . '_' . $teamId;
+        $logTableName = "log_" . $userTableName . '_' . $teamId;
 
         $tableData = '';
         if (!Schema::hasTable($tableName)) {
@@ -46,7 +47,7 @@ class TableController extends Controller {
                     $value['name'] = preg_replace('/\s+/', '_', $value['name']);
                     if ($value['unique'] == 'true') {
                         $table->string($value['name'])->unique($value['name']);
-                    }else{
+                    } else {
                         $table->string($value['name'])->nullable();
                     }
                 }
@@ -111,7 +112,7 @@ class TableController extends Controller {
             'teamsArr' => $teams,
             'source_arr' => $source_arr
         ));
-    } 
+    }
 
     public function getAllTablesForSocket(Request $request) {
 
@@ -230,7 +231,7 @@ class TableController extends Controller {
             $allTabCount = count($allTabsData);
             $teamId = $tableNameArr[0]['team_id'];
             $teammates = $this->getTeamMembers($teamId);
-            
+
             return view('home', array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
@@ -264,10 +265,10 @@ class TableController extends Controller {
             if (request()->wantsJson()) {
                 return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
             } else {
-                
+
                 $teamId = $tableNameArr[0]['team_id'];
                 $teammates = $this->getTeamMembers($teamId);
-                
+
                 return view('table.response', array(
                     'allTabs' => $data,
                     'tableId' => $tableId,
@@ -334,8 +335,7 @@ class TableController extends Controller {
         }
     }
 
-    public function loadSelectedTableStructure($tableName)
-    {
+    public function loadSelectedTableStructure($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr[0]['id']);
@@ -371,10 +371,8 @@ class TableController extends Controller {
                     }
                 });
 
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData)
-                {
-                    foreach($tableData as $key => $value)
-                    {
+                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $key => $value) {
                         $table->string($value['name']);
                     }
                 });
@@ -382,18 +380,14 @@ class TableController extends Controller {
                 $paramArr['id'] = $tableAutoIncId;
                 $paramArr['socketApi'] = $request->input('socketApi');
                 $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
-            }
-            catch (\Illuminate\Database\QueryException $ex)
-            {
+            } catch (\Illuminate\Database\QueryException $ex) {
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
             }
 
             $arr['msg'] = "Table Updated Successfuly";
             return response()->json($arr);
-        }
-        else
-        {
+        } else {
             $arr['msg'] = "Table Not Found";
             return response()->json($arr);
         }
@@ -471,20 +465,28 @@ class TableController extends Controller {
         $array = array_values($ret);
         return $array;
     }
+
     public function getTeamMembers($teamId) {
         $authToken = session()->get('socket_token');
         $client = new GuzzleHttp\Client();
-        $request = $client->get(env('SOCKET_API_URL') . '/teams/'.$teamId.'/memberships.json', ['headers' => ['Authorization' => $authToken]]);
+        $request = $client->get(env('SOCKET_API_URL') . '/teams/' . $teamId . '/memberships.json', ['headers' => ['Authorization' => $authToken]]);
         $response = $request->getBody()->getContents();
         $team_response_arr = json_decode($response, true);
-        
-        $member_array = array(0=>array('email'=>'','name'=>'No One'));
-        foreach($team_response_arr['memberships'] as $member){
+
+        $member_array = array(0 => array('email' => '', 'name' => 'No One'));
+        foreach ($team_response_arr['memberships'] as $member) {
             $email = $member['user']['email'];
-            $name = $member['user']['first_name']." ".$member['user']['last_name'];
-            $member_array[] = array('email'=>$email,'name'=>$name);
+            $name = $member['user']['first_name'] . " " . $member['user']['last_name'];
+            $member_array[] = array('email' => $email, 'name' => $name);
         }
         return $member_array;
+    }
+
+    public function getAllTables(Request $request) {
+        $authToken = $request->header('Authorization');
+        $response = Viasocket::getUserTeam($authToken);
+        $teamIdArr = Viasocket::getTeamIdArray($response);
+        return $this->getUserTablesByTeamId($teamIdArr);
     }
 
 }
