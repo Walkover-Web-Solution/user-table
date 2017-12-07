@@ -98,7 +98,7 @@ class TableController extends Controller {
             'teamsArr' => $teams,
             'source_arr' => $source_arr
         ));
-    } 
+    }
 
     public function getAllTablesForSocket(Request $request) {
 
@@ -130,35 +130,43 @@ class TableController extends Controller {
         return $tableLstJson;
     }
 
-    public function loadSelectedTable($tableName) {
+    public function loadSelectedTable($tableName)
+    {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $userTableName = $tableNameArr[0]['table_name'];
         $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']), true), TRUE);
-        if (empty($tableNameArr[0]['table_id'])) {
+
+        if(empty($tableNameArr[0]['table_id']))
+        {
             echo "no table found";
             exit();
-        } else {
+        }
+        else
+        {
             $tableId = $tableNameArr[0]['table_id'];
-            $allTabs = \DB::table($tableId)
-                    ->select('*')
-                    ->get();
+            $allTabs = \DB::table($tableId)->select('*')->get();
             $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
             $filters = Tables::getFiltrableData($tableId);
-            if (!empty($tabs)) {
-                foreach ($tabs as $val) {
+            if(!empty($tabs))
+            {
+                foreach ($tabs as $val)
+                {
                     $tab_name = $val['tab_name'];
                     $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
                     $tabCount = count($tabCountData);
 
                     $arrTabCount[] = array($tab_name => $tabCount);
                 }
-            } else {
+            }
+            else
+            {
                 $arrTabCount = array();
             }
+
             $allTabCount = count($allTabsData);
 
             return view('home', array(
@@ -170,7 +178,8 @@ class TableController extends Controller {
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
-                'structure' => $userTableStructure));
+                'structure' => $userTableStructure
+            ));
         }
     }
 
@@ -283,25 +292,55 @@ class TableController extends Controller {
         return $data;
     }
 
-    public function add(Request $request) {
+    public function add(Request $request)
+    {
+        $user = \Auth::user();
+
         //$input_data = $request->all();
         $table_auth = $request->header('Auth-Key');
         $teams = team_table_mapping::getTableByAuth(array($table_auth));
         $response = json_decode(json_encode($teams), true);
-        if (empty($response)) {
+
+        if(empty($response))
+        {
             return response()->json(array('error' => 'authorization_failure'), 401);
         }
+
         $incoming_data = $request->all();
+
         $table_incr_id = $response[0]['id'];
         $dataSource = $incoming_data['socket_data_source'];
+
         unset($incoming_data['socket_data_source']);
         unset($incoming_data['_token']);
+
         $table_name = $response[0]['table_id'];
         $table_structure = $response[0]['table_structure'];
+
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
-        if (isset($teamData['error'])) {
+
+        if(isset($teamData['error']))
+        {
             return response()->json($teamData, 400);
-        } else {
+        }
+        else
+        {
+            $incoming_data['auth_name'] = $user->first_name." ".$user->last_name;
+            $incoming_data['auth_email'] = $user->email;
+
+            $data_string = json_encode($incoming_data);
+
+            $ch = curl_init($teams[0]->socket_api);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+            );
+
+            $result = curl_exec($ch);
+
             team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
             return response()->json($teamData);
         }
