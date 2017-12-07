@@ -8,6 +8,8 @@ use App\ColumnType;
 
 class TableStructure extends Model {
     
+    protected $hidden = ['created_at', 'updated_at'];
+    
     public function columnType()
     {
         return $this->belongsTo(ColumnType::class,'column_type_id','id'); 
