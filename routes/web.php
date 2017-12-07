@@ -32,6 +32,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
 # To Show table data
 Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
+Route::get('/graph/{tableName}', 'TableController@showGraphForTable');
+Route::get('/graphdata', 'TableController@getGraphDataForTable');
 # Route for saved filters
 Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTableFilterData');
 # For create table view

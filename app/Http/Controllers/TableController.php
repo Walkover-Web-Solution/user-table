@@ -130,6 +130,21 @@ class TableController extends Controller {
         return $tableLstJson;
     }
 
+    public function getGraphDataForTable(Request $request){
+       $tableName = $request->input('tableName');
+       $dateColumn = $request->input('dateColumn');
+       $secondColumn = $request->input('secondColumn');
+       
+       $tableNames = team_table_mapping::getUserTablesNameByName($tableName);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+        $userTableName = $tableNameArr[0]['table_id'];
+        
+      // $sql = "SELECT STR_TO_DATE($dateColumn, '%d/%m/%Y') DateColumn,Count($secondColumn) as Total FROM $userTableName group by STR_TO_DATE($dateColumn, '%d/%m/%Y')";
+         $sql = "SELECT $secondColumn LabelColumn,Count($secondColumn) as Total FROM $userTableName group by $secondColumn";
+       $tableData =  Tables::getSQLData($sql);
+       print_r(json_encode($tableData));
+    }
+    
     public function loadSelectedTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
@@ -170,6 +185,61 @@ class TableController extends Controller {
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
                 'filters' => $filters,
+                'structure' => $userTableStructure));
+        }
+    }
+    public function showGraphForTable($tableName) {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+       
+        $userTableName = $tableNameArr[0]['table_name']; 
+        $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']), true), TRUE);
+       // print_r($userTableStructure);
+        $date_columns = array();
+        $other_columns = array();
+        foreach ($userTableStructure as $key => $value) {
+           // echo "<hr>";
+           // print_r($value);
+               if($value['type'] == 'date')
+                   $date_columns[] = $key;
+               else if($value['unique'] == "false")
+                   $other_columns[] = $key;
+        }
+        if (empty($tableNameArr[0]['table_id'])) {
+            echo "no table found";
+            exit();
+        } else {
+            $tableId = $tableNameArr[0]['table_id'];
+            $allTabs = \DB::table($tableId)
+                    ->select('*')
+                    ->get();
+            $allTabsData = json_decode(json_encode($allTabs), true);
+            $data = Tabs::getTabsByTableId($tableId);
+            $tabs = json_decode(json_encode($data), true);
+
+         
+            if (!empty($tabs)) {
+                foreach ($tabs as $val) {
+                    $tab_name = $val['tab_name'];
+                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
+                    $tabCount = count($tabCountData);
+
+                    $arrTabCount[] = array($tab_name => $tabCount);
+                }
+            } else {
+                $arrTabCount = array();
+            }
+            $allTabCount = count($allTabsData);
+
+            return view('graph', array(
+                'activeTab' => 'All',
+                'date_columns' => $date_columns,
+                'other_columns' => $other_columns,
+                'tabs' => $tabs,
+                'allTabs' => $allTabsData,
+                'allTabCount' => $allTabCount,
+                'tableId' => $tableName,
+                'userTableName' => $userTableName,
                 'structure' => $userTableStructure));
         }
     }

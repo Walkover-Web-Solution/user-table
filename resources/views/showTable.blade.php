@@ -14,7 +14,7 @@
     <link href="{{ asset('css/reset.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    
+    <link href="{{ asset('css/bootstrap-datepicker3.css') }}" rel="stylesheet">
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 <!--    <script src="js/jquery.min.js"></script>

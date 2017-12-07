@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tables extends Model
 {
+    public static function getSQLData($sql){
+         $tableData = \DB::select($sql);
+         return $tableData;
+    }
     public static function getFiltrableData($tableId)
     {
         $forStr = array('is' => null,
