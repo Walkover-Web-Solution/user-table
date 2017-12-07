@@ -207,16 +207,15 @@ class TableController extends Controller {
     public function showGraphForTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
-
         $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']), true), TRUE);
+        $userTableStructure = $tableNameArr[0]['table_structure'];
         $date_columns = array();
         $other_columns = array();
         foreach ($userTableStructure as $key => $value) {
-            if ($value['type'] == 'date')
-                $date_columns[] = $key;
-            else if ($value['unique'] == "false")
-                $other_columns[] = $key;
+            if ($value['column_type']['column_name'] == 'date')
+                $date_columns[] = $value['column_name'];
+            else if ($value['is_unique'] == "false")
+                $other_columns[] = $value['column_name'];;
         }
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
