@@ -3,23 +3,27 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\TableStructure;
 
 class team_table_mapping extends Model {
 
     protected $table = 'team_table_mappings';
-    protected $fillable = ['id', 'table_name', 'table_id', 'team_id'];
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id','auth','socket_api'];
+    public $timestamps = false;
+
+    public function tableStructure() {
+        return $this->hasMany(TableStructure::class, 'table_id', 'id');
+    }
 
     public static function getUserTablesByTeam($teamIdArr) {
-        $data = \DB::table('team_table_mappings')
-                ->select('*')
+        $data = team_table_mapping::with('tableStructure.columnType')
                 ->whereIn('team_id', $teamIdArr)
                 ->get();
         return $data;
     }
 
     public static function makeNewTableEntry($paramArr) {
-        $data = \DB::table('team_table_mappings')
-                ->insert($paramArr);
+        $data = team_table_mapping::create($paramArr);
         return $data;
     }
 
@@ -32,16 +36,14 @@ class team_table_mapping extends Model {
     }
 
     public static function getUserTablesNameById($tableId) {
-        $data = \DB::table('team_table_mappings')
-                ->select('*')
+        $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('id', $tableId)
                 ->get();
         return $data;
     }
 
     public static function getTableByAuth($auth) {
-        $data = \DB::table('team_table_mappings')
-                ->select('*')
+        $data = team_table_mapping::with('tableStructure.columnType')
                 ->wherein('auth', $auth)
                 ->get();
         return $data;
@@ -53,7 +55,7 @@ class team_table_mapping extends Model {
         $existsArr = json_decode(json_encode($exists), true);
 
         if ($existsArr) {
-            echo "Working as required";
+            //echo "Working as required";
         } else {
             \DB::table('user_data_source')
                     ->insert(array('table_incr_id' => $table_incr_id, 'source' => $dataSource));
@@ -61,13 +63,14 @@ class team_table_mapping extends Model {
         return True;
     }
 
-    public static function makeNewEntryInTable($table_name, $input_param, $structureJson) {
+    public static function makeNewEntryInTable($table_name, $input_param, $structure) {
         $data = 0;
         $unique_key = '';
-        $structure = json_decode($structureJson, TRUE);
+        //print_r($structure);die;
+        //$structure = json_decode($structureJson, TRUE);
 
         foreach ($input_param as $key => $value) {
-            if ($structure[$key]['unique'] == 'true') {
+            if ($structure[$key]['unique'] == 1) {
                 $unique_key = $key;
                 break;
             }
@@ -110,13 +113,12 @@ class team_table_mapping extends Model {
         return array('success' => 'data_updated');
     }
 
-    public static function updateTableStructure($paramArr) { 
+    public static function updateTableStructure($paramArr) {
         $tableAutoIncId = $paramArr['id'];
-        $tableStructure = $paramArr['table_structure'];
         $socketApi = $paramArr['socketApi'];
         $data = \DB::table('team_table_mappings')
                 ->where('id', $tableAutoIncId)
-                ->update(['table_structure' => $tableStructure, 'socket_api' => $socketApi]);
+                ->update(['socket_api' => $socketApi]);
         return $data;
     }
 

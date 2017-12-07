@@ -17,7 +17,7 @@ class CreateTableStructuresTable extends Migration {
             $table->integer('table_id')->unsigned();
             $table->string('column_name', 60);
             $table->integer('column_type_id')->unsigned();
-            $table->string('default_value', 255)->nullable();
+            $table->text('default_value', 50)->nullable();
             $table->boolean('is_unique')->default(0);
             $table->timestamps();
             $table->foreign('table_id')->references('id')->on('team_table_mappings');

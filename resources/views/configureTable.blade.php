@@ -17,25 +17,6 @@
 </head>
 
 <body>
-    <?php
-//    print_r($tableData);
-//    die;
-//    echo "<br>";
-//    echo "<br>";
-//    echo "<br>";
-//    echo $tableData[0]['table_name'];
-    $tableStructureArr = json_decode($tableData[0]['table_structure'],TRUE);
-//    print_r($tableStruarr);
-//    foreach($tableStruarr as $key => $value){
-//        echo $key;
-//        echo "<br>";
-//        print_r($value);
-//        echo "<br>";
-//        echo "<br>";
-//    }
-//    die;
-    ?>
-
     <div class="container">
         <div class="row">
             <!--  new field form -->
@@ -65,25 +46,27 @@
                             <div id="tableStructure">
                                 <span style="display: none" id="tableId">{{$tableData[0]['id']}}</span>
                                 @php ($i = 1)
-                                @foreach($tableStructureArr as $key => $value)
+                                @foreach($structure as $key => $value)
                                 <div class="row" id="column_"`+i+`>
                                     <div class="form-group col-xs-3">
-                                        <label>{{$key}}</label>
-                                        @if($value['unique'] == 'true')
+                                        <label>{{$value['column_name']}}</label>
+                                        @if($value['is_unique'])
                                             <span>(Unique)</span>
                                         @endif
                                     </div>
                                     <div class="form-group col-xs-3">
-                                        <label>{{$value['type']}}</label>
+                                        <label>{{$value['column_type']['column_name']}}</label>
                                     </div>
                                     <div class="form-group col-xs-1">
                                         <label>{{ $i }}</label>
                                     </div>
                                     <div class="form-group col-xs-2">
-
                                     </div>
                                     <div class="form-group col-xs-3">
-                                       <label>{{ ($value['value']) ? $value['value'] : 'No Default Value'  }}</label>
+                                       <label>
+                                           <?php $options = json_decode($value['default_value'],true); ?>
+                                           {{ implode(",",$options['options'])}}
+                                       </label>
                                     </div>
                                 </div>
                                 @php ($i++)
