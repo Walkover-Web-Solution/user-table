@@ -144,8 +144,21 @@ class TableController extends Controller {
         return $tableLstJson;
     }
 
-    public function loadSelectedTable($tableName)
-    {
+    public function getGraphDataForTable(Request $request) {
+        $tableName = $request->input('tableName');
+        $dateColumn = $request->input('dateColumn');
+        $secondColumn = $request->input('secondColumn');
+
+        $tableNames = team_table_mapping::getUserTablesNameByName($tableName);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+        $userTableName = $tableNameArr[0]['table_id'];
+
+        $sql = "SELECT $secondColumn LabelColumn,Count($secondColumn) as Total FROM $userTableName group by $secondColumn";
+        $tableData = Tables::getSQLData($sql);
+        print_r(json_encode($tableData));
+    }
+
+    public function loadSelectedTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $userTableName = $tableNameArr[0]['table_name'];
@@ -153,9 +166,7 @@ class TableController extends Controller {
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
-        }
-        else
-        {
+        } else {
             $tableId = $tableNameArr[0]['table_id'];
             $allTabs = \DB::table($tableId)->select('*')->get();
             $allTabsData = json_decode(json_encode($allTabs), true);
@@ -163,19 +174,15 @@ class TableController extends Controller {
             $tabs = json_decode(json_encode($data), true);
 
             $filters = Tables::getFiltrableData($tableId);
-            if(!empty($tabs))
-            {
-                foreach ($tabs as $val)
-                {
+            if (!empty($tabs)) {
+                foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
                     $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
                     $tabCount = count($tabCountData);
 
                     $arrTabCount[] = array($tab_name => $tabCount);
                 }
-            }
-            else
-            {
+            } else {
                 $arrTabCount = array();
             }
 
@@ -194,6 +201,59 @@ class TableController extends Controller {
                 'structure' => $userTableStructure,
                 'teammates' => $teammates)
             );
+        }
+    }
+
+    public function showGraphForTable($tableName) {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+
+        $userTableName = $tableNameArr[0]['table_name'];
+        $userTableStructure = json_decode(json_decode(json_encode($tableNameArr[0]['table_structure']), true), TRUE);
+        $date_columns = array();
+        $other_columns = array();
+        foreach ($userTableStructure as $key => $value) {
+            if ($value['type'] == 'date')
+                $date_columns[] = $key;
+            else if ($value['unique'] == "false")
+                $other_columns[] = $key;
+        }
+        if (empty($tableNameArr[0]['table_id'])) {
+            echo "no table found";
+            exit();
+        } else {
+            $tableId = $tableNameArr[0]['table_id'];
+            $allTabs = \DB::table($tableId)
+                    ->select('*')
+                    ->get();
+            $allTabsData = json_decode(json_encode($allTabs), true);
+            $data = Tabs::getTabsByTableId($tableId);
+            $tabs = json_decode(json_encode($data), true);
+
+
+            if (!empty($tabs)) {
+                foreach ($tabs as $val) {
+                    $tab_name = $val['tab_name'];
+                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
+                    $tabCount = count($tabCountData);
+
+                    $arrTabCount[] = array($tab_name => $tabCount);
+                }
+            } else {
+                $arrTabCount = array();
+            }
+            $allTabCount = count($allTabsData);
+
+            return view('graph', array(
+                'activeTab' => 'All',
+                'date_columns' => $date_columns,
+                'other_columns' => $other_columns,
+                'tabs' => $tabs,
+                'allTabs' => $allTabsData,
+                'allTabCount' => $allTabCount,
+                'tableId' => $tableName,
+                'userTableName' => $userTableName,
+                'structure' => $userTableStructure));
         }
     }
 
@@ -317,8 +377,7 @@ class TableController extends Controller {
         return $data;
     }
 
-    public function add(Request $request)
-    {
+    public function add(Request $request) {
         $user = \Auth::user();
 
         //$input_data = $request->all();
@@ -326,8 +385,7 @@ class TableController extends Controller {
         $teams = team_table_mapping::getTableByAuth(array($table_auth));
         $response = json_decode(json_encode($teams), true);
 
-        if(empty($response))
-        {
+        if (empty($response)) {
             return response()->json(array('error' => 'authorization_failure'), 401);
         }
 
@@ -343,13 +401,10 @@ class TableController extends Controller {
         $table_structure = TableStructure::formatTableStructureData($response[0]['table_structure']);
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
 
-        if(isset($teamData['error']))
-        {
+        if (isset($teamData['error'])) {
             return response()->json($teamData, 400);
-        }
-        else
-        {
-            $incoming_data['auth_name'] = $user->first_name." ".$user->last_name;
+        } else {
+            $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
             $incoming_data['auth_email'] = $user->email;
 
             $data_string = json_encode($incoming_data);

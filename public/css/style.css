@@ -786,3 +786,19 @@ side bar component end
 .user_dropdown .open .dropdown-toggle:hover {
     background: #2767bd;
 }
+
+.control-caption{
+    margin:0px 15px;
+}
+.graph-form{
+    padding:10px;
+}
+#myChart{width:100%;height:400px;}
+.graph-page-container{padding:10px;}
+.charts-container{display:block;clear:both;margin:20px;}
+.chart-first{width:100%;}
+.pie-chart-container{margin: 20px 0px;}
+.top-chart-container{position:relative;}
+.ajax-loader-container {display:none;background-color: rgba(0,0,0,0.5); position: absolute;    top: 0px;    left: 0px;    bottom: 0px;    right: 0px;}
+.loading-icon{text-align: center;margin-top:12%;}
+.column-caption {text-align: center;margin:10px 0px;font-size:14px;font-weight:bold;} 

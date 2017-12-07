@@ -41,6 +41,14 @@ class team_table_mapping extends Model {
                 ->get();
         return $data;
     }
+    
+    public static function getUserTablesNameByName($tableName) {
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->where('table_name', $tableName)
+                ->get();
+        return $data;
+    }
 
     public static function getTableByAuth($auth) {
         $data = team_table_mapping::with('tableStructure.columnType')
