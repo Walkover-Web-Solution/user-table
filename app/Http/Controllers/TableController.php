@@ -378,7 +378,7 @@ class TableController extends Controller {
 
     public function add(Request $request) {
         $user = \Auth::user();
-
+var_dump($user);die;
         //$input_data = $request->all();
         $table_auth = $request->header('Auth-Key');
         $teams = team_table_mapping::getTableByAuth(array($table_auth));

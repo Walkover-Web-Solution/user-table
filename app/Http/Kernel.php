@@ -59,7 +59,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'socketMasterKey' => \App\Http\Middleware\socketMasterKey::class,
-        'verifysockettoken' => \App\Http\Middleware\VerifyViasocketToken::class, 
-        'verifytabletoken' => \App\Http\Middleware\VerifyTableToken::class, 
+        'verifysockettoken' => \App\Http\Middleware\VerifyViasocketToken::class
     ];
 }

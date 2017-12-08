@@ -20,7 +20,3 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => ['verifysockettoken']], function() {
     Route::get('/tables', 'TableController@getAllTables');
 });
-Route::group(['middleware' => ['verifytabletoken']], function() {
-    # to create or add user
-    Route::post('/add_update', 'TableController@add');
-});
