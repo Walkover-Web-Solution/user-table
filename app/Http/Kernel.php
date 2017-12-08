@@ -60,5 +60,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'socketMasterKey' => \App\Http\Middleware\socketMasterKey::class,
         'verifysockettoken' => \App\Http\Middleware\VerifyViasocketToken::class, 
+        'verifytabletoken' => \App\Http\Middleware\VerifyTableToken::class, 
     ];
 }
