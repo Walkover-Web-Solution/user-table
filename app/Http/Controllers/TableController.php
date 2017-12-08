@@ -565,7 +565,11 @@ class TableController extends Controller {
             $member_array = array(0 => array('email' => '', 'name' => 'No One'));
             foreach ($team_response_arr['memberships'] as $member) {
                 $email = $member['user']['email'];
-                $name = $member['user']['first_name'] . " " . $member['user']['last_name'];
+                if (empty($member['user']['first_name']) && empty($member['user']['last_name'])) {
+                    $name = $email;
+                } else {
+                    $name = $member['user']['first_name'] . " " . $member['user']['last_name'];
+                }
                 $member_array[] = array('email' => $email, 'name' => $name);
             }
         } catch (\GuzzleHttp\Exception\RequestException $e) {
