@@ -377,9 +377,6 @@ class TableController extends Controller {
     }
 
     public function add(Request $request) {
-        $user = \Auth::user();
-var_dump($user);die;
-        //$input_data = $request->all();
         $table_auth = $request->header('Auth-Key');
         $teams = team_table_mapping::getTableByAuth(array($table_auth));
         $response = json_decode(json_encode($teams), true);
@@ -403,22 +400,25 @@ var_dump($user);die;
         if (isset($teamData['error'])) {
             return response()->json($teamData, 400);
         } else {
-            $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
-            $incoming_data['auth_email'] = $user->email;
+            $user = \Auth::user();
+            if($user!==NULL)
+            {
+                $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
+                $incoming_data['auth_email'] = $user->email;
 
-            $data_string = json_encode($incoming_data);
+                $data_string = json_encode($incoming_data);
 
-            $ch = curl_init($teams[0]->socket_api);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string))
-            );
+                $ch = curl_init($teams[0]->socket_api);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+                );
 
-            $result = curl_exec($ch);
-
+                curl_exec($ch);
+            }
             team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
             return response()->json($teamData);
         }
@@ -434,7 +434,6 @@ var_dump($user);die;
             'structure' => $tableStructure));
     }
 
-    //{"firstname":{"type":"3","unique":"false","value":null}}
     public function configureSelectedTable(Request $request) {
         $tableData = $request->input('tableData');
 
