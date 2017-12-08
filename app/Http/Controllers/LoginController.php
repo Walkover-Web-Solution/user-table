@@ -18,6 +18,7 @@ class LoginController extends Controller {
             return redirect()->route('unauthorised');
         }
         $authToken = 'Bearer ' . $authToken;
+        session()->put('socket_token', $authToken);
         $userdata = $this->getUserDetail($authToken);
         $user = User::where(['email' => $userdata['email']])->first();
         if (!$user) {
@@ -43,21 +44,28 @@ class LoginController extends Controller {
     }
 
     public function getUserDetail($authToken) {
-        $response = Viasocket::getUserProfile($authToken);
-        return $user = json_decode($response, true);
+        try {
+            $response = Viasocket::getUserProfile($authToken);
+            return $user = json_decode($response, true);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return false;
+        }
     }
 
     public function getUserTeam($authToken) {
-        $response = Viasocket::getUserTeam($authToken);
-        $team_response_arr = json_decode($response, true);
-        $team_response = $team_response_arr['teams'];
-        $team_array = array();
-        foreach ($team_response as $value) {
-            $team_array[$value['id']] = $value['name'];
+        try {
+            $response = Viasocket::getUserTeam($authToken);
+            $team_response_arr = json_decode($response, true);
+            $team_response = $team_response_arr['teams'];
+            $team_array = array();
+            foreach ($team_response as $value) {
+                $team_array[$value['id']] = $value['name'];
+            }
+            session()->put('team_array', $team_array);
+            return TRUE;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return FALSE;
         }
-        session()->put('team_array', $team_array);
-        session()->put('socket_token', $authToken);
-        return TRUE;
     }
 
 }
