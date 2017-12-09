@@ -1,24 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app-header')
 
-<head>
-    <title>userTABLE Mockup</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap core CSS -->
-
-    <link href="{{ asset('css/reset.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-
-</head>
-
-<body>
-
-    <div class="container">
+@section('content')
+<div class="container">
         <div class="row">
 
             <!--  new field form -->
@@ -30,7 +13,7 @@
                     ?>
                     {{ Form::select('teamName', [$teamArr]) }}
                     </div>
-                    <div class="panel-heading">Enter Table Name : <input type="text" id="tableName" name="tableName"></div>
+                    <div class="panel-heading">Enter Table Name : <input type="text" class="form-control" id="tableName" name="tableName" /></div>
                     <div class="panel-body">
 
                         <form class="">
@@ -44,11 +27,11 @@
                                 <div class="form-group col-xs-1">
                                     Sequence
                                 </div>
+                                <div class="form-group col-xs-3">
+                                    Default value
+                                </div>
                                 <div class="form-group col-xs-2">
                                     Unique
-                                </div>
-                                <div class="form-group col-xs-3">
-                                   Default value
                                 </div>
                             </div>
                             <div id="tableField">
@@ -97,10 +80,8 @@
         </div>
     </div>
 
-    <script src="js/functions.js"></script>
-</body>
+<script src="js/functions.js"></script>
 
-</html>
 <script type="text/javascript">
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
 </script>
@@ -139,3 +120,5 @@
         }); 
     }
 </script>
+
+@stop

@@ -1,22 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app-header')
 
-<head>
-    <title>Configure Table </title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap core CSS -->
-
-    <link href="{{ asset('css/reset.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-
-</head>
-
-<body>
+@section('content')
     <div class="container">
         <div class="row">
             <!--  new field form -->
@@ -36,11 +20,11 @@
                                 <div class="form-group col-xs-1">
                                      Sequence
                                 </div>
+                                <div class="form-group col-xs-3">
+                                    Default value
+                                </div>
                                 <div class="form-group col-xs-2">
                                     Unique
-                                </div>
-                                <div class="form-group col-xs-3">
-                                   Default value
                                 </div>
                             </div>
                             <div id="tableStructure">
@@ -86,13 +70,15 @@
                         </div>
                     </div>
                     <div class="panel-body">
-                        <label class="col-md-6">Socket API</label>
-                        <label class="col-md-6">Auth Key</label>
+                        <div class="row">
                         <div class="form-group col-md-6">
+                        <label>Socket API</label>
                             <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData[0]['socket_api']}}">
                         </div>
                         <div class="form-group col-md-6">
+                        <label>Auth Key</label>
                             <input type="text" class="form-control name" value="{{$tableData[0]['auth']}}" disabled="">
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -119,10 +105,8 @@
     </div>
 
     <!--<script src="js/functions.js"></script>-->
-    <script src="{{ asset('js/functions.js') }}"></script>
-</body>
+<script src="{{ asset('js/functions.js') }}"></script>
 
-</html>
 <script type="text/javascript">
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
 </script>
@@ -155,3 +139,4 @@
     }
 
 </script>
+@stop
