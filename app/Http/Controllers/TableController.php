@@ -402,7 +402,7 @@ class TableController extends Controller {
             return response()->json($teamData, 400);
         } else {
             $user = \Auth::user();
-            if ($user !== NULL) {
+            if ($user) {
                 $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
                 $incoming_data['auth_email'] = $user->email;
 
@@ -416,7 +416,6 @@ class TableController extends Controller {
                     'Content-Type: application/json',
                     'Content-Length: ' . strlen($data_string))
                 );
-
                 curl_exec($ch);
             }
             team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
