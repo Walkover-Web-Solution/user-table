@@ -309,33 +309,38 @@ class TableController extends Controller {
         }
     }
 
+    public function processFilterData($req, $tableId) {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        if (empty($tableNames['table_id'])) {
+            return array();
+        }
+
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id']);
+        $data = json_decode(json_encode($jsonData), true);
+
+
+        $teamId = $tableNames['team_id'];
+        $teammates = $this->getTeamMembers($teamId);
+
+        return array(
+            'allTabs' => $data,
+            'tableId' => $tableId,
+            'teammates' => $teammates
+        );
+    }
+
     # function get search for selected filters
 
     public function applyFilters(Request $request) {
         $req = (array) ($request->filter);
 
         $tableId = $request->tableId;
-        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-
-        if (empty($tableNames['table_id'])) {
-            echo "no table found";
-            exit();
+        $responseArray = $this->processFilterData($req, $tableId);
+        if (request()->wantsJson()) {
+            return response(json_encode(array('body' => $responseArray)), 400)
+                            ->header('Content-Type', 'application/json');
         } else {
-            $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id']);
-            $data = json_decode(json_encode($jsonData), true);
-            if (request()->wantsJson()) {
-                return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
-            } else {
-
-                $teamId = $tableNames['team_id'];
-                $teammates = $this->getTeamMembers($teamId);
-
-                return view('table.response', array(
-                    'allTabs' => $data,
-                    'tableId' => $tableId,
-                    'teammates' => $teammates
-                ));
-            }
+            return view('table.response', $responseArray);
         }
     }
 
@@ -371,8 +376,8 @@ class TableController extends Controller {
 
         return $data;
     }
-    
-    function getTableDetailsByAuth($table_auth){
+
+    function getTableDetailsByAuth($table_auth) {
         return team_table_mapping::getTableByAuth($table_auth);
     }
 
@@ -502,7 +507,7 @@ class TableController extends Controller {
 
     public function getSearchedData($tableId, $query) {
         $array = $this->getTableSearchData($tableId, $query);
-            return view('table.response', $array);
+        return view('table.response', $array);
     }
 
     public function getTableSearchData($tableId, $query) {
@@ -585,4 +590,19 @@ class TableController extends Controller {
         return $this->getUserTablesByTeamId($teamIdArr);
     }
 
+    /*
+    @param table auth key from header
+    @param search string in query param
+    api function to search table details
+    */
+    public function searchTableData(Request $request, $query){
+        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
+        return $this->getTableSearchData($tableDetails['id'],$query);
+}
+
+    public function filterTableData(Request $request){
+        $req = $request->all();
+        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
+        return $this->processFilterData($req,$tableDetails['id']);
+    }
 }
