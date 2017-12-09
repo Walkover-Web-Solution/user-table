@@ -39,7 +39,7 @@
                 <ul class="dropdown-menu">
                     <li>
                         <a href="{{ route('profile') }}">
-                            Profile
+                            Profile 
                         </a>
                     </li>
                     <li>
