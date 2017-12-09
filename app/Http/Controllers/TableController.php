@@ -160,14 +160,13 @@ class TableController extends Controller {
 
     public function loadSelectedTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
-        if (empty($tableNameArr[0]['table_id'])) {
+        $userTableName = $tableNames['table_name'];
+        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $tableId = $tableNameArr[0]['table_id'];
+            $tableId = $tableNames['table_id'];
             $allTabs = \DB::table($tableId)->select('*')->get();
             $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableId);
@@ -187,7 +186,7 @@ class TableController extends Controller {
             }
 
             $allTabCount = count($allTabsData);
-            $teamId = $tableNameArr[0]['team_id'];
+            $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
             return view('home', array(
                 'activeTab' => 'All',
@@ -206,9 +205,8 @@ class TableController extends Controller {
 
     public function showGraphForTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = $tableNameArr[0]['table_structure'];
+        $userTableName = $tableNames['table_name'];
+        $userTableStructure = $tableNames['table_structure'];
         $date_columns = array();
         $other_columns = array();
         foreach ($userTableStructure as $key => $value) {
@@ -217,11 +215,11 @@ class TableController extends Controller {
             else if ($value['is_unique'] == "false")
                 $other_columns[] = $value['column_name'];;
         }
-        if (empty($tableNameArr[0]['table_id'])) {
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $tableId = $tableNameArr[0]['table_id'];
+            $tableId = $tableNames['table_id'];
             $allTabs = \DB::table($tableId)
                     ->select('*')
                     ->get();
@@ -258,14 +256,13 @@ class TableController extends Controller {
 
     public function loadSelectedTableFilterData($tableId, $tabName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
-        if (empty($tableNameArr[0]['table_id'])) {
+        $userTableName = $tableNames['table_name'];
+        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $tableIdMain = $tableNameArr[0]['table_id'];
+            $tableIdMain = $tableNames['table_id'];
             $allTabs = \DB::table($tableIdMain)
                     ->select('*')
                     ->get();
@@ -294,7 +291,7 @@ class TableController extends Controller {
                 $arrTabCount = array();
             }
             $allTabCount = count($allTabsData);
-            $teamId = $tableNameArr[0]['team_id'];
+            $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
 
             return view('home', array(
@@ -319,19 +316,18 @@ class TableController extends Controller {
 
         $tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        //$userTableName = $tableNameArr[0]['table_name'];
-        if (empty($tableNameArr[0]['table_id'])) {
+
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $jsonData = $this->getAppliedFiltersData($req, $tableNameArr[0]['table_id']);
+            $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id']);
             $data = json_decode(json_encode($jsonData), true);
             if (request()->wantsJson()) {
                 return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
             } else {
 
-                $teamId = $tableNameArr[0]['team_id'];
+                $teamId = $tableNames['team_id'];
                 $teammates = $this->getTeamMembers($teamId);
 
                 return view('table.response', array(
@@ -375,27 +371,29 @@ class TableController extends Controller {
 
         return $data;
     }
+    
+    function getTableDetailsByAuth($table_auth){
+        return team_table_mapping::getTableByAuth($table_auth);
+    }
 
     public function add(Request $request) {
         $table_auth = $request->header('Auth-Key');
-        $teams = team_table_mapping::getTableByAuth(array($table_auth));
-        $response = json_decode(json_encode($teams), true);
+        $response = $this->getTableDetailsByAuth($table_auth);
 
         if (empty($response)) {
             return response()->json(array('error' => 'authorization_failure'), 401);
         }
 
         $incoming_data = $request->all();
-        // print_r($incoming_data);
-        $table_incr_id = $response[0]['id'];
-        
+        $table_incr_id = $response['id'];
+
         $dataSource = $incoming_data['socket_data_source'];
 
         unset($incoming_data['socket_data_source']);
         unset($incoming_data['_token']);
 
-        $table_name = $response[0]['table_id'];
-        $table_structure = TableStructure::formatTableStructureData($response[0]['table_structure']);
+        $table_name = $response['table_id'];
+        $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
 
         if (isset($teamData['error'])) {
@@ -425,11 +423,11 @@ class TableController extends Controller {
 
     public function loadSelectedTableStructure($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $tableStructure = TableStructure::withColumns($tableNameArr[0]['id']);
+        //$tableNameArr = json_decode(json_encode($tableNames), true);
+        $tableStructure = TableStructure::withColumns($tableNames['id']);
 
         return view('configureTable', array(
-            'tableData' => $tableNameArr,
+            'tableData' => $tableNames,
             'structure' => $tableStructure));
     }
 
@@ -443,30 +441,30 @@ class TableController extends Controller {
 
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $tableAutoIncId = $tableNameArr[0]['id'];
+
+        $tableAutoIncId = $tableNames['id'];
         $resp = TableStructure::validateStructure($tableData, $tableAutoIncId);
         TableStructure::insertTableStructure($resp['data']);
-        $tableName = $tableNameArr[0]['table_id'];
-        $logTableName = "log_" . $tableNameArr[0]['table_name'] . "_" . $tableNameArr[0]['team_id'];
+        $tableName = $tableNames['table_id'];
+        $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
 
         if (Schema::hasTable($tableName)) {
             try {
                 Schema::table($tableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $key => $value) {
+                    foreach ($tableData as $value) {
                         $table->string($value['name']);
                     }
                 });
 
                 Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $key => $value) {
+                    foreach ($tableData as $value) {
                         $table->string($value['name']);
                     }
                 });
 
                 $paramArr['id'] = $tableAutoIncId;
                 $paramArr['socketApi'] = $request->input('socketApi');
-                $tableNameArr = team_table_mapping::updateTableStructure($paramArr);
+                team_table_mapping::updateTableStructure($paramArr);
             } catch (\Illuminate\Database\QueryException $ex) {
                 $arr['msg'] = "Error in updation";
                 return response()->json($arr);
@@ -487,9 +485,8 @@ class TableController extends Controller {
             return response()->json(array('error' => 'Invalid table id'));
         }
         $tableNames = team_table_mapping::getUserTablesNameById($update_details['table_id']);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
 
-        $tableName = $tableNameArr[0]['table_id'];
+        $tableName = $tableNames['table_id'];
         $param['table'] = $tableName;
         $param['where_key'] = 'id';
         $param['where_value'] = $update_details['row_id'];
@@ -504,11 +501,14 @@ class TableController extends Controller {
     }
 
     public function getSearchedData($tableId, $query) {
+        $array = $this->getTableSearchData($tableId, $query);
+            return view('table.response', $array);
+    }
+
+    public function getTableSearchData($tableId, $query) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        //$userTableName = $tableNameArr[0]['table_name'];
-        $tableID = $tableNameArr[0]['table_id'];
-        $tableStructure = $tableNameArr[0]['table_structure'];
+        $tableID = $tableNames['table_id'];
+        $tableStructure = $tableNames['table_structure'];
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
@@ -527,14 +527,14 @@ class TableController extends Controller {
             }
 
             $data = $users->get();
-            $results = $array = json_decode(json_encode($data), True);
-            $teamId = $tableNameArr[0]['team_id'];
+            $results = json_decode(json_encode($data), True);
+            $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
-            return view('table.response', array(
+            return array(
                 'allTabs' => $results,
                 'tableId' => $tableID,
                 'teammates' => $teammates
-            ));
+            );
         }
     }
 

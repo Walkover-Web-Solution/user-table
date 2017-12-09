@@ -13,20 +13,20 @@ class UserController extends Controller {
 
     public function getDetailsOfUserById($tableId, $id) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
         
-        if (empty($tableNameArr[0]['table_id'])) {
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $data = \DB::table($tableNameArr[0]['table_id'])->selectRaw('*')->where('id', $id)->first();
+            $data = \DB::table($tableNames['table_id'])->selectRaw('*')->where('id', $id)->first();
         }
         
-        $colDetails = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
+        $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
         return response(
                         json_encode(
-                                array('data' => $data, 'colDetails' => $colDetails, 'authKey' => $tableNameArr[0]['auth'])
+                                array('data' => $data, 'colDetails' => $colDetails,
+                                    'authKey' => $tableNames['auth'])
                         ), 200
                 )->header('Content-Type', 'application/json');
     }
@@ -55,11 +55,11 @@ class UserController extends Controller {
             return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
         } else {
             $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-            $tableNameArr = json_decode(json_encode($tableNames), true);
-            if (empty($tableNameArr[0]['table_id'])) {
-                return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
+            if (empty($tableNames['table_id'])) {
+                return response(json_encode(array('error' => "something went wrong.")),
+                        403)->header('Content-Type', 'application/json');
             } else {
-                $tableId = $tableNameArr[0]['table_id'];
+                $tableId = $tableNames['table_id'];
             }
         }
         $appliedFilters = json_decode($request->filter);

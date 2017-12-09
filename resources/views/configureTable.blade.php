@@ -23,7 +23,7 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">Configure</div>
-                    <div class="panel-heading">Table Name :   <label>{{$tableData[0]['table_name']}}</label></div>
+                    <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
                     <div class="panel-body">
                         <form class="">
                             <div class="row" id="column_"`+i+`>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                             <div id="tableStructure">
-                                <span style="display: none" id="tableId">{{$tableData[0]['id']}}</span>
+                                <span style="display: none" id="tableId">{{$tableData['id']}}</span>
                                 @php ($i = 1)
                                 @foreach($structure as $key => $value)
                                 <div class="row" id="column_"`+i+`>
@@ -89,10 +89,10 @@
                         <label class="col-md-6">Socket API</label>
                         <label class="col-md-6">Auth Key</label>
                         <div class="form-group col-md-6">
-                            <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData[0]['socket_api']}}">
+                            <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData['socket_api']}}">
                         </div>
                         <div class="form-group col-md-6">
-                            <input type="text" class="form-control name" value="{{$tableData[0]['auth']}}" disabled="">
+                            <input type="text" class="form-control name" value="{{$tableData['auth']}}" disabled="">
                         </div>
                     </div>
                 </div>
