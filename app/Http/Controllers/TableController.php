@@ -386,8 +386,9 @@ class TableController extends Controller {
         }
 
         $incoming_data = $request->all();
-
+        // print_r($incoming_data);
         $table_incr_id = $response[0]['id'];
+        
         $dataSource = $incoming_data['socket_data_source'];
 
         unset($incoming_data['socket_data_source']);
