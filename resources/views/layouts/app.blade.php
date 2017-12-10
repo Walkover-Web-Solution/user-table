@@ -17,7 +17,7 @@
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
         <link rel="stylesheet" href="{{url('css/reset.css')}}"> <!-- CSS reset -->
         <link rel="stylesheet" href="{{url('css/style.css')}}"> <!-- Resource style -->
-        <link rel="stylesheet" href="{{url('css/style2.css')}}"> <!-- Resource style -->        
+        <link rel="stylesheet" href="{{url('css/style2.css')}}"> <!-- Resource style -->  
         <script src="{{url('js/modernizr.js')}}"></script> <!-- Modernizr -->
         <link type="text/css" href="{{url('css/jquery-ui.css')}}" rel="Stylesheet" />
         <script type="text/javascript" src="{{url('js/jquery-1.4.4.js')}}"></script>

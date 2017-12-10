@@ -8,7 +8,6 @@ use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\TableStructure;
 use GuzzleHttp;
 use App\Viasocket;
@@ -37,13 +36,12 @@ class TableController extends Controller {
         $tableName = "main_" . $userTableName . '_' . $teamId;
         $logTableName = "log_" . $userTableName . '_' . $teamId;
 
-        $tableData = '';
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) use ($data) {
                 $table->increments('id');
                 $table->charset = 'utf8';
                 $table->collation = 'utf8_unicode_ci';
-                foreach ($data as $key => $value) {
+                foreach ($data as $value) {
                     $value['name'] = preg_replace('/\s+/', '_', $value['name']);
                     if ($value['unique'] == 'true') {
                         $table->string($value['name'])->unique($value['name']);
@@ -54,7 +52,7 @@ class TableController extends Controller {
             });
             Schema::create($logTableName, function (Blueprint $table) use ($data) {
                 $table->increments('id');
-                foreach ($data as $key => $value) {
+                foreach ($data as $value) {
                     $value['name'] = preg_replace('/\s+/', '_', $value['name']);
                     $table->string($value['name'])->nullable();
                 }
@@ -115,13 +113,12 @@ class TableController extends Controller {
     }
 
     public function getAllTablesForSocket(Request $request) {
-
         $team_ids = $request->input('team_ids');
         $team_id_array = explode(',', $team_ids);
         $table_data = $this->getUserTablesByTeamId($team_id_array);
         $table_array = array();
         $count = 0;
-        foreach ($table_data as $key => $value) {
+        foreach ($table_data as $value) {
             $table_array[$value['team_id']][$count]['table_id'] = $value['table_id'];
             $table_array[$value['team_id']][$count]['table_name'] = $value['table_name'];
             $table_array[$value['team_id']][$count]['structure'] = $value['table_structure'];
@@ -129,11 +126,11 @@ class TableController extends Controller {
             $count++;
         }
         $response_arr = array();
-        $count = 0;
+        $cnt = 0;
         foreach ($table_array as $team_id => $table_data) {
-            $response_arr[$count]['team_id'] = $team_id;
-            $response_arr[$count]['tables'] = $table_data;
-            $count++;
+            $response_arr[$cnt]['team_id'] = $team_id;
+            $response_arr[$cnt]['tables'] = $table_data;
+            $cnt++;
         }
         return response()->json($response_arr);
     }
@@ -209,7 +206,7 @@ class TableController extends Controller {
         $userTableStructure = $tableNames['table_structure'];
         $date_columns = array();
         $other_columns = array();
-        foreach ($userTableStructure as $key => $value) {
+        foreach ($userTableStructure as $value) {
             if ($value['column_type']['column_name'] == 'date')
                 $date_columns[] = $value['column_name'];
             else if ($value['is_unique'] == "false")
@@ -309,23 +306,25 @@ class TableController extends Controller {
         }
     }
 
-    public function processFilterData($req, $tableId) {
+    public function processFilterData($req, $tableId,$pageSize=20) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id']);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'],$pageSize);
         $data = json_decode(json_encode($jsonData), true);
-
+        $results = $data['data'];
+        unset($data['data']);
 
         $teamId = $tableNames['team_id'];
         $teammates = $this->getTeamMembers($teamId);
 
         return array(
-            'allTabs' => $data,
+            'allTabs' => $results,
             'tableId' => $tableId,
-            'teammates' => $teammates
+            'teammates' => $teammates,
+            'pagination' => $data
         );
     }
 
@@ -335,7 +334,7 @@ class TableController extends Controller {
         $req = (array) ($request->filter);
 
         $tableId = $request->tableId;
-        $responseArray = $this->processFilterData($req, $tableId);
+        $responseArray = $this->processFilterData($req, $tableId,30);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                             ->header('Content-Type', 'application/json');
@@ -344,7 +343,7 @@ class TableController extends Controller {
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId) {
+    public static function getAppliedFiltersData($req, $tableId,$pageSize=20) {
         $users = \DB::table($tableId)->selectRaw('*');
 
         foreach (array_keys($req) as $paramName) {
@@ -372,7 +371,7 @@ class TableController extends Controller {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
             }
         }
-        $data = $users->get();
+        $data = $users->paginate($pageSize);
 
         return $data;
     }
@@ -506,11 +505,11 @@ class TableController extends Controller {
     }
 
     public function getSearchedData($tableId, $query) {
-        $array = $this->getTableSearchData($tableId, $query);
+        $array = $this->getTableSearchData($tableId, $query,30);
         return view('table.response', $array);
     }
 
-    public function getTableSearchData($tableId, $query) {
+    public function getTableSearchData($tableId, $query,$pageSize=20) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
@@ -531,14 +530,17 @@ class TableController extends Controller {
                 $count++;
             }
 
-            $data = $users->get();
+            $data = $users->paginate($pageSize);
             $results = json_decode(json_encode($data), True);
+            $allTabs = $results['data'];
+            unset($results['data']);
             $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
             return array(
-                'allTabs' => $results,
+                'allTabs' => $allTabs,
                 'tableId' => $tableID,
-                'teammates' => $teammates
+                'teammates' => $teammates,
+                'pagination' =>$results
             );
         }
     }
@@ -591,18 +593,22 @@ class TableController extends Controller {
     }
 
     /*
-    @param table auth key from header
-    @param search string in query param
-    api function to search table details
-    */
-    public function searchTableData(Request $request, $query){
-        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        return $this->getTableSearchData($tableDetails['id'],$query);
-}
+      @param table auth key from header
+      @param search string in query param
+      api function to search table details
+     */
 
-    public function filterTableData(Request $request){
-        $req = $request->all();
+    public function searchTableData(Request $request, $query) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        return $this->processFilterData($req,$tableDetails['id']);
+        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
+        return $this->getTableSearchData($tableDetails['id'], $query,$pageSize);
     }
+
+    public function filterTableData(Request $request) {
+        $req = $request->all();
+        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
+        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
+        return $this->processFilterData($req, $tableDetails['id'],$pageSize);
+    }
+
 }
