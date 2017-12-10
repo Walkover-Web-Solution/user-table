@@ -43,8 +43,7 @@ class team_table_mapping extends Model {
     }
     
     public static function getUserTablesNameByName($tableName) {
-        $data = \DB::table('team_table_mappings')
-                ->select('*')
+        $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('table_name', $tableName)
                 ->get();
         return $data;

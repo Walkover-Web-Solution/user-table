@@ -65,7 +65,7 @@
 
                     <form class="form-inline graph-form">
 
-                         <div class="form-group">
+                         <div class="form-group" style="display:none;">
                             <label for="email"  class="control-caption">Column</label>
                             <select class="form-control" id="column2">
                                 @foreach( $other_columns as $other_column)
@@ -85,9 +85,9 @@
                        
                         <div class="form-group">
                             <label for="email"  class="control-caption">Date Range</label>
-                            <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+                            <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text"/>
                             To
-                            <input class="form-control" id="date1" name="date1" placeholder="MM/DD/YYY" type="text"/>
+                            <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text"/>
                         </div>
                         <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>
                     </form>
@@ -108,9 +108,9 @@
                     </div>
                     <div class="form-group">
                         <label for="email"  class="control-caption">Date Range</label>
-                        <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+                        <input class="form-control" id="date" name="pieDate" placeholder="MM/DD/YYY" type="text"/>
                         To
-                        <input class="form-control" id="date1" name="date1" placeholder="MM/DD/YYY" type="text"/>
+                        <input class="form-control" id="date1" name="pieDate1" placeholder="MM/DD/YYY" type="text"/>
                     </div>
                     <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
                 </form>
@@ -225,9 +225,9 @@
    
     return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
 }
-    function getGraphData(dateColumn, secondColumn) {
+    function getGraphData(dateColumn, secondColumn,startDate,endDate) {
         var tableName = "{{$userTableName}}";
-        var dataUrl = "{{env('APP_URL')}}/graphdata?tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
+        var dataUrl = "{{env('APP_URL')}}/graphdata?startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
         $.get(dataUrl, function (response) {
             var data = JSON.parse(response);
             var Total_data = 0;
@@ -304,8 +304,11 @@
     function loadGraph() {
         $(".top-chart-container .ajax-loader-container").show();
         var column1 = $("#column1").val();
-        var column2 = $("#column2").val();
-        getGraphData(column1, column2);
+        var barDate = $("#barDate").val();
+        var barDate1 = $("#barDate1").val();
+        console.log("StartDate : " , barDate);
+        console.log(barDate1);
+        getGraphData(column1, column1,barDate,barDate1);
     }
     $(document).ready(function ($) {
 
