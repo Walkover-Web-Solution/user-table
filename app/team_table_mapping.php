@@ -38,7 +38,7 @@ class team_table_mapping extends Model {
     public static function getUserTablesNameById($tableId) {
         $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('id', $tableId)
-                ->get();
+                ->first()->toArray();
         return $data;
     }
 
@@ -52,8 +52,8 @@ class team_table_mapping extends Model {
 
     public static function getTableByAuth($auth) {
         $data = team_table_mapping::with('tableStructure.columnType')
-                ->wherein('auth', $auth)
-                ->get();
+                ->where('auth', $auth)
+                ->first()->toArray();
         return $data;
     }
 

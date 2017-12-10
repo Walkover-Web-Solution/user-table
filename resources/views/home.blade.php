@@ -1,10 +1,4 @@
 @extends('layouts.app')
-<div>{{$userTableName}}
-    <a href="{{route('tables')}}">Back to Tables
-</div>
-<div>
-   <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a>
-</div>
 @section('content')
 <div class="tablist">
     <ul id="tablist">
@@ -33,10 +27,12 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
                     <!-- {{ Auth::user()->name }}  -->
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </a>
 
                 <ul class="dropdown-menu">
+                <li><a href="{{route('tables')}}">Dashboard</a></li>
+                <li><a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a></li>                
                     <li>
                         <a href="{{ route('profile') }}">
                             Profile
@@ -282,9 +278,9 @@
                 <div class="modal-footer">
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
                     <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData()">
-                        Save
+                        Update
                     </button>
                 </div>
             </form>

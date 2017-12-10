@@ -1,13 +1,12 @@
 @extends('layouts.app')
-<div>{{$userTableName}}
-    <a href="{{route('tables')}}">Back to Tables
-</div>
-<div>
-    <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a>
-</div>
 @section('content')
 <div class="tablist">
     <ul id="tablist">
+    <li>
+        <a href="{{env('APP_URL')}}/tables/{{$tableId}}">
+            <i class="glyphicon glyphicon-arrow-left"></i> Back to {{$userTableName}} Table
+        </a>
+    </li>    
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
             <!-- Authentication Links -->
@@ -18,10 +17,12 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
                     <!-- {{ Auth::user()->name }}  -->
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </a>
 
                 <ul class="dropdown-menu">
+                    <li><a href="{{route('tables')}}">Dashboard</a></li>
+                    <li><a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a></li>      
                     <li>
                         <a href="{{ route('profile') }}">
                             Profile
