@@ -22,7 +22,7 @@
             </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
             <td>
-                <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
+                <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'dropdown')">
                     <?php $options = json_decode($structure[$k]['value'],true);?>
                     @foreach($options['options'] as $info)
                     <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
@@ -31,7 +31,7 @@
             </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td>
-            <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
+            <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
                         <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach
@@ -63,7 +63,7 @@
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
-        <td><select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
+        <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'dropdown')">
                <?php $options = json_decode($structure[$k]['value'],true);?>
                     @foreach($options['options'] as $info)
                     <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
@@ -72,7 +72,7 @@
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td>
-            <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
+            <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
                         <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach

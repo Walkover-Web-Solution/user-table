@@ -59,7 +59,7 @@
                     @if (Route::has('login'))
                     <div class="top-right links">
                         @auth
-                        <a href="{{ url('/tables') }}" class="navbar-btn typeform-share link signup-btn btn pull-right">Home</a>
+                        <a href="{{ url('/tables') }}" class="navbar-btn link signup-btn btn pull-right">Dashboard</a>
                         @else
                         <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin" class="navbar-btn typeform-share link signup-btn btn pull-right">Sign up</a>
                         <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="navbar-btn btn pull-right">Log in</a>
