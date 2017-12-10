@@ -252,12 +252,20 @@ class TableController extends Controller {
     }
 
     public function loadSelectedTableFilterData($tableId, $tabName) {
+            $results = $this->processTableData($tableId, $tabName);
+            return view('home', $results);
+    }
+    
+    public function loadContacts($tableIdMain, $tabName){
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
+        return json_decode(json_encode($tabDataJson), true);
+    }
+    
+    public function processTableData($tableId, $tabName){
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $userTableName = $tableNames['table_name'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
-            echo "no table found";
-            exit();
+            return array();
         } else {
             $tableIdMain = $tableNames['table_id'];
             $allTabs = \DB::table($tableIdMain)
@@ -273,8 +281,7 @@ class TableController extends Controller {
                 $tabArray = json_decode($tabSql['query'], true);
             }
 
-            $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
-            $tabData = json_decode(json_encode($tabDataJson), true);
+            $tabData = $this->loadContacts($tableIdMain, $tabName);
             $filters = Tables::getFiltrableData($tableIdMain);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
@@ -291,18 +298,18 @@ class TableController extends Controller {
             $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
 
-            return view('home', array(
+            return array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
                 'allTabs' => $tabData,
                 'allTabCount' => $allTabCount,
                 'arrTabCount' => $arrTabCount,
                 'tableId' => $tableId,
-                'userTableName' => $userTableName,
+                'userTableName' => $tableNames['table_name'],
                 'filters' => $filters,
                 'structure' => $userTableStructure,
                 'teammates' => $teammates,
-                'activeTabFilter' => $tabArray));
+                'activeTabFilter' => $tabArray);
         }
     }
 
@@ -609,6 +616,13 @@ class TableController extends Controller {
         $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         return $this->processFilterData($req, $tableDetails['id'],$pageSize);
+    }
+    
+    public function getContacts(Request $request){
+        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
+        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
+        $tabName = empty($request->get('filter'))?'All':$request->get('filter');
+        return $this->loadContacts($tableDetails['table_id'], $tabName);
     }
 
 }

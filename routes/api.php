@@ -24,4 +24,5 @@ Route::group(['middleware' => ['verifysockettoken']], function() {
 Route::group(['middleware' => ['verifytabletoken']], function() {
     Route::get('/tables/{query}', 'TableController@searchTableData');
     Route::post('/tables','TableController@filterTableData');
+    Route::get('/contacts', 'TableController@getContacts');
 });
