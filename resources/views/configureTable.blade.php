@@ -27,11 +27,14 @@
                     <div class="panel-body">
                         <form class="">
                             <div class="row" id="column_"`+i+`>
-                                <div class="form-group col-xs-3">
+                                <div class="form-group col-xs-2">
                                     Name
                                 </div>
-                                <div class="form-group col-xs-3">
+                                <div class="form-group col-xs-2">
                                     Type
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    Display
                                 </div>
                                 <div class="form-group col-xs-1">
                                      Sequence
@@ -48,25 +51,43 @@
                                 @php ($i = 1)
                                 @foreach($structure as $key => $value)
                                 <div class="row" id="column_"`+i+`>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-xs-2">
+                                        <input type="hidden" value="{{$value['column_name']}}" class="name">
                                         <label>{{$value['column_name']}}</label>
                                         @if($value['is_unique'])
                                             <span>(Unique)</span>
                                         @endif
                                     </div>
-                                    <div class="form-group col-xs-3">
-                                        <label>{{$value['column_type']['column_name']}}</label>
-                                    </div>
-                                    <div class="form-group col-xs-1">
-                                        <label>{{ $i }}</label>
+                                    <div class="form-group col-xs-2">
+                                        <select class="form-control type">
+                                            <option value="">Select Field Type</option>
+                                            <option value="1" {{ ($value['column_type']['column_name'] == 'text') ? 'selected' : '' }}>text</option>
+                                            <option value="2" {{ ($value['column_type']['column_name'] == 'phone') ? 'selected' : '' }}>phone</option>
+                                            <option value="3" {{ ($value['column_type']['column_name'] == 'any number') ? 'selected' : '' }}>any number</option>
+                                            <option value="4" {{ ($value['column_type']['column_name'] == 'airthmatic number') ? 'selected' : '' }}>airthmatic number</option>
+                                            <option value="5" {{ ($value['column_type']['column_name'] == 'email') ? 'selected' : '' }}>email</option>
+                                            <option value="6" {{ ($value['column_type']['column_name'] == 'dropdown') ? 'selected' : '' }}>dropdown</option>
+                                            <option value="7" {{ ($value['column_type']['column_name'] == 'radio button') ? 'selected' : '' }}>radio button</option>
+                                            <option value="8" {{ ($value['column_type']['column_name'] == 'checkbox') ? 'selected' : '' }}>checkbox</option>
+                                            <option value="9" {{ ($value['column_type']['column_name'] == 'date') ? 'selected' : '' }}>date</option>
+                                            <option value="10" {{ ($value['column_type']['column_name'] == 'my teammates') ? 'selected' : '' }}>my teammates</option>
+                                        </select>
                                     </div>
                                     <div class="form-group col-xs-2">
+                                        <select class="form-control display">
+                                            <option value="1">Show</option>
+                                            <option value="0">Hide</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-1">
+                                        <input type="text" value="{{ $i }}" name="fieldOrder" class="form-control order">
+                                    </div>
+                                    <div class="form-group col-xs-2">
+                                        <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
                                     </div>
                                     <div class="form-group col-xs-3">
-                                       <label>
-                                           <?php $options = json_decode($value['default_value'],true); ?>
-                                           {{ implode(",",$options['options'])}}
-                                       </label>
+                                        <?php $options = json_decode($value['default_value'],true); ?>
+                                        <textarea name="" placeholder="Default value" class="form-control value">{{ implode(",",$options['options'])}}</textarea>
                                     </div>
                                 </div>
                                 @php ($i++)
@@ -82,7 +103,7 @@
 
                         <div class="form-group">
                             <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
-                            <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button> 
+                            <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
                         </div>
                     </div>
                     <div class="panel-body">
@@ -127,31 +148,44 @@
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
 </script>
 <script type="text/javascript">
-    var tableData1= [];
+    var tableData1 = [];
+    var tableData2 = [];
 
     function createTable(){
-       $("#tableFieldRow .row").each(function(idx) {
+        $("#tableFieldRow .row").each(function(idx) {
            var name = $('.name', $(this)).val();
            var type = $('.type', $(this)).val();
+           var display = $('.display', $(this)).val();
+           var order = $('.order', $(this)).val();
            var unique = $('.unique', $(this)).prop("checked");
            var value = $('.value', $(this)).val();
 
-           tableData1[idx] = {'name':name,'type':type,'unique':unique,'value':value};
+           tableData1[idx] = {'name':name,'type':type,'display':display,'order':order,'unique':unique,'value':value};
        });
+
+       $('#tableStructure .row').each(function(idy){
+           var name = $('.name', $(this)).val();
+           var type = $('.type', $(this)).val();
+           var display = $('.display', $(this)).val();
+           var order = $('.order', $(this)).val();
+           var unique = $('.unique', $(this)).prop("checked");
+           var value = $('.value', $(this)).val();
+
+           tableData2[idy] = {'name':name,'type':type,'display':display, 'order':order, 'unique':unique, 'value':value};
+       });
+
        var tableId = $("#tableId").text();
        var socketApi = $("#socketApi").val();
-       console.log(tableId,API_BASE_URL);
+       console.log(tableId, API_BASE_URL);
        $.ajax({
-                    url: API_BASE_URL+'/configureTable',
-                    type: 'POST',
-                    data: {tableData:tableData1,tableId:tableId,socketApi:socketApi},
-                    dataType: 'json',
-                    success: function(info){
-                        alert(info.msg);
-                            location.reload();
-                    }
-
-                });
+            url: API_BASE_URL+'/configureTable',
+            type: 'POST',
+            data: {tableData:tableData1, tableOldData:tableData2, tableId:tableId, socketApi:socketApi},
+            dataType: 'json',
+            success: function(info){
+                alert(info.msg);
+                location.reload();
+            }
+        });
     }
-
 </script>

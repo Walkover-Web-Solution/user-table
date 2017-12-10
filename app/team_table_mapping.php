@@ -41,7 +41,7 @@ class team_table_mapping extends Model {
                 ->get();
         return $data;
     }
-    
+
     public static function getUserTablesNameByName($tableName) {
         $data = \DB::table('team_table_mappings')
                 ->select('*')
@@ -134,6 +134,13 @@ class team_table_mapping extends Model {
         $data = \DB::table($paramArr['table'])
                 ->where($paramArr['where_key'], $paramArr['where_value'])
                 ->update($paramArr['update']);
+        return $data;
+    }
+
+    public static function updateTableStructureData($tableId, $structure) {
+        $data = \DB::table('team_table_mappings')
+                ->where('id', $tableId)
+                ->update(['table_structure' => $structure]);
         return $data;
     }
 

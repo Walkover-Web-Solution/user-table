@@ -294,8 +294,8 @@ function searchKeyword(event, query) {
 }
 function getOptionList() {
     $.ajax({
-        type: 'GET', 
-        dataType: 'json', 
+        type: 'GET',
+        dataType: 'json',
         url: API_BASE_URL + "/getOptionList",
         success: function (response) {
             optionList = response;
@@ -323,11 +323,14 @@ function addRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
+            </div>
+            <div class="form-group col-xs-2">
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
             </div>
             <div class="form-group col-xs-1">
                 <input type="text" class="form-control order" name="fieldOrder" placeholder="">
@@ -336,7 +339,7 @@ function addRow(check) {
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
             <div class="form-group col-xs-3">
-                <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
+                <textarea type="text" name="" placeholder="Default value" class="form-control value"></textarea>
             </div>
         </div>`;
     formGrp += '';
@@ -362,11 +365,14 @@ function addMoreRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
+            </div>
+            <div class="form-group col-xs-2">
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
             </div>
             <div class="form-group col-xs-1">
                 <input type="text" class="form-control order" name="fieldOrder" placeholder="">
@@ -375,7 +381,7 @@ function addMoreRow(check) {
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
             <div class="form-group col-xs-3">
-                <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
+                <textarea type="text" name="" placeholder="Default value" class="form-control value"></textarea>
             </div>
         </div>`;
     formGrp += '';

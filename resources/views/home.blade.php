@@ -39,7 +39,7 @@
                 <ul class="dropdown-menu">
                     <li>
                         <a href="{{ route('profile') }}">
-                            Profile 
+                            Profile
                         </a>
                     </li>
                     <li>
@@ -144,10 +144,12 @@
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{asset('js/templates.js')}}"></script>
 <script src="{{asset('js/functions.js')}}"></script>
+
 <script type="text/javascript">
-                                                       var API_BASE_URL = '{{env('API_BASE_URL')}}';
-                                                       var activeTab = '{{$activeTab}}';
-                                                       var tableId = '{{$tableId}}';</script>
+    var API_BASE_URL = '{{env('API_BASE_URL')}}';
+    var activeTab = '{{$activeTab}}';
+    var tableId = '{{$tableId}}';
+</script>
 <!-- inline scripts -->
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');

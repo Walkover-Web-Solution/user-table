@@ -35,11 +35,14 @@
 
                         <form class="">
                             <div class="row" id="column_"`+i+`>
-                                <div class="form-group col-xs-3">
+                                <div class="form-group col-xs-2">
                                     Name
                                 </div>
-                                <div class="form-group col-xs-3">
+                                <div class="form-group col-xs-2">
                                     Type
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    Display
                                 </div>
                                 <div class="form-group col-xs-1">
                                     Sequence
@@ -110,13 +113,14 @@
     function createTable(){
        $("#tableField .row").each(function(idx) {
            var name = $('.name', $(this)).val();
+           var display = $('.display', $(this)).val();
            var type = $('.type', $(this)).val();
            var order = $('.order', $(this)).val();
            var unique = $('.unique', $(this)).prop("checked");
            var value = $('.value', $(this)).val();
            console.log(name,type,order,unique,value);
 
-           tableData[idx] = {'name':name,'type':type,'order':order,'unique':unique,'value':value};
+           tableData[idx] = {'name':name,'type':type,'display':display,'order':order,'unique':unique,'value':value};
 //           tableData[idx].type = type;
 //           tableData[idx].unique = unique;
 //           tableData[idx].value = value;
@@ -136,6 +140,6 @@
                 window.location.href = "tables";
             }
 
-        }); 
+        });
     }
 </script>
