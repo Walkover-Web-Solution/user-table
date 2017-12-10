@@ -2,7 +2,11 @@
 @section('content')
 <div class="tablist">
     <ul id="tablist">
-    <li><a href=""><i class="glyphicon glyphicon-arrow-left"></i> Back to Table1</a></li>    
+    <li>
+        <a href="{{env('APP_URL')}}/tables/{{$tableId}}">
+            <i class="glyphicon glyphicon-arrow-left"></i> Back to {{$userTableName}} Table
+        </a>
+    </li>    
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
             <!-- Authentication Links -->
