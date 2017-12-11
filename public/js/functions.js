@@ -334,7 +334,7 @@ function addRow(check) {
                 <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
             </div>
             <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
@@ -376,7 +376,7 @@ function addMoreRow(check) {
                 <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
             </div>
             <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>

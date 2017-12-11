@@ -80,7 +80,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-xs-1">
-                                            <input type="text" value="{{ $i }}" name="fieldOrder" class="form-control order">
+                                            <input type="text" value="{{ $i }}" name="fieldOrder" class="form-control order order-input">
                                         </div>
                                         <div class="form-group col-xs-3">
                                             <?php $options = json_decode($value['default_value'], true); ?>
@@ -130,6 +130,30 @@
     var tableData2 = [];
 
     function createTable() {
+
+        var idx = {};
+        $('.order-input').each(function(){
+            var val = $(this).val();
+            if(val.length)
+            {
+                if(idx[val])
+                {
+                    idx[val]++;
+                }
+                else
+                {
+                  idx[val] = 1;
+                }
+            }
+        });
+        var gt_one = $.map(idx,function(e,i){return e>1 ? e: null});
+        var isUnique = gt_one.length==0
+        if(isUnique == false)
+        {
+            alert("This order already used before");
+            return false;
+        }
+
         $("#tableFieldRow .row").each(function (idx) {
             var name = $('.name', $(this)).val();
             var type = $('.type', $(this)).val();

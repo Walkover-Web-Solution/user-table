@@ -92,6 +92,29 @@
     var tableData= [];
 
     function createTable(){
+        var idx = {};
+        $('.order-input').each(function(){
+            var val = $(this).val();
+            if(val.length)
+            {
+                if(idx[val])
+                {
+                    idx[val]++;
+                }
+                else
+                {
+                  idx[val] = 1;
+                }
+            }
+        });
+        var gt_one = $.map(idx,function(e,i){return e>1 ? e: null});
+        var isUnique = gt_one.length==0
+        if(isUnique == false)
+        {
+            alert("Please remove repeat sequence from order.");
+            return false;
+        }
+
        $("#tableField .row").each(function(idx) {
            var name = $('.name', $(this)).val();
            var display = $('.display', $(this)).val();
