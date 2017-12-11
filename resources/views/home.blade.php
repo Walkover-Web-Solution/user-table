@@ -134,6 +134,8 @@
         </div>
     </div>
 </div>
+
+<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#popUp" data-toggle="modal"><span><img id="wiz" src="{{ asset('img/sending.svg') }}"  alt="sending" /></span></a>
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -331,4 +333,65 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+
+<!-- send modal -->
+<div id="popUp" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" role="content">
+        <div class="modal-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                                    <!-- <div class="modal-header">
+                            <h4 class="modal-title">Title</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>  
+                        </div> -->
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#home" data-toggle="tab">Now</a></li>
+                                <li><a href="#menu1" data-toggle="tab">Auto</a></li>
+                                <!-- <li><a href="#menu2" data-toggle="tab">Menu 2</a></li>
+                                <li><a href="#menu3" data-toggle="tab">Menu 3</a></li> -->
+                            </ul>
+                            <div class="tab-content">
+                                <div id="home" class="tab-pane fade in active jumbotron">
+                                    <form class="">
+                                        <div class="form-group">
+                                            <label class="" for="exampleInputEmail3">field 1</label>
+                                            <input type="email" class="form-control form-control-sm" id="exampleInputEmail3" placeholder="field-1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="" for="exampleInputPassword3">field 2</label>
+                                            <input type="password" class="form-control form-control-sm mr-1" id="exampleInputPassword3" placeholder="field-2">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div id="menu1" class="tab-pane fade jumbotron text-center">
+                                    <h3>Auto</h3>
+                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dropdown" style="margin-top:20px;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">choose-options
+                            <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">SMS</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">email</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">webhook</a></li>
+                            <!-- <li role="presentation" class="divider"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">About Us</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @stop
