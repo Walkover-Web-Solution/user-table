@@ -52,9 +52,10 @@
             </li>
             @endguest
         </ul>
+        <li class="pull-right"><a href="javascript:void(0);" title="add" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom"><i class="glyphicon glyphicon-plus"></i></a></li>
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
-            <label for="searchInput"><i class="fa fa-search"></i></label>
+            <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom" title="search data"></i></label>
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
         </form>
