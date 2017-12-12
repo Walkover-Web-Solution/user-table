@@ -46,6 +46,7 @@
                                         Unique
                                     </div>
                                 </div>
+
                                 <div id="tableStructure">
                                     <span style="display: none" id="tableId">{{$tableData['id']}}</span>
                                     @php ($i = 1)
@@ -54,40 +55,42 @@
                                         <div class="form-group col-xs-2">
                                             <input type="hidden" value="{{$value['column_name']}}" class="name">
                                             <label>{{$value['column_name']}}</label>
-                                            @if($value['is_unique'])
-                                            <span>(Unique)</span>
+                                            @if(array_key_exists($value['column_name'], $sequence))
+                                                {{ ($sequence[$value['column_name']]['unique'] == 'true') ? '(Unique)' : '' }}
                                             @endif
+                                            <!-- @if($value['is_unique'])
+                                            <span>(Unique)</span>
+                                            @endif -->
                                         </div>
                                         <div class="form-group col-xs-2">
                                             <select class="form-control type">
                                                 <option value="">Select Field Type</option>
-                                                <option value="1" {{ ($value['column_type']['column_name'] == 'text') ? 'selected' : '' }}>text</option>
-                                                <option value="2" {{ ($value['column_type']['column_name'] == 'phone') ? 'selected' : '' }}>phone</option>
-                                                <option value="3" {{ ($value['column_type']['column_name'] == 'any number') ? 'selected' : '' }}>any number</option>
-                                                <option value="4" {{ ($value['column_type']['column_name'] == 'airthmatic number') ? 'selected' : '' }}>airthmatic number</option>
-                                                <option value="5" {{ ($value['column_type']['column_name'] == 'email') ? 'selected' : '' }}>email</option>
-                                                <option value="6" {{ ($value['column_type']['column_name'] == 'dropdown') ? 'selected' : '' }}>dropdown</option>
-                                                <option value="7" {{ ($value['column_type']['column_name'] == 'radio button') ? 'selected' : '' }}>radio button</option>
-                                                <option value="8" {{ ($value['column_type']['column_name'] == 'checkbox') ? 'selected' : '' }}>checkbox</option>
-                                                <option value="9" {{ ($value['column_type']['column_name'] == 'date') ? 'selected' : '' }}>date</option>
-                                                <option value="10" {{ ($value['column_type']['column_name'] == 'my teammates') ? 'selected' : '' }}>my teammates</option>
+                                                @foreach($columnList as $row)
+                                                <option value="{{ $row['id'] }}" {{ ($value['column_type']['column_name'] == $row['column_name']) ? 'selected' : '' }}>{{ $row['column_name'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group col-xs-2">
                                             <select class="form-control display">
-                                                <option value="1">Show</option>
-                                                <option value="0">Hide</option>
+                                                @if(array_key_exists($value['column_name'], $sequence))
+                                                <option value="1" {{ $sequence[$value['column_name']]['display'] == 1 ? 'selected' : '' }}>Show</option>
+                                                <option value="0" {{ $sequence[$value['column_name']]['display'] == 0 ? 'selected' : '' }}>Hide</option>
+                                                @endif
                                             </select>
                                         </div>
                                         <div class="form-group col-xs-1">
-                                            <input type="text" value="{{ $i }}" name="fieldOrder" class="form-control order order-input">
+                                            @if(array_key_exists($value['column_name'], $sequence))
+                                            <input type="text" value="{{ $sequence[$value['column_name']]['order'] }}" name="fieldOrder" class="form-control order order-input">
+                                            @endif
                                         </div>
                                         <div class="form-group col-xs-3">
                                             <?php $options = json_decode($value['default_value'], true); ?>
                                             <textarea name="" placeholder="Default value" class="form-control value">{{ implode(",",$options['options'])}}</textarea>
                                         </div>
                                         <div class="form-group col-xs-2">
-                                            <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+                                            @if(array_key_exists($value['column_name'], $sequence))
+                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['unique'] == 'true') ? 'checked' : '' }}> Uniqe</label>
+                                            @endif
                                         </div>
                                     </div>
                                     @php ($i++)
@@ -123,7 +126,7 @@
 
 </html>
 <script type="text/javascript">
-                            var API_BASE_URL = '{{env('API_BASE_URL')}}';
+    var API_BASE_URL = '{{env('API_BASE_URL')}}';
 </script>
 <script type="text/javascript">
     var tableData1 = [];
@@ -185,6 +188,11 @@
             data: {tableData: tableData1, tableOldData: tableData2, tableId: tableId, socketApi: socketApi},
             dataType: 'json',
             success: function (info) {
+                if(info.error)
+                {
+                    alert(info.msg);
+                    return false;
+                }
                 alert(info.msg);
                 location.reload();
             }

@@ -50,6 +50,14 @@ class team_table_mapping extends Model {
         return $data;
     }
 
+    public static function getDataById($id) {
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->where('id', $id)
+                ->get();
+        return $data;
+    }
+
     public static function getTableByAuth($auth) {
         $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('auth', $auth)

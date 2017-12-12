@@ -10,6 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use App\TableStructure;
+use App\ColumnType;
 use GuzzleHttp;
 use App\Viasocket;
 
@@ -161,6 +162,9 @@ class TableController extends Controller {
     public function loadSelectedTable($tableName)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+
+        $tableJsonStructure = team_table_mapping::getDataById($tableName);
+
         $userTableName = $tableNames['table_name'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
@@ -171,7 +175,7 @@ class TableController extends Controller {
             $allTabs = \DB::table($tableId)->select('*')->get();
             $allTabsDataUnorder = json_decode(json_encode($allTabs), true);
 
-            foreach(json_decode($tableNames[0]['table_structure'], true) as $k=>$v)
+            foreach(json_decode($tableJsonStructure[0]->table_structure, true) as $k=>$v)
             {
                 if($v['display'] == 1)
                     $orderNeed[] = $k;
@@ -449,18 +453,24 @@ class TableController extends Controller {
 
     public function loadSelectedTableStructure($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $tableStructure = TableStructure::withColumns($tableNames['id']);
+        $tableStructure = TableStructure::withColumns($tableNames['id']); // This data already come in above table
+
+        $tableJsonStructure = team_table_mapping::getDataById($tableName);
+        $ColumnType = ColumnType::all();
 
         return view('configureTable', array(
             'tableData' => $tableNames,
-            'structure' => $tableStructure));
+            'structure' => $tableStructure,
+            'sequence' => json_decode($tableJsonStructure[0]->table_structure, true),
+            'columnList' => $ColumnType));
     }
 
     public function configureSelectedTable(Request $request)
     {
         $inputdata = $request->input('tableData');
         $tableData = $this->aasort($inputdata, "order");
-
+        // echo '<pre>';
+        // print_r($tableData);die;
         $tableOldData = $request->input('tableOldData');
 
         $inputdata1 = array_merge($tableData, $tableOldData);
@@ -471,14 +481,14 @@ class TableController extends Controller {
             $new_arr[$v['name']] = $v;
         }
 
+        if(empty($tableData[0]['name']))
+        {
+            $arr =  array('msg' => 'Nothing to added, Please add atleast one column', 'error' => true);
+            return response()->json($arr);
+        }
+
         $tableId = $request->input('tableId');
         team_table_mapping::updateTableStructureData($tableId, json_encode($new_arr));
-
-        // if(empty($tableData))
-        // {
-        //     $arr['msg'] = "Nothing to added, Please add atleast one column";
-        //     return response()->json($arr);
-        // }
 
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
 
