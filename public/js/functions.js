@@ -339,8 +339,11 @@ function addRow(check) {
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
             </div>
-            <div class="form-group col-xs-2">
+            <div class="form-group col-xs-1">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+            </div>
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
             </div>
         </div>`;
     formGrp += '';
@@ -381,8 +384,11 @@ function addMoreRow(check) {
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
             </div>
-            <div class="form-group col-xs-2">
+            <div class="form-group col-xs-1">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+            </div>
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
             </div>
         </div>`;
     formGrp += '';

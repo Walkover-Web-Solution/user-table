@@ -24,6 +24,10 @@ class TableStructure extends Model {
         TableStructure::insert($tableStructure);
     }
 
+    public static function deleteTableStructure($id) {
+        TableStructure::where('table_id', $id)->delete();
+    }
+
     public static function validateStructure($tableData, $tableAutoIncId = 0)
     {
         $tableStructure = array();
@@ -65,6 +69,8 @@ class TableStructure extends Model {
                     'column_name' => $value['name'],
                     'column_type_id' => $value['type'],
                     'default_value' => $arr_tojson,
+                    'ordering' => $value['ordering'],
+                    'display' => $value['display'],
                     'is_unique' => (empty($value['unique']) || $value['unique']==false) ? 0 : 1,
                     'created_at' => Carbon::now()->toDateTimeString(),
                     'updated_at' => Carbon::now()->toDateTimeString()
@@ -76,6 +82,8 @@ class TableStructure extends Model {
                     'column_name' => $value['name'],
                     'column_type_id' => $value['type'],
                     'default_value' => $arr_tojson,
+                    'ordering' => $value['ordering'],
+                    'display' => $value['display'],
                     'is_unique' => empty($value['unique']) ? 0 : 1,
                     'created_at' => Carbon::now()->toDateTimeString(),
                     'updated_at' => Carbon::now()->toDateTimeString()

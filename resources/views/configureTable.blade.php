@@ -56,7 +56,7 @@
                                             <input type="hidden" value="{{$value['column_name']}}" class="name">
                                             <label>{{$value['column_name']}}</label>
                                             @if(array_key_exists($value['column_name'], $sequence))
-                                                {{ ($sequence[$value['column_name']]['unique'] == 'true') ? '(Unique)' : '' }}
+                                                {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? '(Unique)' : '' }}
                                             @endif
                                             <!-- @if($value['is_unique'])
                                             <span>(Unique)</span>
@@ -80,7 +80,7 @@
                                         </div>
                                         <div class="form-group col-xs-1">
                                             @if(array_key_exists($value['column_name'], $sequence))
-                                            <input type="text" value="{{ $sequence[$value['column_name']]['order'] }}" name="fieldOrder" class="form-control order order-input">
+                                            <input type="text" value="{{ $sequence[$value['column_name']]['ordering'] }}" name="fieldOrder" class="form-control order order-input">
                                             @endif
                                         </div>
                                         <div class="form-group col-xs-3">
@@ -89,7 +89,7 @@
                                         </div>
                                         <div class="form-group col-xs-2">
                                             @if(array_key_exists($value['column_name'], $sequence))
-                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['unique'] == 'true') ? 'checked' : '' }}> Uniqe</label>
+                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? 'checked' : '' }}> Uniqe</label>
                                             @endif
                                         </div>
                                     </div>
@@ -102,7 +102,6 @@
 
                             <div class="form-group">
                                 <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
-                                <button class="btn btn-md btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
                             </div>
                         </div>
                         <div class="panel-body">
@@ -113,6 +112,9 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <input type="text" class="form-control name" value="{{$tableData['auth']}}" disabled="">
+                            </div>
+                            <div class="form-group col-md-12 text-center">
+                                <button class="btn btn-md btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
                             </div>
                         </div>
                     </div>
@@ -127,6 +129,13 @@
 </html>
 <script type="text/javascript">
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
+</script>
+<script>
+$(document).ready(function(){
+    $('body').on('click', '.remove-row', function() {
+        $(this).closest('.row').text('');
+    });
+});
 </script>
 <script type="text/javascript">
     var tableData1 = [];
@@ -165,7 +174,7 @@
             var unique = $('.unique', $(this)).prop("checked");
             var value = $('.value', $(this)).val();
 
-            tableData1[idx] = {'name': name, 'type': type, 'display': display, 'order': order, 'unique': unique, 'value': value};
+            tableData1[idx] = {'name': name, 'type': type, 'display': display, 'ordering': order, 'unique': unique, 'value': value};
         });
 
         $('#tableStructure .row').each(function (idy) {
@@ -176,7 +185,7 @@
             var unique = $('.unique', $(this)).prop("checked");
             var value = $('.value', $(this)).val();
 
-            tableData2[idy] = {'name': name, 'type': type, 'display': display, 'order': order, 'unique': unique, 'value': value};
+            tableData2[idy] = {'name': name, 'type': type, 'display': display, 'ordering': order, 'unique': unique, 'value': value};
         });
 
         var tableId = $("#tableId").text();

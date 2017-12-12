@@ -124,7 +124,7 @@
            var value = $('.value', $(this)).val();
            console.log(name,type,order,unique,value);
 
-           tableData[idx] = {'name':name,'type':type,'display':display,'order':order,'unique':unique,'value':value};
+           tableData[idx] = {'name':name,'type':type,'display':display,'ordering':order,'unique':unique,'value':value};
 //           tableData[idx].type = type;
 //           tableData[idx].unique = unique;
 //           tableData[idx].value = value;
