@@ -102,7 +102,7 @@
 
                             <div class="form-group">
                                 <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
-                                <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
+                                <button class="btn btn-md btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
                             </div>
                         </div>
                         <div class="panel-body">
@@ -181,6 +181,10 @@
 
         var tableId = $("#tableId").text();
         var socketApi = $("#socketApi").val();
+
+        $('#updateTable').attr("disabled", true);
+        $('#updateTable').text("Please Wait...");
+
         console.log(tableId, API_BASE_URL);
         $.ajax({
             url: API_BASE_URL + '/configureTable',
@@ -188,6 +192,8 @@
             data: {tableData: tableData1, tableOldData: tableData2, tableId: tableId, socketApi: socketApi},
             dataType: 'json',
             success: function (info) {
+                $('#updateTable').attr("disabled", false);
+                $('#updateTable').html('<i class="glyphicon glyphicon-book"></i> Update');
                 if(info.error)
                 {
                     alert(info.msg);

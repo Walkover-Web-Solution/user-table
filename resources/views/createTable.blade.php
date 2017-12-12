@@ -49,7 +49,7 @@
 
                         <div class="form-group">
                             <button class="btn btn-md btn-success" onclick="addRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
-                            <button class="btn btn-md btn-success" onclick="createTable()"><i class="glyphicon glyphicon-plus"></i> Create</button>
+                            <button class="btn btn-md btn-success" id="createTable" onclick="createTable()"><i class="glyphicon glyphicon-plus"></i> Create</button>
                         </div>
                     </div>
                     <hr>
@@ -133,6 +133,9 @@
        var teamId = $('select[name=teamName]').val();
        var socketApi = $("#socketApi").val();
 
+       $('#createTable').attr("disabled", true);
+       $('#createTable').text("Please Wait...");
+
        console.log(tableData);
        $.ajax({
             url: 'createTable',
@@ -140,6 +143,13 @@
             data: {tableData:tableData,tableName:tableName,teamId:teamId, socketApi:socketApi},
             dataType: 'json',
             success: function(info){
+                $('#createTable').attr("disabled", false);
+                $('#createTable').html('<i class="glyphicon glyphicon-plus"></i> Create');
+                if(info.error)
+                {
+                    alert(info.msg);
+                    return false;
+                }
                 alert(info.msg);
                 window.location.href = "tables";
             }

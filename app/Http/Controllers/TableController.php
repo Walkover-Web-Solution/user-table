@@ -27,11 +27,13 @@ class TableController extends Controller {
         }
 
         $userTableName = $request->input('tableName');
-        if (empty($userTableName)) {
-            $arr['msg'] = "Table Name Can't be empty";
-            $arr['error'] = TRUE;
+
+        if(empty($userTableName))
+        {
+            $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
