@@ -258,16 +258,16 @@ class TableController extends Controller {
     }
 
     public function loadSelectedTableFilterData($tableId, $tabName) {
-            $results = $this->processTableData($tableId, $tabName);
-            return view('home', $results);
+        $results = $this->processTableData($tableId, $tabName);
+        return view('home', $results);
     }
-    
-    public function loadContacts($tableIdMain, $tabName){
+
+    public function loadContacts($tableIdMain, $tabName) {
         $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
         return json_decode(json_encode($tabDataJson), true);
     }
-    
-    public function processTableData($tableId, $tabName){
+
+    public function processTableData($tableId, $tabName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
@@ -319,13 +319,13 @@ class TableController extends Controller {
         }
     }
 
-    public function processFilterData($req, $tableId,$pageSize=20) {
+    public function processFilterData($req, $tableId, $pageSize = 20) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'],$pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -347,7 +347,7 @@ class TableController extends Controller {
         $req = (array) ($request->filter);
 
         $tableId = $request->tableId;
-        $responseArray = $this->processFilterData($req, $tableId,30);
+        $responseArray = $this->processFilterData($req, $tableId, 30);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                             ->header('Content-Type', 'application/json');
@@ -356,7 +356,7 @@ class TableController extends Controller {
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId,$pageSize=20) {
+    public static function getAppliedFiltersData($req, $tableId, $pageSize = 20) {
         $users = \DB::table($tableId)->selectRaw('*');
 
         foreach (array_keys($req) as $paramName) {
@@ -418,20 +418,23 @@ class TableController extends Controller {
         } else {
             $user = \Auth::user();
             if ($user) {
-                $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
-                $incoming_data['auth_email'] = $user->email;
+                if (!empty($response['socket_api'])) {
 
-                $data_string = json_encode($incoming_data);
+                    $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
+                    $incoming_data['auth_email'] = $user->email;
 
-                $ch = curl_init($teams[0]->socket_api);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($data_string))
-                );
-                curl_exec($ch);
+                    $data_string = json_encode($incoming_data);
+
+                    $ch = curl_init($response['socket_api']);
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data_string))
+                    );
+                    curl_exec($ch);
+                }
             }
             team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
             return response()->json($teamData);
@@ -447,16 +450,15 @@ class TableController extends Controller {
             'tableData' => $tableNames,
             'structure' => $tableStructure));
     }
-    
-    public function getSelectedTableStructure($tableName , Request $request)
-    {
+
+    public function getSelectedTableStructure($tableName, Request $request) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr['id']);
 
         return response()->json(array(
-            'tableData' => $tableNameArr,
-            'structure' => $tableStructure));
+                    'tableData' => $tableNameArr,
+                    'structure' => $tableStructure));
     }
 
     public function configureSelectedTable(Request $request) {
@@ -529,11 +531,11 @@ class TableController extends Controller {
     }
 
     public function getSearchedData($tableId, $query) {
-        $array = $this->getTableSearchData($tableId, $query,30);
+        $array = $this->getTableSearchData($tableId, $query, 30);
         return view('table.response', $array);
     }
 
-    public function getTableSearchData($tableId, $query,$pageSize=20) {
+    public function getTableSearchData($tableId, $query, $pageSize = 20) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
@@ -564,7 +566,7 @@ class TableController extends Controller {
                 'allTabs' => $allTabs,
                 'tableId' => $tableID,
                 'teammates' => $teammates,
-                'pagination' =>$results
+                'pagination' => $results
             );
         }
     }
@@ -624,21 +626,21 @@ class TableController extends Controller {
 
     public function searchTableData(Request $request, $query) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
-        return $this->getTableSearchData($tableDetails['id'], $query,$pageSize);
+        $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
+        return $this->getTableSearchData($tableDetails['id'], $query, $pageSize);
     }
 
     public function filterTableData(Request $request) {
         $req = $request->all();
-        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
+        $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        return $this->processFilterData($req, $tableDetails['id'],$pageSize);
+        return $this->processFilterData($req, $tableDetails['id'], $pageSize);
     }
-    
-    public function getContacts(Request $request){
+
+    public function getContacts(Request $request) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        $pageSize = empty($request->get('pageSize'))?100:$request->get('pageSize');
-        $tabName = empty($request->get('filter'))?'All':$request->get('filter');
+        $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
+        $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
         return $this->loadContacts($tableDetails['table_id'], $tabName);
     }
 
