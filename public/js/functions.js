@@ -230,6 +230,7 @@ function editUserData(type) {
     var fieldChange = false;
     if(type == 'edit'){
         var editUserDetailsForm = $("#editUserDetails .form-control")
+        jsonDoc['edit_url_callback'] = true;
     }
     else{
     var editUserDetailsForm = $("#addUserDetails .form-control")

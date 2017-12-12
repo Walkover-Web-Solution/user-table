@@ -394,6 +394,7 @@ class TableController extends Controller {
     }
 
     public function add(Request $request) {
+        $add_entry_flag = False;
         $table_auth = $request->header('Auth-Key');
         $response = $this->getTableDetailsByAuth($table_auth);
 
@@ -403,11 +404,15 @@ class TableController extends Controller {
 
         $incoming_data = $request->all();
         $table_incr_id = $response['id'];
-
+        
         $dataSource = $incoming_data['socket_data_source'];
+        if(!isset($incoming_data['edit_url_callback'])){
+            $add_entry_flag = True;
+        }
 
         unset($incoming_data['socket_data_source']);
         unset($incoming_data['_token']);
+        unset($incoming_data['edit_url_callback']);
 
         $table_name = $response['table_id'];
         $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
@@ -418,14 +423,22 @@ class TableController extends Controller {
         } else {
             $user = \Auth::user();
             if ($user) {
-                if (!empty($response['socket_api'])) {
+                $webhook_url = '';
+                if($add_entry_flag && !empty($response['new_entry_api'])){
+                    $webhook_url = $response['new_entry_api'];
+                }
+                elseif(!$add_entry_flag && !empty($response['socket_api']) ){
+                    $webhook_url = $response['socket_api'];
+                }
+                
+                if ($webhook_url != '') {
 
                     $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
                     $incoming_data['auth_email'] = $user->email;
 
                     $data_string = json_encode($incoming_data);
 
-                    $ch = curl_init($response['socket_api']);
+                    $ch = curl_init($webhook_url);
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
