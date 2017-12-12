@@ -54,7 +54,7 @@
                     </div>
                     <hr>
                     <div class="panel-body">
-                        <label class="col-md-12">Socket API</label>
+                        <label class="col-md-12">Webhook Update Notification</label>
                         <div class="form-group col-md-5">
                             <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="">
                         </div>

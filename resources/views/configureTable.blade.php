@@ -106,7 +106,7 @@
                             </div>
                         </div>
                         <div class="panel-body">
-                            <label class="col-md-6">Socket API</label>
+                            <label class="col-md-6">Webhook Update Notification</label>
                             <label class="col-md-6">Auth Key</label>
                             <div class="form-group col-md-6">
                                 <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData['socket_api']}}">

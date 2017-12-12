@@ -13,15 +13,19 @@ class UserController extends Controller {
 
     public function getDetailsOfUserById($tableId, $id) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+
         
+
         if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
             $data = \DB::table($tableNames['table_id'])->selectRaw('*')->where('id', $id)->first();
         }
-        
+
         $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
+
+
 
         return response(
                         json_encode(

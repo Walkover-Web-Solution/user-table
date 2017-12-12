@@ -20,7 +20,13 @@ class TableController extends Controller {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
         $data = $this->aasort($data1, "order"); // Array sort by abhishek jain
+
         $resp = TableStructure::validateStructure($data);
+
+        foreach($data as $k=>$v)
+        {
+            $new_arr[$v['name']] = $v;
+        }
 
         if (!empty($resp['error'])) {
             return response()->json($resp);
@@ -68,8 +74,10 @@ class TableController extends Controller {
             $paramArr['table_name'] = $userTableName;
             $paramArr['table_id'] = $tableName;
             $paramArr['team_id'] = $teamId;
+            $paramArr['table_structure'] = json_encode($new_arr);
             $paramArr['auth'] = $randomAuth;
             $paramArr['socket_api'] = $socketApi;
+
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
             foreach ($resp['data'] as $key => $value) {
@@ -78,6 +86,7 @@ class TableController extends Controller {
             }
             #insert table structure in table
             TableStructure::insertTableStructure($resp['data']);
+
             return response()->json($arr);
         } else {
             $arr['msg'] = "Table already exists. Please use different table name";
