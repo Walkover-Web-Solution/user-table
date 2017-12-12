@@ -122,7 +122,6 @@ function applyFilterData(jsonObject, tableId) {
 }
 
 function getUserDetails(id, tableId) {
-    //console.log(results[index]);
     if (id) {
         //selectedRow = index;
         $.ajax({
@@ -140,7 +139,6 @@ function getUserDetails(id, tableId) {
 
                     var i = 0;
                     for (var k in val) {
-                        //console.log(k);
                         if (k === 'id') {
                             continue;
                         }
@@ -180,19 +178,62 @@ function getUserDetails(id, tableId) {
             }
         });
     }
+    else{
+        $.ajax({
+            type: 'GET', // Use GET
+            url: API_BASE_URL + '/tables/structure/' + tableId , // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            success: function (res) {
+                
+                tableStructure = res.structure;
+                tableData = res.tableData;
+                var authKey = tableData['auth'];
+                
+                $('#tokenKey').val(authKey);
+                var editForm = '';
+                
+                for (var k in tableStructure){
+                    column_type = tableStructure[k]['column_type'];
+                    
+                    var cls = '';
+                            
+                    if (column_type.column_name == 'timestamp'){
+                        cls = 'calendar_cls';
+                    }
+                                
+                            
+                                editForm += `<div class="row">`;
+                                editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
+
+                                if (column_type.id !== 6) {
+                                    editForm += createInputElement('', tableStructure[k]['column_name'], cls);
+                                } else {
+                                    editForm += createSelectElement('', tableStructure[k]['column_name'], k);
+                                }
+                                editForm += '</div>';
+                }
+                $("#add_users_body").html(editForm);
+                $('#follow_up_date').attr('type', 'date');
+                $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
+                return false;
+                
+            }
+        });
+    }
 }
 
-function editUserData() {
+function editUserData(type) {
     clearInterval(myInterval);
-    // console.log('stop interval')
     id = $("#eId").val();
     var authKey = $("#tokenKey").val();
     var obj;
     var jsonDoc = {};
     var fieldChange = false;
-    //console.log('in edit user details')
-    var editUserDetailsForm = $("#editUserDetails .form-control")
-        //jsonDoc['id'] = id;
+    if(type == 'edit'){
+        var editUserDetailsForm = $("#editUserDetails .form-control")
+    }
+    else{
+    var editUserDetailsForm = $("#addUserDetails .form-control")
+    }
     jsonDoc['socket_data_source'] = '';
     editUserDetailsForm.each(function() {
         fieldChange = $(this).attr('data-change');
@@ -225,12 +266,10 @@ function editUserData() {
             xhr.setRequestHeader('Auth-Key', authKey);
         },
         success: function(data) {
-            //console.log("success");
             ALL_USERS[selectedRow] = data.data;
             console.log(data)
 
             //startInterval();
-            console.log('start interval');
         },
         // contentType: "application/json"
     });

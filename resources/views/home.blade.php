@@ -280,7 +280,7 @@
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
                     <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData()">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
                         Update
                     </button>
                 </div>
@@ -332,6 +332,33 @@
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+</div>
+<div id="add_user" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <!-- <div class="modal-header login-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title">Edit User</h4>
+            </div> -->
+            <form id="addUserDetails">
+                <div class="modal-body" id="add_users_body">
+                </div>
+
+                <div class="modal-footer">
+                    <input type="hidden" id="eId"/>
+                    <input type="hidden" id="tokenKey"/>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('add')">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_user" data-dismiss="modal" id="createNew" onclick="getUserDetails(false,{{$tableId}})">New Entry</button>
 </div>
 <!-- /.modal -->
 

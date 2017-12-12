@@ -56,6 +56,13 @@
                             <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="">
                         </div>
                     </div>
+                    
+                    <div class="panel-body">
+                        <label class="col-md-12">New Entry API</label>
+                        <div class="form-group col-md-5">
+                            <input type="text" placeholder="Enter API for new entry" class="form-control name" id="newEntryApi" name="newEntryApi" value="">
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -105,12 +112,13 @@
        var tableName = $("#tableName").val();
        var teamId = $('select[name=teamName]').val();
        var socketApi = $("#socketApi").val();
+       var newEntryApi = $("#newEntryApi").val();
 
        console.log(tableData);
        $.ajax({
             url: 'createTable',
             type: 'POST',
-            data: {tableData:tableData,tableName:tableName,teamId:teamId, socketApi:socketApi},
+            data: {tableData:tableData,tableName:tableName,teamId:teamId, socketApi:socketApi , newEntryApi : newEntryApi},
             dataType: 'json',
             success: function(info){
                 alert(info.msg);

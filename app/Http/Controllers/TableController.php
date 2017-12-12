@@ -33,6 +33,7 @@ class TableController extends Controller {
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
+        $newEntryApi = $request->input('newEntryApi');
         $tableName = "main_" . $userTableName . '_' . $teamId;
         $logTableName = "log_" . $userTableName . '_' . $teamId;
 
@@ -65,6 +66,7 @@ class TableController extends Controller {
             $paramArr['team_id'] = $teamId;
             $paramArr['auth'] = $randomAuth;
             $paramArr['socket_api'] = $socketApi;
+            $paramArr['new_entry_api'] = $newEntryApi;
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
             foreach ($resp['data'] as $key => $value) {
@@ -163,8 +165,11 @@ class TableController extends Controller {
             echo "no table found";
             exit();
         } else {
+            $tableAuth = $tableNames['auth'];
             $tableId = $tableNames['table_id'];
-            $allTabs = \DB::table($tableId)->select('*')->get();
+            $allTabs = \DB::table($tableId)
+                    ->select('*')
+                    ->get();
             $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
@@ -195,7 +200,8 @@ class TableController extends Controller {
                 'userTableName' => $userTableName,
                 'filters' => $filters,
                 'structure' => $userTableStructure,
-                'teammates' => $teammates)
+                'teammates' => $teammates,
+                'tableAuth' => $tableAuth)
             );
         }
     }
@@ -439,6 +445,17 @@ class TableController extends Controller {
 
         return view('configureTable', array(
             'tableData' => $tableNames,
+            'structure' => $tableStructure));
+    }
+    
+    public function getSelectedTableStructure($tableName , Request $request)
+    {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $tableNameArr = json_decode(json_encode($tableNames), true);
+        $tableStructure = TableStructure::withColumns($tableNameArr['id']);
+
+        return response()->json(array(
+            'tableData' => $tableNameArr,
             'structure' => $tableStructure));
     }
 
