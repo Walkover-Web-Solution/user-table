@@ -97,6 +97,7 @@ class TableStructure extends Model {
     }
 
     public static function formatTableStructureData($tableStructure){
+        $userTableStructure = array();
         foreach ($tableStructure as $detail) {
             $columnType = $detail['column_type'];
             $userTableStructure[$detail['column_name']] = array(

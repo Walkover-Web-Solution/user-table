@@ -177,7 +177,7 @@ class TableController extends Controller {
             $tableId = $tableNames['table_id'];
             $allTabs = \DB::table($tableId)->select('*')->get();
             $allTabsDataUnorder = json_decode(json_encode($allTabs), true);
-
+            $newarr = $orderNeed =array();
             foreach($tableNames['table_structure'] as $k=>$v)
             {
                 $newarr[$v['column_name']] = $v;
