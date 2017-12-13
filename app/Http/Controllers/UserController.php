@@ -13,19 +13,32 @@ class UserController extends Controller {
 
     public function getDetailsOfUserById($tableId, $id) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        
+
         if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
             $data = \DB::table($tableNames['table_id'])->selectRaw('*')->where('id', $id)->first();
         }
-        
+
         $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
+
+        foreach($tableNames['table_structure'] as $k=>$v)
+        {
+            $newarr[$v['column_name']] = $v;
+        }
+
+        foreach($newarr as $k=>$v)
+        {
+            $orderNeed[] = $k;
+        }
+
+        $data = json_decode(json_encode($data),true);
+        $newData = $this->orderArray($data, $orderNeed);
 
         return response(
                         json_encode(
-                                array('data' => $data, 'colDetails' => $colDetails,
+                                array('data' => $newData, 'colDetails' => $colDetails,
                                     'authKey' => $tableNames['auth'])
                         ), 200
                 )->header('Content-Type', 'application/json');
@@ -97,6 +110,16 @@ class UserController extends Controller {
         return view('profile', array(
             'user' => Auth::user()
         ));
+    }
+
+    function orderArray($arrayToOrder, $keys)
+    {
+        foreach($keys as $key)
+        {
+            $inner_ordered[$key] = $arrayToOrder[$key];
+        }
+        $inner_ordered['id'] = $arrayToOrder['id'];
+        return json_decode(json_encode($inner_ordered));
     }
 
 }
