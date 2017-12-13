@@ -564,6 +564,7 @@ class TableController extends Controller {
 
                     $paramArr['id'] = $tableAutoIncId;
                     $paramArr['socketApi'] = $request->input('socketApi');
+                    $paramArr['new_entry_api'] = $request->input('newEntryApi');
                     team_table_mapping::updateTableStructure($paramArr);
                 } catch (\Illuminate\Database\QueryException $ex) {
                     $arr['msg'] = "Error in updation";

@@ -113,6 +113,11 @@
                             <div class="form-group col-md-6">
                                 <input type="text" class="form-control name" value="{{$tableData['auth']}}" disabled="">
                             </div>
+                            
+                            <label class="col-md-6">Webhook New Entry Notification</label>
+                            <div class="form-group col-md-6">
+                                <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="newEntryApi" value="{{$tableData['new_entry_api']}}">
+                            </div>
                             <div class="form-group col-md-12 text-center">
                                 <button class="btn btn-md btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
                             </div>
@@ -190,6 +195,7 @@ $(document).ready(function(){
 
         var tableId = $("#tableId").text();
         var socketApi = $("#socketApi").val();
+        var newEntryApi = $("#newEntryApi").val();
 
         $('#updateTable').attr("disabled", true);
         $('#updateTable').text("Please Wait...");
@@ -198,7 +204,7 @@ $(document).ready(function(){
         $.ajax({
             url: API_BASE_URL + '/configureTable',
             type: 'POST',
-            data: {tableData: tableData1, tableOldData: tableData2, tableId: tableId, socketApi: socketApi},
+            data: {tableData: tableData1, tableOldData: tableData2, tableId: tableId, socketApi: socketApi , newEntryApi : newEntryApi},
             dataType: 'json',
             success: function (info) {
                 $('#updateTable').attr("disabled", false);
