@@ -34,7 +34,8 @@
     "autoload-dev": {
         "classmap": [
             "tests/TestCase.php",
-            "database/seeds/ColumnTypesSeeder.php"
+            "database/seeds/ColumnTypesSeeder.php",
+            "Yadakhov/InsertOnDuplicateKey.php"
         ],
         "psr-4": {
             "Tests\\": "tests/"

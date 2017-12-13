@@ -5,9 +5,12 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\ColumnType;
+use Yadakhov\InsertOnDuplicateKey;
 
 class TableStructure extends Model {
 
+    // The function is implemented as a trait.
+    use InsertOnDuplicateKey;
     protected $hidden = ['created_at', 'updated_at'];
 
     public function columnType()
@@ -26,6 +29,10 @@ class TableStructure extends Model {
 
     public static function deleteTableStructure($id) {
         TableStructure::where('table_id', $id)->delete();
+    }
+
+    public static function updateStructureInBulk($tableStructure){
+        TableStructure::insertOnDuplicateKey($tableStructure);
     }
 
     public static function validateStructure($tableData, $tableAutoIncId = 0)

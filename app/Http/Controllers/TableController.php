@@ -535,8 +535,9 @@ class TableController extends Controller {
             return response()->json($resp);
         }
 
-        TableStructure::deleteTableStructure($tableNames['id']);
-        TableStructure::insertTableStructure($resp['data']);
+        //TableStructure::deleteTableStructure($tableNames['id']);
+        //TableStructure::insertTableStructure($resp['data']);
+        TableStructure::updateStructureInBulk($resp['data']);
 
         $tableName = $tableNames['table_id'];
         $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
