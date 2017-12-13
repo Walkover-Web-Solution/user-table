@@ -364,22 +364,27 @@ function addRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
+            <div class="form-group col-xs-2">
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
+            </div>
             <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
             </div>
-            <div class="form-group col-xs-2">
+            <div class="form-group col-xs-1">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
             </div>
-
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
+            </div>
         </div>`;
     formGrp += '';
     tableData.push(obj);
@@ -404,20 +409,26 @@ function addMoreRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
+            <div class="form-group col-xs-2">
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
+            </div>
             <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
                 <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
             </div>
-            <div class="form-group col-xs-2">
+            <div class="form-group col-xs-1">
                 <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+            </div>
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
             </div>
         </div>`;
     formGrp += '';

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\TableStructure;
+use App\ColumnType;
 use GuzzleHttp;
 use App\Viasocket;
 
@@ -17,7 +18,8 @@ class TableController extends Controller {
     public function createTable(Request $request) {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
-        $data = $this->aasort($data1, "order"); // Array sort by abhishek jain
+        $data = $this->aasort($data1, "ordering"); // Array sort by abhishek jain
+
         $resp = TableStructure::validateStructure($data);
 
         if (!empty($resp['error'])) {
@@ -25,11 +27,13 @@ class TableController extends Controller {
         }
 
         $userTableName = $request->input('tableName');
-        if (empty($userTableName)) {
-            $arr['msg'] = "Table Name Can't be empty";
-            $arr['error'] = TRUE;
+
+        if(empty($userTableName))
+        {
+            $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
@@ -67,6 +71,7 @@ class TableController extends Controller {
             $paramArr['auth'] = $randomAuth;
             $paramArr['socket_api'] = $socketApi;
             $paramArr['new_entry_api'] = $newEntryApi;
+
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
             foreach ($resp['data'] as $key => $value) {
@@ -75,6 +80,7 @@ class TableController extends Controller {
             }
             #insert table structure in table
             TableStructure::insertTableStructure($resp['data']);
+
             return response()->json($arr);
         } else {
             $arr['msg'] = "Table already exists. Please use different table name";
@@ -157,8 +163,10 @@ class TableController extends Controller {
         print_r(json_encode($tableData));
     }
 
-    public function loadSelectedTable($tableName) {
+    public function loadSelectedTable($tableName)
+    {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+
         $userTableName = $tableNames['table_name'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
@@ -167,29 +175,51 @@ class TableController extends Controller {
         } else {
             $tableAuth = $tableNames['auth'];
             $tableId = $tableNames['table_id'];
-            $allTabs = \DB::table($tableId)
-                    ->select('*')
-                    ->get();
-            $allTabsData = json_decode(json_encode($allTabs), true);
+            $allTabs = \DB::table($tableId)->select('*')->get();
+            $allTabsDataUnorder = json_decode(json_encode($allTabs), true);
+
+            foreach($tableNames['table_structure'] as $k=>$v)
+            {
+                $newarr[$v['column_name']] = $v;
+            }
+
+            foreach($newarr as $k=>$v)
+            {
+                if($v['display'] == 1)
+                    $orderNeed[] = $k;
+            }
+
+            array_unshift($orderNeed, 'id');
+
+            if(!empty($allTabsDataUnorder))
+                $allTabsData = $this->orderArray($allTabsDataUnorder, $orderNeed);
+            else
+                $allTabsData = $allTabsDataUnorder;
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
             $filters = Tables::getFiltrableData($tableId);
-            if (!empty($tabs)) {
-                foreach ($tabs as $val) {
+
+            if(!empty($tabs))
+            {
+                foreach($tabs as $val)
+                {
                     $tab_name = $val['tab_name'];
                     $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
                     $tabCount = count($tabCountData);
 
                     $arrTabCount[] = array($tab_name => $tabCount);
                 }
-            } else {
+            }
+            else
+            {
                 $arrTabCount = array();
             }
 
             $allTabCount = count($allTabsData);
             $teamId = $tableNames['team_id'];
             $teammates = $this->getTeamMembers($teamId);
+
             return view('home', array(
                 'activeTab' => 'All',
                 'tabs' => $tabs,
@@ -418,6 +448,8 @@ class TableController extends Controller {
         $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
 
+        
+
         if (isset($teamData['error'])) {
             return response()->json($teamData, 400);
         } else {
@@ -456,12 +488,20 @@ class TableController extends Controller {
 
     public function loadSelectedTableStructure($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        //$tableNameArr = json_decode(json_encode($tableNames), true);
-        $tableStructure = TableStructure::withColumns($tableNames['id']);
+        $tableStructure = TableStructure::withColumns($tableNames['id']); // This data already come in above table
+
+        $ColumnType = ColumnType::all();
+
+        foreach($tableNames['table_structure'] as $k=>$v)
+        {
+            $new_arr[$v['column_name']] = $v;
+        }
 
         return view('configureTable', array(
             'tableData' => $tableNames,
-            'structure' => $tableStructure));
+            'structure' => $tableStructure,
+            'sequence' => $new_arr,
+            'columnList' => $ColumnType));
     }
 
     public function getSelectedTableStructure($tableName, Request $request) {
@@ -474,48 +514,68 @@ class TableController extends Controller {
                     'structure' => $tableStructure));
     }
 
-    public function configureSelectedTable(Request $request) {
+    public function configureSelectedTable(Request $request)
+    {
         $tableData = $request->input('tableData');
+        $tableOldData = $request->input('tableOldData');
+        if(!empty($tableData))
+            $newTableStructure = array_merge($tableData, $tableOldData);
+        else
+            $newTableStructure = $tableOldData;
 
-        if (empty($tableData)) {
-            $arr['msg'] = "Nothing to added, Please add atleast one column";
-            return response()->json($arr);
-        }
+        $newTableStructure = $this->aasort($newTableStructure, "ordering");
+
+        // echo '<pre>';
+        // print_r($newTableStructure);die;
+
+        // if(empty($tableData[0]['name']))
+        // {
+        //     $arr =  array('msg' => 'Nothing to added, Please add atleast one column', 'error' => true);
+        //     return response()->json($arr);
+        // }
 
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
 
         $tableAutoIncId = $tableNames['id'];
-        $resp = TableStructure::validateStructure($tableData, $tableAutoIncId);
+        $resp = TableStructure::validateStructure($newTableStructure, $tableAutoIncId);
+
+        TableStructure::deleteTableStructure($tableNames['id']);
         TableStructure::insertTableStructure($resp['data']);
+
         $tableName = $tableNames['table_id'];
         $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
 
         if (Schema::hasTable($tableName)) {
-            try {
-                Schema::table($tableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $value) {
-                        $table->string($value['name']);
-                    }
-                });
+            if(!empty($tableData))
+            {
+                try {
+                    Schema::table($tableName, function (Blueprint $table) use ($tableData) {
+                        foreach ($tableData as $value) {
+                            $table->string($value['name']);
+                        }
+                    });
 
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $value) {
-                        $table->string($value['name']);
-                    }
-                });
+                    Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
+                        foreach ($tableData as $value) {
+                            $table->string($value['name']);
+                        }
+                    });
 
-                $paramArr['id'] = $tableAutoIncId;
-                $paramArr['socketApi'] = $request->input('socketApi');
-                team_table_mapping::updateTableStructure($paramArr);
-            } catch (\Illuminate\Database\QueryException $ex) {
-                $arr['msg'] = "Error in updation";
-                return response()->json($arr);
+                    $paramArr['id'] = $tableAutoIncId;
+                    $paramArr['socketApi'] = $request->input('socketApi');
+                    team_table_mapping::updateTableStructure($paramArr);
+                } catch (\Illuminate\Database\QueryException $ex) {
+                    $arr['msg'] = "Error in updation";
+                    return response()->json($arr);
+                }
             }
 
             $arr['msg'] = "Table Updated Successfuly";
             return response()->json($arr);
-        } else {
+        }
+        else
+        {
             $arr['msg'] = "Table Not Found";
             return response()->json($arr);
         }
@@ -597,6 +657,20 @@ class TableController extends Controller {
         }
         $array = array_values($ret);
         return $array;
+    }
+
+    function orderArray($arrayToOrder, $keys)
+    {
+        foreach($arrayToOrder as $val)
+        {
+            foreach ($keys as $key)
+            {
+                $inner_ordered[$key] = $val[$key];
+            }
+            $ordered[] = $inner_ordered;
+        }
+
+        return $ordered;
     }
 
     public function getTeamMembers($teamId) {
