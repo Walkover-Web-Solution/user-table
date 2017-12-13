@@ -491,7 +491,7 @@ class TableController extends Controller {
         $tableStructure = TableStructure::withColumns($tableNames['id']); // This data already come in above table
 
         $ColumnType = ColumnType::all();
-
+        $new_arr = array();
         foreach($tableNames['table_structure'] as $k=>$v)
         {
             $new_arr[$v['column_name']] = $v;
@@ -525,20 +525,15 @@ class TableController extends Controller {
 
         $newTableStructure = $this->aasort($newTableStructure, "ordering");
 
-        // echo '<pre>';
-        // print_r($newTableStructure);die;
-
-        // if(empty($tableData[0]['name']))
-        // {
-        //     $arr =  array('msg' => 'Nothing to added, Please add atleast one column', 'error' => true);
-        //     return response()->json($arr);
-        // }
 
         $tableId = $request->input('tableId');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
 
         $tableAutoIncId = $tableNames['id'];
         $resp = TableStructure::validateStructure($newTableStructure, $tableAutoIncId);
+        if(isset($resp['error'])){
+            return response()->json($resp);
+        }
 
         TableStructure::deleteTableStructure($tableNames['id']);
         TableStructure::insertTableStructure($resp['data']);

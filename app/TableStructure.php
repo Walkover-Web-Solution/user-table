@@ -61,6 +61,9 @@ class TableStructure extends Model {
             {
                 $value['unique']=0;
             }
+            if(empty($value['display'])){
+                $value['display']=1;
+            }
 
             if ($tableAutoIncId)
             {

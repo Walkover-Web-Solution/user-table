@@ -168,13 +168,22 @@ $(document).ready(function(){
 
         $("#tableFieldRow .row").each(function (idx) {
             var name = $('.name', $(this)).val();
-            var type = $('.type', $(this)).val();
-            var display = $('.display', $(this)).val();
-            var order = $('.order', $(this)).val();
-            var unique = $('.unique', $(this)).prop("checked");
-            var value = $('.value', $(this)).val();
+            if(name!=='') {
+                var type = $('.type', $(this)).val();
+                var display = $('.display', $(this)).val();
+                var order = $('.order', $(this)).val();
+                var unique = $('.unique', $(this)).prop("checked");
+                var value = $('.value', $(this)).val();
 
-            tableData1[idx] = {'name': name, 'type': type, 'display': display, 'ordering': order, 'unique': unique, 'value': value};
+                tableData1[idx] = {
+                    'name': name,
+                    'type': type,
+                    'display': display,
+                    'ordering': order,
+                    'unique': unique,
+                    'value': value
+                };
+            }
         });
 
         $('#tableStructure .row').each(function (idy) {
