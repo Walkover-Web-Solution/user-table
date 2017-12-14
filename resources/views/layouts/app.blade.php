@@ -22,7 +22,7 @@
         <link type="text/css" href="{{url('css/jquery-ui.css')}}" rel="Stylesheet" />
         <script type="text/javascript" src="{{url('js/jquery-1.4.4.js')}}"></script>
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
-        <link rel="icon" type="image/png" href="{{url('img/logo.png')}}">
+        <link rel="icon" type="image/png" href="{{url('favicon.png')}}" />
     </head>
     <body>
             <div id="main-wrp">

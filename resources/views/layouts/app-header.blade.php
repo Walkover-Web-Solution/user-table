@@ -11,7 +11,7 @@
         <title>{{ config('app.name', 'Contact UI') }}</title>
 
         <!-- Styles -->
-
+         <link rel="icon" type="image/png" href="{{url('favicon.png')}}" />
         <link href="{{ asset('css/normalize.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ url('css/app.css') }}" rel="stylesheet" />
@@ -23,7 +23,7 @@
         <script src="{{ asset('js/jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
         <script src="{{ url('js/bootstrap.min.js') }}"></script>
-          <link rel="icon" type="image/png" href="{{url('img/logo.png')}}">
+          <!-- <link rel="icon" type="image/png" href="{{url('img/logo.png')}}"> -->
     </head>
     <body>
             <nav class="navbar navbar-default">
