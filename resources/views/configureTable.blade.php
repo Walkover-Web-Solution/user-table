@@ -1,22 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app-header')
 
-    <head>
-        <title>Configure Table </title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Bootstrap core CSS -->
-
-        <link href="{{ asset('css/reset.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
-        <script src="{{ asset('js/jquery.min.js') }}"></script>
-        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-
-    </head>
-
-    <body>
+@section('content')
         <div class="container">
             <div class="row">
                 <!--  new field form -->
@@ -129,9 +113,7 @@
 
     <!--<script src="js/functions.js"></script>-->
         <script src="{{ asset('js/functions.js') }}"></script>
-    </body>
 
-</html>
 <script type="text/javascript">
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
 </script>
@@ -229,3 +211,4 @@ $(document).ready(function(){
         });
     }
 </script>
+@stop
