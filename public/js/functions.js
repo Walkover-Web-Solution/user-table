@@ -132,6 +132,7 @@ function getUserDetails(id, tableId) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
+                var teammates = res.teammates;
                 var editForm = '';
                 if (val) {
                     $("#eId").val(val.id);
@@ -156,7 +157,10 @@ function getUserDetails(id, tableId) {
 
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
                                     editForm += createInputElement(val[k], k, cls);
-                                } else {
+                                } else if (currentField.column_type_id == 6) {
+                                    editForm += createSelectElement(currentField, val[k], k);
+                                } else if (currentField.column_type_id == 10) {
+                                    currentField['value_arr']['options'] = teammates;
                                     editForm += createSelectElement(currentField, val[k], k);
                                 }
                                 editForm += '</div>';
@@ -164,7 +168,10 @@ function getUserDetails(id, tableId) {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
                                     editForm += createInputElement(val[k], k, cls);
-                                } else {
+                                } else if (currentField.column_type_id == 6) {
+                                    editForm += createSelectElement(currentField, val[k], k);
+                                } else if (currentField.column_type_id == 10) {
+                                    currentField['value_arr']['options'] = teammates;
                                     editForm += createSelectElement(currentField, val[k], k);
                                 }
                                 editForm += '</div></div>';
@@ -267,7 +274,7 @@ function editUserData(type) {
             xhr.setRequestHeader('Auth-Key', authKey);
         },
         success: function(data) {
-            ALL_USERS[selectedRow] = data.data;
+            // ALL_USERS[selectedRow] = data.data;
             console.log(data)
 
             //startInterval();
@@ -486,15 +493,24 @@ function onTypeText() {
 
 //  create select option
 function createSelectElement(arr, selected, k) {
+    console.log(arr, selected, k);
     var arrList = arr['value_arr']['options'];
     $('.title').text('Choose One Option');
 
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
-        if (arrList[i] == selected) {
-            lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
-        } else {
-            lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
+        if(arr.column_type_id != 10) {
+            if (arrList[i] == selected) {
+                lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
+            } else {
+                lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
+            }
+        }else  {
+            if (arrList[i]['email'] == selected) {
+                lists += `<option value="` + arrList[i]['email'] + `" selected>` + arrList[i]['name'] + `</option>`
+            } else {
+                lists += `<option value="` + arrList[i]['email'] + `">` + arrList[i]['name'] + `</option>`
+            }
         }
 
     }

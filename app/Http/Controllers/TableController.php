@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Tabs;
 use App\Tables;
+use App\Teams;
 use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
@@ -218,7 +219,7 @@ class TableController extends Controller {
 
             $allTabCount = count($allTabsData);
             $teamId = $tableNames['team_id'];
-            $teammates = $this->getTeamMembers($teamId);
+            $teammates = Teams::getTeamMembers($teamId);
 
             return view('home', array(
                 'activeTab' => 'All',
@@ -332,7 +333,7 @@ class TableController extends Controller {
             }
             $allTabCount = count($allTabsData);
             $teamId = $tableNames['team_id'];
-            $teammates = $this->getTeamMembers($teamId);
+            $teammates = Teams::getTeamMembers($teamId);
 
             return array(
                 'activeTab' => $tabName,
@@ -361,7 +362,7 @@ class TableController extends Controller {
         unset($data['data']);
 
         $teamId = $tableNames['team_id'];
-        $teammates = $this->getTeamMembers($teamId);
+        $teammates = Teams::getTeamMembers($teamId);
 
         return array(
             'allTabs' => $results,
@@ -631,7 +632,7 @@ class TableController extends Controller {
             $allTabs = $results['data'];
             unset($results['data']);
             $teamId = $tableNames['team_id'];
-            $teammates = $this->getTeamMembers($teamId);
+            $teammates = Teams::getTeamMembers($teamId);
             return array(
                 'allTabs' => $allTabs,
                 'tableId' => $tableID,
@@ -668,31 +669,6 @@ class TableController extends Controller {
         }
 
         return $ordered;
-    }
-
-    public function getTeamMembers($teamId) {
-        try {
-            $authToken = session()->get('socket_token');
-            $client = new GuzzleHttp\Client();
-            $request = $client->get(env('SOCKET_API_URL') . '/teams/' . $teamId . '/memberships.json', ['headers' => ['Authorization' => $authToken]]);
-            $response = $request->getBody()->getContents();
-            $team_response_arr = json_decode($response, true);
-
-
-            $member_array = array(0 => array('email' => '', 'name' => 'No One'));
-            foreach ($team_response_arr['memberships'] as $member) {
-                $email = $member['user']['email'];
-                if (empty($member['user']['first_name']) && empty($member['user']['last_name'])) {
-                    $name = $email;
-                } else {
-                    $name = $member['user']['first_name'] . " " . $member['user']['last_name'];
-                }
-                $member_array[] = array('email' => $email, 'name' => $name);
-            }
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $member_array = array(0 => array('email' => '', 'name' => 'No One'));
-        }
-        return $member_array;
     }
 
     public function getAllTables(Request $request) {

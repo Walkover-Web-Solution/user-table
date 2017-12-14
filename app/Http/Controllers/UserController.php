@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\StoreTokens;
 use App\Tabs;
+use App\Teams;
 use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,8 @@ class UserController extends Controller {
         }
 
         $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        $teamId = $tableNames['team_id'];
+        $teammates = Teams::getTeamMembers($teamId);
 
         foreach($tableNames['table_structure'] as $k=>$v)
         {
@@ -39,7 +42,7 @@ class UserController extends Controller {
         return response(
                         json_encode(
                                 array('data' => $newData, 'colDetails' => $colDetails,
-                                    'authKey' => $tableNames['auth'])
+                                    'authKey' => $tableNames['auth'], 'teammates' => $teammates)
                         ), 200
                 )->header('Content-Type', 'application/json');
     }
