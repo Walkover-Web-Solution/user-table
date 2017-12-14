@@ -53,7 +53,6 @@ function drawUserTable(user_data) {
 
         userDetails += `</tr>`
 
-        // console.log(userDetails);
         usersArr.push(userDetails);
         userDetails = '';
 
@@ -156,7 +155,7 @@ function getUserDetails(id, tableId) {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
 
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls);
+                                    editForm += createInputElement(val[k], k, cls, currentField);
                                 } else if (currentField.column_type_id == 6) {
                                     editForm += createSelectElement(currentField, val[k], k);
                                 } else if (currentField.column_type_id == 10) {
@@ -167,7 +166,7 @@ function getUserDetails(id, tableId) {
                             } else {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls);
+                                    editForm += createInputElement(val[k], k, cls, currentField);
                                 } else if (currentField.column_type_id == 6) {
                                     editForm += createSelectElement(currentField, val[k], k);
                                 } else if (currentField.column_type_id == 10) {
@@ -199,6 +198,7 @@ function getUserDetails(id, tableId) {
                 var editForm = '';
                 
                 for (var k in tableStructure){
+                    field = tableStructure[k]
                     column_type = tableStructure[k]['column_type'];
                     
                     var cls = '';
@@ -212,7 +212,7 @@ function getUserDetails(id, tableId) {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
 
                                 if (column_type.id !== 6) {
-                                    editForm += createInputElement('', tableStructure[k]['column_name'], cls);
+                                    editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
                                 } else {
                                     editForm += createSelectElement('', tableStructure[k]['column_name'], k);
                                 }
@@ -257,7 +257,6 @@ function editUserData(type) {
                 //console.log(val);
             }
         }
-        // console.log(dataid,val)
         jsonDoc[dataid] = val;
         //}
     });
@@ -304,8 +303,6 @@ function watchOnchange(ele) {
 
 function startInterval() {
     myInterval = setInterval(function() {
-        // console.log(activeTab)
-        //getTabDetails(activeTab)
     }, interval);
 }
 
@@ -493,7 +490,6 @@ function onTypeText() {
 
 //  create select option
 function createSelectElement(arr, selected, k) {
-    console.log(arr, selected, k);
     var arrList = arr['value_arr']['options'];
     $('.title').text('Choose One Option');
 

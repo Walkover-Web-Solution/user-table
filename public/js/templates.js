@@ -1,7 +1,6 @@
 function filterTmpl(data) {
     var html = '<form id="filterForm" >';
     $.each(data, function(key, val) {
-        // console.log('key, value:', key, val);
         html += `<li class="active">
         <div class="form-check">
             <label class="form-check-label" >
@@ -42,12 +41,12 @@ function createSelectElement(currentField, selected, key) {
     return selectElem;
 }
 
-function createInputElement(val, key, cls) {
+function createInputElement(val, key, cls, field) {
     var inputElem = '';
     if (!val) {
         val = '';
     }
-    if (key === "username") {
+    if (field.unique === 1) {
         inputElem += `<input type="text" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" disabled data-change="true">`;
     } else {
         inputElem += `<input type="text" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" onchange="watchOnchange(` + key + `)">`;
