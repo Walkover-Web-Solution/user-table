@@ -150,6 +150,20 @@ class TableController extends Controller {
         return $tableLstJson;
     }
 
+    public function orderData($tableNames){
+        $newarr = $orderNeed =array();
+        foreach($tableNames['table_structure'] as $k=>$v)
+        {
+            $newarr[$v['column_name']] = $v;
+        }
+
+        foreach($newarr as $k=>$v)
+        {
+            if($v['display'] == 1)
+                $orderNeed[] = $k;
+        }
+        return $orderNeed;
+    }
     public function loadSelectedTable($tableName)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
@@ -163,25 +177,13 @@ class TableController extends Controller {
             $tableAuth = $tableNames['auth'];
             $tableId = $tableNames['table_id'];
             $allTabs = \DB::table($tableId)->select('*')->get();
-            $allTabsDataUnorder = json_decode(json_encode($allTabs), true);
-            $newarr = $orderNeed =array();
-            foreach($tableNames['table_structure'] as $k=>$v)
-            {
-                $newarr[$v['column_name']] = $v;
-            }
-
-            foreach($newarr as $k=>$v)
-            {
-                if($v['display'] == 1)
-                    $orderNeed[] = $k;
-            }
-
+            $allTabsData = json_decode(json_encode($allTabs), true);
+            $orderNeed = $this->orderData($tableNames);
             array_unshift($orderNeed, 'id');
 
-            if(!empty($allTabsDataUnorder))
-                $allTabsData = $this->orderArray($allTabsDataUnorder, $orderNeed);
-            else
-                $allTabsData = $allTabsDataUnorder;
+            if(!empty($allTabsData))
+                $allTabsData = $this->orderArray($allTabsData, $orderNeed);
+
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
@@ -208,17 +210,17 @@ class TableController extends Controller {
             $teammates = Teams::getTeamMembers($teamId);
 
             return view('home', array(
-                'activeTab' => 'All',
-                'tabs' => $tabs,
-                'allTabs' => $allTabsData,
-                'allTabCount' => $allTabCount,
-                'arrTabCount' => $arrTabCount,
-                'tableId' => $tableName,
-                'userTableName' => $userTableName,
-                'filters' => $filters,
-                'structure' => $userTableStructure,
-                'teammates' => $teammates,
-                'tableAuth' => $tableAuth)
+                    'activeTab' => 'All',
+                    'tabs' => $tabs,
+                    'allTabs' => $allTabsData,
+                    'allTabCount' => $allTabCount,
+                    'arrTabCount' => $arrTabCount,
+                    'tableId' => $tableName,
+                    'userTableName' => $userTableName,
+                    'filters' => $filters,
+                    'structure' => $userTableStructure,
+                    'teammates' => $teammates,
+                    'tableAuth' => $tableAuth)
             );
         }
     }
@@ -243,6 +245,8 @@ class TableController extends Controller {
             $allTabs = \DB::table($tableIdMain)
                     ->select('*')
                     ->get();
+            $orderNeed = $this->orderData($tableNames);
+            array_unshift($orderNeed, 'id');
             $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableIdMain);
             $tabs = json_decode(json_encode($data), true);
@@ -254,6 +258,9 @@ class TableController extends Controller {
             }
 
             $tabData = $this->loadContacts($tableIdMain, $tabName);
+            if(!empty($tabData))
+                $tabData = $this->orderArray($tabData, $orderNeed);
+
             $filters = Tables::getFiltrableData($tableIdMain);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {

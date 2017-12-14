@@ -12,7 +12,7 @@ class team_table_mapping extends Model {
     public $timestamps = false;
 
     public function tableStructure() {
-        return $this->hasMany(TableStructure::class, 'table_id', 'id');
+        return $this->hasMany(TableStructure::class, 'table_id', 'id')->orderBy('ordering','ASC');
     }
 
     public static function getUserTablesByTeam($teamIdArr) {
