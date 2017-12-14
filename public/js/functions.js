@@ -188,16 +188,19 @@ function getUserDetails(id, tableId) {
             url: API_BASE_URL + '/tables/structure/' + tableId , // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (res) {
                 
-                tableStructure = res.structure;
-                tableData = res.tableData;
+                var tableStructure = res.structure;
+                var COL_FIELD = res.colDetails;
+                var tableData = res.tableData;
+                var teammates = res.teammates
                 var authKey = tableData['auth'];
                 
                 $('#tokenKey').val(authKey);
                 var editForm = '';
                 
                 for (var k in tableStructure){
-                    field = tableStructure[k]
-                    column_type = tableStructure[k]['column_type'];
+                    var field = tableStructure[k]
+                    var currentField = COL_FIELD[field['column_name']];
+                    var column_type = tableStructure[k]['column_type'];
                     
                     var cls = '';
                             
@@ -209,10 +212,13 @@ function getUserDetails(id, tableId) {
                                 // editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
 
-                                if (column_type.id !== 6) {
+                                if (column_type.id !== 6 && column_type.id !== 10) {
                                     editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
-                                } else {
-                                    editForm += createSelectElement('', tableStructure[k]['column_name'], k);
+                                } else if (column_type.id == 6){
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], k);
+                                } else if(column_type.id == 10){
+                                    currentField['value_arr']['options'] = teammates;
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], k);
                                 }
                                 editForm += '</div>';
                 }

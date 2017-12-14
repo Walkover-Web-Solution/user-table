@@ -507,10 +507,16 @@ class TableController extends Controller {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr['id']);
+        $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        $teamId = $tableNames['team_id'];
+        $teammates = Teams::getTeamMembers($teamId);
 
         return response()->json(array(
                     'tableData' => $tableNameArr,
-                    'structure' => $tableStructure));
+                    'structure' => $tableStructure,
+                    'colDetails' => $colDetails,
+                    'teammates' => $teammates
+            ));
     }
 
     public function configureSelectedTable(Request $request)

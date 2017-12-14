@@ -24,23 +24,6 @@ function filterTmpl(data) {
     return html;
 }
 
-function createSelectElement(currentField, selected, key) {
-    var selectElem = '';
-    // currentField['options'].unshift('None Selected');
-    selectElem += `<select class="form-control" name="` + key + `" dataid="` + key + `" onchange="watchOnchange(` + key + `)">
-                   <option>select</option>`;
-
-    for (var val of currentField['options']) {
-        if (val == selected) {
-            selectElem += `<option value="` + val + `" selected>` + val + `</option>`;
-        } else {
-            selectElem += `<option value="` + val + `">` + val + `</option>`;
-        }
-    }
-    selectElem += `</select>`;
-    return selectElem;
-}
-
 function createInputElement(val, key, cls, field) {
     var inputElem = '';
     if (!val) {
