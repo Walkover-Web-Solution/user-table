@@ -82,10 +82,10 @@
                             <div class="form-check">
                                 <label class="form-check-label">
                                     @if(isset($activeTabFilter[$k]))
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
+                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}" datacoltype="{{$filter['col_type']}}"
+                                            onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
                                     @else
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
+                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}" datacoltype="{{$filter['col_type']}}"
                                            onclick="showDiv('condition_{{$k}}')" aria-label="...">
                                     @endif
                                     {{$k}}</label>
@@ -95,25 +95,45 @@
                                 @else
                                 <div id="condition_{{$k}}" class="hide filter-option">
                                     @endif
-                                    @foreach($filter as $key =>$option)
+                                    @foreach($filter['col_filter'] as $key =>$option)
                                     <div class="form-check">
                                         <label class="form-check-label radio-label">
                                             @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}')" type="radio"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
+                                                onclick="showFilterInputText(this,'{{$k}}')" type="radio"
                                                    aria-label="..." checked="checked">
                                             @else
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
                                                    onclick="showFilterInputText(this,'{{$k}}')" type="radio"
                                                    aria-label="...">
                                             @endif
                                             {{$key}}
                                             @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                @if($filter['col_type'] == 'dropdown')
+                                                    <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
+                                                        <option value=""></option>
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                          <option value="{{$opt}}">{{$opt}}</option>
+                                                        @endforeach
+                                                    </select>     
+                                                @else
+                                                    <input class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                @endif
                                             @else
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text">
+                                                @if($filter['col_type'] == 'dropdown')
+                                                    <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
+                                                        <option value=""></option>
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                        <option value="{{$opt}}">{{$opt}}</option>
+                                                        @endforeach
+                                                    </select>     
+                                                @else
+                                                    <input class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" style="display:none;">
+                                                @endif
                                             @endif
                                         </label>
                                     </div>
@@ -152,89 +172,94 @@
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
-    initFilterSlider();
-    if (activeTab != 'All'){
-    $('.cd-panel').addClass('is-visible');
-    }
-    // toggle navigation
-    $('[data-toggle="offcanvas"]').click(function () {
-    $("#navigation").toggleClass("hidden-xs");
-    });
-    // init tooltip
-    $("[data-toggle=tooltip]").tooltip();
-    // toggle checkboxes
-    $("#mytable #checkall").click(function () {
-    if ($("#mytable #checkall").is(':checked')) {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", true);
-    });
-    } else {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", false);
-    });
-    }
-    });
-    $('#saveTabModel').hide();
-    $('#saveAsInput').hide();
-    $('#saveTabButton').click(function () {
-    var filterChecked = [];
-    var jsonObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked")
-            filterCheckedElement.each(function () {
-            dataid = $(this).attr('dataid');
-            filterChecked.push($(this).attr('dataid'));
-            var radioButton = $("#condition_" + dataid + " input:checked");
-            var radioname = radioButton.attr('dataid')
-                    var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
-            var subDoc = {};
-            subDoc[radioname] = radioButtonValue
-                    jsonObject[dataid] = subDoc;
-            });
-    var tabName = $('#saveAsInput').val();
-    obj = jsonObject;
-    $.ajaxSetup({
-    headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-    });
-    console.log(obj);
-    $.ajax({
-    type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-            dataType: 'json', // Set datatype - affects Accept header
-            url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            data: {'filter':JSON.stringify(obj), 'tab':tabName, 'tableId':tableId}, // Some data e.g. Valid JSON as a string
-            success: function (data) {
-            console.log(data);
-            window.setTimeout(function(){
-            location.reload()
-            }, 2000);
+        initFilterSlider();
+        if (activeTab != 'All') {
+            $('.cd-panel').addClass('is-visible');
+        }
+        // toggle navigation
+        $('[data-toggle="offcanvas"]').click(function () {
+            $("#navigation").toggleClass("hidden-xs");
+        });
+        // init tooltip
+        $("[data-toggle=tooltip]").tooltip();
+        // toggle checkboxes
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", true);
+                });
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
             }
-    });
-    });
-    $(".form-check-input").on('keyup', function() {
-    clearInterval(myInterval);
-    //var tableId = '{{ collect(request()->segments())->last() }}';
-    // console.log('clear interval');
-    if (globaltimeout != null) clearTimeout(globaltimeout);
-    globaltimeout = setTimeout(function() {
-    makeFilterJsonData(tableId);
-    }, 600);
-    })
+        });
+        $('#saveTabModel').hide();
+        $('#saveAsInput').hide();
+        $('#saveTabButton').click(function () {
+            var filterChecked = [];
+            var jsonObject = {};
+            var filterCheckedElement = $(".filterConditionName:checked")
+            filterCheckedElement.each(function () {
+                dataid = $(this).attr('dataid');
+                filterChecked.push($(this).attr('dataid'));
+                var radioButton = $("#condition_" + dataid + " input:checked");
+                var radioname = radioButton.attr('dataid')
+                var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
+                var subDoc = {};
+                subDoc[radioname] = radioButtonValue
+                jsonObject[dataid] = subDoc;
+            });
+            var tabName = $('#saveAsInput').val();
+            obj = jsonObject;
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            console.log(obj);
+            $.ajax({
+                type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+                dataType: 'json', // Set datatype - affects Accept header
+                url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+                data: {
+                    'filter': JSON.stringify(obj),
+                    'tab': tabName,
+                    'tableId': tableId
+                }, // Some data e.g. Valid JSON as a string
+                success: function (data) {
+                    console.log(data);
+                    window.setTimeout(function () {
+                        location.reload()
+                    }, 2000);
+                }
+            });
+        });
+        $(".form-check-input").on('change', function () {
+            clearInterval(myInterval);
+            //var tableId = '{{ collect(request()->segments())->last() }}';
+            // console.log('clear interval');
+            if (globaltimeout != null) clearTimeout(globaltimeout);
+            globaltimeout = setTimeout(function () {
+                makeFilterJsonData(tableId);
+            }, 600);
+        });
 
-            $(".form-check-input").blur(function() {
-    window.setTimeout(function() {
-    //startInterval();
-    }, 20000);
+        $(".form-check-input").blur(function () {
+            window.setTimeout(function () {
+                //startInterval();
+            }, 20000);
+        });
     });
-    });
+
     function SaveAsNew(state) {
-    if (state) {
-    $('#saveAsInput').val('');
-    $('#saveAsInput').show();
-    } else {
-    $('#saveAsInput').hide();
-    $('#saveAsInput').val(activeTab);
-    }
+        if (state) {
+            $('#saveAsInput').val('');
+            $('#saveAsInput').show();
+        } else {
+            $('#saveAsInput').hide();
+            $('#saveAsInput').val(activeTab);
+        }
     }
 
 </script>

@@ -32,7 +32,7 @@ class Tabs extends Model {
         $data = Tabs::where('tab_name', $tab)->first(['webhook']);
         return $data->webhook;
     }
-
+ 
     public static function getTabsByTableId($tableId) {
         $data = \DB::table('tabs')
                 ->select('tab_name')

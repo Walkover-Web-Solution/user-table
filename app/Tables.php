@@ -10,26 +10,85 @@ class Tables extends Model
          $tableData = \DB::select($sql);
          return $tableData;
     }
-    public static function getFiltrableData($tableId)
-    {
+    public static function getFiltrableData($tableId, $userTableStructure)
+    { 
         $forStr = array('is' => null,
                         'is_not' =>null,
+                        'starts_with' =>null,
+                        'ends_with' =>null,
                         'contains'=>null,
-                        'not_contains' =>null
+                        'not_contains' =>null,
+                        'is_unknown' =>null,
+                        'has_any_value' =>null
                         );
         $forInt = array( 'less_than'=> null,
                          'greater_than'=> null,
-                         'equals_to'=> null);
-        $forDate = array('from' =>null,'to' => null);
+                         'is' => null,
+                         'is_not' =>null,
+                         'equals_to'=> null,
+                         'is_unknown' =>null,
+                         'has_any_value' =>null
+                        );
+        $forDate = array('from' =>null,
+                         'to' => null,
+                         'before' => null,
+                         'after' => null,
+                         'exactly' => null,
+                         'is_unknown' =>null,
+                         'has_any_value' =>null
+                        );
+        $forDropDown = array( 'is' => null,
+                        'is_not' =>null,
+                        'is_unknown' =>null,
+                        'has_any_value' =>null
+                        );
         $data = array();
-        $table_info_columns =  \DB::select("SHOW COLUMNS FROM `$tableId` WHERE FIELD NOT IN ('id')");
+       // $table_info_columns =  \DB::select("SHOW COLUMNS FROM `$tableId` WHERE FIELD NOT IN ('id')");
         $tabQuery  = (array) json_decode(Tabs::getTabsByTableId($tableId));
         $tabQuery = array();
-
-        foreach ($table_info_columns as $column) {
-            $col_name = $column->Field;
-            $col_type = $column->Type;
-
+        foreach ($userTableStructure as $column => $struct) {
+        //foreach ($table_info_columns as $column) {
+            $col_name = $column;
+            $col_type = $struct["type"];
+            $col_options = $struct["value_arr"]["options"]; //$struct["value"];
+            /*$options = $struct["value_arr"]["options"];
+            echo "<hr/>";
+            print_r($options);
+            */
+            if ($col_type == 'text' || $col_type == 'email' || $col_type == 'phone') {
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forStr;
+                $col_detail['col_options'] = $col_options;
+                $data[$col_name] =  $col_detail;
+            }
+            else if ($col_type == 'any number' || $col_type == 'airthmatic number' ) {
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forInt;
+                $col_detail['col_options'] = $col_options;
+                $data[$col_name] =  $col_detail;
+            }
+            else if($col_type == 'date'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forDate;
+                $col_detail['col_options'] = $col_options;
+                $data[$col_name] =  $col_detail;
+            }
+            else if($col_type == 'dropdown'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forDropDown;
+                $col_detail['col_options'] = $col_options;
+                $data[$col_name] =  $col_detail;
+            }
+            
+            /*
             if(isset($tabQuery[$col_name]))
             {
                 //for string fields
@@ -72,6 +131,7 @@ class Tables extends Model
                 else if(strpos($col_type, 'timestamp') !== false)
                    $data[$col_name] =  $forDate;
             }
+        */
         }
         return $data;
     }
@@ -97,31 +157,30 @@ class Tables extends Model
             
             if (isset($req[$paramName]->is)) {
                 $users->where($paramName,'=',$req[$paramName]->is);
-            }
-            else if (isset($req[$paramName]->is_not))
+            }else if (isset($req[$paramName]->is_not))
             {
                 $users->where($paramName,'<>',$req[$paramName]->is_not);
-            }
-
-            else if (isset($req[$paramName]->contains)) {
+            }else if (isset($req[$paramName]->contains)) {
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->contains.'%');
-            }
-            else if (isset($req[$paramName]->not_contains)) {
+            }else if (isset($req[$paramName]->not_contains)) {
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->not_contains.'%');
-            }
-            else if (isset($req[$paramName]->greater_than)) {
+            } else if (isset($req[$paramName]['starts_with'])) {
+                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+            } else if (isset($req[$paramName]['ends_with'])) {
+                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
+            } else if (isset($req[$paramName]['is_unknown'])) {
+                $users->whereNull($paramName);
+            } else if (isset($req[$paramName]['has_any_value'])) {
+                $users->whereNotNull($paramName);
+            }else if (isset($req[$paramName]->greater_than)) {
                 $users->where($paramName,'>',$req[$paramName]->greater_than);
-            }
-            else if (isset($req[$paramName]->less_than)) {
+            }else if (isset($req[$paramName]->less_than)) {
                 $users->where($paramName,'<',$req[$paramName]->less_than);
-            }
-            else if (isset($req[$paramName]->equals_to)) {
+            }else if (isset($req[$paramName]->equals_to)) {
                 $users->where($paramName,'=',$req[$paramName]->equals_to);
-            }
-            else if (isset($req[$paramName]->equals_to)) {
+            }else if (isset($req[$paramName]->equals_to)) {
                 $users->where($paramName,'=',$req[$paramName]->equals_to);
-            }
-            else if (isset($req[$paramName]->from)) {
+            }else if (isset($req[$paramName]->from)) {
                 $users->where($paramName,'>=',$req[$paramName]->from);
             }
             if (isset($req[$paramName]->to)) {

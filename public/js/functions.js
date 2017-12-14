@@ -66,12 +66,14 @@ function drawUserTable(user_data) {
 function showFilterInputText(ths, val) {
     $(".filterinput" + val).hide();
     $(ths).parent().find("input:text").show();
+    $(ths).parent().find("select").show();
 }
 
 function showDiv(id) {
     // console.log(id);
     $("#" + id).toggleClass('hide');
     $("#" + id).find("input:text").hide();
+    $(ths).parent().find("select").hide();
 }
 
 var globaltimeout = null;
@@ -85,22 +87,25 @@ function saveTab() {
 function makeFilterJsonData(tableId) {
     var filterChecked = [];
     var jsonObject = {};
+    var coltypeObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
     filterCheckedElement.each(function () {
         dataid = $(this).attr('dataid');
         filterChecked.push($(this).attr('dataid'));
         var radioButton = $("#condition_" + dataid + " input:checked");
-        var radioname = radioButton.attr('dataid')
+        var radioname = radioButton.attr('dataid');
+        var coltype = radioButton.attr('datacoltype');
         var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
         //console.log(dataid, radioname, radioButtonValue)
         var subDoc = {};
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
+        coltypeObject[dataid] = coltype;
     })
-    applyFilterData(jsonObject, tableId);
+    applyFilterData(jsonObject, tableId, coltypeObject);
 }
 
-function applyFilterData(jsonObject, tableId) {
+function applyFilterData(jsonObject, tableId,coltypeObject) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -113,7 +118,7 @@ function applyFilterData(jsonObject, tableId) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: {'filter': obj, 'tab': 'All', 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
         success: function (data) {
             $('#response').html(data);

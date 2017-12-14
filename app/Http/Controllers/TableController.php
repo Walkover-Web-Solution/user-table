@@ -161,8 +161,18 @@ class TableController extends Controller {
     public function loadSelectedTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
+
         $userTableName = $tableNameArr[0]['table_name'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
+       /*
+        foreach($userTableStructure as $col => $struct){
+            echo "<hr />";
+            print_r($col);
+            echo "===";
+            print_r($struct);            
+        }
+        */
+       // echo "<hr />";
         if (empty($tableNameArr[0]['table_id'])) {
             echo "no table found";
             exit();
@@ -173,7 +183,7 @@ class TableController extends Controller {
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
-            $filters = Tables::getFiltrableData($tableId);
+            $filters = Tables::getFiltrableData($tableId,$userTableStructure);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -316,6 +326,7 @@ class TableController extends Controller {
 
     public function applyFilters(Request $request) {
         $req = (array) ($request->filter);
+        $coltype = ($request->coltype);
 
         $tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
@@ -325,7 +336,8 @@ class TableController extends Controller {
             echo "no table found";
             exit();
         } else {
-            $jsonData = $this->getAppliedFiltersData($req, $tableNameArr[0]['table_id']);
+            $jsonData = $this->getAppliedFiltersData($req, $tableNameArr[0]['table_id'],$coltype);
+           // print_r( $jsonData);
             $data = json_decode(json_encode($jsonData), true);
             if (request()->wantsJson()) {
                 return response(json_encode(array('body' => $data)), 200)->header('Content-Type', 'application/json');
@@ -343,19 +355,29 @@ class TableController extends Controller {
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId) {
+    public static function getAppliedFiltersData($req, $tableId,$coltype) {
         $users = \DB::table($tableId)->selectRaw('*');
-
         foreach (array_keys($req) as $paramName) {
-
+           
+            if(isset($coltype)){
+                $ctype = $coltype[$paramName];
+            }
             if (isset($req[$paramName]['is'])) {
                 $users->where($paramName, '=', $req[$paramName]['is']);
             } else if (isset($req[$paramName]['is_not'])) {
                 $users->where($paramName, '<>', $req[$paramName]['is_not']);
+            } else if (isset($req[$paramName]['starts_with'])) {
+                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+            } else if (isset($req[$paramName]['ends_with'])) {
+                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
             } else if (isset($req[$paramName]['contains'])) {
                 $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
             } else if (isset($req[$paramName]['not_contains'])) {
                 $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+            } else if (isset($req[$paramName]['is_unknown'])) {
+                $users->whereNull($paramName)->orWhere($paramName, '');
+            } else if (isset($req[$paramName]['has_any_value'])) {
+                $users->whereNotNull($paramName);
             } else if (isset($req[$paramName]['greater_than'])) {
                 $users->where($paramName, '>', $req[$paramName]['greater_than']);
             } else if (isset($req[$paramName]['less_than'])) {
@@ -366,10 +388,14 @@ class TableController extends Controller {
                 $users->where($paramName, '=', $req[$paramName]['equals_to']);
             } else if (isset($req[$paramName]['from'])) {
                 $users->where($paramName, '>=', $req[$paramName]['from']);
-            }
-            if (isset($req[$paramName]['to'])) {
+            }else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
+            }else if (isset($req[$paramName]['before'])) {
+                $users->where($paramName, '<=', $req[$paramName]['to']);
+            }else if (isset($req[$paramName]['after'])) {
+                $users->where($paramName, '>=', $req[$paramName]['to']);
             }
+
         }
         $data = $users->get();
 
