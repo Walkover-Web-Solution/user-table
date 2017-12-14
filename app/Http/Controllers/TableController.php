@@ -682,9 +682,10 @@ class TableController extends Controller {
       api function to search table details
      */
 
-    public function searchTableData(Request $request, $query) {
+    public function searchTableData(Request $request) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
+        $query = empty($request->get('query')) ? "" : $request->get('query');
         return $this->getTableSearchData($tableDetails['id'], $query, $pageSize);
     }
 
