@@ -218,7 +218,7 @@
     // console.log('clear interval');
     if (globaltimeout != null) clearTimeout(globaltimeout);
     globaltimeout = setTimeout(function() {
-    makeFilterJsonData(tableId);
+    makeFilterJsonData(tableId,'Search');
     }, 600);
     })
 
@@ -397,14 +397,11 @@
 <div id="popUp" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg" role="content">
         <div class="modal-content">
+         <div class="modal-body">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-6">
-                                    <!-- <div class="modal-header">
-                            <h4 class="modal-title">Title</h4>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>  
-                        </div> -->
-                        <div class="modal-body">
+ 
                             <ul class="nav nav-tabs">
                                 <li class="active"><a href="#home" data-toggle="tab">Now</a></li>
                                 <li><a href="#menu1" data-toggle="tab">Auto</a></li>
@@ -430,20 +427,60 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    
                     <div class="col-md-6">
-                        <div class="dropdown" style="margin-top:20px;">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">choose-options
-                            <span class="caret"></span></button>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">SMS</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">email</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">webhook</a></li>
+                        <ul class="nav nav-tabs" aria-labelledby="menu1">
+                            <li class="active"><a href="#email" data-toggle="tab">Email</a></li>
+                            <li class=""><a href="#sms" data-toggle="tab">SMS</a></li>
+                            <li class=""><a href="#webhook" data-toggle="tab">Webhook</a></li>
                             <!-- <li role="presentation" class="divider"></li>
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="#">About Us</a></li> -->
                             </ul>
+                        <div id="setTabs" class="tab-content">
+        <!-- sms pricing tab content start -->
+                    <div class="tab-pane active" id="email">
+                        <form class="" id="emailForm">
+                        <h2>Email : </h2>
+                        <label class="" for="">From Email: </label>
+                        <input type="text" class="form-control form-control-sm" id="from_email" name="from_email">
+                        <label class="" for="">From Name : </label>
+                        <input type="text" class="form-control form-control-sm" id="from_name" name="from_name">
+                        <label class="" for="">Email Column : </label>
+                        <input type="text" class="form-control form-control-sm" id="email_column" name="email_column">
+                        <label class="" for="">Subject : </label>
+                        <input type="text" class="form-control form-control-sm" id="subject" name="subject">
+                        <label class="" for="">Mail Content : </label>
+                        <textarea id="mailContent" name="mailContent"></textarea>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="sendMailSMS('email')" data-dismiss="modal">Send</button>
+                        </form>
+                    </div>
+                     <br><br><br><br>
+                    <div class="tab-pane" id="sms">
+                        <form class="" id="smsForm">
+                        <h2>SMS : </h2>
+                        <label class="" for="">Sender Id : </label>
+                        <input type="" class="form-control form-control-sm" id="sender" name="sender">
+                        <label class="" for="">Route : </label>
+                        <input type="" class="form-control form-control-sm" id="route" name="route">
+                        <label class="" for="">Message Content : </label>
+                        <input type="" class="form-control form-control-sm" id="message" name="message">
+                        <label class="" for="">Mobile Column </label>
+                        <input type="" class="form-control form-control-sm" id="mobile_columnn" name="mobile_columnn">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="sendMailSMS('sms')" data-dismiss="modal">Send</button>
+                        </form>
+                    </div>
+                     <br><br><br><br>
+                    <div class="tab-pane" id="webhook">
+                        <h2>Webhook : </h2>
+                        <label class="" for="">URL : </label>
+                        <input type="" class="form-control form-control-sm" id="url">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="" data-dismiss="modal">Send</button>
+                    </div>
+                        
                         </div>
                     </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -453,3 +490,24 @@
 
 
 @stop
+<script type="text/javascript">
+var API_BASE_URL = '{{env('API_BASE_URL')}}';
+var activeTab = '{{$activeTab}}';
+var tableId = '{{$tableId}}';
+function sendMailSMS(type){
+    if(type == 'email'){
+        console.log("we are in if");
+        var formData = $("#emailForm").serializeArray();
+    }
+    if(type == 'sms'){
+        console.log("we are in if");
+        var formData = $("#smsForm").serializeArray();
+    }
+    var result = { };
+    $.each(formData, function() {
+        result[this.name] = this.value;
+    });
+    var JsonData =  makeFilterJsonData(tableId,'returnData');
+    sendData(type,JsonData,result,tableId);
+}
+</script>

@@ -79,7 +79,9 @@ function saveTab() {
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId) {
+function makeFilterJsonData(tableId,type) {
+    console.log("we are here boss");
+    console.log(tableId,type);
     var filterChecked = [];
     var jsonObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
@@ -94,6 +96,10 @@ function makeFilterJsonData(tableId) {
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
     })
+    console.log("we are here to check data",jsonObject);
+    if(type == "returnData"){
+        return jsonObject;
+    }
     applyFilterData(jsonObject, tableId);
 }
 
@@ -544,3 +550,20 @@ $(document).ready(function() {
     $('#right_panel').hide();
     var title = $('#right_panel .title');
 });
+
+
+function sendData(type,JsonData,formData,tableId){
+ $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+        url: API_BASE_URL + "/sendEmailSMS", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+        data: { 'filter': JsonData, 'type': type, 'formData': formData ,'tableId' : tableId}, // Some data e.g. Valid JSON as a string
+        // headers: { 'token': tokenKey },
+        success: function(data) {
+        }
+    });   
+}

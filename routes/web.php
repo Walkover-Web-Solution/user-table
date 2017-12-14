@@ -54,6 +54,9 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 
     #save filter
     Route::post('/filter/save', 'UserController@saveFilter');
+    
+    # Send SMS Email
+    Route::post('/sendEmailSMS', 'TableController@sendEmailSMS');
 
     # search in active table
     Route::get('/search/{tableId}/{query}', 'TableController@getSearchedData');
