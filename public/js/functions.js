@@ -215,10 +215,10 @@ function getUserDetails(id, tableId) {
                                 if (column_type.id !== 6 && column_type.id !== 10) {
                                     editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
                                 } else if (column_type.id == 6){
-                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], k);
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
                                 } else if(column_type.id == 10){
                                     currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], k);
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
                                 }
                                 editForm += '</div>';
                 }
@@ -262,7 +262,6 @@ function editUserData(type) {
             }
         }
         jsonDoc[dataid] = val;
-        //}
     });
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     jsonDoc['_token'] = CSRF_TOKEN;
