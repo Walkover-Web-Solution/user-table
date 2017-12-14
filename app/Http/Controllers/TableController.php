@@ -449,8 +449,6 @@ class TableController extends Controller {
         $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
         $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
 
-        
-
         if (isset($teamData['error'])) {
             return response()->json($teamData, 400);
         } else {

@@ -81,10 +81,11 @@ class team_table_mapping extends Model {
 
     public static function makeNewEntryInTable($table_name, $input_param, $structure) {
         $data = 0;
+        $message = '';
         $unique_key = '';
         // print_r($input_param);die;
         // $structure = json_decode($structureJson, TRUE);
-
+        $update_data = array();
         foreach ($input_param as $key => $value) {
             if ($structure[$key]['unique'] == 1) {
                 $unique_key = $key;
@@ -104,10 +105,14 @@ class team_table_mapping extends Model {
         $response = json_decode(json_encode($responseObj));
 
         if (empty($response)) {
+            $message = 'Entry Added';
             $data = \DB::table($table_name)
                     ->insert($input_param);
+            $update_data = \DB::table($table_name)
+                ->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->get();
         } else {
-            $update_data = array();
             foreach ($input_param as $key => $value) {
                 if ($structure[$key]['type'] != 'airthmatic number') {
                     if (!empty($input_param[$key])) {
@@ -119,16 +124,20 @@ class team_table_mapping extends Model {
                     }
                 }
             }
-
+            $message = 'Entry Updated';
             $data = \DB::table($table_name)
                     ->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
+            $update_data = \DB::table($table_name)
+                ->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->get();
         }
         $log_table = 'log' . substr($table_name, 4);
         \DB::table($log_table)
                 ->insert($input_param);
 
-        return array('success' => 'data_updated');
+        return array('success' => $message, 'data' => $update_data);
     }
 
     public static function updateTableStructure($paramArr) {

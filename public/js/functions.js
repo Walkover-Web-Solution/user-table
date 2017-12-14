@@ -1,4 +1,4 @@
-var ALL_USERS;
+var ALL_USERS = [];
 var results = [];
 var ALL_FIELDS = [];
 var activeTab = "All";
@@ -274,7 +274,7 @@ function editUserData(type) {
             xhr.setRequestHeader('Auth-Key', authKey);
         },
         success: function(data) {
-            // ALL_USERS[selectedRow] = data.data;
+            ALL_USERS[selectedRow] = data.data;
             console.log(data)
 
             //startInterval();
