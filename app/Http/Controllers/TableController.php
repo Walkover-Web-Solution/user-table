@@ -488,13 +488,18 @@ class TableController extends Controller {
                 try {
                     Schema::table($tableName, function (Blueprint $table) use ($tableData) {
                         foreach ($tableData as $value) {
-                            $table->string($value['name']);
+                            $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                            if ($value['unique'] == 'true') {
+                                $table->string($value['name'])->unique($value['name']);
+                            } else {
+                                $table->string($value['name'])->nullable();
+                            }
                         }
                     });
 
                     Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
                         foreach ($tableData as $value) {
-                            $table->string($value['name']);
+                            $table->string($value['name'])->nullable();
                         }
                     });
 
