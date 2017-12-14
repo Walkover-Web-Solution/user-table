@@ -66,16 +66,16 @@
                                         </div>
                                         <div class="form-group col-xs-1">
                                             @if(array_key_exists($value['column_name'], $sequence))
-                                            <input type="text" value="{{ $sequence[$value['column_name']]['ordering'] }}" name="fieldOrder" class="form-control order order-input">
+                                            <input type="text" value="{{ $sequence[$value['column_name']]['ordering'] }}" name="fieldOrder" class="form-control order order-input lowercase">
                                             @endif
                                         </div>
                                         <div class="form-group col-xs-3">
                                             <?php $options = json_decode($value['default_value'], true); ?>
-                                            <textarea name="" placeholder="Default value" class="form-control value">{{ implode(",",$options['options'])}}</textarea>
+                                            <textarea name="" placeholder="Default value" class="form-control value lowercase">{{ implode(",",$options['options'])}}</textarea>
                                         </div>
                                         <div class="form-group col-xs-2">
                                             @if(array_key_exists($value['column_name'], $sequence))
-                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? 'checked' : '' }}> Uniqe</label>
+                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? 'checked' : '' }} disabled=""> Uniqe</label>
                                             @endif
                                         </div>
                                     </div>
@@ -91,21 +91,31 @@
                             </div>
                         </div>
                         <div class="panel-body">
-                            <label class="col-md-6">Webhook Update Notification</label>
-                            <label class="col-md-6">Auth Key</label>
-                            <div class="form-group col-md-6">
-                                <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData['socket_api']}}">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <input type="text" class="form-control name" value="{{$tableData['auth']}}" disabled="">
-                            </div>
-                            
-                            <label class="col-md-6">Webhook New Entry Notification</label>
-                            <div class="form-group col-md-6">
-                                <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="newEntryApi" value="{{$tableData['new_entry_api']}}">
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <button class="btn btn-md btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <form>
+                                        <div class="form-group col-md-6">
+                                            <label for="socketApi">Webhook Update Notification</label>
+                                            <input type="text" placeholder="Enter API" class="form-control name" id="socketApi" name="socketApi" value="{{$tableData['socket_api']}}">
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="key">Auth Key</label>
+                                            <input type="text" class="form-control name" id="key" name="key" value="{{$tableData['auth']}}" disabled="">
+                                        </div>
+                                        
+                                        <div class="form-group col-md-6">
+                                            <label for="newEntryApi">Webhook New Entry Notification</label>
+                                            <input type="text" placeholder="Enter API" class="form-control" id="newEntryApi" name="newEntryApi" value="{{$tableData['new_entry_api']}}" >
+                                        </div>
+                                        <div class="col-md-6">
+                                            &nbsp;
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <button class="btn btn-lg btn-success" id="updateTable" onclick="createTable()"><i class="glyphicon glyphicon-book"></i> Update</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

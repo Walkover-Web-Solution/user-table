@@ -52,7 +52,7 @@
             </li>
             @endguest
         </ul>
-        <li class="pull-right"><a href="javascript:void(0);" title="add" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom"><i class="glyphicon glyphicon-plus"></i></a></li>
+        <li class="pull-right"><a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user" data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})"><i class="glyphicon glyphicon-plus"></i></a></li>
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
             <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom" title="search data"></i></label>
@@ -335,35 +335,63 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div id="add_user" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+
+
+
+
+<!-- add user modal || plus button -->
+<div id="add_user" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="content">
         <!-- Modal content-->
         <div class="modal-content">
             <!-- <div class="modal-header login-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title">Edit User</h4>
             </div> -->
-            <form id="addUserDetails">
-                <div class="modal-body" id="add_users_body">
-                </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <form id="addUserDetails">
+                        <div class="modal-body" id="add_users_body">
+                            <div class="container-fluid">
+                                <div class="row">
 
-                <div class="modal-footer">
-                    <input type="hidden" id="eId"/>
-                    <input type="hidden" id="tokenKey"/>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('add')">
-                        Save
-                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                        <div class="modal-footer">
+                            <!-- <input type="hidden" id="eId"/>
+                            <input type="hidden" id="tokenKey"/> -->
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('add')">
+                                Save
+                            </button>
+                        </div>
+                    
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-<div>
+<!-- <div>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_user" data-dismiss="modal" id="createNew" onclick="getUserDetails(false,{{$tableId}})">New Entry</button>
-</div>
+</div> -->
 <!-- /.modal -->
 
+<!-- <script>
+
+    function modalClose() {
+        if (location.hash == '#popUp') {
+            location.hash = '';
+        }
+    }
+
+    document.addEventListener('keyup', function(e) {
+        if (e.keyCode == 27) {
+            modalClose();
+        }
+    });
+</script> -->
 
 <!-- send modal -->
 <div id="popUp" class="modal fade" role="dialog">

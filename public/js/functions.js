@@ -58,8 +58,6 @@ function drawUserTable(user_data) {
 
     });
     return usersArr;
-
-
 }
 
 function showFilterInputText(ths, val) {
@@ -151,7 +149,7 @@ function getUserDetails(id, tableId) {
                             if (currentField.type == 'timestamp')
                                 cls = 'calendar_cls';
                             if (i % 2) {
-                                editForm += `<div class="row">`;
+                                // editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
 
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
@@ -208,7 +206,7 @@ function getUserDetails(id, tableId) {
                     }
                                 
                             
-                                editForm += `<div class="row">`;
+                                // editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
 
                                 if (column_type.id !== 6) {

@@ -23,6 +23,7 @@
         <script src="{{ asset('js/jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
         <script src="{{ url('js/bootstrap.min.js') }}"></script>
+          <link rel="icon" type="image/png" href="{{url('img/logo.png')}}">
     </head>
     <body>
             <nav class="navbar navbar-default">
