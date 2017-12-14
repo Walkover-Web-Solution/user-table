@@ -7,9 +7,11 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">Configure</div>
+                        <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
                         <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
                         <div class="panel-body">
                             <form class="">
+
                                 <div class="row" id="column_"`+i+`>
                                     <div class="form-group col-xs-2">
                                         Name
