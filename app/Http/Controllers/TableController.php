@@ -633,7 +633,7 @@ class TableController extends Controller {
             $teammates = Teams::getTeamMembers($teamId);
             return array(
                 'allTabs' => $allTabs,
-                'tableId' => $tableID,
+                'tableId' => $tableId,
                 'teammates' => $teammates,
                 'pagination' => $results
             );
