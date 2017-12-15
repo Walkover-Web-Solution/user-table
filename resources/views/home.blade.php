@@ -136,7 +136,7 @@
     </div>
 </div>
 
-<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#popUp" data-toggle="modal"><span><img id="wiz" src="{{ asset('img/sending.svg') }}"  alt="sending" /></span></a>
+<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img id="wiz" src="{{ asset('img/sending.svg') }}"  alt="sending" /></span></a>
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -394,95 +394,102 @@
 </script> -->
 
 <!-- send modal -->
-<div id="popUp" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg" role="content">
-        <div class="modal-content">
-         <div class="modal-body">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-6">
- 
-                            <ul class="nav nav-tabs">
-                                <li class="active"><a href="#home" data-toggle="tab">Now</a></li>
-                                <li><a href="#menu1" data-toggle="tab">Auto</a></li>
-                                <!-- <li><a href="#menu2" data-toggle="tab">Menu 2</a></li>
-                                <li><a href="#menu3" data-toggle="tab">Menu 3</a></li> -->
-                            </ul>
-                            <div class="tab-content">
-                                <div id="home" class="tab-pane fade in active jumbotron">
-                                    <form class="">
-                                        <div class="form-group">
-                                            <label class="" for="exampleInputEmail3">field 1</label>
-                                            <input type="email" class="form-control form-control-sm" id="exampleInputEmail3" placeholder="field-1">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="" for="exampleInputPassword3">field 2</label>
-                                            <input type="password" class="form-control form-control-sm mr-1" id="exampleInputPassword3" placeholder="field-2">
-                                        </div>
-                                    </form>
-                                </div>
-                                <div id="menu1" class="tab-pane fade jumbotron text-center">
-                                    <h3>Auto</h3>
-                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                </div>
-                            </div>
-                        </div>
-                    
-                    <div class="col-md-6">
-                        <ul class="nav nav-tabs" aria-labelledby="menu1">
-                            <li class="active"><a href="#email" data-toggle="tab">Email</a></li>
-                            <li class=""><a href="#sms" data-toggle="tab">SMS</a></li>
-                            <li class=""><a href="#webhook" data-toggle="tab">Webhook</a></li>
-                            <!-- <li role="presentation" class="divider"></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">About Us</a></li> -->
-                            </ul>
-                        <div id="setTabs" class="tab-content">
-        <!-- sms pricing tab content start -->
-                    <div class="tab-pane active" id="email">
-                        <form class="" id="emailForm">
-                        <h2>Email : </h2>
-                        <label class="" for="">From Email: </label>
-                        <input type="text" class="form-control form-control-sm" id="from_email" name="from_email">
-                        <label class="" for="">From Name : </label>
-                        <input type="text" class="form-control form-control-sm" id="from_name" name="from_name">
-                        <label class="" for="">Email Column : </label>
-                        <input type="text" class="form-control form-control-sm" id="email_column" name="email_column">
-                        <label class="" for="">Subject : </label>
-                        <input type="text" class="form-control form-control-sm" id="subject" name="subject">
-                        <label class="" for="">Mail Content : </label>
-                        <textarea id="mailContent" name="mailContent"></textarea>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="sendMailSMS('email')" data-dismiss="modal">Send</button>
-                        </form>
-                    </div>
-                     <br><br><br><br>
-                    <div class="tab-pane" id="sms">
-                        <form class="" id="smsForm">
-                        <h2>SMS : </h2>
-                        <label class="" for="">Sender Id : </label>
-                        <input type="" class="form-control form-control-sm" id="sender" name="sender">
-                        <label class="" for="">Route : </label>
-                        <input type="" class="form-control form-control-sm" id="route" name="route">
-                        <label class="" for="">Message Content : </label>
-                        <input type="" class="form-control form-control-sm" id="message" name="message">
-                        <label class="" for="">Mobile Column </label>
-                        <input type="" class="form-control form-control-sm" id="mobile_columnn" name="mobile_columnn">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="sendMailSMS('sms')" data-dismiss="modal">Send</button>
-                        </form>
-                    </div>
-                     <br><br><br><br>
-                    <div class="tab-pane" id="webhook">
-                        <h2>Webhook : </h2>
-                        <label class="" for="">URL : </label>
-                        <input type="" class="form-control form-control-sm" id="url">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="" data-dismiss="modal">Send</button>
-                    </div>
-                        
-                        </div>
-                    </div>
-                    </div>
+<div id="send_popup" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md" role="content">
+        <div class="modal-content"> 
+        <ul class="nav nav-tabs" aria-labelledby="menu1">
+            <li class="active"><a href="#email" data-toggle="tab">Email</a></li>
+            <li class=""><a href="#sms" data-toggle="tab">SMS</a></li>
+            <li class=""><a href="#webhook" data-toggle="tab">Webhook</a></li>
+            <li class="pull-right">
+                <a href="javascript:void(0);" onclick="event.stopPropagation();">
+                    <label onclick="timeToSend('now')" class="radio-inline"><input type="radio" name="type" value="">Now</label>
+                    <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value="" name="type">Auto</label>
+                </a>
+            </li>
 
+        </ul>
+        <div class="modal-body">
+
+
+        <div class="option_box" id="now">Send Now option block</div>
+        <div class="option_box" id="auto">Send Auto option block</div>
+
+        <div id="setTabs" class="tab-content">
+        <div class="tab-pane active" id="email">
+            <form class="" id="emailForm">
+                <div class="form-group">
+                    <label class="" for="">From Email: </label>
+                    <input type="text" class="form-control" id="from_email" name="from_email" />
                 </div>
+
+                <div class="form-group">
+                    <label class="" for="">From Name: </label>
+                    <input type="text" class="form-control" id="from_name" name="from_name" />
+                </div>
+
+                <div class="form-group">
+                    <label class="" for="">Email Column: </label>
+                    <input type="text" class="form-control" id="email_column" name="email_column" />
+                </div>
+
+                <div class="form-group">
+                    <label class="" for="">Subject: </label>
+                    <input type="text" class="form-control" id="subject" name="subject" />
+                </div>
+
+                <div class="form-group">
+                    <label class="" for="">Mail Content: </label>
+                    <textarea id="mailContent" class="form-control" name="mailContent"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')" data-dismiss="modal">Send</button>
+                </div>
+                                
+            </form>
+        </div>
+        <div class="tab-pane" id="sms">
+            <form class="" id="smsForm">
+
+            <div class="form-group">
+                <label class="" for="">Sender Id : </label>
+                <input type="" class="form-control " id="sender" name="sender">
             </div>
+            
+            <div class="form-group">
+                <label class="" for="">Route : </label>
+                <input type="" class="form-control " id="route" name="route">
+            </div>
+
+            <div class="form-group">
+                <label class="" for="">Message Content : </label>
+                <input type="" class="form-control " id="message" name="message">
+            </div>
+
+            <div class="form-group">
+                <label class="" for="">Mobile Column : </label>
+                <input type="" class="form-control " id="mobile_columnn" name="mobile_columnn">
+            </div>
+
+                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')" data-dismiss="modal">Send</button>
+            </form>
+        </div>
+        <div class="tab-pane" id="webhook">
+            
+            <div class="form-group">
+                <label class="" for="">URL : </label>
+                <input type="" class="form-control " id="url" name="mobile_columnn">
+            </div>
+            <button type="button" class="btn btn-primary btn-md" onclick="" data-dismiss="modal">Send</button>
+        </div>
+        
+
+
+
+
+
+        </div>
         </div>
     </div>
 </div>
@@ -510,4 +517,15 @@ function sendMailSMS(type){
     var JsonData =  makeFilterJsonData(tableId,'returnData');
     sendData(type,JsonData,result,tableId);
 }
+
+function timeToSend(type) {
+    if (type == 'auto') {
+        $('#auto').removeClass('hide');
+        $('#now').addClass('hide');
+    } else {
+        $('#auto').addClass('hide');
+        $('#now').removeClass('hide');
+    }
+}
+
 </script>

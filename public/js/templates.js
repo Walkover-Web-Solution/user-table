@@ -24,7 +24,7 @@ function filterTmpl(data) {
     return html;
 }
 
-function createSelectElement(currentField, selected, key) {
+function createSelectElement(currentField, selected, key, inputType) {
     var selectElem = '';
     // currentField['options'].unshift('None Selected');
     selectElem += `<select class="form-control" name="` + key + `" dataid="` + key + `" onchange="watchOnchange(` + key + `)">
@@ -41,15 +41,15 @@ function createSelectElement(currentField, selected, key) {
     return selectElem;
 }
 
-function createInputElement(val, key, cls, field) {
+function createInputElement(val, key, cls, field, inputType) {
     var inputElem = '';
     if (!val) {
         val = '';
     }
     if (field.unique === 1) {
-        inputElem += `<input type="text" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" disabled data-change="true">`;
+        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" disabled data-change="true">`;
     } else {
-        inputElem += `<input type="text" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" onchange="watchOnchange(` + key + `)">`;
+        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" onchange="watchOnchange(` + key + `)">`;
     }
 
     return inputElem;
