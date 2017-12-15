@@ -19,9 +19,9 @@ class CreateSendSmsDetailsTable extends Migration
             $table->text('message',100)->nullable();
             $table->string('number',20)->nullable();
             $table->string('authKey',30)->nullable();
-            $table->integer('route',11)->nullable();
-            $table->integer('status',10)->nullable();
-            $table->integer('tableId',10)->nullable();
+            $table->integer('route')->unsigned()->nullable();
+            $table->integer('status')->unsigned()->nullable();
+            $table->integer('tableId')->unsigned()->nullable();
             
         });
     }

@@ -20,9 +20,9 @@ class CreateSendMailDetailsTable extends Migration
             $table->string('from_name',100)->nullable();
             $table->string('subject',500)->nullable();
             $table->text('content')->nullable();
-            $table->integer('status',10)->nullable();
+            $table->integer('status')->unsigned()->nullable();
             $table->string('mailKey',500)->nullable();
-            $table->integer('tableId',10)->nullable();
+            $table->integer('tableId')->unsigned()->nullable();
             
         });
     }
