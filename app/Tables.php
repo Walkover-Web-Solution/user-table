@@ -43,18 +43,12 @@ class Tables extends Model
                         'has_any_value' =>null
                         );
         $data = array();
-       // $table_info_columns =  \DB::select("SHOW COLUMNS FROM `$tableId` WHERE FIELD NOT IN ('id')");
-        $tabQuery  = (array) json_decode(Tabs::getTabsByTableId($tableId));
-        $tabQuery = array();
+
         foreach ($userTableStructure as $column => $struct) {
-        //foreach ($table_info_columns as $column) {
             $col_name = $column;
             $col_type = $struct["type"];
-            $col_options = $struct["value_arr"]["options"]; //$struct["value"];
-            /*$options = $struct["value_arr"]["options"];
-            echo "<hr/>";
-            print_r($options);
-            */
+            $col_options = $struct["value_arr"]["options"];
+
             if ($col_type == 'text' || $col_type == 'email' || $col_type == 'phone') {
                 $col_detail = array();
                 $col_detail['col_name'] = $col_name;
@@ -87,51 +81,6 @@ class Tables extends Model
                 $col_detail['col_options'] = $col_options;
                 $data[$col_name] =  $col_detail;
             }
-            
-            /*
-            if(isset($tabQuery[$col_name]))
-            {
-                //for string fields
-               if(isset($tabQuery[$col_name]->is))
-                   $data[$col_name]['is'] = $tabQuery[$col_name]->is;
-
-               else  if(isset($tabQuery[$col_name]->is_not))
-                   $data[$col_name]['is_not'] = $tabQuery[$col_name]->is_not;
-
-               else  if(isset($tabQuery[$col_name]->contains))
-                   $data[$col_name]['contains'] = $tabQuery[$col_name]->contains;
-
-               else  if(isset($tabQuery[$col_name]->not_contains))
-                   $data[$col_name]['not_contains'] = $tabQuery[$col_name]->not_contains;
-
-               //for int fields
-               else  if(isset($tabQuery[$col_name]->less_than))
-                   $data[$col_name]['less_than'] = $tabQuery[$col_name]->less_than;
-
-               else  if(isset($tabQuery[$col_name]->greater_than))
-                   $data[$col_name]['greater_than'] = $tabQuery[$col_name]->greater_than;
-
-               else  if(isset($tabQuery[$col_name]->equals_to))
-                   $data[$col_name]['equals_to'] = $tabQuery[$col_name]->equals_to;
-
-               // for dates
-               else  if(isset($tabQuery[$col_name]->from))
-                   $data[$col_name]['from'] = $tabQuery[$col_name]->from;
-
-               else  if(isset($tabQuery[$col_name]->to))
-                   $data[$col_name]['to'] = $tabQuery[$col_name]->to;
-            }
-            else{
-                if (strpos($col_type, 'varchar') !== false) {
-                    $data[$col_name] =  $forStr;
-                }
-                else if (strpos($col_type, 'int') !== false) {
-                    $data[$col_name] =  $forInt;
-                }
-                else if(strpos($col_type, 'timestamp') !== false)
-                   $data[$col_name] =  $forDate;
-            }
-        */
         }
         return $data;
     }
@@ -164,13 +113,13 @@ class Tables extends Model
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->contains.'%');
             }else if (isset($req[$paramName]->not_contains)) {
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->not_contains.'%');
-            } else if (isset($req[$paramName]['starts_with'])) {
-                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
-            } else if (isset($req[$paramName]['ends_with'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
-            } else if (isset($req[$paramName]['is_unknown'])) {
+            } else if (isset($req[$paramName]->starts_with)) {
+                $users->where($paramName, 'LIKE', '' . $req[$paramName]->starts_with . '%');
+            } else if (isset($req[$paramName]->ends_with)) {
+                $users->where($paramName, 'LIKE', '%' . $req[$paramName]->ends_with . '');
+            } else if (isset($req[$paramName]->is_unknown)) {
                 $users->whereNull($paramName);
-            } else if (isset($req[$paramName]['has_any_value'])) {
+            } else if (isset($req[$paramName]->has_any_value)) {
                 $users->whereNotNull($paramName);
             }else if (isset($req[$paramName]->greater_than)) {
                 $users->where($paramName,'>',$req[$paramName]->greater_than);

@@ -5,7 +5,7 @@
 
     <thead id="userThead">
         <tr>
-            <th><span class="fixed-header"></span></th>
+            <!-- <th><span class="fixed-header"></span></th> -->
             @foreach($val as $k => $colName)
             <th><span class="fixed-header">{{$k}}</span></th>
             @endforeach
@@ -13,7 +13,7 @@
     </thead>
     <tbody id="all_users">
             <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
-            <td></td>
+            <!-- <td></td> -->
             @foreach($val as $k => $colValue)
             @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
              <?php $options = json_decode($structure[$k]['value'],true);?>
@@ -55,7 +55,6 @@
     @endif
     @if($key!=0)
     <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
-        <td></td>
         @foreach($val as $k => $colValue)
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'],true);?>

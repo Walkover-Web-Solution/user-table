@@ -81,7 +81,9 @@ function saveTab() {
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId) {
+function makeFilterJsonData(tableId, type) {
+    console.log("we are here boss");
+    console.log(tableId, type);
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
@@ -98,7 +100,11 @@ function makeFilterJsonData(tableId) {
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
         coltypeObject[dataid] = coltype;
-    })
+    });
+    console.log("we are here to check data", jsonObject);
+    if (type == "returnData") {
+        return jsonObject;
+    }
     applyFilterData(jsonObject, tableId, coltypeObject);
 }
 
@@ -115,17 +121,16 @@ function applyFilterData(jsonObject, tableId,coltypeObject) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-<<<<<<< HEAD
+
         data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
-=======
-        data: { 'filter': obj, 'tab': 'All', 'tableId': tableId }, // Some data e.g. Valid JSON as a string
->>>>>>> test
+
         // headers: { 'token': tokenKey },
         success: function(data) {
             $('#response').html(data);
         }
     });
 }
+var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select'];
 
 function getUserDetails(id, tableId) {
     if (id) {
@@ -158,27 +163,27 @@ function getUserDetails(id, tableId) {
                             if (currentField.type == 'timestamp')
                                 cls = 'calendar_cls';
                             if (i % 2) {
-                                // editForm += `<div class="row">`;
+                                editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
 
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls, currentField);
+                                    editForm += createInputElement(val[k], k, cls, currentField, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.column_type_id == 6) {
-                                    editForm += createSelectElement(currentField, val[k], k);
+                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.column_type_id == 10) {
                                     currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, val[k], k);
+                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 }
                                 editForm += '</div>';
                             } else {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                                 if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls, currentField);
+                                    editForm += createInputElement(val[k], k, cls, currentField, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.column_type_id == 6) {
-                                    editForm += createSelectElement(currentField, val[k], k);
+                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.column_type_id == 10) {
                                     currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, val[k], k);
+                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 }
                                 editForm += '</div></div>';
                             }
@@ -190,8 +195,7 @@ function getUserDetails(id, tableId) {
                 }
             }
         });
-    }
-    else{
+    } else {
         $.ajax({
             type: 'GET', // Use GET
             url: API_BASE_URL + '/tables/structure/' + tableId , // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
@@ -202,7 +206,7 @@ function getUserDetails(id, tableId) {
                 var tableData = res.tableData;
                 var teammates = res.teammates
                 var authKey = tableData['auth'];
-                
+
                 $('#tokenKey').val(authKey);
                 var editForm = '';
                 
@@ -210,32 +214,32 @@ function getUserDetails(id, tableId) {
                     var field = tableStructure[k]
                     var currentField = COL_FIELD[field['column_name']];
                     var column_type = tableStructure[k]['column_type'];
-                    
+
                     var cls = '';
-                            
-                    if (column_type.column_name == 'timestamp'){
+
+                    if (column_type.column_name == 'timestamp') {
                         cls = 'calendar_cls';
                     }
                                 
                             
-                                // editForm += `<div class="row">`;
-                                editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
+                    // editForm += `<div class="row">`;
+                    editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
 
-                                if (column_type.id !== 6 && column_type.id !== 10) {
-                                    editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
-                                } else if (column_type.id == 6){
-                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
-                                } else if(column_type.id == 10){
-                                    currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
-                                }
-                                editForm += '</div>';
+                    if (column_type.id !== 6 && column_type.id !== 10) {
+                        editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
+                    } else if (column_type.id == 6){
+                        editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
+                    } else if(column_type.id == 10){
+                        currentField['value_arr']['options'] = teammates;
+                        editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
+                    }
+                    editForm += '</div>';
                 }
                 $("#add_users_body").html(editForm);
                 $('#follow_up_date').attr('type', 'date');
                 $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
                 return false;
-                
+
             }
         });
     }
@@ -248,12 +252,11 @@ function editUserData(type) {
     var obj;
     var jsonDoc = {};
     var fieldChange = false;
-    if(type == 'edit'){
+    if (type == 'edit') {
         var editUserDetailsForm = $("#editUserDetails .form-control")
         jsonDoc['edit_url_callback'] = true;
-    }
-    else{
-    var editUserDetailsForm = $("#addUserDetails .form-control")
+    } else {
+        var editUserDetailsForm = $("#addUserDetails .form-control")
     }
     jsonDoc['socket_data_source'] = '';
     editUserDetailsForm.each(function() {
@@ -286,11 +289,7 @@ function editUserData(type) {
         },
         success: function(data) {
             ALL_USERS[selectedRow] = data.data;
-            console.log(data)
-
-            //startInterval();
         },
-        // contentType: "application/json"
     });
 }
 
@@ -314,8 +313,7 @@ function watchOnchange(ele) {
 }
 
 function startInterval() {
-    myInterval = setInterval(function() {
-    }, interval);
+    myInterval = setInterval(function() {}, interval);
 }
 
 //startInterval();
@@ -507,13 +505,13 @@ function createSelectElement(arr, selected, k) {
 
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
-        if(arr.column_type_id != 10) {
+        if (arr.column_type_id != 10) {
             if (arrList[i] == selected) {
                 lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
             } else {
                 lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
             }
-        }else  {
+        } else {
             if (arrList[i]['email'] == selected) {
                 lists += `<option value="` + arrList[i]['email'] + `" selected>` + arrList[i]['name'] + `</option>`
             } else {
@@ -557,4 +555,21 @@ $(document).ready(function() {
     getOptionList();
     $('#right_panel').hide();
     var title = $('#right_panel .title');
+    $(".option_box").addClass('hide');
 });
+
+
+function sendData(type, JsonData, formData, tableId) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+        url: API_BASE_URL + "/sendEmailSMS", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+        data: { 'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId }, // Some data e.g. Valid JSON as a string
+        // headers: { 'token': tokenKey },
+        success: function(data) {}
+    });
+}

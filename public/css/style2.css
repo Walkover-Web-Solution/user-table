@@ -11,8 +11,8 @@ body,
 html {
     height: 100%;
     /* background: #fafafa; */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    /* -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; */
 }
 
 body {
@@ -20,7 +20,7 @@ body {
     font-size: 14px;
 }
 
-.lowercase{
+.lowercase {
     text-transform: lowercase !important;
 }
 
@@ -103,4 +103,33 @@ body {
 #tableName {
     width: 200px;
     display: inline-block
+}
+
+#send_popup .nav-tabs {
+    background: #f5f8fa;
+}
+
+#send_popup .nav-tabs>li.active>a,
+#send_popup .nav-tabs>li.active>a:focus,
+#send_popup .nav-tabs>li.active>a:hover {
+    background-color: #3097D1;
+    border-color: #2a88bd;
+    color: #fff;
+    border-radius: 0;
+}
+
+.checkbox-inline,
+.radio-inline {
+    line-height: 1.5;
+}
+
+.option_box {
+    padding: 10px;
+    background: #f5f8fa;
+    margin-bottom: 10px;
+    border: 1px solid #3097d173
+}
+
+#tableStructure label {
+    text-transform: lowercase;
 }
