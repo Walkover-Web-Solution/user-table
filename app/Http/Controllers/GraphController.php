@@ -14,8 +14,7 @@ use GuzzleHttp;
 use App\Viasocket;
 
 class GraphController extends Controller {
-
-     public function getGraphDataForTable(Request $request) {
+    public function getGraphDataForTable(Request $request) {
         $tableName = $request->input('tableName');
         $dateColumn = $request->input('dateColumn');
         $secondColumn = $request->input('secondColumn');
@@ -24,10 +23,9 @@ class GraphController extends Controller {
         $endDate = $request->input('endDate');
 
         $tableNames = team_table_mapping::getUserTablesNameByName($tableName);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_id'];
+        $userTableName = $tableNames['table_id'];
 
-        $userTableStructure = $tableNameArr[0]['table_structure'];
+        $userTableStructure = $tableNames['table_structure'];
         $column_type = "text";
 
         foreach ($userTableStructure as $key => $value) {
@@ -44,49 +42,35 @@ class GraphController extends Controller {
             $sql = "SELECT STR_TO_DATE($secondColumn, '%d/%m/%Y')  LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by STR_TO_DATE($secondColumn, '%d/%m/%Y')";
         else
             $sql = "SELECT $secondColumn LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by $secondColumn";
-//print_r( $sql);
         $tableData = Tables::getSQLData($sql);
-        print_r(json_encode($tableData));
+        return json_encode($tableData);
     }
 
     public function showGraphForTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        $userTableName = $tableNameArr[0]['table_name'];
-        $userTableStructure = $tableNameArr[0]['table_structure'];
+        $userTableName = $tableNames['table_name'];
+        $userTableStructure = $tableNames['table_structure'];
         $date_columns = array();
         $other_columns = array();
-        //print_r($userTableStructure);
         foreach ($userTableStructure as $key => $value) {
             if ($value['column_type']['column_name'] == 'date')
                 $date_columns[] = $value['column_name'];
             else if ($value['is_unique'] == "false")
                 $other_columns[] = $value['column_name'];;
         }
-        if (empty($tableNameArr[0]['table_id'])) {
+
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $tableId = $tableNameArr[0]['table_id'];
+            $tableId = $tableNames['table_id'];
             $allTabs = \DB::table($tableId)
-                    ->select('*')
-                    ->get();
+                ->select('*')
+                ->get();
             $allTabsData = json_decode(json_encode($allTabs), true);
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
-
-            if (!empty($tabs)) {
-                foreach ($tabs as $val) {
-                    $tab_name = $val['tab_name'];
-                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
-                    $tabCount = count($tabCountData);
-
-                    $arrTabCount[] = array($tab_name => $tabCount);
-                }
-            } else {
-                $arrTabCount = array();
-            }
             $allTabCount = count($allTabsData);
 
             return view('graph', array(
@@ -101,5 +85,4 @@ class GraphController extends Controller {
                 'structure' => $userTableStructure));
         }
     }
-
 }
