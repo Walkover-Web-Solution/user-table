@@ -139,12 +139,11 @@ class team_table_mapping extends Model {
         return array('success' => $message, 'data' => $update_data);
     }
 
-    public static function updateTableStructure($paramArr) {
-        $tableAutoIncId = $paramArr['id'];
-        $socketApi = $paramArr['socketApi'];
+    public static function updateTableStructure($paramArr, $tableId) {
         $data = \DB::table('team_table_mappings')
-                ->where('id', $tableAutoIncId)
-                ->update(['socket_api' => $socketApi]);
+                ->where('id', $tableId)
+                ->update($paramArr);
+
         return $data;
     }
 
