@@ -633,7 +633,7 @@ class TableController extends Controller {
             $teammates = Teams::getTeamMembers($teamId);
             return array(
                 'allTabs' => $allTabs,
-                'tableId' => $tableID,
+                'tableId' => $tableId,
                 'teammates' => $teammates,
                 'pagination' => $results
             );
@@ -702,5 +702,109 @@ class TableController extends Controller {
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
         return $this->loadContacts($tableDetails['table_id'], $tabName);
     }
+    
+    public function sendEmailSMS(Request $request){
+        $filter = (array) ($request->filter);
+        $formData = (array) ($request->formData);
+        $type = ($request->type);
+        $tableId = $request->tableId;
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        if (empty($tableNames['table_id'])) {
+            return array();
+        }
 
+        $jsonData = $this->getAppliedFiltersData($filter, $tableNames['table_id'],1000);
+        $data = json_decode(json_encode($jsonData), true);
+        $results = $data['data'];
+        if(empty($results)){
+            return response(json_encode(array('message' =>'No record found to send')), 200)->header('Content-Type', 'application/json');
+        }
+        if($type == 'email'){
+            $response = $this->sendMail($formData,$results,$tableId);
+        }
+        if($type == 'sms'){
+            $response = $this->sendSMS($formData,$results,$tableId);
+        }
+        return $response;
+    }
+    
+    public function sendMail($formData,$data,$tableId){
+        $from_email = $formData['from_email'];
+        $from_name = $formData['from_name'];
+        $email_column = $formData['email_column'];
+        $subject = $formData['subject'];
+        $mailContent = $formData['mailContent'];
+        preg_match_all("~\##(.*?)\##~",$mailContent,$replaceKey);
+        $insertParamArr = array();
+        $i=0;
+        $findArr = array();
+        $mailKey = "testKey";
+        foreach($data as $key => $value){
+            if(!isset($value[$email_column])){
+                return response(json_encode(array('message' =>'Email column not found')), 403)->header('Content-Type', 'application/json');
+            }
+            if(!empty($value)){
+                $name = $value['name'];
+                $valArr = array();
+                foreach($replaceKey[1] as $index => $strName){
+                    if(isset($value[$strName])){
+                        $valArr[$index] = $value[$strName];
+                        $findArr[$index] = "##$strName##";
+                    }
+                    else{
+                    }
+                    
+                }
+                $actualMailContent = str_replace($findArr, $valArr, $mailContent);
+                $insertParamArr[$i] = array('to_email' => $value[$email_column],'from_email' => $from_email, 'from_name'=> $from_name ,'subject' => $subject,'content' => $actualMailContent,'status' => 0,'mailKey'=> $mailKey,'tableId'=>$tableId); 
+            }
+            $i++;
+        }
+        $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
+        if($response){
+            return response(json_encode(array('message' =>'Email Sent')), 200)->header('Content-Type', 'application/json');
+        }
+        else{
+            return response(json_encode(array('message' =>'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+        }
+    }
+    
+    public function sendSMS($formData,$data,$tableId){
+        $senderId = $formData['sender'];
+        $route = $formData['route'];
+        $mobile_column = $formData['mobile_columnn'];
+        $message = $formData['message'];
+        preg_match_all("~\##(.*?)\##~",$message,$replaceKey);
+        $insertParamArr = array();
+        $i = 0;
+        $findArr = array();
+        $authkey = '125463';
+        foreach($data as $key => $value){
+            if(!isset($value[$mobile_column])){
+                return response(json_encode(array('message' =>'SMS column not found')), 403)->header('Content-Type', 'application/json');
+            }
+            if(!empty($value)){
+                $valArr = array();
+                foreach($replaceKey[1] as $index => $strName){
+                    if(isset($value[$strName])){
+                        $valArr[$index] = $value[$strName];
+                        $findArr[$index] = "##$strName##";
+                    }
+                    else{
+                    }
+                    
+                }
+                $actualMsg = str_replace($findArr, $valArr, $message);
+                $insertParamArr[$i] = array('senderId' => $senderId,'message' => $actualMsg, 'number'=> $value[$mobile_column] ,'authkey' => $authkey,'route' => $route,'status' => 0,'tableId'=>$tableId); 
+            }
+            $i++;
+        }
+        $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
+        if($response){
+            return response(json_encode(array('message' =>'SMS Sent')), 200)->header('Content-Type', 'application/json');
+        }
+        else{
+            return response(json_encode(array('message' =>'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+        }
+    }
 }
