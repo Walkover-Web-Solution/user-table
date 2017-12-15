@@ -20,3 +20,9 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => ['verifysockettoken']], function() {
     Route::get('/tables', 'TableController@getAllTables');
 });
+
+Route::group(['middleware' => ['verifytabletoken']], function() {
+    Route::get('/search', 'TableController@searchTableData');
+    Route::post('/search','TableController@filterTableData');
+    Route::get('/contacts', 'TableController@getContacts');
+});

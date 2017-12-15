@@ -1,4 +1,4 @@
-var ALL_USERS;
+var ALL_USERS = [];
 var results = [];
 var ALL_FIELDS = [];
 var activeTab = "All";
@@ -8,18 +8,18 @@ var myInterval;
 var interval = 3000; // after every 3s
 var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date'];
 var checkList = [{
-        name: 'Unique',
-        priority: ['high', 'medium', 'low']
-    }];
+    name: 'Unique',
+    priority: ['high', 'medium', 'low']
+}];
 var numberList = [];
 var dateList = ['relative', 'normal'];
 var customTypes = ['dropdown', 'radio button', 'checkbox']
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -34,7 +34,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 //var API_BASE_URL = "http://localhost:8000";
 //var tokenKey = localStorage.getItem('token');
 //var tokenKey = getUrlParameter('token');
-$('body').on('focus', ".calendar_cls", function () {
+$('body').on('focus', ".calendar_cls", function() {
     $(this).datepicker();
 });
 
@@ -42,7 +42,7 @@ function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
 
-    user_data.forEach(function (val, index) {
+    user_data.forEach(function(val, index) {
 
         userDetails += `<tr data-toggle="modal" data-target="#edit_user" onclick = "getUserDetails('` + index + `')" >
         <td></td>`
@@ -53,14 +53,11 @@ function drawUserTable(user_data) {
 
         userDetails += `</tr>`
 
-        // console.log(userDetails);
         usersArr.push(userDetails);
         userDetails = '';
 
     });
     return usersArr;
-
-
 }
 
 function showFilterInputText(ths, val) {
@@ -89,7 +86,7 @@ function makeFilterJsonData(tableId) {
     var jsonObject = {};
     var coltypeObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
-    filterCheckedElement.each(function () {
+    filterCheckedElement.each(function() {
         dataid = $(this).attr('dataid');
         filterChecked.push($(this).attr('dataid'));
         var radioButton = $("#condition_" + dataid + " input:checked");
@@ -118,26 +115,30 @@ function applyFilterData(jsonObject, tableId,coltypeObject) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+<<<<<<< HEAD
         data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
+=======
+        data: { 'filter': obj, 'tab': 'All', 'tableId': tableId }, // Some data e.g. Valid JSON as a string
+>>>>>>> test
         // headers: { 'token': tokenKey },
-        success: function (data) {
+        success: function(data) {
             $('#response').html(data);
         }
     });
 }
 
 function getUserDetails(id, tableId) {
-    //console.log(results[index]);
     if (id) {
         //selectedRow = index;
         $.ajax({
             type: 'GET', // Use GET
             url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             //   headers: { 'token': tokenKey },
-            success: function (res) {
+            success: function(res) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
+                var teammates = res.teammates;
                 var editForm = '';
                 if (val) {
                     $("#eId").val(val.id);
@@ -145,7 +146,6 @@ function getUserDetails(id, tableId) {
 
                     var i = 0;
                     for (var k in val) {
-                        //console.log(k);
                         if (k === 'id') {
                             continue;
                         }
@@ -158,20 +158,26 @@ function getUserDetails(id, tableId) {
                             if (currentField.type == 'timestamp')
                                 cls = 'calendar_cls';
                             if (i % 2) {
-                                editForm += `<div class="row">`;
+                                // editForm += `<div class="row">`;
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
 
-                                if (currentField && currentField.column_type_id !== 6) {
-                                    editForm += createInputElement(val[k], k, cls);
-                                } else {
+                                if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
+                                    editForm += createInputElement(val[k], k, cls, currentField);
+                                } else if (currentField.column_type_id == 6) {
+                                    editForm += createSelectElement(currentField, val[k], k);
+                                } else if (currentField.column_type_id == 10) {
+                                    currentField['value_arr']['options'] = teammates;
                                     editForm += createSelectElement(currentField, val[k], k);
                                 }
                                 editForm += '</div>';
                             } else {
                                 editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                                if (currentField && currentField.column_type_id !== 6) {
-                                    editForm += createInputElement(val[k], k, cls);
-                                } else {
+                                if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
+                                    editForm += createInputElement(val[k], k, cls, currentField);
+                                } else if (currentField.column_type_id == 6) {
+                                    editForm += createSelectElement(currentField, val[k], k);
+                                } else if (currentField.column_type_id == 10) {
+                                    currentField['value_arr']['options'] = teammates;
                                     editForm += createSelectElement(currentField, val[k], k);
                                 }
                                 editForm += '</div></div>';
@@ -180,26 +186,77 @@ function getUserDetails(id, tableId) {
                     }
                     $("#edit_users_body").html(editForm);
                     $('#follow_up_date').attr('type', 'date');
-                    $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
+                    // $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
                 }
+            }
+        });
+    }
+    else{
+        $.ajax({
+            type: 'GET', // Use GET
+            url: API_BASE_URL + '/tables/structure/' + tableId , // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            success: function (res) {
+                
+                var tableStructure = res.structure;
+                var COL_FIELD = res.colDetails;
+                var tableData = res.tableData;
+                var teammates = res.teammates
+                var authKey = tableData['auth'];
+                
+                $('#tokenKey').val(authKey);
+                var editForm = '';
+                
+                for (var k in tableStructure){
+                    var field = tableStructure[k]
+                    var currentField = COL_FIELD[field['column_name']];
+                    var column_type = tableStructure[k]['column_type'];
+                    
+                    var cls = '';
+                            
+                    if (column_type.column_name == 'timestamp'){
+                        cls = 'calendar_cls';
+                    }
+                                
+                            
+                                // editForm += `<div class="row">`;
+                                editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
+
+                                if (column_type.id !== 6 && column_type.id !== 10) {
+                                    editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
+                                } else if (column_type.id == 6){
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
+                                } else if(column_type.id == 10){
+                                    currentField['value_arr']['options'] = teammates;
+                                    editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
+                                }
+                                editForm += '</div>';
+                }
+                $("#add_users_body").html(editForm);
+                $('#follow_up_date').attr('type', 'date');
+                $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
+                return false;
+                
             }
         });
     }
 }
 
-function editUserData() {
+function editUserData(type) {
     clearInterval(myInterval);
-    // console.log('stop interval')
     id = $("#eId").val();
     var authKey = $("#tokenKey").val();
     var obj;
     var jsonDoc = {};
     var fieldChange = false;
-    //console.log('in edit user details')
-    var editUserDetailsForm = $("#editUserDetails .form-control")
-    //jsonDoc['id'] = id;
+    if(type == 'edit'){
+        var editUserDetailsForm = $("#editUserDetails .form-control")
+        jsonDoc['edit_url_callback'] = true;
+    }
+    else{
+    var editUserDetailsForm = $("#addUserDetails .form-control")
+    }
     jsonDoc['socket_data_source'] = '';
-    editUserDetailsForm.each(function () {
+    editUserDetailsForm.each(function() {
         fieldChange = $(this).attr('data-change');
         //if (fieldChange) {
         dataid = $(this).attr('dataid');
@@ -213,9 +270,7 @@ function editUserData() {
                 //console.log(val);
             }
         }
-        // console.log(dataid,val)
         jsonDoc[dataid] = val;
-        //}
     });
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     jsonDoc['_token'] = CSRF_TOKEN;
@@ -226,16 +281,14 @@ function editUserData() {
         url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
         data: jsonDoc, // Some data e.g. Valid JSON as a string
 
-        beforeSend: function (xhr) {
+        beforeSend: function(xhr) {
             xhr.setRequestHeader('Auth-Key', authKey);
         },
-        success: function (data) {
-            //console.log("success");
+        success: function(data) {
             ALL_USERS[selectedRow] = data.data;
             console.log(data)
 
             //startInterval();
-            console.log('start interval');
         },
         // contentType: "application/json"
     });
@@ -243,12 +296,12 @@ function editUserData() {
 
 function initFilterSlider() {
     //open the lateral panel
-    $('.cd-btn').on('click', function (event) {
+    $('.cd-btn').on('click', function(event) {
         event.preventDefault();
         $('.cd-panel').addClass('is-visible');
     });
     //clode the lateral panel
-    $('.cd-panel').on('click', function (event) {
+    $('.cd-panel').on('click', function(event) {
         if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
             $('.cd-panel').removeClass('is-visible');
             event.preventDefault();
@@ -261,9 +314,7 @@ function watchOnchange(ele) {
 }
 
 function startInterval() {
-    myInterval = setInterval(function () {
-        // console.log(activeTab)
-        //getTabDetails(activeTab)
+    myInterval = setInterval(function() {
     }, interval);
 }
 
@@ -292,19 +343,20 @@ function searchKeyword(event, query) {
     if (!q) {
         return false;
     }
-    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
+    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
         $('#response').html(response);
 
     });
 }
+
 function getOptionList() {
     $.ajax({
-        type: 'GET', 
-        dataType: 'json', 
+        type: 'GET',
+        dataType: 'json',
         url: API_BASE_URL + "/getOptionList",
-        success: function (response) {
+        success: function(response) {
             optionList = response;
-            setTimeout(function () {
+            setTimeout(function() {
                 addRow(true);
                 addMoreRow(true);
             }, 300);
@@ -328,28 +380,34 @@ function addRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
-            <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
-            </div>
             <div class="form-group col-xs-2">
-                <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
+            </div>
+            <div class="form-group col-xs-1">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
-                <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
+                <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
+            </div>
+            <div class="form-group col-xs-1">
+                <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+            </div>
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
             </div>
         </div>`;
     formGrp += '';
     tableData.push(obj);
     return $('#tableField').append(formGrp);
 
-}
-;
+};
+
 function addMoreRow(check) {
 
     var obj1 = {
@@ -367,27 +425,32 @@ function addMoreRow(check) {
     }
 
     var formGrp = `<div class="row" id="column_"` + i + `>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <input type="text" placeholder="Enter Field Name" class="form-control name" name="fieldName" value="">
             </div>
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <select class="form-control type" >` + lists + ` </select>
             </div>
-            <div class="form-group col-xs-1">
-                <input type="text" class="form-control order" name="fieldOrder" placeholder="">
-            </div>
             <div class="form-group col-xs-2">
-                <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+                <select class="form-control display"><option value="1">Show</option><option value="0">Hide</option></select>
+            </div>
+            <div class="form-group col-xs-1">
+                <input type="text" class="form-control order order-input" name="fieldOrder" placeholder="">
             </div>
             <div class="form-group col-xs-3">
-                <textarea type="text" name="" placeholder="Default value" class="value"></textarea>
+                <textarea type="text" name="" placeholder="Default value" class="value form-control"></textarea>
+            </div>
+            <div class="form-group col-xs-1">
+                <label><input type="radio" name="uniqe" class="unique"> Uniqe</label>
+            </div>
+            <div class="form-group col-xs-1">
+                <a href="javascript:void(0)" class="remove-row"><i class="glyphicon glyphicon-trash"></i></a>
             </div>
         </div>`;
     formGrp += '';
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
-}
-;
+};
 
 
 // on select field type
@@ -419,13 +482,13 @@ function onSelectOption(val) {
 function onTypeText() {
     $('.title').text('Choose One Option');
     var html = '';
-    $.each(checkList, function (idx, val) {
+    $.each(checkList, function(idx, val) {
         html += `<div class="checkbox">
             <label>
             <input type="checkbox" class="" onclick="showDiv('` + val.name + `')">` + val.name + `</label>
         </div>
         <div id="` + val.name + `" class="hide more-option">`;
-        $.each(val.priority, function (indx) {
+        $.each(val.priority, function(indx) {
             html += `<div class="form-check">
                 <label class="form-check-label radio-label">
                     <input class="" name="priority" type="radio"> ` + val.priority[indx] + `
@@ -444,22 +507,29 @@ function createSelectElement(arr, selected, k) {
 
     var lists = '';
     for (i = 0; i <= arrList.length - 1; i++) {
-        if (arrList[i] == selected) {
-            lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
-        } else {
-            lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
+        if(arr.column_type_id != 10) {
+            if (arrList[i] == selected) {
+                lists += `<option value="` + arrList[i] + `" selected>` + arrList[i] + `</option>`
+            } else {
+                lists += `<option value="` + arrList[i] + `">` + arrList[i] + `</option>`
+            }
+        }else  {
+            if (arrList[i]['email'] == selected) {
+                lists += `<option value="` + arrList[i]['email'] + `" selected>` + arrList[i]['name'] + `</option>`
+            } else {
+                lists += `<option value="` + arrList[i]['email'] + `">` + arrList[i]['name'] + `</option>`
+            }
         }
 
     }
     var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
     return formGrp;
-}
-;
+};
 
 
 // radioType behavior on checkbox
 function radioBehavior() {
-    $(".chkbx").change(function () {
+    $(".chkbx").change(function() {
         $(".chkbx").prop('checked', false);
         $(this).prop('checked', true);
     });
@@ -483,7 +553,7 @@ function showDiv(id) {
     $("#" + id).toggleClass('hide');
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
     getOptionList();
     $('#right_panel').hide();
     var title = $('#right_panel .title');

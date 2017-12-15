@@ -1,6 +1,8 @@
 <table class="table basic table-bordred">
+
     @foreach($allTabs as $key=>$val)
     @if($key==0)
+
     <thead id="userThead">
         <tr>
             <th><span class="fixed-header"></span></th>
@@ -22,20 +24,20 @@
             </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
             <td>
-                <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
+                <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'dropdown')">
                     <?php $options = json_decode($structure[$k]['value'],true);?>
                     @foreach($options['options'] as $info)
                     <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
                     @endforeach
-                </select>   
+                </select>
             </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td>
-            <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
+            <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
                         <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach
-            </select>   
+            </select>
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
             <?php $options = json_decode($structure[$k]['value'],true);?>
@@ -63,20 +65,20 @@
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
-        <td><select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'dropdown')">
+        <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'dropdown')">
                <?php $options = json_decode($structure[$k]['value'],true);?>
                     @foreach($options['options'] as $info)
                     <option value="{{$info}}" @if($info == $colValue) selected="selected" @endif >{{$info}}</option>
                     @endforeach
-            </select>   
+            </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td>
-            <select id="{{$k}}:_:{{$val['id']}}" onchange="updateData(this, 'teammates')">
+            <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();" onchange="updateData(this, 'teammates')">
                     @foreach($teammates as $team)
                         <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                     @endforeach
-            </select>   
+            </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
             <?php $options = json_decode($structure[$k]['value'],true);?>
@@ -88,7 +90,7 @@
         @else
         <td>{{$colValue}}</td>
 	@endif
-		
+
         @endforeach
     </tr>
     @endif
@@ -131,7 +133,7 @@
                     new_value = $(this).val();
                 });
         }
-        
+
         $.ajax({
         type: 'POST',
                 url: API_BASE_URL + "/update",

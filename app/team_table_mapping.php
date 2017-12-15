@@ -8,11 +8,11 @@ use App\TableStructure;
 class team_table_mapping extends Model {
 
     protected $table = 'team_table_mappings';
-    protected $fillable = ['id', 'table_name', 'table_id', 'team_id','auth','socket_api'];
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id', 'table_structure', 'auth','socket_api', 'new_entry_api'];
     public $timestamps = false;
 
     public function tableStructure() {
-        return $this->hasMany(TableStructure::class, 'table_id', 'id');
+        return $this->hasMany(TableStructure::class, 'table_id', 'id')->orderBy('ordering','ASC');
     }
 
     public static function getUserTablesByTeam($teamIdArr) {
@@ -38,21 +38,29 @@ class team_table_mapping extends Model {
     public static function getUserTablesNameById($tableId) {
         $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('id', $tableId)
-                ->get();
+                ->first()->toArray();
         return $data;
     }
-    
+
     public static function getUserTablesNameByName($tableName) {
         $data = team_table_mapping::with('tableStructure.columnType')
-                ->where('table_name', $tableName)
+            ->where('table_name', $tableName)
+            ->first()->toArray();
+        return $data;
+    }
+
+    public static function getDataById($id) {
+        $data = \DB::table('team_table_mappings')
+                ->select('*')
+                ->where('id', $id)
                 ->get();
         return $data;
     }
 
     public static function getTableByAuth($auth) {
         $data = team_table_mapping::with('tableStructure.columnType')
-                ->wherein('auth', $auth)
-                ->get();
+                ->where('auth', $auth)
+                ->first()->toArray();
         return $data;
     }
 
@@ -72,32 +80,38 @@ class team_table_mapping extends Model {
 
     public static function makeNewEntryInTable($table_name, $input_param, $structure) {
         $data = 0;
+        $message = '';
         $unique_key = '';
-        //print_r($structure);die;
-        //$structure = json_decode($structureJson, TRUE);
-
+        // print_r($input_param);die;
+        // $structure = json_decode($structureJson, TRUE);
+        $update_data = array();
         foreach ($input_param as $key => $value) {
             if ($structure[$key]['unique'] == 1) {
                 $unique_key = $key;
                 break;
             }
         }
+
         if (empty($unique_key) || empty($input_param[$key])) {
             return array('error' => 'unique_key_not_found');
         }
+
         $responseObj = \DB::table($table_name)
                 ->select('*')
                 ->where($unique_key, $input_param[$unique_key])
                 ->get();
 
-
         $response = json_decode(json_encode($responseObj));
 
         if (empty($response)) {
+            $message = 'Entry Added';
             $data = \DB::table($table_name)
                     ->insert($input_param);
+            $update_data = \DB::table($table_name)
+                ->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->get();
         } else {
-            $update_data = array();
             foreach ($input_param as $key => $value) {
                 if ($structure[$key]['type'] != 'airthmatic number') {
                     if (!empty($input_param[$key])) {
@@ -109,15 +123,20 @@ class team_table_mapping extends Model {
                     }
                 }
             }
-
+            $message = 'Entry Updated';
             $data = \DB::table($table_name)
                     ->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
+            $update_data = \DB::table($table_name)
+                ->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->get();
         }
         $log_table = 'log' . substr($table_name, 4);
         \DB::table($log_table)
                 ->insert($input_param);
-        return array('success' => 'data_updated');
+
+        return array('success' => $message, 'data' => $update_data);
     }
 
     public static function updateTableStructure($paramArr) {
@@ -133,6 +152,13 @@ class team_table_mapping extends Model {
         $data = \DB::table($paramArr['table'])
                 ->where($paramArr['where_key'], $paramArr['where_value'])
                 ->update($paramArr['update']);
+        return $data;
+    }
+
+    public static function updateTableStructureData($tableId, $structure) {
+        $data = \DB::table('team_table_mappings')
+                ->where('id', $tableId)
+                ->update(['table_structure' => $structure]);
         return $data;
     }
 

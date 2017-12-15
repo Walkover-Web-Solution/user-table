@@ -59,7 +59,7 @@
                     @if (Route::has('login'))
                     <div class="top-right links">
                         @auth
-                        <a href="{{ url('/tables') }}" class="navbar-btn typeform-share link signup-btn btn pull-right">Home</a>
+                        <a href="{{ url('/tables') }}" class="navbar-btn link signup-btn btn pull-right">Dashboard</a>
                         @else
                         <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin" class="navbar-btn typeform-share link signup-btn btn pull-right">Sign up</a>
                         <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="navbar-btn btn pull-right">Log in</a>
@@ -81,7 +81,7 @@
                         <div class="cust-container">
                             <img src="./img/btn-with-img.png" class="image" style="background-image: url('./img/table.png')" alt="user-table-with-cover" />
                             <div class="middle">
-                                <a href="javascript:void(0)" data-toggle="modal"><img src="./img/btn-with-img.png" alt="yt-btn"></a>
+                                <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal"><img src="./img/btn-with-img.png" alt="yt-btn"></a>
                             </div>
                          </div>
                     </figure>
@@ -100,7 +100,7 @@
                     <!-- <h4 class="modal-title">YouTube Video</h4> -->
                 </div>
                 <div class="modal-body">
-                    <iframe id="cartoonVideo" width="560" height="315" src="//www.youtube.com/embed/6ZfuNTqbHE8" frameborder="0" allowfullscreen></iframe>
+                    <iframe id="cartoonVideo" width="560" height="315" src="https://www.youtube.com/embed/_pTCqobclks" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>

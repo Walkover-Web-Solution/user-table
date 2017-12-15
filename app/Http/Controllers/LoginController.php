@@ -20,25 +20,29 @@ class LoginController extends Controller {
         $authToken = 'Bearer ' . $authToken;
         session()->put('socket_token', $authToken);
         $userdata = $this->getUserDetail($authToken);
-        $user = User::where(['email' => $userdata['email']])->first();
-        if (!$user) {
-            $user = new User();
-            $user->email = $userdata['email'];
-            $user->first_name = $userdata['first_name'];
-            $user->last_name = $userdata['last_name'];
-            $user->company = $userdata['company'];
-            $user->identifier = $userdata['identifier'];
-            $user->api_token = str_random(60); //slight change here
-            $password = str_random(8);
-            $user->password = Hash::make($password); //md5($password);
-            $user->save();
-        }
-        $this->getUserTeam($authToken);
-        // attempt to do the login
-        if ($user) {
-            Auth::login($user);
-            return redirect()->route('tables');
-        } else {
+        if ($userdata) {
+            $user = User::where(['email' => $userdata['email']])->first();
+            if (!$user) {
+                $user = new User();
+                $user->email = $userdata['email'];
+                $user->first_name = $userdata['first_name'];
+                $user->last_name = $userdata['last_name'];
+                $user->company = $userdata['company'];
+                $user->identifier = $userdata['identifier'];
+                $user->api_token = str_random(60); //slight change here
+                $password = str_random(8);
+                $user->password = Hash::make($password); //md5($password);
+                $user->save();
+            }
+            $this->getUserTeam($authToken);
+            // attempt to do the login
+            if ($user) {
+                Auth::login($user);
+                return redirect()->route('tables');
+            } else {
+                return redirect()->route('unauthorised');
+            }
+        }else{
             return redirect()->route('unauthorised');
         }
     }

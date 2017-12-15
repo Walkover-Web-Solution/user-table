@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\StoreTokens;
 use App\Tabs;
+use App\Teams;
 use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,20 +14,35 @@ class UserController extends Controller {
 
     public function getDetailsOfUserById($tableId, $id) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $tableNameArr = json_decode(json_encode($tableNames), true);
-        
-        if (empty($tableNameArr[0]['table_id'])) {
+
+        if (empty($tableNames['table_id'])) {
             echo "no table found";
             exit();
         } else {
-            $data = \DB::table($tableNameArr[0]['table_id'])->selectRaw('*')->where('id', $id)->first();
+            $data = \DB::table($tableNames['table_id'])->selectRaw('*')->where('id', $id)->first();
         }
-        
-        $colDetails = TableStructure::formatTableStructureData($tableNameArr[0]['table_structure']);
+
+        $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        $teamId = $tableNames['team_id'];
+        $teammates = Teams::getTeamMembers($teamId);
+
+        foreach($tableNames['table_structure'] as $k=>$v)
+        {
+            $newarr[$v['column_name']] = $v;
+        }
+
+        foreach($newarr as $k=>$v)
+        {
+            $orderNeed[] = $k;
+        }
+
+        $data = json_decode(json_encode($data),true);
+        $newData = $this->orderArray($data, $orderNeed);
 
         return response(
                         json_encode(
-                                array('data' => $data, 'colDetails' => $colDetails, 'authKey' => $tableNameArr[0]['auth'])
+                                array('data' => $newData, 'colDetails' => $colDetails,
+                                    'authKey' => $tableNames['auth'], 'teammates' => $teammates)
                         ), 200
                 )->header('Content-Type', 'application/json');
     }
@@ -55,11 +71,11 @@ class UserController extends Controller {
             return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
         } else {
             $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-            $tableNameArr = json_decode(json_encode($tableNames), true);
-            if (empty($tableNameArr[0]['table_id'])) {
-                return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
+            if (empty($tableNames['table_id'])) {
+                return response(json_encode(array('error' => "something went wrong.")),
+                        403)->header('Content-Type', 'application/json');
             } else {
-                $tableId = $tableNameArr[0]['table_id'];
+                $tableId = $tableNames['table_id'];
             }
         }
         $appliedFilters = json_decode($request->filter);
@@ -97,6 +113,16 @@ class UserController extends Controller {
         return view('profile', array(
             'user' => Auth::user()
         ));
+    }
+
+    function orderArray($arrayToOrder, $keys)
+    {
+        foreach($keys as $key)
+        {
+            $inner_ordered[$key] = $arrayToOrder[$key];
+        }
+        $inner_ordered['id'] = $arrayToOrder['id'];
+        return json_decode(json_encode($inner_ordered));
     }
 
 }

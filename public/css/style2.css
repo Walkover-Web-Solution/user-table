@@ -1,0 +1,106 @@
+/*Main CSS*/
+
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700,900');
+
+/*font-family: 'Lato', sans-serif;  */
+
+
+/*Home Page*/
+
+body,
+html {
+    height: 100%;
+    /* background: #fafafa; */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+}
+
+.lowercase{
+    text-transform: lowercase !important;
+}
+
+
+/* textarea.form-control {
+    height: 100px;
+} */
+
+.card {
+    width: 100%;
+    background: #fafafa;
+    padding: 15px;
+    height: 170px;
+    border: 1px solid #d9d9d9;
+    display: table;
+    margin-bottom: 20px;
+    float: left;
+    border-radius: 4px;
+    position: relative;
+    -webkit-transition: all 0.3s ease-in;
+    /* Safari */
+    transition: all 0.3s ease-in;
+    border: 1px solid #3097d173;
+}
+
+.card:hover {
+    border-color: #3097D1;
+    box-shadow: 0px 0px 10px #d9d9d9;
+}
+
+.card>div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.card h1 {
+    font-size: 2em;
+    margin: 0 0 20px;
+    text-align: center;
+}
+
+.card .title {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.card-new i {
+    font-size: 64px;
+    margin-bottom: 15px;
+    color: #636b6f;
+    opacity: 0.7;
+    font-style: normal;
+    line-height: 34px;
+}
+
+.cp {
+    cursor: pointer;
+}
+
+.more-option {
+    margin-left: 20px;
+}
+
+.card_link {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+}
+
+.card .btn-grp,
+.card .title {
+    z-index: 9;
+    position: relative
+}
+
+#tableName {
+    width: 200px;
+    display: inline-block
+}

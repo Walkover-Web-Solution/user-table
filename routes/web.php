@@ -44,10 +44,10 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for creating user table in database
     Route::post('/createTable', 'TableController@createTable');
 # for Configure user table in database
-    Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
+    Route::get('/tables/structure/{tableName}', 'TableController@getSelectedTableStructure');
 # for alter user table in database
     Route::post('/configureTable', 'TableController@configureSelectedTable');
-
+    Route::get('/configure/{tableName}', 'TableController@loadSelectedTableStructure');
     Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
     #serach by filters
     Route::post('/filter', 'TableController@applyFilters');

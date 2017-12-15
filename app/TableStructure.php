@@ -5,63 +5,95 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\ColumnType;
+use Yadakhov\InsertOnDuplicateKey;
 
 class TableStructure extends Model {
-    
+
+    // The function is implemented as a trait.
+    use InsertOnDuplicateKey;
     protected $hidden = ['created_at', 'updated_at'];
-    
+
     public function columnType()
     {
-        return $this->belongsTo(ColumnType::class,'column_type_id','id'); 
+        return $this->belongsTo(ColumnType::class,'column_type_id','id');
     }
 
     public static function withColumns($tableId) {
         return TableStructure::with('columnType')->where('table_id',$tableId)->get()->toArray();
     }
-    
+
 
     public static function insertTableStructure($tableStructure) {
         TableStructure::insert($tableStructure);
     }
 
-    public static function validateStructure($tableData, $tableAutoIncId = 0) {
+    public static function deleteTableStructure($id) {
+        TableStructure::where('table_id', $id)->delete();
+    }
+
+    public static function updateStructureInBulk($tableStructure){
+        TableStructure::insertOnDuplicateKey($tableStructure);
+    }
+
+    public static function validateStructure($tableData, $tableAutoIncId = 0)
+    {
         $tableStructure = array();
-        foreach ($tableData as $key => $value) {
+        foreach ($tableData as $key => $value)
+        {
             $value['name'] = preg_replace('/\s+/', '_', $value['name']);
-            if (empty($value['name'])) {
+
+            if (empty($value['name']))
+            {
                 $arr['msg'] = "Name Can't be empty";
                 $arr['error'] = TRUE;
                 return $arr;
             }
-            if (empty($value['type'])) {
+
+            if (empty($value['type']))
+            {
                 $arr['msg'] = "type Can't be empty";
                 $arr['error'] = TRUE;
                 return $arr;
             }
+
             $defaultValeArray = explode(',', $value['value']);
+
             if(!empty($defaultValeArray))
                 $arr_tojson = json_encode(array('options'=>$defaultValeArray));
             else{
                 $arr_tojson='';
             }
-            if(!empty($value['unique']) && $value['unique']=='false'){
+
+            if(!empty($value['unique']) && $value['unique']=='false')
+            {
                 $value['unique']=0;
             }
-            if ($tableAutoIncId) {
+            if(empty($value['display'])){
+                $value['display']=1;
+            }
+
+            if ($tableAutoIncId)
+            {
                 $tableStructure[] = array(
                     'table_id' => $tableAutoIncId,
                     'column_name' => $value['name'],
                     'column_type_id' => $value['type'],
                     'default_value' => $arr_tojson,
+                    'ordering' => $value['ordering'],
+                    'display' => $value['display'],
                     'is_unique' => (empty($value['unique']) || $value['unique']==false) ? 0 : 1,
                     'created_at' => Carbon::now()->toDateTimeString(),
                     'updated_at' => Carbon::now()->toDateTimeString()
                 );
-            } else {
+            }
+            else
+            {
                 $tableStructure[] = array(
                     'column_name' => $value['name'],
                     'column_type_id' => $value['type'],
                     'default_value' => $arr_tojson,
+                    'ordering' => $value['ordering'],
+                    'display' => $value['display'],
                     'is_unique' => empty($value['unique']) ? 0 : 1,
                     'created_at' => Carbon::now()->toDateTimeString(),
                     'updated_at' => Carbon::now()->toDateTimeString()
@@ -75,6 +107,7 @@ class TableStructure extends Model {
     }
 
     public static function formatTableStructureData($tableStructure){
+        $userTableStructure = array();
         foreach ($tableStructure as $detail) {
             $columnType = $detail['column_type'];
             $userTableStructure[$detail['column_name']] = array(
