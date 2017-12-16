@@ -97,39 +97,41 @@
                                         <label class="form-check-label radio-label">
                                             @if(isset($activeTabFilter[$k][$key]))
                                             <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
-                                                onclick="showFilterInputText(this,'{{$k}}')" type="radio"
+                                                onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
                                                    aria-label="..." checked="checked">
                                             @else
                                             <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}')" type="radio"
+                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
                                                    aria-label="...">
                                             @endif
                                             {{$key}}
-                                            @if(isset($activeTabFilter[$k][$key]))
-                                                @if($filter['col_type'] == 'dropdown')
-                                                    <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
-                                                        <option value=""></option>
-                                                        @foreach($filter['col_options'] as $ind=>$opt)
-                                                          <option value="{{$opt}}">{{$opt}}</option>
-                                                        @endforeach
-                                                    </select>     
+                                            @if($key != "is_unknown" && $key != "has_any_value")
+                                                @if(isset($activeTabFilter[$k][$key]))
+                                                    @if($filter['col_type'] == 'dropdown')
+                                                        <select class="form-check-input filterinput{{$k}} form-control"
+                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
+                                                            <option value=""></option>
+                                                            @foreach($filter['col_options'] as $ind=>$opt)
+                                                            <option value="{{$opt}}">{{$opt}}</option>
+                                                            @endforeach
+                                                        </select>     
+                                                    @else
+                                                        <input class="form-check-input filterinput{{$k}} form-control"
+                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                    @endif
                                                 @else
-                                                    <input class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                                @endif
-                                            @else
-                                                @if($filter['col_type'] == 'dropdown')
-                                                    <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
-                                                        <option value=""></option>
-                                                        @foreach($filter['col_options'] as $ind=>$opt)
-                                                        <option value="{{$opt}}">{{$opt}}</option>
-                                                        @endforeach
-                                                    </select>     
-                                                @else
-                                                    <input class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" style="display:none;">
+                                                    @if($filter['col_type'] == 'dropdown')
+                                                        <select class="form-check-input filterinput{{$k}} form-control"
+                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
+                                                            <option value=""></option>
+                                                            @foreach($filter['col_options'] as $ind=>$opt)
+                                                            <option value="{{$opt}}">{{$opt}}</option>
+                                                            @endforeach
+                                                        </select>     
+                                                    @else
+                                                        <input class="form-check-input filterinput{{$k}} form-control"
+                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" style="display:none;">
+                                                    @endif
                                                 @endif
                                             @endif
                                         </label>
@@ -232,6 +234,16 @@
             }
     });
     });
+    $(".form-check-input").on('change', function() {
+        clearInterval(myInterval);
+        //var tableId = '{{ collect(request()->segments())->last() }}';
+        // console.log('clear interval');
+        if (globaltimeout != null) clearTimeout(globaltimeout);
+        globaltimeout = setTimeout(function() {
+        makeFilterJsonData(tableId,'Search');
+        }, 600);
+    });
+
     $(".form-check-input").on('keyup', function() {
         clearInterval(myInterval);
         //var tableId = '{{ collect(request()->segments())->last() }}';
