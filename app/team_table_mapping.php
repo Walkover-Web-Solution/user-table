@@ -88,8 +88,12 @@ class team_table_mapping extends Model {
             }
         }
 
-        if (empty($unique_key) || !empty($input_param['id'])) {
+        if (empty($unique_key)) {
             $unique_key = 'id';
+        }else{
+            if(isset($input_param['id'])){
+                unset($input_param['id']);
+            }
         }
         $table = \DB::table($table_name);
 
