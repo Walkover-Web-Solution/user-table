@@ -57,10 +57,11 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-xs-2">
+                                            <?php $display = $sequence[$value['column_name']]['display']; ?>
                                             <select class="form-control display">
                                                 @if(array_key_exists($value['column_name'], $sequence))
-                                                <option value="1" {{ $sequence[$value['column_name']]['display'] == 1 ? 'selected' : '' }}>Show</option>
-                                                <option value="0" {{ $sequence[$value['column_name']]['display'] == 0 ? 'selected' : '' }}>Hide</option>
+                                                <option value="1" {{ ($display == 1) ? 'selected' : '' }}>Show</option>
+                                                <option value="0" {{ ($display == 0) ? 'selected' : '' }}>Hide</option>
                                                 @endif
                                             </select>
                                         </div>
