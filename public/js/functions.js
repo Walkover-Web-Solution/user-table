@@ -108,7 +108,7 @@ function makeFilterJsonData(tableId, type) {
     applyFilterData(jsonObject, tableId, coltypeObject);
 }
 
-function applyFilterData(jsonObject, tableId,coltypeObject) {
+function applyFilterData(jsonObject, tableId, coltypeObject) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -122,7 +122,7 @@ function applyFilterData(jsonObject, tableId,coltypeObject) {
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
-        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
+        data: { 'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject }, // Some data e.g. Valid JSON as a string
 
         // headers: { 'token': tokenKey },
         success: function(data) {
@@ -198,9 +198,9 @@ function getUserDetails(id, tableId) {
     } else {
         $.ajax({
             type: 'GET', // Use GET
-            url: API_BASE_URL + '/tables/structure/' + tableId , // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            success: function (res) {
-                
+            url: API_BASE_URL + '/tables/structure/' + tableId, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            success: function(res) {
+
                 var tableStructure = res.structure;
                 var COL_FIELD = res.colDetails;
                 var tableData = res.tableData;
@@ -209,8 +209,8 @@ function getUserDetails(id, tableId) {
 
                 $('#tokenKey').val(authKey);
                 var editForm = '';
-                
-                for (var k in tableStructure){
+
+                for (var k in tableStructure) {
                     var field = tableStructure[k]
                     var currentField = COL_FIELD[field['column_name']];
                     var column_type = tableStructure[k]['column_type'];
@@ -220,16 +220,16 @@ function getUserDetails(id, tableId) {
                     if (column_type.column_name == 'timestamp') {
                         cls = 'calendar_cls';
                     }
-                                
-                            
+
+
                     // editForm += `<div class="row">`;
                     editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
 
                     if (column_type.id !== 6 && column_type.id !== 10) {
                         editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
-                    } else if (column_type.id == 6){
+                    } else if (column_type.id == 6) {
                         editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
-                    } else if(column_type.id == 10){
+                    } else if (column_type.id == 10) {
                         currentField['value_arr']['options'] = teammates;
                         editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
                     }
@@ -237,7 +237,7 @@ function getUserDetails(id, tableId) {
                 }
                 $("#add_users_body").html(editForm);
                 $('#follow_up_date').attr('type', 'date');
-                $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
+                // $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
                 return false;
 
             }

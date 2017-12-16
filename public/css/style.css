@@ -621,7 +621,8 @@ th {
     transition: all 0.5s ease;
 }
 
-#edit_users_body label {
+#edit_users_body label,
+#add_users_body label {
     text-transform: capitalize;
     font-weight: normal;
     margin-bottom: 5px;

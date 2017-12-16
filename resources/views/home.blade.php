@@ -362,34 +362,28 @@
 
 <!-- add user modal || plus button -->
 <div id="add_user" class="modal fade" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-lg" role="content">
+    <div class="modal-dialog modal-md" role="content">
         <!-- Modal content-->
         <div class="modal-content">
             <!-- <div class="modal-header login-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title">Edit User</h4>
             </div> -->
-            <div class="container-fluid">
                 <div class="row">
                     <form id="addUserDetails">
-                        <div class="modal-body" id="add_users_body">
-                            <div class="container-fluid">
-                                <div class="row">
-
-                                </div>
+                        <div class="modal-body pull-left" id="add_users_body">
+ 
                             </div>
                         </div>
                     </form>
                         <div class="modal-footer">
                             <!-- <input type="hidden" id="eId"/>
                             <input type="hidden" id="tokenKey"/> -->
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
                             <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('add')">
-                                Save
+                                Add
                             </button>
                         </div>
-                    
-                </div>
             </div>
         </div>
     </div>
