@@ -272,6 +272,8 @@ class TableController extends Controller
     public function processFilterData($req, $tableId, $pageSize = 20)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        
         if (empty($tableNames['table_id'])) {
             return array();
         }
@@ -288,7 +290,8 @@ class TableController extends Controller
             'allTabs' => $results,
             'tableId' => $tableId,
             'teammates' => $teammates,
-            'pagination' => $data
+            'pagination' => $data,
+            'structure' => $userTableStructure,
         );
     }
 
