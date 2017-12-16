@@ -59,10 +59,16 @@ function drawUserTable(user_data) {
     return usersArr;
 }
 
-function showFilterInputText(ths, val) {
+function showFilterInputText(ths, val,tableId) {
     $(".filterinput" + val).hide();
-    $(ths).parent().find("input:text").show();
-    $(ths).parent().find("select").show();
+    dataid = $(ths).attr('dataid');
+    if(dataid != "has_any_value" && dataid != 'is_unknown'){
+        $(ths).parent().find("input:text").show();
+        $(ths).parent().find("select").show();
+    }else{
+        makeFilterJsonData(tableId,'Search');
+    }
+    
 }
 
 function showDiv(id) {
