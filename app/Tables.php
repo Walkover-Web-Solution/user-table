@@ -110,11 +110,11 @@ class Tables extends Model
                 $users->where($paramName,'=',$req[$paramName]->is);
             }else if (isset($req[$paramName]->is_not))
             {
-                $users->where($paramName,'<>',$req[$paramName]->is_not);
+                $users->where($paramName,'!=',$req[$paramName]->is_not);
             }else if (isset($req[$paramName]->contains)) {
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->contains.'%');
             }else if (isset($req[$paramName]->not_contains)) {
-                $users->where($paramName,'LIKE','%'.$req[$paramName]->not_contains.'%');
+                $users->where($paramName,'NOT LIKE','%'.$req[$paramName]->not_contains.'%');
             } else if (isset($req[$paramName]->starts_with)) {
                 $users->where($paramName, 'LIKE', '' . $req[$paramName]->starts_with . '%');
             } else if (isset($req[$paramName]->ends_with)) {
