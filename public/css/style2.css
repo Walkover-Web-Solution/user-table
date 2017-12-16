@@ -134,6 +134,18 @@ body {
     text-transform: lowercase;
 }
 
+.invalid_msg {
+    border: 1px solid #ebccd1;
+    color: #a94442;
+    overflow: hidden;
+    background-color: #f2dede;
+    clear: both;
+    margin: 0 15px 0;
+    padding: 7px;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    width: calc(100% - 30px);
+}
 #tableField input {
     text-transform: lowercase;
 }

@@ -59,16 +59,16 @@ function drawUserTable(user_data) {
     return usersArr;
 }
 
-function showFilterInputText(ths, val,tableId) {
+function showFilterInputText(ths, val, tableId) {
     $(".filterinput" + val).hide();
     dataid = $(ths).attr('dataid');
-    if(dataid != "has_any_value" && dataid != 'is_unknown'){
+    if (dataid != "has_any_value" && dataid != 'is_unknown') {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("select").show();
-    }else{
-        makeFilterJsonData(tableId,'Search');
+    } else {
+        makeFilterJsonData(tableId, 'Search');
     }
-    
+
 }
 
 function showDiv(id) {
@@ -221,13 +221,13 @@ function getUserDetails(id, tableId) {
                 var teammates = res.teammates
                 var authKey = tableData['auth'];
                 var idElem = {
-                    column_name: "id",
-                    column_type_id: 0,
-                    unique: 0,
-                    default_value: { options: [""] },
-                    column_type: { id: 1, column_name: "id" }
-                }
-                //tableStructure.unshift(idElem);
+                        column_name: "id",
+                        column_type_id: 0,
+                        unique: 0,
+                        default_value: { options: [""] },
+                        column_type: { id: 1, column_name: "id" }
+                    }
+                    //tableStructure.unshift(idElem);
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
@@ -245,7 +245,7 @@ function getUserDetails(id, tableId) {
 
                     // editForm += `<div class="row">`;
                     var label = tableStructure[k]['column_name'];
-                    if(currentField.unique === 1) label = label + '*';
+                    if (currentField.unique === 1) label = label + '*';
                     editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + label + `</label>`;
 
                     if (column_type.id !== 6 && column_type.id !== 10) {
@@ -290,8 +290,10 @@ function editUserData(type) {
         required = $(this).attr('required');
         val = $(this).val();
         if (required && val === "") {
-            document.getElementById("validation_messgae_" + dataid).innerHTML = "Required " + dataid
-            is_valid =false;
+            errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
+            $('#add_users_body').append(errMsg);
+            // document.getElementById("validation_messgae_" + dataid).innerHTML = "Required " + dataid
+            is_valid = false;
         }
         if (dataid == 'follow_up_date') {
             if (!val) {
@@ -303,7 +305,7 @@ function editUserData(type) {
         }
         jsonDoc[dataid] = val;
     });
-    if(is_valid) {
+    if (is_valid) {
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
         obj = jsonDoc;
@@ -313,10 +315,10 @@ function editUserData(type) {
             url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             data: jsonDoc, // Some data e.g. Valid JSON as a string
 
-            beforeSend: function (xhr) {
+            beforeSend: function(xhr) {
                 xhr.setRequestHeader('Auth-Key', authKey);
             },
-            success: function (data) {
+            success: function(data) {
                 // ALL_USERS[selectedRow] = data.data;
                 location.reload();
             },
