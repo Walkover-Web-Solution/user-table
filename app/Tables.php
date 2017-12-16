@@ -12,7 +12,7 @@ class Tables extends Model
          $tableData = \DB::select($sql);
          return $tableData;
     }
-    public static function getFiltrableData($tableId, $userTableStructure)
+    public static function getFiltrableData($tableId, $userTableStructure,$teammates)
     { 
         $forStr = array('is' => null,
                         'is_not' =>null,
@@ -82,7 +82,15 @@ class Tables extends Model
                 $col_detail['col_filter'] = $forDropDown;
                 $col_detail['col_options'] = $col_options;
                 $data[$col_name] =  $col_detail;
+            }else if($col_type == 'my teammates'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forDropDown;
+                $col_detail['col_options'] = $teammates;
+                $data[$col_name] =  $col_detail;
             }
+
         }
         return $data;
     }
@@ -102,7 +110,8 @@ class Tables extends Model
     
     
      public static function getFilteredUsersDetailsData($req,$tableId){
-         
+         //print_r($req);
+         //return;
          $users =  \DB::table($tableId)->selectRaw('*');
         foreach(array_keys($req) as $paramName) {
             
@@ -110,19 +119,19 @@ class Tables extends Model
                 $users->where($paramName,'=',$req[$paramName]->is);
             }else if (isset($req[$paramName]->is_not))
             {
-                $users->where($paramName,'<>',$req[$paramName]->is_not);
+                $users->where($paramName,'!=',$req[$paramName]->is_not);
             }else if (isset($req[$paramName]->contains)) {
                 $users->where($paramName,'LIKE','%'.$req[$paramName]->contains.'%');
             }else if (isset($req[$paramName]->not_contains)) {
-                $users->where($paramName,'LIKE','%'.$req[$paramName]->not_contains.'%');
+                $users->where($paramName,'NOT LIKE','%'.$req[$paramName]->not_contains.'%');
             } else if (isset($req[$paramName]->starts_with)) {
                 $users->where($paramName, 'LIKE', '' . $req[$paramName]->starts_with . '%');
             } else if (isset($req[$paramName]->ends_with)) {
                 $users->where($paramName, 'LIKE', '%' . $req[$paramName]->ends_with . '');
             } else if (isset($req[$paramName]->is_unknown)) {
-                $users->whereNull($paramName);
+                $users->whereNull($paramName)->orWhere($paramName, '');
             } else if (isset($req[$paramName]->has_any_value)) {
-                $users->whereNotNull($paramName);
+                $users->whereNotNull($paramName)->where($paramName , '<>','');
             }else if (isset($req[$paramName]->greater_than)) {
                 $users->where($paramName,'>',$req[$paramName]->greater_than);
             }else if (isset($req[$paramName]->less_than)) {

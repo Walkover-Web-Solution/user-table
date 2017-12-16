@@ -100,6 +100,9 @@ function makeFilterJsonData(tableId, type) {
         var radioname = radioButton.attr('dataid');
         var coltype = radioButton.attr('datacoltype');
         var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
+        if(radioname == "has_any_value" || radioname == 'is_unknown'){
+            radioButtonValue = "1";
+        }
         //console.log(dataid, radioname, radioButtonValue)
         var subDoc = {};
         subDoc[radioname] = radioButtonValue

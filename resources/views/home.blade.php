@@ -107,7 +107,7 @@
                                             {{$key}}
                                             @if($key != "is_unknown" && $key != "has_any_value")
                                                 @if(isset($activeTabFilter[$k][$key]))
-                                                    @if($filter['col_type'] == 'dropdown')
+                                                    @if($filter['col_type'] == 'dropdown' || $filter['col_type'] == 'my teammates')
                                                         <select class="form-check-input filterinput{{$k}} form-control"
                                                             name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
                                                             <option value=""></option>
@@ -120,7 +120,7 @@
                                                             name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
                                                     @endif
                                                 @else
-                                                    @if($filter['col_type'] == 'dropdown')
+                                                    @if($filter['col_type'] == 'dropdown' || $filter['col_type'] == 'my teammates')
                                                         <select class="form-check-input filterinput{{$k}} form-control"
                                                             name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
                                                             <option value=""></option>
