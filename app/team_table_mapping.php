@@ -106,14 +106,19 @@ class team_table_mapping extends Model {
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         } else {
             foreach ($input_param as $key => $value) {
-                if ($structure[$key]['type'] != 'airthmatic number') {
-                    if (!empty($input_param[$key])) {
-                        $update_data[$key] = $input_param[$key];
+                if(isset($structure[$key]))
+                {
+                    if ($structure[$key]['type'] != 'airthmatic number') {
+                        if (!empty($input_param[$key])) {
+                            $update_data[$key] = $input_param[$key];
+                        }
+                    } else {
+                        if (!empty($input_param[$key])) {
+                            $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')');
+                        }
                     }
-                } else {
-                    if (!empty($input_param[$key])) {
-                        $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')');
-                    }
+                }else if($key == 'id'){
+                    $update_data[$key] = $input_param[$key];
                 }
             }
             $message = 'Entry Updated';
