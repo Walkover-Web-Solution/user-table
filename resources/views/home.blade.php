@@ -389,10 +389,7 @@
                         </div>
                     </form>
                         <div class="modal-footer">
-                            <!-- <input type="hidden" id="eId"/>
-                            <input type="hidden" id="tokenKey"/> -->
-                            <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                            <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('add')">
+                            <button type="button" class="btn btn-success" onclick="editUserData('add')">
                                 Add
                             </button>
                         </div>
@@ -400,25 +397,6 @@
         </div>
     </div>
 </div>
-<!-- <div>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_user" data-dismiss="modal" id="createNew" onclick="getUserDetails(false,{{$tableId}})">New Entry</button>
-</div> -->
-<!-- /.modal -->
-
-<!-- <script>
-
-    function modalClose() {
-        if (location.hash == '#popUp') {
-            location.hash = '';
-        }
-    }
-
-    document.addEventListener('keyup', function(e) {
-        if (e.keyCode == 27) {
-            modalClose();
-        }
-    });
-</script> -->
 
 <!-- send modal -->
 <div id="send_popup" class="modal fade" role="dialog">

@@ -1,13 +1,13 @@
 function filterTmpl(data) {
     var html = '<form id="filterForm" >';
-    $.each(data, function(key, val) {
+    $.each(data, function (key, val) {
         html += `<li class="active">
         <div class="form-check">
             <label class="form-check-label" >
             <input type="checkbox" class="filterConditionName" dataid="` + key + `"  onclick="showDiv('condition_` + key + `')" aria-label="...">` + key + `</label>
         </div>
         <div id="condition_` + key + `" class="hide filter-option">`;
-        $.each(val, function(key1) {
+        $.each(val, function (key1) {
             html += `<div class="form-check">
                 <label class="form-check-label radio-label">
                     <input class="form-check-radio" name="` + key + `_filter" dataid="` + key1 + `" onclick="showFilterInputText(this,'` + key + `')" type="radio" aria-label="...">` + key1 + `
@@ -43,14 +43,15 @@ function createSelectElement(currentField, selected, key, inputType) {
 
 function createInputElement(val, key, cls, field, inputType) {
     var inputElem = '';
-    if (!val) {
-        val = '';
-    }
+    var is_disable = '';
+    if (!val) val = '';
+    else is_disable ="disabled";
+
     if (field.unique === 1) {
-        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" disabled data-change="true">`;
+        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" ` + is_disable + ` data-change="true" required>`;
     } else {
         inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" onchange="watchOnchange(` + key + `)">`;
     }
-
+    inputElem += `<p id="validation_messgae_` + key + `"></p>`
     return inputElem;
 }

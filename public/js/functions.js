@@ -165,9 +165,9 @@ function getUserDetails(id, tableId) {
 
                     var i = 0;
                     for (var k in val) {
-                        // if (k === 'id') {
-                        //     continue;
-                        // }
+                        if (k === 'id') {
+                            continue;
+                        }
                         var currentField = COL_FIELD[k];
                         i++;
                         if (!currentField) {
@@ -231,6 +231,7 @@ function getUserDetails(id, tableId) {
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
+                var lable;
                 for (var k in tableStructure) {
                     var field = tableStructure[k]
                     var currentField = COL_FIELD[field['column_name']];
@@ -242,12 +243,13 @@ function getUserDetails(id, tableId) {
                         cls = 'calendar_cls';
                     }
 
-
                     // editForm += `<div class="row">`;
-                    editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + tableStructure[k]['column_name'] + `</label>`;
+                    var label = tableStructure[k]['column_name'];
+                    if(currentField.unique === 1) label = label + '*';
+                    editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + label + `</label>`;
 
                     if (column_type.id !== 6 && column_type.id !== 10) {
-                        editForm += createInputElement('', tableStructure[k]['column_name'], cls, field);
+                        editForm += createInputElement('', tableStructure[k]['column_name'], cls, currentField, inputTypeArr[currentField.column_type_id]);
                     } else if (column_type.id == 6) {
                         editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
                     } else if (column_type.id == 10) {
@@ -273,46 +275,53 @@ function editUserData(type) {
     var obj;
     var jsonDoc = {};
     var fieldChange = false;
+    var is_valid = true;
     if (type == 'edit') {
-        var editUserDetailsForm = $("#editUserDetails .form-control")
+        var userDetailsForm = $("#editUserDetails .form-control")
         jsonDoc['edit_url_callback'] = true;
     } else {
-        var editUserDetailsForm = $("#addUserDetails .form-control")
+        var userDetailsForm = $("#addUserDetails .form-control")
     }
     jsonDoc['socket_data_source'] = '';
-    editUserDetailsForm.each(function() {
+    userDetailsForm.each(function() {
         fieldChange = $(this).attr('data-change');
         //if (fieldChange) {
         dataid = $(this).attr('dataid');
+        required = $(this).attr('required');
         val = $(this).val();
+        if (required && val === "") {
+            document.getElementById("validation_messgae_" + dataid).innerHTML = "Required " + dataid
+            is_valid =false;
+        }
         if (dataid == 'follow_up_date') {
             if (!val) {
                 var date = new Date();
                 val = date.toLocaleDateString();
                 val = val.split('/');
                 val = val[2] + "/" + val[1] + "/" + val[0];
-                //console.log(val);
             }
         }
         jsonDoc[dataid] = val;
     });
-    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    jsonDoc['_token'] = CSRF_TOKEN;
-    obj = jsonDoc;
-    $.ajax({
-        type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-        dataType: 'json', // Set datatype - affects Accept header
-        url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: jsonDoc, // Some data e.g. Valid JSON as a string
+    if(is_valid) {
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        jsonDoc['_token'] = CSRF_TOKEN;
+        obj = jsonDoc;
+        $.ajax({
+            type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+            dataType: 'json', // Set datatype - affects Accept header
+            url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            data: jsonDoc, // Some data e.g. Valid JSON as a string
 
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Auth-Key', authKey);
-        },
-        success: function(data) {
-            // ALL_USERS[selectedRow] = data.data;
-            location.reload();
-        },
-    });
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Auth-Key', authKey);
+            },
+            success: function (data) {
+                // ALL_USERS[selectedRow] = data.data;
+                location.reload();
+            },
+        });
+    }
 }
 
 function initFilterSlider() {
