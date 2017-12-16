@@ -115,7 +115,7 @@
             }
         });
         var gt_one = $.map(idx,function(e,i){return e>1 ? e: null});
-        var isUnique = gt_one.length==0
+        var isUnique = gt_one.length==0;
         if(isUnique == false)
         {
             alert("Please remove repeat sequence from order.");

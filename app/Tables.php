@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
 
 class Tables extends Model
 {
@@ -140,6 +141,32 @@ class Tables extends Model
         $data = $users->get();
         return $data;
 
+    }
+
+    public static function createMainTable($tableName,$data){
+        Schema::create($tableName, function (Blueprint $table) use ($data) {
+            $table->increments('id');
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
+            foreach ($data as $value) {
+                $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                if ($value['unique'] == 'true') {
+                    $table->string($value['name'])->unique($value['name']);
+                } else {
+                    $table->string($value['name'])->nullable();
+                }
+            }
+        });
+    }
+
+    public static function createLogTable($logTableName,$data){
+        Schema::create($logTableName, function (Blueprint $table) use ($data) {
+            $table->increments('id');
+            foreach ($data as $value) {
+                $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                $table->string($value['name'])->nullable();
+            }
+        });
     }
     
 }

@@ -14,7 +14,7 @@ function filterTmpl(data) {
                     <input class="form-check-input filterinput` + key + ` form-control" name="` + key + `_filter_text" id="` + key + `_filter_text_` + key1 + `" type="text">
                 </label>
             </div>`;
-        })
+        });
         html += `</div>
         </li>`
     });

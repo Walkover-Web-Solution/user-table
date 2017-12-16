@@ -65,15 +65,6 @@
 
                         <form class="form-inline graph-form">
 
-<<<<<<< HEAD
-                         <div class="form-group" style="display:none;">
-                            <label for="email"  class="control-caption">Column</label>
-                            <select class="form-control" id="column2">
-                                @foreach( $other_columns as $other_column)
-                                <option value="{{$other_column}}">{{$other_column}}</option>
-                                @endforeach
-                            </select>
-=======
                             <div class="form-group" style="display:none;">
                                 <label for="email"  class="control-caption">Column</label>
                                 <select class="form-control" id="column2">
@@ -104,7 +95,6 @@
                             <div class="chart-first">
                                 <canvas id="myChart" height="400"></canvas>
                             </div>
->>>>>>> test
                         </div>
                     </div>
                     <form class="form-inline graph-form">
@@ -118,15 +108,9 @@
                         </div>
                         <div class="form-group">
                             <label for="email"  class="control-caption">Date Range</label>
-<<<<<<< HEAD
-                            <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text"/>
-                            To
-                            <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text"/>
-=======
                             <input class="form-control" id="date" name="pieDate" placeholder="MM/DD/YYY" type="text"/>
                             To
                             <input class="form-control" id="date1" name="pieDate1" placeholder="MM/DD/YYY" type="text"/>
->>>>>>> test
                         </div>
                         <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
                     </form>
@@ -139,27 +123,7 @@
                                     <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
                                 </div>
                             @endforeach
-<<<<<<< HEAD
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="email"  class="control-caption">Date Range</label>
-                        <input class="form-control" id="date" name="pieDate" placeholder="MM/DD/YYY" type="text"/>
-                        To
-                        <input class="form-control" id="date1" name="pieDate1" placeholder="MM/DD/YYY" type="text"/>
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
-                </form>
-
-                <div class="charts-container">
-                    <div class="pie-chart-container row">
-                        @foreach( $other_columns as $other_column)
-                        <div class="pie-chart col-md-3 col-lg-3">
-                            <div class="column-caption">Column : {{$other_column}}</div>
-                            <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
-=======
                             <div class="clearfix"></div>
->>>>>>> test
                         </div>
                     </div>
 
@@ -244,72 +208,6 @@
                 window.mybarChart.data.datasets[0].data = values;
                 window.mybarChart.data.labels = labels;
                 window.mybarChart.update();
-<<<<<<< HEAD
-        }
-    }
-    //Get Graph functions.
-    function getRandomColor() {
-      var letters = '0123456789ABCDEF';
-      var color = '#';
-      for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
-    function random_rgba() {
-    var o = Math.round, r = Math.random, s = 255;
-    var opacity = 0.5;// r().toFixed(1);
-   
-    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
-}
-    function getGraphData(dateColumn, secondColumn,startDate,endDate) {
-        var tableName = "{{$userTableName}}";
-        var dataUrl = "{{env('APP_URL')}}/graphdata?startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
-        $.get(dataUrl, function (response) {
-            var data = JSON.parse(response);
-            var Total_data = 0;
-            for (index = 0; index < data.length; index++) {
-                var item = data[index];
-                Total_data += item.Total;
-            }
-            var thurshold = Total_data / 25;
-            //console.log(thurshold);
-            var dates = new Array();
-            var values = new Array();
-            var colors = new Array();
-            var bcolors = new Array();
-            var others_count = 0;
-            for (index = 0; index < data.length; index++) {
-                var item = data[index];
-                if(item.Total > thurshold) {
-                   dates.push(item.LabelColumn);
-                   values.push(item.Total);
-                   colors.push(random_rgba());
-                   bcolors.push("rgba(100,100,100,1)");
-                }else{
-                    others_count += item.Total;
-                } 
-            }
-            dates.push("Others");
-            values.push(others_count);
-            colors.push(random_rgba());
-            bcolors.push("rgba(100,100,100,1)");
-            //console.log(colors);
-            CreateBarChart("myChart", dates,values,colors,bcolors);
-            $(".top-chart-container .ajax-loader-container").hide();
-        });
-    }
-    function getPieGraphData(dateColumn, secondColumn, element) {
-        var tableName = "{{$userTableName}}";
-        var dataUrl = "{{env('APP_URL')}}/graphdata?tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
-        $.get(dataUrl, function (response) {
-            var data = JSON.parse(response);
-            var Total_data = 0;
-            for (index = 0; index < data.length; index++) {
-                var item = data[index];
-                Total_data += item.Total;
-=======
->>>>>>> test
             }
         }
         //Get Graph functions.
@@ -319,28 +217,6 @@
             for (var i = 0; i < 6; i++) {
                 color += letters[Math.floor(Math.random() * 16)];
             }
-<<<<<<< HEAD
-            dates.push("Others");
-            values.push(others_count);
-            colors.push(random_rgba());
-            bcolors.push("rgba(100,100,100,1)");
-            
-            //console.log(colors);
-            CreatePieChart(element, dates,values,colors,bcolors);
-            //$(".top-chart-container .ajax-loader-container").hide();
-        });
-    }
-    function loadGraph() {
-        $(".top-chart-container .ajax-loader-container").show();
-        var column1 = $("#column1").val();
-        var barDate = $("#barDate").val();
-        var barDate1 = $("#barDate1").val();
-        console.log("StartDate : " , barDate);
-        console.log(barDate1);
-        getGraphData(column1, column1,barDate,barDate1);
-    }
-    $(document).ready(function ($) {
-=======
             return color;
         }
         function random_rgba() {
@@ -419,7 +295,6 @@
                 values.push(others_count);
                 colors.push(random_rgba());
                 bcolors.push("rgba(100,100,100,1)");
->>>>>>> test
 
                 //console.log(colors);
                 CreatePieChart(element, dates,values,colors,bcolors);

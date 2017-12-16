@@ -9,6 +9,7 @@ use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\TableStructure;
+use App\Http\Helpers;
 
 class UserController extends Controller {
 
@@ -37,7 +38,7 @@ class UserController extends Controller {
         }
 
         $data = json_decode(json_encode($data),true);
-        $newData = $this->orderArray($data, $orderNeed);
+        $newData = Helpers::orderDataArray($data, $orderNeed);
 
         return response(
                         json_encode(
@@ -113,16 +114,6 @@ class UserController extends Controller {
         return view('profile', array(
             'user' => Auth::user()
         ));
-    }
-
-    function orderArray($arrayToOrder, $keys)
-    {
-        foreach($keys as $key)
-        {
-            $inner_ordered[$key] = $arrayToOrder[$key];
-        }
-        $inner_ordered['id'] = $arrayToOrder['id'];
-        return json_decode(json_encode($inner_ordered));
     }
 
 }

@@ -200,15 +200,15 @@
         $('#saveTabButton').click(function () {
             var filterChecked = [];
             var jsonObject = {};
-            var filterCheckedElement = $(".filterConditionName:checked")
+            var filterCheckedElement = $(".filterConditionName:checked");
             filterCheckedElement.each(function () {
                 dataid = $(this).attr('dataid');
                 filterChecked.push($(this).attr('dataid'));
                 var radioButton = $("#condition_" + dataid + " input:checked");
-                var radioname = radioButton.attr('dataid')
+                var radioname = radioButton.attr('dataid');
                 var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
                 var subDoc = {};
-                subDoc[radioname] = radioButtonValue
+                subDoc[radioname] = radioButtonValue;
                 jsonObject[dataid] = subDoc;
             });
         var tabName = $('#saveAsInput').val();
