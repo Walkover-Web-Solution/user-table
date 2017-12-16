@@ -1,13 +1,9 @@
 @extends('layouts.app')
-<div>{{$userTableName}}
-    <a href="{{route('tables')}}">Back to Tables
-</div>
-<div>
-    <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a>
-</div>
+    <!-- <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a> -->
 @section('content')
     <div class="tablist">
         <ul id="tablist">
+            <li><a href="{{route('tables')}}"><i class="glyphicon glyphicon-chevron-left"></i> Back to Tables</a></li>
             <!-- Right Side Of Navbar -->
             <ul class="nav navbar-right user_dropdown">
                 <!-- Authentication Links -->
@@ -16,29 +12,32 @@
                     <li><a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Register</a></li>
                 @else
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
                         <!-- {{ Auth::user()->name }}  -->
-                            <i class="fa fa-caret-down" aria-hidden="true"></i>
-                        </a>
+                        {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </a>
 
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{{ route('profile') }}">
-                                    Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                   document.getElementById('logout-form').submit();">
-                                    Logout
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    {{ csrf_field() }}
-                                </form>
-                            </li>
-                        </ul>
+                    <ul class="dropdown-menu">
+                    <li><a href="{{route('tables')}}">Dashboard</a></li>
+                    <!-- <li><a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a></li>                 -->
+                        <li>
+                            <a href="{{ route('profile') }}">
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
+                                document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
+                        </li>
+                    </ul>
                     </li>
+
                 @endguest
             </ul>
             <form class="search-form pull-right" action="" name="queryForm"

@@ -149,11 +149,20 @@ function getUserDetails(id, tableId) {
                     $("#eId").val(val.id);
                     $('#tokenKey').val(authKey);
 
+                    var idElem = {
+                        column_name: "id",
+                        column_type_id: 0,
+                        unique: 1,
+                        default_value: { options: [""] },
+                        column_type: { id: 1, column_name: "id" }
+                    }
+                    COL_FIELD.id = idElem;
+
                     var i = 0;
                     for (var k in val) {
-                        if (k === 'id') {
-                            continue;
-                        }
+                        // if (k === 'id') {
+                        //     continue;
+                        // }
                         var currentField = COL_FIELD[k];
                         i++;
                         if (!currentField) {
@@ -206,7 +215,14 @@ function getUserDetails(id, tableId) {
                 var tableData = res.tableData;
                 var teammates = res.teammates
                 var authKey = tableData['auth'];
-
+                var idElem = {
+                    column_name: "id",
+                    column_type_id: 0,
+                    unique: 0,
+                    default_value: { options: [""] },
+                    column_type: { id: 1, column_name: "id" }
+                }
+                tableStructure.unshift(idElem);
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
