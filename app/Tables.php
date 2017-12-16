@@ -101,7 +101,8 @@ class Tables extends Model
     
     
      public static function getFilteredUsersDetailsData($req,$tableId){
-         
+         //print_r($req);
+         //return;
          $users =  \DB::table($tableId)->selectRaw('*');
         foreach(array_keys($req) as $paramName) {
             
@@ -119,9 +120,9 @@ class Tables extends Model
             } else if (isset($req[$paramName]->ends_with)) {
                 $users->where($paramName, 'LIKE', '%' . $req[$paramName]->ends_with . '');
             } else if (isset($req[$paramName]->is_unknown)) {
-                $users->whereNull($paramName);
+                $users->whereNull($paramName)->orWhere($paramName, '');
             } else if (isset($req[$paramName]->has_any_value)) {
-                $users->whereNotNull($paramName);
+                $users->whereNotNull($paramName)->where($paramName , '<>','');
             }else if (isset($req[$paramName]->greater_than)) {
                 $users->where($paramName,'>',$req[$paramName]->greater_than);
             }else if (isset($req[$paramName]->less_than)) {

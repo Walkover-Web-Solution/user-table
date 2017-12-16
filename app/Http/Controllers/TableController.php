@@ -299,6 +299,8 @@ class TableController extends Controller
     }
     public static function getAppliedFiltersData($req, $tableId, $pageSize = 20)
     {
+      //  print_r($req);
+      //  return;
         $users = \DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
 
@@ -317,7 +319,7 @@ class TableController extends Controller
             } else if (isset($req[$paramName]['is_unknown'])) {
                 $users->whereNull($paramName)->orWhere($paramName, '');
             } else if (isset($req[$paramName]['has_any_value'])) {
-                $users->whereNotNull($paramName);
+                $users->whereNotNull($paramName)->where($paramName , '<>','');
             } else if (isset($req[$paramName]['greater_than'])) {
                 $users->where($paramName, '>', $req[$paramName]['greater_than']);
             } else if (isset($req[$paramName]['less_than'])) {
