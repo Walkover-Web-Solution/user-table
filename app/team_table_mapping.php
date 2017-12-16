@@ -96,7 +96,7 @@ class team_table_mapping extends Model {
         if (empty($input_param[$unique_key])) {
             $response=array();
         } else {
-            $response = $table->select('*')->where($unique_key, $input_param[$unique_key])->first()->toArray();
+            $response = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
         }
 
         if (empty($response)) {
