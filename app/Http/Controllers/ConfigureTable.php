@@ -73,12 +73,12 @@ class ConfigureTable extends Controller
                         foreach ($tableData as $value) {
                             $value['name'] = preg_replace('/\s+/', '_', $value['name']);
                             if ($value['unique'] == 'true') {
-                                $table->string($value['name'])->unique($value['name']);
+                                $table->string($value['name'])->unique($value['name'])->change();
                             } else {
                                 if($value['type']==9){
-                                    $table->timestamp($value['name'])->nullable();
+                                    $table->timestamp($value['name'])->nullable()->change();
                                 }else {
-                                    $table->string($value['name'])->nullable();
+                                    $table->string($value['name'])->nullable()->change();
                                 }
                             }
                         }
@@ -89,8 +89,6 @@ class ConfigureTable extends Controller
                             $table->string($value['name'])->nullable();
                         }
                     });
-
-
                 } catch (\Illuminate\Database\QueryException $ex) {
                     $arr['msg'] = "Error in updation";
                     $arr['exception'] = $ex;
