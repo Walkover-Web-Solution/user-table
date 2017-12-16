@@ -1,3 +1,4 @@
+<?php use Carbon\Carbon;?>
 <table class="table basic table-bordred">
 
     @foreach($allTabs as $key=>$val)
@@ -52,6 +53,14 @@
                    value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif>{{$info}}<br>
             @endforeach
         </td>
+            @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
+                <?php if($colValue){
+                    $carbonDate = new Carbon($colValue);
+                    $date = $carbonDate->diffForHumans();
+                }else{
+                    $date = '';
+                } ?>
+                <td>{{$date}}</td>
         @else
         <td>{{$colValue}}</td>
         @endif
@@ -98,6 +107,14 @@
                    value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif>{{$info}}<br>
             @endforeach
         </td>
+            @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
+            <?php if($colValue){
+                $carbonDate = new Carbon($colValue);
+                $date = $carbonDate->diffForHumans();
+            }else{
+                $date = '';
+                } ?>
+                <td>{{$date}}</td>
         @else
         <td>{{$colValue}}</td>
         @endif

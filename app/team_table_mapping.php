@@ -89,10 +89,10 @@ class team_table_mapping extends Model {
                    $unique_key = $key;
                }
                if($structure[$key]['column_type_id']==9){
-                   if (Helpers::validateDate($value,'Y-m-d H:i:s')!== false) {
-                       $input_param[$key] = Helpers::validateDate($value,'Y-m-d H:i:s');
+                   if (Helpers::validateDate($value)!== false) {
+                       $input_param[$key] = Carbon::parse($value);
                    }else{
-                       $input_param[$key] = NULL;
+                       $input_param[$key]  ='';
                    }
                }
            }
