@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\TableStructure;
 
 class team_table_mapping extends Model {
 
@@ -79,11 +78,8 @@ class team_table_mapping extends Model {
     }
 
     public static function makeNewEntryInTable($table_name, $input_param, $structure) {
-        $data = 0;
-        $message = '';
+
         $unique_key = '';
-        // print_r($input_param);die;
-        // $structure = json_decode($structureJson, TRUE);
         $update_data = array();
         foreach ($input_param as $key => $value) {
             if ($structure[$key]['unique'] == 1) {
@@ -92,25 +88,21 @@ class team_table_mapping extends Model {
             }
         }
 
-        if (empty($unique_key) || empty($input_param[$key])) {
-            return array('error' => 'unique_key_not_found');
+        if (empty($unique_key)) {
+            $unique_key = 'id';
         }
+        $table = \DB::table($table_name);
 
-        $responseObj = \DB::table($table_name)
-                ->select('*')
-                ->where($unique_key, $input_param[$unique_key])
-                ->get();
-
-        $response = json_decode(json_encode($responseObj));
+        if (empty($input_param[$unique_key])) {
+            $response=array();
+        } else {
+            $response = $table->select('*')->where($unique_key, $input_param[$unique_key])->first()->toArray();
+        }
 
         if (empty($response)) {
             $message = 'Entry Added';
-            $data = \DB::table($table_name)
-                    ->insert($input_param);
-            $update_data = \DB::table($table_name)
-                ->select('*')
-                ->where($unique_key, $input_param[$unique_key])
-                ->get();
+            $table->insert($input_param);
+            $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         } else {
             foreach ($input_param as $key => $value) {
                 if ($structure[$key]['type'] != 'airthmatic number') {
@@ -124,15 +116,16 @@ class team_table_mapping extends Model {
                 }
             }
             $message = 'Entry Updated';
-            $data = \DB::table($table_name)
-                    ->where($unique_key, $input_param[$unique_key])
+            $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
-            $update_data = \DB::table($table_name)
-                ->select('*')
+            $update_data = $table->select('*')
                 ->where($unique_key, $input_param[$unique_key])
-                ->get();
+                ->first();
         }
         $log_table = 'log' . substr($table_name, 4);
+        if(isset($input_param['id'])){
+            unset($input_param['id']);
+        }
         \DB::table($log_table)
                 ->insert($input_param);
 
