@@ -156,7 +156,13 @@ class TableController extends Controller
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
-            $filters = Tables::getFiltrableData($tableId,$userTableStructure);
+            $teamId = $tableNames['team_id'];
+            $teammates = Teams::getTeamMembers($teamId);
+            $teammatesoptions = array();
+            foreach($teammates as $tkey => $tvalue){
+                $teammatesoptions[] = $tvalue['name'];
+            }
+            $filters = Tables::getFiltrableData($tableId,$userTableStructure,$teammatesoptions);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -170,8 +176,7 @@ class TableController extends Controller
             }
 
             $allTabCount = count($allTabsData);
-            $teamId = $tableNames['team_id'];
-            $teammates = Teams::getTeamMembers($teamId);
+           
 
             return view('home', array(
                     'activeTab' => 'All',
@@ -228,7 +233,14 @@ class TableController extends Controller
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
-            $filters = Tables::getFiltrableData($tableIdMain,$userTableStructure);
+            $teamId = $tableNames['team_id'];
+            $teammates = Teams::getTeamMembers($teamId);
+    
+            $teammatesoptions = array();
+            foreach($teammates as $tkey => $tvalue){
+                $teammatesoptions[] = $tvalue['name'];
+            }
+            $filters = Tables::getFiltrableData($tableIdMain,$userTableStructure,$teammatesoptions);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -241,9 +253,7 @@ class TableController extends Controller
                 $arrTabCount = array();
             }
             $allTabCount = count($allTabsData);
-            $teamId = $tableNames['team_id'];
-            $teammates = Teams::getTeamMembers($teamId);
-
+           
             return array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,

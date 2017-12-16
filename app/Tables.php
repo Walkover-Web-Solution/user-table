@@ -11,7 +11,7 @@ class Tables extends Model
          $tableData = \DB::select($sql);
          return $tableData;
     }
-    public static function getFiltrableData($tableId, $userTableStructure)
+    public static function getFiltrableData($tableId, $userTableStructure,$teammates)
     { 
         $forStr = array('is' => null,
                         'is_not' =>null,
@@ -81,7 +81,15 @@ class Tables extends Model
                 $col_detail['col_filter'] = $forDropDown;
                 $col_detail['col_options'] = $col_options;
                 $data[$col_name] =  $col_detail;
+            }else if($col_type == 'my teammates'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forDropDown;
+                $col_detail['col_options'] = $teammates;
+                $data[$col_name] =  $col_detail;
             }
+
         }
         return $data;
     }
