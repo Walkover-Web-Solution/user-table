@@ -222,7 +222,7 @@ function getUserDetails(id, tableId) {
                     default_value: { options: [""] },
                     column_type: { id: 1, column_name: "id" }
                 }
-                tableStructure.unshift(idElem);
+                //tableStructure.unshift(idElem);
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
