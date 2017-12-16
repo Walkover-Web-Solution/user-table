@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http;
-
-
+use DateTime;
 class Helpers
 {
     public static function aasort(&$array, $key)
@@ -55,5 +54,10 @@ class Helpers
                 $orderNeed[] = $k;
         }
         return $orderNeed;
+    }
+    public static function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
     }
 }

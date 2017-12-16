@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Http\Helpers;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class team_table_mapping extends Model {
 
@@ -85,7 +87,13 @@ class team_table_mapping extends Model {
            if(isset($structure[$key])) {
                if ($structure[$key]['unique'] == 1) {
                    $unique_key = $key;
-                   break;
+               }
+               if($structure[$key]['column_type_id']==9){
+                   if (Helpers::validateDate($value,'Y-m-d H:i:s')!== false) {
+                       $input_param[$key] = Helpers::validateDate($value,'Y-m-d H:i:s');
+                   }else{
+                       $input_param[$key] = NULL;
+                   }
                }
            }
         }

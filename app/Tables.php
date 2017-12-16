@@ -154,7 +154,11 @@ class Tables extends Model
                 if ($value['unique'] == 'true') {
                     $table->string($value['name'])->unique($value['name']);
                 } else {
-                    $table->string($value['name'])->nullable();
+                    if($value['type']==9){
+                        $table->timestamp($value['name'])->nullable();
+                    }else {
+                        $table->string($value['name'])->nullable();
+                    }
                 }
             }
         });
