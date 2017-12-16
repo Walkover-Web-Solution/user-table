@@ -133,3 +133,7 @@ body {
 #tableStructure label {
     text-transform: lowercase;
 }
+
+#tableField input {
+    text-transform: lowercase;
+}
