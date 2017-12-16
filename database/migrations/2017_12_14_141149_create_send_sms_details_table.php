@@ -13,7 +13,7 @@ class CreateSendSmsDetailsTable extends Migration
      */
     public function up()
     {
-         Schema::create('send_mail_details', function (Blueprint $table) {
+         Schema::create('send_sms_details', function (Blueprint $table) {
             $table->increments('id');
             $table->string('senderId',15)->nullable();
             $table->text('message',100)->nullable();
