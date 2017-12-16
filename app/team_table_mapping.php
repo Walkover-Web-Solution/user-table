@@ -82,10 +82,12 @@ class team_table_mapping extends Model {
         $unique_key = '';
         $update_data = array();
         foreach ($input_param as $key => $value) {
-            if ($structure[$key]['unique'] == 1) {
-                $unique_key = $key;
-                break;
-            }
+           if(isset($structure[$key])) {
+               if ($structure[$key]['unique'] == 1) {
+                   $unique_key = $key;
+                   break;
+               }
+           }
         }
 
         if (empty($unique_key)) {
