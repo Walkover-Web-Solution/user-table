@@ -40,7 +40,7 @@ class TableStructure extends Model {
         $tableStructure = array();
         foreach ($tableData as $key => $value)
         {
-            $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+            $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
 
             if (empty($value['name']))
             {
