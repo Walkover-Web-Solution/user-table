@@ -71,7 +71,7 @@ class ConfigureTable extends Controller
             try {
                 Schema::table($tableName, function (Blueprint $table) use ($tableData,$tableName) {
                     foreach ($tableData as $value) {
-                        $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                         if(Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
                         {
                             if ($value['unique'] == 'true') {
@@ -100,6 +100,7 @@ class ConfigureTable extends Controller
 
                 Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
                     foreach ($tableData as $value) {
+                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                         $table->string($value['name'])->nullable();
                     }
                 });

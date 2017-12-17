@@ -159,7 +159,7 @@ class Tables extends Model
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             foreach ($data as $value) {
-                $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                 if ($value['unique'] == 'true') {
                     $table->string($value['name'])->unique($value['name']);
                 } else {
@@ -177,7 +177,7 @@ class Tables extends Model
         Schema::create($logTableName, function (Blueprint $table) use ($data) {
             $table->increments('id');
             foreach ($data as $value) {
-                $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+                $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                 $table->string($value['name'])->nullable();
             }
         });
