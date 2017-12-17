@@ -66,12 +66,14 @@ class ConfigureTable extends Controller
         $tableName = $tableNames['table_id'];
         $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
 
-        if (Schema::hasTable($tableName)) {
-            if (!empty($tableData)) {
-                try {
-                    Schema::table($tableName, function (Blueprint $table) use ($tableData) {
-                        foreach ($tableData as $value) {
-                            $value['name'] = preg_replace('/\s+/', '_', $value['name']);
+
+        if (!empty($tableData)) {
+            try {
+                Schema::table($tableName, function (Blueprint $table) use ($tableData,$tableName) {
+                    foreach ($tableData as $value) {
+                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                        if(Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
+                        {
                             if ($value['unique'] == 'true') {
                                 $table->string($value['name'])->unique($value['name'])->change();
                             } else {
@@ -81,28 +83,37 @@ class ConfigureTable extends Controller
                                     $table->string($value['name'])->nullable()->change();
                                 }
                             }
+                        }else{
+                            if ($value['unique'] == 'true') {
+                                $table->string($value['name'])->unique($value['name']);
+                            } else {
+                                if($value['type']==9){
+                                    $table->timestamp($value['name'])->nullable();
+                                }else {
+                                    $table->string($value['name'])->nullable();
+                                }
+                            }
                         }
-                    });
 
-                    Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                        foreach ($tableData as $value) {
-                            $table->string($value['name'])->nullable();
-                        }
-                    });
-                } catch (\Illuminate\Database\QueryException $ex) {
-                    $arr['msg'] = "Error in updation";
-                    $arr['exception'] = $ex;
-                    return response()->json($arr);
-                }
+                    }
+                });
+
+                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
+                    foreach ($tableData as $value) {
+                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                        $table->string($value['name'])->nullable();
+                    }
+                });
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $arr['msg'] = "Error in updation";
+                $arr['exception'] = $ex;
+                return response()->json($arr);
             }
-
-            $arr['msg'] = "Table Updated Successfuly";
-            $arr['newTableStructure'] = $newTableStructure;
-
-            return response()->json($arr);
-        } else {
-            $arr['msg'] = "Table Not Found";
-            return response()->json($arr);
         }
+
+        $arr['msg'] = "Table Updated Successfuly";
+        $arr['newTableStructure'] = $newTableStructure;
+
+        return response()->json($arr);
     }
 }
