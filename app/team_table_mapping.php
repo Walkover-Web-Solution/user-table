@@ -132,7 +132,7 @@ class team_table_mapping extends Model {
                         }
                     }
                 }else if($key == 'id'){
-                    $update_data[$key] = $input_param[$key];
+                    //$update_data[$key] = $input_param[$key];
                 }
             }
             $message = 'Entry Updated';
