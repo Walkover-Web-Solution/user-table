@@ -8,7 +8,11 @@
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
         @foreach($val as $k => $colName)
+        @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
+        @else
+        <th hidden><span class="fixed-header">{{$k}}</span></th>
+        @endif
         @endforeach
     </tr>
     </thead>
@@ -61,6 +65,8 @@
                     $date = '';
                 } ?>
                 <td>{{$date}}</td>
+        @elseif($k == 'id')
+        <td hidden>{{$colValue}}</td>
         @else
         <td>{{$colValue}}</td>
         @endif
@@ -115,6 +121,8 @@
                 $date = '';
                 } ?>
                 <td>{{$date}}</td>
+        @elseif($k == 'id')
+        <td hidden>{{$colValue}}</td>
         @else
         <td>{{$colValue}}</td>
         @endif
