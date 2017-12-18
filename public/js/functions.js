@@ -259,7 +259,7 @@ function editUserData(type) {
     } else {
         var userDetailsForm = $("#addUserDetails .form-control")
     }
-    jsonDoc['socket_data_source'] = '';
+    jsonDoc['data_source'] = 'manual';
     userDetailsForm.each(function () {
         fieldChange = $(this).attr('data-change');
         //if (fieldChange) {
