@@ -83,8 +83,6 @@ function saveTab() {
 }
 
 function makeFilterJsonData(tableId, type) {
-    console.log("we are here boss");
-    console.log(tableId, type);
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
@@ -99,7 +97,6 @@ function makeFilterJsonData(tableId, type) {
         if (radioname == "has_any_value" || radioname == 'is_unknown') {
             radioButtonValue = "1";
         }
-        //console.log(dataid, radioname, radioButtonValue)
         var subDoc = {};
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
@@ -128,7 +125,6 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
 
         data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
 
-        // headers: { 'token': tokenKey },
         success: function (data) {
             $('#response').html(data);
         }
@@ -139,11 +135,9 @@ var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select'
 
 function getUserDetails(id, tableId) {
     if (id) {
-        //selectedRow = index;
         $.ajax({
             type: 'GET', // Use GET
             url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            //   headers: { 'token': tokenKey },
             success: function (res) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
@@ -165,9 +159,6 @@ function getUserDetails(id, tableId) {
 
                     var i = 0;
                     for (var k in val) {
-                        // if (k === 'id') {
-                        //     continue;
-                        // }
                         var currentField = COL_FIELD[k];
                         i++;
                         if (k === 'id') {
@@ -176,21 +167,26 @@ function getUserDetails(id, tableId) {
                             editForm += '</div></div>';
                         } else {
                             editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                            if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
-                            } else if (currentField.column_type_id == 6) {
+                            if (currentField.column_type_id == 9) { // if column type is date
+                                selectedDateTime = val[k];
+                                var splitarray = new Array();
+                                if (selectedDateTime == null) selectedDateTime = new Date().toLocaleDateString();
+                                splitarray = selectedDateTime.split(" ");
+                                var date = splitarray[0];
+                                editForm += createInputElement(date, k, currentField, inputTypeArr[currentField.column_type_id]);
+                            } else if (currentField.column_type_id == 6) { // if column type is dropdown
                                 editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                            } else if (currentField.column_type_id == 10) {
+                            } else if (currentField.column_type_id == 10) { // if column type is teammates
                                 currentField['value_arr']['options'] = teammates;
                                 editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                            } else {
+                                editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
                             }
                             editForm += '</div></div>';
-
                         }
                     }
                     $("#edit_users_body").html(editForm);
                     $('#follow_up_date').attr('type', 'date');
-                    // $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
                 }
             }
         });
