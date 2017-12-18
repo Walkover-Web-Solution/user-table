@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Tabs;
 use App\Tables;
 use App\Teams;
@@ -42,8 +43,8 @@ class TableController extends Controller
         $logTableName = "log_" . $userTableName . '_' . $teamId;
 
         if (!Schema::hasTable($tableName)) {
-            Tables::createMainTable($tableName,$data);
-            Tables::createLogTable($logTableName,$data);
+            Tables::createMainTable($tableName, $data);
+            Tables::createLogTable($logTableName, $data);
 
             $arr['msg'] = "Table Successfully created";
             // Make entry of table in team table mapping & store table structure
@@ -159,10 +160,10 @@ class TableController extends Controller
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);
             $teammatesoptions = array();
-            foreach($teammates as $tkey => $tvalue){
+            foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableId,$userTableStructure,$teammatesoptions);
+            $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammatesoptions);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -176,7 +177,7 @@ class TableController extends Controller
             }
 
             $allTabCount = count($allTabsData);
-           
+
 
             return view('home', array(
                     'activeTab' => 'All',
@@ -235,12 +236,12 @@ class TableController extends Controller
 
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);
-    
+
             $teammatesoptions = array();
-            foreach($teammates as $tkey => $tvalue){
+            foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableIdMain,$userTableStructure,$teammatesoptions);
+            $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammatesoptions);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -253,7 +254,7 @@ class TableController extends Controller
                 $arrTabCount = array();
             }
             $allTabCount = count($allTabsData);
-           
+
             return array(
                 'activeTab' => $tabName,
                 'tabs' => $tabs,
@@ -273,7 +274,7 @@ class TableController extends Controller
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
-        
+
         if (empty($tableNames['table_id'])) {
             return array();
         }
@@ -297,8 +298,9 @@ class TableController extends Controller
 
     # function get search for selected filters
 
-    public function applyFilters(Request $request) {
-        $req = (array) ($request->filter);
+    public function applyFilters(Request $request)
+    {
+        $req = (array)($request->filter);
         $coltype = ($request->coltype);
 
         $tableId = $request->tableId;
@@ -310,10 +312,11 @@ class TableController extends Controller
             return view('table.response', $responseArray);
         }
     }
+
     public static function getAppliedFiltersData($req, $tableId, $pageSize = 20)
     {
-      //  print_r($req);
-      //  return;
+        //  print_r($req);
+        //  return;
         $users = \DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
 
@@ -332,7 +335,7 @@ class TableController extends Controller
             } else if (isset($req[$paramName]['is_unknown'])) {
                 $users->whereNull($paramName)->orWhere($paramName, '');
             } else if (isset($req[$paramName]['has_any_value'])) {
-                $users->whereNotNull($paramName)->where($paramName , '<>','');
+                $users->whereNotNull($paramName)->where($paramName, '<>', '');
             } else if (isset($req[$paramName]['greater_than'])) {
                 $users->where($paramName, '>', $req[$paramName]['greater_than']);
             } else if (isset($req[$paramName]['less_than'])) {
@@ -343,11 +346,11 @@ class TableController extends Controller
                 $users->where($paramName, '=', $req[$paramName]['equals_to']);
             } else if (isset($req[$paramName]['from'])) {
                 $users->where($paramName, '>=', $req[$paramName]['from']);
-            }else if (isset($req[$paramName]['to'])) {
+            } else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
-            }else if (isset($req[$paramName]['before'])) {
+            } else if (isset($req[$paramName]['before'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
-            }else if (isset($req[$paramName]['after'])) {
+            } else if (isset($req[$paramName]['after'])) {
                 $users->where($paramName, '>=', $req[$paramName]['to']);
             }
 
@@ -364,61 +367,70 @@ class TableController extends Controller
 
     public function add(Request $request)
     {
-        $add_entry_flag = False;
-        $table_auth = $request->header('Auth-Key');
-        $response = $this->getTableDetailsByAuth($table_auth);
+        try {
+            $add_entry_flag = False;
+            $dataSource = '';
+            $table_auth = $request->header('Auth-Key');
+            $response = $this->getTableDetailsByAuth($table_auth);
 
-        if (empty($response)) {
-            return response()->json(array('error' => 'authorization_failure'), 401);
-        }
-
-        $incoming_data = $request->all();
-        $table_incr_id = $response['id'];
-
-        $dataSource = $incoming_data['socket_data_source'];
-        if (!isset($incoming_data['edit_url_callback'])) {
-            $add_entry_flag = True;
-        }
-
-        unset($incoming_data['socket_data_source']);
-        unset($incoming_data['_token']);
-        unset($incoming_data['edit_url_callback']);
-
-        $table_name = $response['table_id'];
-        $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
-        $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
-
-        if (isset($teamData['error'])) {
-            return response()->json($teamData, 400);
-        } else {
-            $user = \Auth::user();
-            if ($user) {
-                $webhook_url = '';
-                if ($add_entry_flag && !empty($response['new_entry_api'])) {
-                    $webhook_url = $response['new_entry_api'];
-                } elseif (!$add_entry_flag && !empty($response['socket_api'])) {
-                    $webhook_url = $response['socket_api'];
-                }
-
-                if ($webhook_url != '') {
-                    $incoming_data = json_decode(json_encode($teamData['data']),true);
-                    $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
-                    $incoming_data['auth_email'] = $user->email;
-                    $data_string = json_encode($incoming_data);
-
-                    $ch = curl_init($webhook_url);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                            'Content-Type: application/json',
-                            'Content-Length: ' . strlen($data_string))
-                    );
-                    curl_exec($ch);
-                }
+            if (empty($response)) {
+                return response()->json(array('error' => 'authorization_failure'), 401);
             }
-            team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
-            return response()->json($teamData);
+
+            $incoming_data = $request->all();
+            $table_incr_id = $response['id'];
+
+            if (isset($incoming_data['data_source'])) {
+                $dataSource = $incoming_data['data_source'];
+            }
+            if (!isset($incoming_data['edit_url_callback'])) {
+                $add_entry_flag = True;
+            }
+
+            unset($incoming_data['data_source']);
+            unset($incoming_data['_token']);
+            unset($incoming_data['edit_url_callback']);
+
+            $table_name = $response['table_id'];
+            $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
+            $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
+
+            if (isset($teamData['error'])) {
+                return response()->json($teamData, 400);
+            } else {
+                $user = \Auth::user();
+                if ($user) {
+                    $webhook_url = '';
+                    if ($add_entry_flag && !empty($response['new_entry_api'])) {
+                        $webhook_url = $response['new_entry_api'];
+                    } elseif (!$add_entry_flag && !empty($response['socket_api'])) {
+                        $webhook_url = $response['socket_api'];
+                    }
+
+                    if ($webhook_url != '') {
+                        $incoming_data = json_decode(json_encode($teamData['data']), true);
+                        $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
+                        $incoming_data['auth_email'] = $user->email;
+                        $data_string = json_encode($incoming_data);
+
+                        $ch = curl_init($webhook_url);
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                'Content-Type: application/json',
+                                'Content-Length: ' . strlen($data_string))
+                        );
+                        curl_exec($ch);
+                    }
+                }
+                team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
+                return response()->json($teamData);
+            }
+        } catch (Exception $ex) {
+            $arr['msg'] = "Error occurred";
+            $arr['exception'] = $ex->getMessage();
+            return response()->json($arr);
         }
     }
 
@@ -542,10 +554,11 @@ class TableController extends Controller
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
         return $this->loadContacts($tableDetails['table_id'], $tabName);
     }
-    
-    public function sendEmailSMS(Request $request){
-        $filter = (array) ($request->filter);
-        $formData = (array) ($request->formData);
+
+    public function sendEmailSMS(Request $request)
+    {
+        $filter = (array)($request->filter);
+        $formData = (array)($request->formData);
         $type = ($request->type);
         $tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
@@ -553,98 +566,96 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($filter, $tableNames['table_id'],1000);
+        $jsonData = $this->getAppliedFiltersData($filter, $tableNames['table_id'], 1000);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
-        if(empty($results)){
-            return response(json_encode(array('message' =>'No record found to send')), 200)->header('Content-Type', 'application/json');
+        if (empty($results)) {
+            return response(json_encode(array('message' => 'No record found to send')), 200)->header('Content-Type', 'application/json');
         }
-        if($type == 'email'){
-            $response = $this->sendMail($formData,$results,$tableId);
+        if ($type == 'email') {
+            $response = $this->sendMail($formData, $results, $tableId);
         }
-        if($type == 'sms'){
-            $response = $this->sendSMS($formData,$results,$tableId);
+        if ($type == 'sms') {
+            $response = $this->sendSMS($formData, $results, $tableId);
         }
         return $response;
     }
-    
-    public function sendMail($formData,$data,$tableId){
+
+    public function sendMail($formData, $data, $tableId)
+    {
         $from_email = $formData['from_email'];
         $from_name = $formData['from_name'];
         $email_column = $formData['email_column'];
         $subject = $formData['subject'];
         $mailContent = $formData['mailContent'];
-        preg_match_all("~\##(.*?)\##~",$mailContent,$replaceKey);
+        preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
         $insertParamArr = array();
-        $i=0;
+        $i = 0;
         $findArr = array();
         $mailKey = "testKey";
-        foreach($data as $key => $value){
-            if(!isset($value[$email_column])){
-                return response(json_encode(array('message' =>'Email column not found')), 403)->header('Content-Type', 'application/json');
+        foreach ($data as $key => $value) {
+            if (!isset($value[$email_column])) {
+                return response(json_encode(array('message' => 'Email column not found')), 403)->header('Content-Type', 'application/json');
             }
-            if(!empty($value)){
+            if (!empty($value)) {
                 $name = $value['name'];
                 $valArr = array();
-                foreach($replaceKey[1] as $index => $strName){
-                    if(isset($value[$strName])){
+                foreach ($replaceKey[1] as $index => $strName) {
+                    if (isset($value[$strName])) {
                         $valArr[$index] = $value[$strName];
                         $findArr[$index] = "##$strName##";
+                    } else {
                     }
-                    else{
-                    }
-                    
+
                 }
                 $actualMailContent = str_replace($findArr, $valArr, $mailContent);
-                $insertParamArr[$i] = array('to_email' => $value[$email_column],'from_email' => $from_email, 'from_name'=> $from_name ,'subject' => $subject,'content' => $actualMailContent,'status' => 0,'mailKey'=> $mailKey,'tableId'=>$tableId); 
+                $insertParamArr[$i] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $mailKey, 'tableId' => $tableId);
             }
             $i++;
         }
         $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
-        if($response){
-            return response(json_encode(array('message' =>'Email Sent')), 200)->header('Content-Type', 'application/json');
-        }
-        else{
-            return response(json_encode(array('message' =>'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+        if ($response) {
+            return response(json_encode(array('message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
+        } else {
+            return response(json_encode(array('message' => 'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
         }
     }
-    
-    public function sendSMS($formData,$data,$tableId){
+
+    public function sendSMS($formData, $data, $tableId)
+    {
         $senderId = $formData['sender'];
         $route = $formData['route'];
         $mobile_column = $formData['mobile_columnn'];
         $message = $formData['message'];
-        preg_match_all("~\##(.*?)\##~",$message,$replaceKey);
+        preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
         $insertParamArr = array();
         $i = 0;
         $findArr = array();
         $authkey = '125463';
-        foreach($data as $key => $value){
-            if(!isset($value[$mobile_column])){
-                return response(json_encode(array('message' =>'SMS column not found')), 403)->header('Content-Type', 'application/json');
+        foreach ($data as $key => $value) {
+            if (!isset($value[$mobile_column])) {
+                return response(json_encode(array('message' => 'SMS column not found')), 403)->header('Content-Type', 'application/json');
             }
-            if(!empty($value)){
+            if (!empty($value)) {
                 $valArr = array();
-                foreach($replaceKey[1] as $index => $strName){
-                    if(isset($value[$strName])){
+                foreach ($replaceKey[1] as $index => $strName) {
+                    if (isset($value[$strName])) {
                         $valArr[$index] = $value[$strName];
                         $findArr[$index] = "##$strName##";
+                    } else {
                     }
-                    else{
-                    }
-                    
+
                 }
                 $actualMsg = str_replace($findArr, $valArr, $message);
-                $insertParamArr[$i] = array('senderId' => $senderId,'message' => $actualMsg, 'number'=> $value[$mobile_column] ,'authkey' => $authkey,'route' => $route,'status' => 0,'tableId'=>$tableId); 
+                $insertParamArr[$i] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $authkey, 'route' => $route, 'status' => 0, 'tableId' => $tableId);
             }
             $i++;
         }
         $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
-        if($response){
-            return response(json_encode(array('message' =>'SMS Sent')), 200)->header('Content-Type', 'application/json');
-        }
-        else{
-            return response(json_encode(array('message' =>'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+        if ($response) {
+            return response(json_encode(array('message' => 'SMS Sent')), 200)->header('Content-Type', 'application/json');
+        } else {
+            return response(json_encode(array('message' => 'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
         }
     }
 }
