@@ -29,11 +29,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-//var API_BASE_URL = "https://contacts-apis.herokuapp.com";
-//var API_BASE_URL = "http://localhost:8000";
-//var tokenKey = localStorage.getItem('token');
-//var tokenKey = getUrlParameter('token');
-$('body').on('focus', ".calendar_cls", function() {
+$('body').on('focus', ".calendar_cls", function () {
     $(this).datepicker();
 });
 
@@ -41,7 +37,7 @@ function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
 
-    user_data.forEach(function(val, index) {
+    user_data.forEach(function (val, index) {
 
         userDetails += `<tr data-toggle="modal" data-target="#edit_user" onclick = "getUserDetails('` + index + `')" >
         <td></td>`
@@ -93,14 +89,14 @@ function makeFilterJsonData(tableId, type) {
     var jsonObject = {};
     var coltypeObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
-    filterCheckedElement.each(function() {
+    filterCheckedElement.each(function () {
         dataid = $(this).attr('dataid');
         filterChecked.push($(this).attr('dataid'));
         var radioButton = $("#condition_" + dataid + " input:checked");
         var radioname = radioButton.attr('dataid');
         var coltype = radioButton.attr('datacoltype');
         var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
-        if(radioname == "has_any_value" || radioname == 'is_unknown'){
+        if (radioname == "has_any_value" || radioname == 'is_unknown') {
             radioButtonValue = "1";
         }
         //console.log(dataid, radioname, radioButtonValue)
@@ -130,14 +126,15 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
-        data: { 'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject }, // Some data e.g. Valid JSON as a string
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
 
         // headers: { 'token': tokenKey },
-        success: function(data) {
+        success: function (data) {
             $('#response').html(data);
         }
     });
 }
+
 var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select'];
 
 function getUserDetails(id, tableId) {
@@ -147,7 +144,7 @@ function getUserDetails(id, tableId) {
             type: 'GET', // Use GET
             url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             //   headers: { 'token': tokenKey },
-            success: function(res) {
+            success: function (res) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
@@ -161,49 +158,34 @@ function getUserDetails(id, tableId) {
                         column_name: "id",
                         column_type_id: 0,
                         unique: 1,
-                        default_value: { options: [""] },
-                        column_type: { id: 1, column_name: "id" }
+                        default_value: {options: [""]},
+                        column_type: {id: 1, column_name: "id"}
                     }
                     COL_FIELD.id = idElem;
 
                     var i = 0;
                     for (var k in val) {
-                        if (k === 'id') {
-                            continue;
-                        }
+                        // if (k === 'id') {
+                        //     continue;
+                        // }
                         var currentField = COL_FIELD[k];
                         i++;
-                        if (!currentField) {
-                            i = i - 1;
+                        if (k === 'id') {
+                            editForm += `<div hidden class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                            editForm += createHiddenElement(val[k], k);
+                            editForm += '</div></div>';
                         } else {
-                            var cls = '';
-                            if (currentField.type == 'timestamp')
-                                cls = 'calendar_cls';
-                            if (i % 2) {
-                                editForm += `<div class="row">`;
-                                editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-
-                                if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls, currentField, inputTypeArr[currentField.column_type_id]);
-                                } else if (currentField.column_type_id == 6) {
-                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                } else if (currentField.column_type_id == 10) {
-                                    currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                }
-                                editForm += '</div>';
-                            } else {
-                                editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                                if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
-                                    editForm += createInputElement(val[k], k, cls, currentField, inputTypeArr[currentField.column_type_id]);
-                                } else if (currentField.column_type_id == 6) {
-                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                } else if (currentField.column_type_id == 10) {
-                                    currentField['value_arr']['options'] = teammates;
-                                    editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                }
-                                editForm += '</div></div>';
+                            editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                            if (currentField && currentField.column_type_id !== 6 && currentField.column_type_id !== 10) {
+                                editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
+                            } else if (currentField.column_type_id == 6) {
+                                editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                            } else if (currentField.column_type_id == 10) {
+                                currentField['value_arr']['options'] = teammates;
+                                editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                             }
+                            editForm += '</div></div>';
+
                         }
                     }
                     $("#edit_users_body").html(editForm);
@@ -216,7 +198,7 @@ function getUserDetails(id, tableId) {
         $.ajax({
             type: 'GET', // Use GET
             url: API_BASE_URL + '/tables/structure/' + tableId, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            success: function(res) {
+            success: function (res) {
 
                 var tableStructure = res.structure;
                 var COL_FIELD = res.colDetails;
@@ -224,35 +206,27 @@ function getUserDetails(id, tableId) {
                 var teammates = res.teammates
                 var authKey = tableData['auth'];
                 var idElem = {
-                        column_name: "id",
-                        column_type_id: 0,
-                        unique: 0,
-                        default_value: { options: [""] },
-                        column_type: { id: 1, column_name: "id" }
-                    }
-                    //tableStructure.unshift(idElem);
+                    column_name: "id",
+                    column_type_id: 0,
+                    unique: 0,
+                    default_value: {options: [""]},
+                    column_type: {id: 1, column_name: "id"}
+                }
+                //tableStructure.unshift(idElem);
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
-                var lable;
                 for (var k in tableStructure) {
                     var field = tableStructure[k]
                     var currentField = COL_FIELD[field['column_name']];
                     var column_type = tableStructure[k]['column_type'];
 
-                    var cls = '';
-
-                    if (column_type.column_name == 'timestamp') {
-                        cls = 'calendar_cls';
-                    }
-
-                    // editForm += `<div class="row">`;
                     var label = tableStructure[k]['column_name'];
                     if (currentField.unique === 1) label = label + '*';
                     editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + label + `</label>`;
 
                     if (column_type.id !== 6 && column_type.id !== 10) {
-                        editForm += createInputElement('', tableStructure[k]['column_name'], cls, currentField, inputTypeArr[currentField.column_type_id]);
+                        editForm += createInputElement('', tableStructure[k]['column_name'], currentField, inputTypeArr[currentField.column_type_id]);
                     } else if (column_type.id == 6) {
                         editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
                     } else if (column_type.id == 10) {
@@ -286,7 +260,7 @@ function editUserData(type) {
         var userDetailsForm = $("#addUserDetails .form-control")
     }
     jsonDoc['socket_data_source'] = '';
-    userDetailsForm.each(function() {
+    userDetailsForm.each(function () {
         fieldChange = $(this).attr('data-change');
         //if (fieldChange) {
         dataid = $(this).attr('dataid');
@@ -295,7 +269,6 @@ function editUserData(type) {
         if (required && val === "") {
             errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
             $('#add_users_body').append(errMsg);
-            // document.getElementById("validation_messgae_" + dataid).innerHTML = "Required " + dataid
             is_valid = false;
         }
         if (dataid == 'follow_up_date') {
@@ -318,11 +291,12 @@ function editUserData(type) {
             url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             data: jsonDoc, // Some data e.g. Valid JSON as a string
 
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader('Auth-Key', authKey);
             },
-            success: function(data) {
+            success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
+                console.log(data)
                 location.reload();
             },
         });
@@ -331,12 +305,12 @@ function editUserData(type) {
 
 function initFilterSlider() {
     //open the lateral panel
-    $('.cd-btn').on('click', function(event) {
+    $('.cd-btn').on('click', function (event) {
         event.preventDefault();
         $('.cd-panel').addClass('is-visible');
     });
     //clode the lateral panel
-    $('.cd-panel').on('click', function(event) {
+    $('.cd-panel').on('click', function (event) {
         if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
             $('.cd-panel').removeClass('is-visible');
             event.preventDefault();
@@ -349,7 +323,8 @@ function watchOnchange(ele) {
 }
 
 function startInterval() {
-    myInterval = setInterval(function() {}, interval);
+    myInterval = setInterval(function () {
+    }, interval);
 }
 
 //startInterval();
@@ -377,7 +352,7 @@ function searchKeyword(event, query) {
     if (!q) {
         return false;
     }
-    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function(response) {
+    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
         $('#response').html(response);
 
     });
@@ -388,15 +363,16 @@ function getOptionList() {
         type: 'GET',
         dataType: 'json',
         url: API_BASE_URL + "/getOptionList",
-        success: function(response) {
+        success: function (response) {
             optionList = response;
-            setTimeout(function() {
+            setTimeout(function () {
                 addRow(true);
                 addMoreRow(true);
             }, 300);
         }
     });
 }
+
 // add new field row
 function addRow(check) {
 
@@ -516,13 +492,13 @@ function onSelectOption(val) {
 function onTypeText() {
     $('.title').text('Choose One Option');
     var html = '';
-    $.each(checkList, function(idx, val) {
+    $.each(checkList, function (idx, val) {
         html += `<div class="checkbox">
             <label>
             <input type="checkbox" class="" onclick="showDiv('` + val.name + `')">` + val.name + `</label>
         </div>
         <div id="` + val.name + `" class="hide more-option">`;
-        $.each(val.priority, function(indx) {
+        $.each(val.priority, function (indx) {
             html += `<div class="form-check">
                 <label class="form-check-label radio-label">
                     <input class="" name="priority" type="radio"> ` + val.priority[indx] + `
@@ -563,7 +539,7 @@ function createSelectElement(arr, selected, k) {
 
 // radioType behavior on checkbox
 function radioBehavior() {
-    $(".chkbx").change(function() {
+    $(".chkbx").change(function () {
         $(".chkbx").prop('checked', false);
         $(this).prop('checked', true);
     });
@@ -587,7 +563,7 @@ function showDiv(id) {
     $("#" + id).toggleClass('hide');
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     getOptionList();
     $('#right_panel').hide();
     var title = $('#right_panel .title');
@@ -604,8 +580,9 @@ function sendData(type, JsonData, formData, tableId) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/sendEmailSMS", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: { 'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId }, // Some data e.g. Valid JSON as a string
+        data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
-        success: function(data) {}
+        success: function (data) {
+        }
     });
 }

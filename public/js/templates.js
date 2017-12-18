@@ -41,17 +41,22 @@ function createSelectElement(currentField, selected, key, inputType) {
     return selectElem;
 }
 
-function createInputElement(val, key, cls, field, inputType) {
+function createInputElement(val, key, field, inputType) {
     var inputElem = '';
     var is_disable = '';
     if (!val) val = '';
-    else is_disable ="disabled";
+    else is_disable = "disabled";
 
     if (field.unique === 1) {
-        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" ` + is_disable + ` data-change="true" required>`;
+        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" ` + is_disable + ` data-change="true" required>`;
     } else {
-        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" class="form-control" onchange="watchOnchange(` + key + `)">`;
+        inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">`;
     }
-    inputElem += `<p id="validation_messgae_` + key + `"></p>`
+    return inputElem;
+}
+
+function createHiddenElement(val, key) {
+    var inputElem = '';
+    inputElem += `<input type="hidden" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" >`;
     return inputElem;
 }
