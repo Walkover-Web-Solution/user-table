@@ -67,15 +67,15 @@ class ConfigureTable extends Controller
         $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
 
 
-        if (!empty($tableData)) {
+        if (!empty($newTableStructure)) {
             try {
-                Schema::table($tableName, function (Blueprint $table) use ($tableData,$tableName) {
-                    foreach ($tableData as $value) {
+                Schema::table($tableName, function (Blueprint $table) use ($newTableStructure,$tableName) {
+                    foreach ($newTableStructure as $value) {
                         $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                         if(Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
                         {
                             if ($value['unique'] == 'true') {
-                                $table->string($value['name'])->unique($value['name'])->change();
+                                //$table->string($value['name'])->unique($value['name'])->change();
                             } else {
                                 if($value['type']==9){
                                     $table->integer($value['name'])->unsigned()->nullable()->change();
@@ -98,10 +98,13 @@ class ConfigureTable extends Controller
                     }
                 });
 
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $value) {
-                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
-                        $table->string($value['name'])->nullable();
+                Schema::table($logTableName, function (Blueprint $table) use ($newTableStructure,$tableName) {
+                    foreach ($newTableStructure as $value) {
+                        if(!Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
+                        {
+                            $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                            $table->string($value['name'])->nullable();
+                        }
                     }
                 });
             } catch (\Illuminate\Database\QueryException $ex) {
