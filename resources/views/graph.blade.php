@@ -4,6 +4,19 @@
     <div class="tablist">
         <ul id="tablist">
             <li><a href="{{route('tables')}}"><i class="glyphicon glyphicon-chevron-left"></i> Back to Tables</a></li>
+            <li role="presentation">
+            <a href="{{env('APP_URL')}}/tables/{{$tableId}}">Table</a>
+        </li>
+        @foreach($arrTabCount as $tabDetail)
+        @foreach($tabDetail as $tabName => $tabCount)
+
+        <li role="presentation">
+            <!--<a href="{{ collect(request()->segments())->last() }}/{{$tabName}}">{{$tabName}}-->
+            <a href="{{env('APP_URL')}}/graph/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
+            </a>
+        </li>
+        @endforeach
+        @endforeach
             <!-- Right Side Of Navbar -->
             <ul class="nav navbar-right user_dropdown">
                 <!-- Authentication Links -->
