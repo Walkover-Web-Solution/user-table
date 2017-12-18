@@ -164,7 +164,7 @@ class Tables extends Model
                     $table->string($value['name'])->unique($value['name']);
                 } else {
                     if($value['type']==9){
-                        $table->timestamp($value['name'])->nullable();
+                        $table->integer($value['name'])->unsigned()->nullable();
                     }else {
                         $table->string($value['name'])->nullable();
                     }

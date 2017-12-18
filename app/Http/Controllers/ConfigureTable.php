@@ -78,7 +78,7 @@ class ConfigureTable extends Controller
                                 $table->string($value['name'])->unique($value['name'])->change();
                             } else {
                                 if($value['type']==9){
-                                    $table->timestamp($value['name'])->nullable()->change();
+                                    $table->integer($value['name'])->unsigned()->nullable()->change();
                                 }else {
                                     $table->string($value['name'])->nullable()->change();
                                 }
@@ -88,7 +88,7 @@ class ConfigureTable extends Controller
                                 $table->string($value['name'])->unique($value['name']);
                             } else {
                                 if($value['type']==9){
-                                    $table->timestamp($value['name'])->nullable();
+                                    $table->integer($value['name'])->unsigned()->nullable();
                                 }else {
                                     $table->string($value['name'])->nullable();
                                 }

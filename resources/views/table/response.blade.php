@@ -59,7 +59,9 @@
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
                 <?php if($colValue){
-                    $carbonDate = new Carbon($colValue);
+                    //$carbonDate = new Carbon($colValue);
+                    $carbonDate = Carbon::createFromTimestamp($colValue);
+
                     $date = $carbonDate->diffForHumans();
                 }else{
                     $date = '';
@@ -115,7 +117,8 @@
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
             <?php if($colValue){
-                $carbonDate = new Carbon($colValue);
+                //$carbonDate = new Carbon($colValue);
+                    $carbonDate = Carbon::createFromTimestamp($colValue);
                 $date = $carbonDate->diffForHumans();
             }else{
                 $date = '';

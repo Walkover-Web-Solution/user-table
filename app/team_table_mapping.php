@@ -2,9 +2,8 @@
 
 namespace App;
 
-use App\Http\Helpers;
+use DB;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class team_table_mapping extends Model {
 
@@ -29,7 +28,7 @@ class team_table_mapping extends Model {
     }
 
     public static function getTableSourcesByTableIncrId($team_incr_id_arr) {
-        $data = \DB::table('user_data_source')
+        $data = DB::table('user_data_source')
                 ->select('*')
                 ->whereIn('table_incr_id', $team_incr_id_arr)
                 ->get();
@@ -51,7 +50,7 @@ class team_table_mapping extends Model {
     }
 
     public static function getDataById($id) {
-        $data = \DB::table('team_table_mappings')
+        $data = DB::table('team_table_mappings')
                 ->select('*')
                 ->where('id', $id)
                 ->get();
@@ -67,13 +66,13 @@ class team_table_mapping extends Model {
 
     public static function makeNewEntryForSource($table_incr_id, $dataSource) {
         $match_this = array('table_incr_id' => $table_incr_id, 'source' => $dataSource);
-        $exists = \DB::table('user_data_source')->where($match_this)->get();
+        $exists = DB::table('user_data_source')->where($match_this)->get();
         $existsArr = json_decode(json_encode($exists), true);
 
         if ($existsArr) {
             //echo "Working as required";
         } else {
-            \DB::table('user_data_source')
+            DB::table('user_data_source')
                     ->insert(array('table_incr_id' => $table_incr_id, 'source' => $dataSource));
         }
         return True;
@@ -89,10 +88,10 @@ class team_table_mapping extends Model {
                    $unique_key = $key;
                }
                if($structure[$key]['column_type_id']==9){
-                   if (Helpers::validateDate($value)!== false) {
-                       $input_param[$key] = Carbon::parse($value);
-                   }else{
+                   if (($timestamp = strtotime($value)) === false) {
                        $input_param[$key]  ='';
+                   } else {
+                       $input_param[$key] = $timestamp;
                    }
                }
            }
@@ -105,7 +104,7 @@ class team_table_mapping extends Model {
                 unset($input_param['id']);
             }
         }
-        $table = \DB::table($table_name);
+        $table = DB::table($table_name);
 
         if (empty($input_param[$unique_key])) {
             $response=array();
@@ -128,7 +127,7 @@ class team_table_mapping extends Model {
                         }
                     } else {
                         if (!empty($input_param[$key])) {
-                            $update_data[$key] = \DB::raw($key . ' + (' . $input_param[$key] . ')');
+                            $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
                         }
                     }
                 }else if($key == 'id'){
@@ -146,14 +145,14 @@ class team_table_mapping extends Model {
         if(isset($input_param['id'])){
             unset($input_param['id']);
         }
-        \DB::table($log_table)
+        DB::table($log_table)
                 ->insert($input_param);
 
         return array('success' => $message, 'data' => $update_data);
     }
 
     public static function updateTableStructure($paramArr, $tableId) {
-        $data = \DB::table('team_table_mappings')
+        $data = DB::table('team_table_mappings')
                 ->where('id', $tableId)
                 ->update($paramArr);
 
@@ -161,14 +160,14 @@ class team_table_mapping extends Model {
     }
 
     public static function updateTableData($paramArr) {
-        $data = \DB::table($paramArr['table'])
+        $data = DB::table($paramArr['table'])
                 ->where($paramArr['where_key'], $paramArr['where_value'])
                 ->update($paramArr['update']);
         return $data;
     }
 
     public static function updateTableStructureData($tableId, $structure) {
-        $data = \DB::table('team_table_mappings')
+        $data = DB::table('team_table_mappings')
                 ->where('id', $tableId)
                 ->update(['table_structure' => $structure]);
         return $data;
