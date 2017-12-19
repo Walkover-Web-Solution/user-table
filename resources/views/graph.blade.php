@@ -238,7 +238,7 @@
             return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
         }
         function getGraphData(dateColumn, secondColumn,startDate,endDate) {
-            var tableName = "{{$userTableName}}";
+            var tableName = "{{$tableId}}";
             var dataUrl = "{{env('APP_URL')}}/graphdata?startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
             $.get(dataUrl, function (response) {
                 var data = JSON.parse(response);
@@ -275,7 +275,7 @@
             });
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
-            var tableName = "{{$userTableName}}";
+            var tableName = "{{$tableId}}";
             var dataUrl = "{{env('APP_URL')}}/graphdata?tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
             $.get(dataUrl, function (response) {
                 var data = JSON.parse(response);
