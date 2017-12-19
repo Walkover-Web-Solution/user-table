@@ -178,7 +178,7 @@ class TableController extends Controller
 
             $allTabCount = count($allTabsData);
 
-
+            rsort($allTabsData);
             return view('home', array(
                     'activeTab' => 'All',
                     'tabs' => $tabs,
@@ -425,7 +425,9 @@ class TableController extends Controller
                     }
                 }
                 team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
-                return response()->json($teamData);
+                $arr['teamData'] = $teamData;
+                $arr['user'] = $user;
+                return response()->json($arr);
             }
         } catch (Exception $ex) {
             $arr['msg'] = "Error occurred";
