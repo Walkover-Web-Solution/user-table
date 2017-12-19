@@ -98,9 +98,9 @@ class ConfigureTable extends Controller
                     }
                 });
 
-                Schema::table($logTableName, function (Blueprint $table) use ($newTableStructure,$tableName) {
+                Schema::table($logTableName, function (Blueprint $table) use ($newTableStructure,$logTableName) {
                     foreach ($newTableStructure as $value) {
-                        if(!Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
+                        if(!Schema::hasColumn($logTableName, $value['name'])) //check whether log table has this column
                         {
                             $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                             $table->string($value['name'])->nullable();
