@@ -168,12 +168,8 @@ function getUserDetails(id, tableId) {
                         } else {
                             editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                             if (currentField.column_type_id == 9) { // if column type is date
-                                selectedDateTime = val[k];
-                                var splitarray = new Array();
-                                if (selectedDateTime == null) selectedDateTime = new Date().toLocaleDateString();
-                                splitarray = selectedDateTime.split(" ");
-                                var date = splitarray[0];
-                                editForm += createInputElement(date, k, currentField, inputTypeArr[currentField.column_type_id]);
+                                var currentVal = parseDate(val[k])
+                                editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
                             } else if (currentField.column_type_id == 6) { // if column type is dropdown
                                 editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                             } else if (currentField.column_type_id == 10) { // if column type is teammates
@@ -239,6 +235,17 @@ function getUserDetails(id, tableId) {
             }
         });
     }
+}
+function parseDate(unixDateTime) {
+    if (unixDateTime == null) var selectedDate = new Date();
+    else var selectedDate = new Date(unixDateTime * 1000);
+    var date = selectedDate.getDate();
+    var month = selectedDate.getMonth() +1;
+    var year = selectedDate.getFullYear();
+    if(date<10) date= "0"+date;
+    if(month<10) month= "0"+month;
+    var currentVal = year +"-"+ month +"-"+ date;
+    return currentVal
 }
 
 function editUserData(type) {
