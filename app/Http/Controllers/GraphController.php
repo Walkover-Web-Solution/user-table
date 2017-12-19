@@ -22,7 +22,7 @@ class GraphController extends Controller {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
 
-        $tableNames = team_table_mapping::getUserTablesNameByName($tableName);
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $userTableName = $tableNames['table_id'];
 
         $userTableStructure = $tableNames['table_structure'];
