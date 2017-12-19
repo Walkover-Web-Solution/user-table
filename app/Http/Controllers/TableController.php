@@ -34,13 +34,14 @@ class TableController extends Controller
             $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+        $userTableName = preg_replace('/\s+/', '_', $userTableName);
 
         $teamId = $request->input('teamId');
 
         $socketApi = $request->input('socketApi');
         $newEntryApi = $request->input('newEntryApi');
-        $tableName = "main_" . $userTableName . '_' . $teamId;
-        $logTableName = "log_" . $userTableName . '_' . $teamId;
+        $tableName = strtolower("main_" . $userTableName . '_' . $teamId);
+        $logTableName = strtolower("log_" . $userTableName . '_' . $teamId);
 
         if (!Schema::hasTable($tableName)) {
             Tables::createMainTable($tableName, $data);

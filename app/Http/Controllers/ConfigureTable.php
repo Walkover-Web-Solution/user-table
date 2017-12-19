@@ -64,7 +64,7 @@ class ConfigureTable extends Controller
         team_table_mapping::updateTableStructure($paramArr, $tableAutoIncId);
 
         $tableName = $tableNames['table_id'];
-        $logTableName = "log_" . $tableNames['table_name'] . "_" . $tableNames['team_id'];
+        $logTableName = strtolower("log_" . $tableNames['table_name'] . "_" . $tableNames['team_id']);
 
 
         if (!empty($newTableStructure)) {
@@ -98,10 +98,13 @@ class ConfigureTable extends Controller
                     }
                 });
 
-                Schema::table($logTableName, function (Blueprint $table) use ($tableData) {
-                    foreach ($tableData as $value) {
-                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
-                        $table->string($value['name'])->nullable();
+                Schema::table($logTableName, function (Blueprint $table) use ($newTableStructure,$logTableName) {
+                    foreach ($newTableStructure as $value) {
+                        if(!Schema::hasColumn($logTableName, $value['name'])) //check whether log table has this column
+                        {
+                            $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                            $table->string($value['name'])->nullable();
+                        }
                     }
                 });
             } catch (\Illuminate\Database\QueryException $ex) {

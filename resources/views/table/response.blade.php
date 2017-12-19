@@ -25,7 +25,7 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
-                   value="{{$info}}" @if($info== $colValue) checked @endif>{{$info}}<br>
+                   value="{{$info}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
@@ -54,7 +54,7 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif>{{$info}}<br>
+                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
@@ -84,7 +84,7 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
-                   value="{{$info}}" @if($info== $colValue) checked @endif>{{$info}}<br>
+                   value="{{$info}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
@@ -112,7 +112,7 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif>{{$info}}<br>
+                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
