@@ -61,7 +61,7 @@
                 <?php if($colValue){
                     //$carbonDate = new Carbon($colValue);
                     $carbonDate = Carbon::createFromTimestamp($colValue);
-
+                    $carbonDate->setTimezone('UTC');
                     $date = $carbonDate->diffForHumans();
                 }else{
                     $date = '';
@@ -119,6 +119,7 @@
             <?php if($colValue){
                 //$carbonDate = new Carbon($colValue);
                     $carbonDate = Carbon::createFromTimestamp($colValue);
+                    $carbonDate->setTimezone('UTC');
                 $date = $carbonDate->diffForHumans();
             }else{
                 $date = '';
