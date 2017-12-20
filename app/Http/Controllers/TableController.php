@@ -86,9 +86,10 @@ class TableController extends Controller
         session()->put('teams', $teams);
 
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
-        $table_incr_id_arr = array();
+        $teamTables = $table_incr_id_arr = array();
 
         foreach ($tableLst as $key => $value) {
+            $teamTables[$value['team_id']][] = $value;
             $table_incr_id_arr[] = $value['id'];
         }
         $data = json_decode(json_encode(team_table_mapping::getTableSourcesByTableIncrId($table_incr_id_arr)), true);
@@ -99,9 +100,9 @@ class TableController extends Controller
         }
 
         return view('showTable', array(
-            'allTables' => $tableLst,
             'teamsArr' => $teams,
-            'source_arr' => $source_arr
+            'source_arr' => $source_arr,
+            'teamTables' => $teamTables
         ));
     }
 
