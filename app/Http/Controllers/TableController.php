@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers;
+use App\Tables;
+use App\TableStructure;
+use App\Tabs;
+use App\team_table_mapping;
+use App\Teams;
+use App\Viasocket;
 use DB;
 use Exception;
-use App\Tabs;
-use App\Tables;
-use App\Teams;
-use App\team_table_mapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use App\TableStructure;
-use App\Viasocket;
-use App\Http\Helpers;
 
 class TableController extends Controller
 {
@@ -254,6 +254,7 @@ class TableController extends Controller
     public function processFilterData($req, $tableId, $pageSize = 20)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
         if (empty($tableNames['table_id'])) {
@@ -274,7 +275,7 @@ class TableController extends Controller
             'teammates' => $teammates,
             'pagination' => $data,
             'structure' => $userTableStructure,
-        );
+            'tableAuth' => $tableAuth);
     }
 
     # function get search for selected filters
@@ -474,7 +475,8 @@ class TableController extends Controller
                 'tableId' => $tableId,
                 'teammates' => $teammates,
                 'tableAuth' => $tableAuth,
-                'pagination' => $results
+                'pagination' => $results,
+                'structure' => $userTableStructure,
             );
         }
     }
