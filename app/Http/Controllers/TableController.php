@@ -454,29 +454,6 @@ class TableController extends Controller
         ));
     }
 
-    public function updateEntry(Request $request)
-    {
-
-        $update_details = $request->all();
-        if (!isset($update_details['table_id'])) {
-            return response()->json(array('error' => 'Invalid table id'));
-        }
-        $tableNames = team_table_mapping::getUserTablesNameById($update_details['table_id']);
-
-        $tableName = $tableNames['table_id'];
-        $param['table'] = $tableName;
-        $param['where_key'] = 'id';
-        $param['where_value'] = $update_details['row_id'];
-
-        $param['update'] = array($update_details['coloumn_name'] => $update_details['new_value']);
-        $response = team_table_mapping::updateTableData($param);
-        if ($response == 1) {
-            return response()->json(array('msg' => 'Data updated'));
-        } else {
-            return response()->json(array('msg' => 'Data couldnot be updated'));
-        }
-    }
-
     public function getSearchedData($tableId, $query)
     {
         $array = $this->getTableSearchData($tableId, $query, 30);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\team_table_mapping;
 use Closure;
+use GuzzleHttp\Exception\RequestException;
 
 class VerifyTableToken {
 
@@ -19,11 +21,11 @@ class VerifyTableToken {
         } else {
             $authToken = $request->header('Auth-Key');
             try {
-                $response = \App\team_table_mapping::getTableByAuth($authToken);
+                $response = team_table_mapping::getTableByAuth($authToken);
                 if(empty($response)){
                     return response()->json(array('error' => 'You need proper authorization.'), 401);
                 }
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
+            } catch (RequestException $e) {
                 return response()->json(json_decode($e->getResponse()->getBody()->getContents()), 401);
             }
         }
