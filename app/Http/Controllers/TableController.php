@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Exception;
 use App\Tabs;
 use App\Tables;
@@ -106,30 +107,6 @@ class TableController extends Controller
         ));
     }
 
-    public function getAllTablesForSocket(Request $request)
-    {
-        $team_ids = $request->input('team_ids');
-        $team_id_array = explode(',', $team_ids);
-        $table_data = $this->getUserTablesByTeamId($team_id_array);
-        $table_array = array();
-        $count = 0;
-        foreach ($table_data as $value) {
-            $table_array[$value['team_id']][$count]['table_id'] = $value['table_id'];
-            $table_array[$value['team_id']][$count]['table_name'] = $value['table_name'];
-            $table_array[$value['team_id']][$count]['structure'] = $value['table_structure'];
-            $table_array[$value['team_id']][$count]['auth'] = $value['auth'];
-            $count++;
-        }
-        $response_arr = array();
-        $cnt = 0;
-        foreach ($table_array as $team_id => $table_data) {
-            $response_arr[$cnt]['team_id'] = $team_id;
-            $response_arr[$cnt]['tables'] = $table_data;
-            $cnt++;
-        }
-        return response()->json($response_arr);
-    }
-
     function getUserTablesByTeamId($teamIdArr)
     {
         $tableLst = team_table_mapping::getUserTablesByTeam($teamIdArr);
@@ -140,16 +117,16 @@ class TableController extends Controller
     public function loadSelectedTable($tableName)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $userTableName = $tableNames['table_name'];
-        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
-        if (empty($tableNames['table_id'])) {
+        if (empty($tableNames)) {
             echo "no table found";
             exit();
         } else {
-            $tableAuth = $tableNames['auth'];
+            $userTableName = $tableNames['table_name'];
             $tableId = $tableNames['table_id'];
-            $allTabs = \DB::table($tableId)->select('*')->get();
-            $allTabsData = json_decode(json_encode($allTabs), true);
+            $tableAuth = $tableNames['auth'];
+            $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+
+            $allTabsData = $this->loadContacts($tableId,'All');
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
 
@@ -217,7 +194,7 @@ class TableController extends Controller
             return array();
         } else {
             $tableIdMain = $tableNames['table_id'];
-            $allTabs = \DB::table($tableIdMain)
+            $allTabs = DB::table($tableIdMain)
                 ->select('*')
                 ->get();
             $orderNeed = Helpers::orderData($tableNames);
@@ -319,7 +296,7 @@ class TableController extends Controller
     {
         //  print_r($req);
         //  return;
-        $users = \DB::table($tableId)->selectRaw('*');
+        $users = DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
 
             if (isset($req[$paramName]['is'])) {
@@ -471,7 +448,7 @@ class TableController extends Controller
             echo "no table found";
             exit();
         } else {
-            $users = \DB::table($tableID)->selectRaw('*');
+            $users = DB::table($tableID)->selectRaw('*');
             $count = 0;
 
             foreach ($userTableStructure as $key => $value) {
