@@ -194,6 +194,7 @@ class TableController extends Controller
             return array();
         } else {
             $tableIdMain = $tableNames['table_id'];
+            $tableAuth = $tableNames['auth'];
             $allTabs = DB::table($tableIdMain)
                 ->select('*')
                 ->get();
@@ -245,7 +246,8 @@ class TableController extends Controller
                 'filters' => $filters,
                 'structure' => $userTableStructure,
                 'teammates' => $teammates,
-                'activeTabFilter' => $tabArray);
+                'activeTabFilter' => $tabArray,
+                'tableAuth' => $tableAuth);
         }
     }
 
@@ -443,6 +445,7 @@ class TableController extends Controller
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
+        $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
@@ -470,6 +473,7 @@ class TableController extends Controller
                 'allTabs' => $allTabs,
                 'tableId' => $tableId,
                 'teammates' => $teammates,
+                'tableAuth' => $tableAuth,
                 'pagination' => $results
             );
         }
