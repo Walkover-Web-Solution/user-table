@@ -64,8 +64,6 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/profile', 'UserController@getKey')->name('profile');
 
     Route::get('/getTables', 'TableController@getAllTablesForSocket')->middleware(['socketMasterKey']);
-
-    Route::post('/update', 'TableController@updateEntry');
 });
 
 # to create or add user
