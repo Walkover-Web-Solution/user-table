@@ -1,5 +1,5 @@
 <?php use Carbon\Carbon;?>
-<table id="myTable" class="table basic table-bordred">
+<table id="myTable" class="table basic table-bordred hover">
 
     @foreach($allTabs as $key=>$val)
     @if($key==0)

@@ -154,8 +154,11 @@
     <div id="user-board" class="user-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex">
-            <div class="scroll-y flex" id="response">
+            <div class="scroll-y flex" id="def_response">
                 @include('table.response')
+            </div>
+            <div class="scroll-y flex" id="response">
+                
             </div>
         </div>
     </div>

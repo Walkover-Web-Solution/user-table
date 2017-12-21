@@ -353,12 +353,15 @@ function searchKeyword(event, query) {
     clearInterval(myInterval);
     var q = query || '';
     if (!q) {
-        return false;
+        $("#def_response").show();
+        $('#response').hide();
+    }else{
+        $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
+            $("#def_response").hide();
+            $('#response').html(response);    
+        });
     }
-    $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
-        $('#response').html(response);
-
-    });
+    
 }
 
 function getOptionList() {
