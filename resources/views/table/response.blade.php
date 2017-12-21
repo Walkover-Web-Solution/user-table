@@ -1,5 +1,5 @@
 <?php use Carbon\Carbon;?>
-<table class="table basic table-bordred">
+<table id="myTable" class="table basic table-bordred">
 
     @foreach($allTabs as $key=>$val)
     @if($key==0)
@@ -9,9 +9,9 @@
         <!-- <th><span class="fixed-header"></span></th> -->
         @foreach($val as $k => $colName)
         @if($k!='id')
-        <th><span class="fixed-header">{{$k}}</span></th>
+        <th><span>{{$k}}</span></th>
         @else
-        <th hidden><span class="fixed-header">{{$k}}</span></th>
+        <th hidden><span>{{$k}}</span></th>
         @endif
         @endforeach
     </tr>
@@ -74,7 +74,7 @@
         @endif
         @endforeach
     </tr>
-    </tbody>
+    
     @endif
     @if($key!=0)
     <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
@@ -136,8 +136,10 @@
     @endif
 
     @endforeach
+    </tbody>
 </table>
 <input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
+
 
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
