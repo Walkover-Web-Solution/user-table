@@ -108,14 +108,14 @@
                                                    aria-label="...">
                                             @endif
                                             {{$key}}
-                                            @if($key != "is_unknown" && $key != "has_any_value")
+                                            @if($key != "is_unknown" && $key != "has_any_value" && $key!='me')
                                                 @if(isset($activeTabFilter[$k][$key]))
                                                     @if($filter['col_type'] == 'dropdown' || $filter['col_type'] == 'my teammates')
                                                         <select class="form-check-input filterinput{{$k}} form-control"
                                                             name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
                                                             <option value=""></option>
                                                             @foreach($filter['col_options'] as $ind=>$opt)
-                                                            <option value="{{$opt}}">{{$opt}}</option>
+                                                            <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key] == $opt['email'])?'selected':''}}>{{$opt['name']}}</option>
                                                             @endforeach
                                                         </select>     
                                                     @else
@@ -128,7 +128,7 @@
                                                             name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
                                                             <option value=""></option>
                                                             @foreach($filter['col_options'] as $ind=>$opt)
-                                                            <option value="{{$opt}}">{{$opt}}</option>
+                                                            <option value="{{$opt['email']}}">{{$opt['name']}}</option>
                                                             @endforeach
                                                         </select>     
                                                     @else
@@ -223,14 +223,12 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        console.log(obj);
         $.ajax({
     type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
             dataType: 'json', // Set datatype - affects Accept header
             url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             data: {'filter':JSON.stringify(obj), 'tab':tabName, 'tableId':tableId}, // Some data e.g. Valid JSON as a string
             success: function (data) {
-            console.log(data);
             window.setTimeout(function(){
             location.reload()
             }, 2000);
@@ -240,7 +238,6 @@
     $(".form-check-input").on('change', function() {
         clearInterval(myInterval);
         //var tableId = '{{ collect(request()->segments())->last() }}';
-        // console.log('clear interval');
         if (globaltimeout != null) clearTimeout(globaltimeout);
         globaltimeout = setTimeout(function() {
         makeFilterJsonData(tableId,'Search');
@@ -250,7 +247,6 @@
     $(".form-check-input").on('keyup', function() {
         clearInterval(myInterval);
         //var tableId = '{{ collect(request()->segments())->last() }}';
-        // console.log('clear interval');
         if (globaltimeout != null) clearTimeout(globaltimeout);
         globaltimeout = setTimeout(function() {
         makeFilterJsonData(tableId,'Search');
@@ -511,11 +507,9 @@ var activeTab = '{{$activeTab}}';
 var tableId = '{{$tableId}}';
 function sendMailSMS(type){
     if(type == 'email'){
-        console.log("we are in if");
         var formData = $("#emailForm").serializeArray();
     }
     if(type == 'sms'){
-        console.log("we are in if");
         var formData = $("#smsForm").serializeArray();
     }
     var result = { };

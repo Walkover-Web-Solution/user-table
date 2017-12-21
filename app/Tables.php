@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
 class Tables extends Model
@@ -46,6 +47,12 @@ class Tables extends Model
             'is_unknown' => null,
             'has_any_value' => null
         );
+        $forTeamMates = array('is' => null,
+            'is_not' => null,
+            'is_unknown' => null,
+            'has_any_value' => null,
+            'me' => null
+        );
         $data = array();
 
         foreach ($userTableStructure as $column => $struct) {
@@ -85,7 +92,7 @@ class Tables extends Model
                 $col_detail = array();
                 $col_detail['col_name'] = $col_name;
                 $col_detail['col_type'] = $col_type;
-                $col_detail['col_filter'] = $forDropDown;
+                $col_detail['col_filter'] = $forTeamMates;
                 $col_detail['col_options'] = $teammates;
                 $data[$col_name] = $col_detail;
             }
@@ -109,10 +116,13 @@ class Tables extends Model
 
     public static function getFilteredUsersDetailsData($req, $tableId)
     {
-        //print_r($req);
-        //return;
+
         $users = \DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
+
+            if (isset($req[$paramName]->me)) {
+                $users->where($paramName, '=', Auth::user()->email);
+            }
 
             if (isset($req[$paramName]->is)) {
                 $users->where($paramName, '=', $req[$paramName]->is);

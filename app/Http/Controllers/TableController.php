@@ -12,6 +12,7 @@ use App\Viasocket;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
 class TableController extends Controller
@@ -142,7 +143,7 @@ class TableController extends Controller
             foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammatesoptions);
+            $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammates);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -221,7 +222,7 @@ class TableController extends Controller
             foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammatesoptions);
+            $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -297,10 +298,11 @@ class TableController extends Controller
 
     public static function getAppliedFiltersData($req, $tableId, $pageSize = 100)
     {
-        //  print_r($req);
-        //  return;
         $users = DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
+            if(isset($req[$paramName]['me'])){
+                $users->where($paramName, '=', Auth::user()->email);
+            }
 
             if (isset($req[$paramName]['is'])) {
                 $users->where($paramName, '=', $req[$paramName]['is']);
