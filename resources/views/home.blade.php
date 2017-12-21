@@ -99,11 +99,11 @@
                                     <div class="form-check">
                                         <label class="form-check-label radio-label">
                                             @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" id="{{$k}}_filter_text_{{$key}}" datacoltype="{{$filter['col_type']}}"
                                                 onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
                                                    aria-label="..." checked="checked">
                                             @else
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" datacoltype="{{$filter['col_type']}}"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" id="{{$k}}_filter_text_{{$key}}" datacoltype="{{$filter['col_type']}}"
                                                    onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
                                                    aria-label="...">
                                             @endif
@@ -218,6 +218,7 @@
             });
         var tabName = $('#saveAsInput').val();
         obj = jsonObject;
+        console.log(obj);
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -230,7 +231,7 @@
             data: {'filter':JSON.stringify(obj), 'tab':tabName, 'tableId':tableId}, // Some data e.g. Valid JSON as a string
             success: function (data) {
             window.setTimeout(function(){
-            location.reload()
+            //location.reload()
             }, 2000);
             }
     });
