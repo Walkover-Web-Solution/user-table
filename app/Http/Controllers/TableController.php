@@ -251,7 +251,7 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId, $pageSize = 20)
+    public function processFilterData($req, $tableId, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
@@ -295,7 +295,7 @@ class TableController extends Controller
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId, $pageSize = 20)
+    public static function getAppliedFiltersData($req, $tableId, $pageSize = 100)
     {
         //  print_r($req);
         //  return;
@@ -441,7 +441,7 @@ class TableController extends Controller
         return view('table.response', $array);
     }
 
-    public function getTableSearchData($tableId, $query, $pageSize = 20)
+    public function getTableSearchData($tableId, $query, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
