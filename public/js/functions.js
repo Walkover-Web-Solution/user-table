@@ -237,7 +237,7 @@ function getUserDetails(id, tableId) {
     }
 }
 function parseDate(unixDateTime) {
-    if (unixDateTime == null) var selectedDate = new Date();
+    if (unixDateTime == 0) return "";
     else var selectedDate = new Date(unixDateTime * 1000);
     var date = selectedDate.getDate();
     var month = selectedDate.getMonth() +1;
