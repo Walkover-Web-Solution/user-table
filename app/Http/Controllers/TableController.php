@@ -107,7 +107,7 @@ class TableController extends Controller
 
     public function getAllTablesForSocket(Request $request)
     {
-        $team_ids = $request->input('team_ids');
+        $team_ids = $request->input('teamIds');
         $team_id_array = explode(',', $team_ids);
         $table_data = $this->getUserTablesByTeamId($team_id_array);
         $table_array = array();
