@@ -563,7 +563,12 @@ $(document).ready(function () {
     var title = $('#right_panel .title');
     $(".option_box").addClass('hide');
 });
-
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover({
+        placement : 'top',
+        trigger : 'hover'
+    });
+});
 
 function sendData(type, JsonData, formData, tableId) {
     $.ajaxSetup({
