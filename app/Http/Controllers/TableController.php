@@ -108,6 +108,30 @@ class TableController extends Controller
         ));
     }
 
+    public function getAllTablesForSocket(Request $request)
+    {
+        $team_ids = $request->input('teamIds');
+        $team_id_array = explode(',', $team_ids);
+        $table_data = $this->getUserTablesByTeamId($team_id_array);
+        $table_array = array();
+        $count = 0;
+        foreach ($table_data as $value) {
+            $table_array[$value['team_id']][$count]['table_id'] = $value['table_id'];
+            $table_array[$value['team_id']][$count]['table_name'] = $value['table_name'];
+            $table_array[$value['team_id']][$count]['structure'] = $value['table_structure'];
+            $table_array[$value['team_id']][$count]['auth'] = $value['auth'];
+            $count++;
+        }
+        $response_arr = array();
+        $cnt = 0;
+        foreach ($table_array as $team_id => $table_data) {
+            $response_arr[$cnt]['team_id'] = $team_id;
+            $response_arr[$cnt]['tables'] = $table_data;
+            $cnt++;
+        }
+        return response()->json($response_arr);
+    }
+
     function getUserTablesByTeamId($teamIdArr)
     {
         $tableLst = team_table_mapping::getUserTablesByTeam($teamIdArr);
