@@ -17,7 +17,7 @@ class Teams extends Model
             $team_response_arr = json_decode($response, true);
 
 
-            $member_array = array(0 => array('email' => '', 'name' => 'No One'));
+            $member_array = array(0 => array('email' => '', 'name' => 'No One'),1=>array('email' => 'me', 'name' => 'Me'));
             foreach ($team_response_arr['memberships'] as $member) {
                 $email = $member['user']['email'];
                 if (empty($member['user']['first_name']) && empty($member['user']['last_name'])) {

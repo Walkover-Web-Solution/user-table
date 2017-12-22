@@ -126,12 +126,11 @@
                                                    aria-label="...">
                                             @endif
                                             {{$key}}
-                                            @if($key != "is_unknown" && $key != "has_any_value" && $key!='me')
+                                            @if($key != "is_unknown" && $key != "has_any_value")
                                             @if(isset($activeTabFilter[$k][$key]))
                                             @if($filter['col_type'] == 'my teammates')
                                             <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
-                                                <option value=""></option>
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
                                                 @foreach($filter['col_options'] as $ind=>$opt)
                                                 <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
                                                 'email'])?'selected':''}}>{{$opt['name']}}</option>
@@ -139,7 +138,7 @@
                                             </select>
                                             @elseif($filter['col_type'] == 'dropdown')
                                             <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
                                                 <option value=""></option>
                                                 @foreach($filter['col_options'] as $ind=>$opt)
                                                 <option value="{{$opt}}">{{$opt}}</option>
@@ -147,22 +146,21 @@
                                             </select>
                                             @else
                                             <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                    type="text" value="{{$activeTabFilter[$k][$key]}}">
                                             @endif
                                             @else
                                             @if($filter['col_type'] == 'my teammates')
                                             <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                     style="display:none;">
-                                                <option value=""></option>
                                                 @foreach($filter['col_options'] as $ind=>$opt)
                                                 <option value="{{$opt['email']}}">{{$opt['name']}}</option>
                                                 @endforeach
                                             </select>
                                             @elseif($filter['col_type'] == 'dropdown')
                                             <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                     style="display:none;">
                                                 <option value=""></option>
                                                 @foreach($filter['col_options'] as $ind=>$opt)
@@ -171,7 +169,7 @@
                                             </select>
                                             @else
                                             <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                    type="text" style="display:none;">
                                             @endif
                                             @endif
@@ -256,14 +254,17 @@
                 filterChecked.push($(this).attr('dataid'));
                 var radioButton = $("#condition_" + dataid + " input:checked");
                 var radioname = radioButton.attr('dataid');
-                var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
+                var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
+                if (radioname == "has_any_value" || radioname == 'is_unknown') {
+                    radioButtonValue = "1";
+                }
                 var subDoc = {};
                 subDoc[radioname] = radioButtonValue;
                 jsonObject[dataid] = subDoc;
             });
             var tabName = $('#saveAsInput').val();
             obj = jsonObject;
-            console.log(obj);
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -276,7 +277,7 @@
                 data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
                 success: function (data) {
                     window.setTimeout(function () {
-                        //location.reload()
+                        location.reload()
                     }, 2000);
                 }
             });

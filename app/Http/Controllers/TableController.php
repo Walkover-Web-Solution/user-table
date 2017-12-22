@@ -321,12 +321,13 @@ class TableController extends Controller
     {
         $users = DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
-            if(isset($req[$paramName]['me'])){
-                $users->where($paramName, '=', Auth::user()->email);
-            }
-
             if (isset($req[$paramName]['is'])) {
-                $users->where($paramName, '=', $req[$paramName]['is']);
+                $val = $req[$paramName]['is'];
+                if($val == 'me')
+                {
+                    $users->where($paramName, '=', Auth::user()->email);
+                }else
+                    $users->where($paramName, '=', $req[$paramName]['is']);
             } else if (isset($req[$paramName]['is_not'])) {
                 $users->where($paramName, '<>', $req[$paramName]['is_not']);
             } else if (isset($req[$paramName]['starts_with'])) {

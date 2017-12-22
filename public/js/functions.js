@@ -58,7 +58,7 @@ function drawUserTable(user_data) {
 function showFilterInputText(ths, val, tableId) {
     $(".filterinput" + val).hide();
     dataid = $(ths).attr('dataid');
-    if (dataid != "has_any_value" && dataid != 'is_unknown' && dataid != 'me') {
+    if (dataid != "has_any_value" && dataid != 'is_unknown') {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("select").show();
     } else {
@@ -93,16 +93,18 @@ function makeFilterJsonData(tableId, type) {
         var radioButton = $("#condition_" + dataid + " input:checked");
         var radioname = radioButton.attr('dataid');
         var coltype = radioButton.attr('datacoltype');
-        var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
-        if (radioname == "has_any_value" || radioname == 'is_unknown' || radioname == 'me') {
+
+        var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
+        if (radioname == "has_any_value" || radioname == 'is_unknown') {
             radioButtonValue = "1";
         }
+
         var subDoc = {};
         subDoc[radioname] = radioButtonValue
         jsonObject[dataid] = subDoc;
         coltypeObject[dataid] = coltype;
     });
-    console.log("we are here to check data", jsonObject);
+    console.log("we are here to check data");
     if (type == "returnData") {
         return jsonObject;
     }
@@ -126,7 +128,7 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
 
         success: function (data) {
-            $('#response').html(data);
+            $('#def_response').html(data);
         }
     });
 }
