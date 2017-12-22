@@ -152,14 +152,14 @@ class TableController extends Controller
             $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
             $allTabsData = $this->loadContacts($tableId,'All');
+            $allTabCount = Tables::getCountOfTabsData($tableId, 'All');
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
 
             if (!empty($allTabsData))
                 $allTabsData = Helpers::orderArray($allTabsData, $orderNeed);
 
-            $data = Tabs::getTabsByTableId($tableId);
-            $tabs = json_decode(json_encode($data), true);
+            $tabs = json_decode(json_encode(Tabs::getTabsByTableId($tableId)), true);
 
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);
@@ -168,19 +168,16 @@ class TableController extends Controller
                 $teammatesoptions[] = $tvalue['name'];
             }
             $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammates);
+
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
-                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
-                    $tabCount = count($tabCountData);
-
+                    $tabCount = Tables::getCountOfTabsData($tableId, $tab_name);
                     $arrTabCount[] = array($tab_name => $tabCount);
                 }
             } else {
                 $arrTabCount = array();
             }
-
-            $allTabCount = count($allTabsData);
 
             rsort($allTabsData);
             return view('home', array(
