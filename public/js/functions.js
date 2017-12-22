@@ -58,7 +58,7 @@ function drawUserTable(user_data) {
 function showFilterInputText(ths, val, tableId) {
     $(".filterinput" + val).hide();
     dataid = $(ths).attr('dataid');
-    if (dataid != "has_any_value" && dataid != 'is_unknown') {
+    if (dataid != "has_any_value" && dataid != 'is_unknown' && dataid != 'me') {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("select").show();
     } else {
@@ -68,7 +68,6 @@ function showFilterInputText(ths, val, tableId) {
 }
 
 function showDiv(id) {
-    // console.log(id);
     $("#" + id).toggleClass('hide');
     $("#" + id).find("input:text").hide();
     $(ths).parent().find("select").hide();
@@ -87,6 +86,7 @@ function makeFilterJsonData(tableId, type) {
     var jsonObject = {};
     var coltypeObject = {};
     var filterCheckedElement = $(".filterConditionName:checked");
+
     filterCheckedElement.each(function () {
         dataid = $(this).attr('dataid');
         filterChecked.push($(this).attr('dataid'));
@@ -94,7 +94,7 @@ function makeFilterJsonData(tableId, type) {
         var radioname = radioButton.attr('dataid');
         var coltype = radioButton.attr('datacoltype');
         var radioButtonValue = $("#" + dataid + "_filter_text_" + radioname).val();
-        if (radioname == "has_any_value" || radioname == 'is_unknown') {
+        if (radioname == "has_any_value" || radioname == 'is_unknown' || radioname == 'me') {
             radioButtonValue = "1";
         }
         var subDoc = {};
@@ -299,7 +299,6 @@ function editUserData(type) {
             },
             success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
-                console.log(data)
                 location.reload();
             },
         });

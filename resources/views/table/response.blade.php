@@ -61,7 +61,7 @@
                 <?php if($colValue){
                     //$carbonDate = new Carbon($colValue);
                     $carbonDate = Carbon::createFromTimestamp($colValue);
-
+                    $carbonDate->setTimezone('UTC');
                     $date = $carbonDate->diffForHumans();
                 }else{
                     $date = '';
@@ -119,6 +119,7 @@
             <?php if($colValue){
                 //$carbonDate = new Carbon($colValue);
                     $carbonDate = Carbon::createFromTimestamp($colValue);
+                    $carbonDate->setTimezone('UTC');
                 $date = $carbonDate->diffForHumans();
             }else{
                 $date = '';
@@ -136,6 +137,7 @@
 
     @endforeach
 </table>
+<input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
 
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
@@ -144,6 +146,11 @@
     ')}}';
 
     function updateData(ths, method) {
+        var authKey = $("#tableAuthKey").val();
+        var obj;
+        var jsonDoc = {};
+        jsonDoc['edit_url_callback'] = true;
+        jsonDoc['data_source'] = 'manual';
         if (method == 'radio_button') {
             var key_name = $(ths).attr('name');
             key_name = key_name.split(":_:");
@@ -174,14 +181,25 @@
                 new_value = $(this).val();
             });
         }
-
+        jsonDoc[coloumn_name] = new_value;
+        jsonDoc['id']= row_id;
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        jsonDoc['_token'] = CSRF_TOKEN;
+        obj = jsonDoc;
         $.ajax({
-            type: 'POST',
-            url: API_BASE_URL + "/update",
-            data: {'coloumn_name': coloumn_name, 'row_id': row_id, 'new_value': new_value, 'table_id': table_incr_id},
+            type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+            dataType: 'json', // Set datatype - affects Accept header
+            url: API_BASE_URL + "/add_update", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            data: jsonDoc, // Some data e.g. Valid JSON as a string
+
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Auth-Key', authKey);
+            },
             success: function (data) {
-                alert(data['msg']);
-            }
+                // ALL_USERS[selectedRow] = data.data;
+                //console.log(data)
+                location.reload();
+            },
         });
     }
 </script>

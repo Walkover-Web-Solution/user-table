@@ -62,9 +62,6 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     # search in active table
     Route::get('/search/{tableId}/{query}', 'TableController@getSearchedData');
     Route::get('/profile', 'UserController@getKey')->name('profile');
-
-
-
     Route::post('/update', 'TableController@updateEntry');
 });
 

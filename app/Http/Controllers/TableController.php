@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Tabs;
-use App\Tables;
-use App\Teams;
-use App\team_table_mapping;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use App\TableStructure;
-use App\Viasocket;
 use App\Http\Helpers;
+use App\Tables;
+use App\TableStructure;
+use App\Tabs;
+use App\team_table_mapping;
+use App\Teams;
+use App\Viasocket;
+use DB;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class TableController extends Controller
 {
@@ -86,9 +88,10 @@ class TableController extends Controller
         session()->put('teams', $teams);
 
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
-        $table_incr_id_arr = array();
+        $teamTables = $table_incr_id_arr = array();
 
         foreach ($tableLst as $key => $value) {
+            $teamTables[$value['team_id']][] = $value;
             $table_incr_id_arr[] = $value['id'];
         }
         $data = json_decode(json_encode(team_table_mapping::getTableSourcesByTableIncrId($table_incr_id_arr)), true);
@@ -99,9 +102,9 @@ class TableController extends Controller
         }
 
         return view('showTable', array(
-            'allTables' => $tableLst,
             'teamsArr' => $teams,
-            'source_arr' => $source_arr
+            'source_arr' => $source_arr,
+            'teamTables' => $teamTables
         ));
     }
 
@@ -139,16 +142,16 @@ class TableController extends Controller
     public function loadSelectedTable($tableName)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
-        $userTableName = $tableNames['table_name'];
-        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
-        if (empty($tableNames['table_id'])) {
+        if (empty($tableNames)) {
             echo "no table found";
             exit();
         } else {
-            $tableAuth = $tableNames['auth'];
+            $userTableName = $tableNames['table_name'];
             $tableId = $tableNames['table_id'];
-            $allTabs = \DB::table($tableId)->select('*')->get();
-            $allTabsData = json_decode(json_encode($allTabs), true);
+            $tableAuth = $tableNames['auth'];
+            $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+
+            $allTabsData = $this->loadContacts($tableId,'All');
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
 
@@ -164,7 +167,7 @@ class TableController extends Controller
             foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammatesoptions);
+            $filters = Tables::getFiltrableData($tableId, $userTableStructure, $teammates);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -216,7 +219,8 @@ class TableController extends Controller
             return array();
         } else {
             $tableIdMain = $tableNames['table_id'];
-            $allTabs = \DB::table($tableIdMain)
+            $tableAuth = $tableNames['auth'];
+            $allTabs = DB::table($tableIdMain)
                 ->select('*')
                 ->get();
             $orderNeed = Helpers::orderData($tableNames);
@@ -242,7 +246,7 @@ class TableController extends Controller
             foreach ($teammates as $tkey => $tvalue) {
                 $teammatesoptions[] = $tvalue['name'];
             }
-            $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammatesoptions);
+            $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
             if (!empty($tabs)) {
                 foreach ($tabs as $val) {
                     $tab_name = $val['tab_name'];
@@ -267,13 +271,15 @@ class TableController extends Controller
                 'filters' => $filters,
                 'structure' => $userTableStructure,
                 'teammates' => $teammates,
-                'activeTabFilter' => $tabArray);
+                'activeTabFilter' => $tabArray,
+                'tableAuth' => $tableAuth);
         }
     }
 
-    public function processFilterData($req, $tableId, $pageSize = 20)
+    public function processFilterData($req, $tableId, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
         if (empty($tableNames['table_id'])) {
@@ -294,7 +300,7 @@ class TableController extends Controller
             'teammates' => $teammates,
             'pagination' => $data,
             'structure' => $userTableStructure,
-        );
+            'tableAuth' => $tableAuth);
     }
 
     # function get search for selected filters
@@ -314,12 +320,13 @@ class TableController extends Controller
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId, $pageSize = 20)
+    public static function getAppliedFiltersData($req, $tableId, $pageSize = 100)
     {
-        //  print_r($req);
-        //  return;
-        $users = \DB::table($tableId)->selectRaw('*');
+        $users = DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
+            if(isset($req[$paramName]['me'])){
+                $users->where($paramName, '=', Auth::user()->email);
+            }
 
             if (isset($req[$paramName]['is'])) {
                 $users->where($paramName, '=', $req[$paramName]['is']);
@@ -454,46 +461,24 @@ class TableController extends Controller
         ));
     }
 
-    public function updateEntry(Request $request)
-    {
-
-        $update_details = $request->all();
-        if (!isset($update_details['table_id'])) {
-            return response()->json(array('error' => 'Invalid table id'));
-        }
-        $tableNames = team_table_mapping::getUserTablesNameById($update_details['table_id']);
-
-        $tableName = $tableNames['table_id'];
-        $param['table'] = $tableName;
-        $param['where_key'] = 'id';
-        $param['where_value'] = $update_details['row_id'];
-
-        $param['update'] = array($update_details['coloumn_name'] => $update_details['new_value']);
-        $response = team_table_mapping::updateTableData($param);
-        if ($response == 1) {
-            return response()->json(array('msg' => 'Data updated'));
-        } else {
-            return response()->json(array('msg' => 'Data couldnot be updated'));
-        }
-    }
-
     public function getSearchedData($tableId, $query)
     {
         $array = $this->getTableSearchData($tableId, $query, 30);
         return view('table.response', $array);
     }
 
-    public function getTableSearchData($tableId, $query, $pageSize = 20)
+    public function getTableSearchData($tableId, $query, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
+        $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
             exit();
         } else {
-            $users = \DB::table($tableID)->selectRaw('*');
+            $users = DB::table($tableID)->selectRaw('*');
             $count = 0;
 
             foreach ($userTableStructure as $key => $value) {
@@ -515,7 +500,9 @@ class TableController extends Controller
                 'allTabs' => $allTabs,
                 'tableId' => $tableId,
                 'teammates' => $teammates,
-                'pagination' => $results
+                'tableAuth' => $tableAuth,
+                'pagination' => $results,
+                'structure' => $userTableStructure,
             );
         }
     }
