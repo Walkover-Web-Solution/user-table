@@ -371,7 +371,7 @@ class TableController extends Controller
         try {
             $add_entry_flag = False;
             $table_auth = $request->header('Auth-Key');
-            $dataSource = $request->header('data_source');
+            $dataSource = $request->header('data-source');
             $response = $this->getTableDetailsByAuth($table_auth);
 
             if (empty($response)) {
