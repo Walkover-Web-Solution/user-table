@@ -58,9 +58,12 @@
         </ul>
 
         <li class="pull-right">
-            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-               data-toggle="modal" onclick="getUserDetails({{$tableId}})">
-                <i class="glyphicon glyphicon-plus"></i></a></li>
+            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user"
+                                  data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})">
+                <i class="glyphicon glyphicon-plus"></i>
+            </a>
+        </li>
+
 
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
