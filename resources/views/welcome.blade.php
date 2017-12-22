@@ -100,7 +100,7 @@
                     <!-- <h4 class="modal-title">YouTube Video</h4> -->
                 </div>
                 <div class="modal-body">
-                    <iframe id="cartoonVideo" width="560" height="315" src="https://www.youtube.com/embed/_pTCqobclks" frameborder="0" allowfullscreen></iframe>
+                    <iframe id="cartoonVideo" width="560" height="315" src="https://www.youtube.com/embed/ktyzXBQN7kk" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>

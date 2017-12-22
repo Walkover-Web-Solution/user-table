@@ -56,9 +56,12 @@
             </li>
             @endguest
         </ul>
-        <li class="pull-right"><a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user"
-                                  data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})"><i
-                        class="glyphicon glyphicon-plus"></i></a></li>
+
+        <li class="pull-right">
+            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
+               data-toggle="modal" onclick="getUserDetails({{$tableId}})">
+                <i class="glyphicon glyphicon-plus"></i></a></li>
+
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
             <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
@@ -187,8 +190,11 @@
     <div id="user-board" class="user-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex">
-            <div class="scroll-y flex" id="response">
+            <div class="scroll-y flex" id="def_response">
                 @include('table.response')
+            </div>
+            <div class="scroll-y flex" id="response">
+                
             </div>
         </div>
     </div>
@@ -308,6 +314,7 @@
     }
 
 </script>
+
 @stop
 @section('models')
 <!-- Modal -->

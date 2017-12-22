@@ -11,7 +11,7 @@
         @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
         @else
-        <th hidden><span class="fixed-header">{{$k}}</span></th>
+        <th hidden  class="fixed-header"><span>{{$k}}</span></th>
         @endif
         @endforeach
     </tr>
@@ -34,6 +34,7 @@
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
                 @foreach($options['options'] as $info)
+                <option value="">select none</option>
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
@@ -43,6 +44,7 @@
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
+                <option value="">select none</option>
                 <option value="{{$team['email']}}" @if($team[
                 'email'] == $colValue) selected="selected" @endif
                 >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
@@ -74,7 +76,7 @@
         @endif
         @endforeach
     </tr>
-    </tbody>
+    
     @endif
     @if($key!=0)
     <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
@@ -92,6 +94,7 @@
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
                 @foreach($options['options'] as $info)
+                <option value="">select none</option>
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
@@ -136,8 +139,11 @@
     @endif
 
     @endforeach
+    </tbody>
 </table>
 <input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
+
+
 
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
@@ -163,7 +169,7 @@
             key_name = key_name.split(":_:");
             coloumn_name = key_name[0];
             row_id = key_name[1];
-            new_value = $(ths).find(":selected").text();
+            new_value = $(ths).find(":selected").val();
         } else if (method == 'teammates') {
             var key_name = $(ths).attr('id');
             key_name = key_name.split(":_:");

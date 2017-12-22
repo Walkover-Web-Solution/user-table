@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="{{url('css/style2.css')}}"> <!-- Resource style -->  
         <script src="{{url('js/modernizr.js')}}"></script> <!-- Modernizr -->
         <link type="text/css" href="{{url('css/jquery-ui.css')}}" rel="Stylesheet" />
-        <script type="text/javascript" src="{{url('js/jquery-1.4.4.js')}}"></script>
+        <script type="text/javascript" src="{{url('js/jquery3.2.1.min.js')}}"></script>
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
         <link rel="icon" type="image/png" href="{{url('favicon.png')}}" />
     </head>

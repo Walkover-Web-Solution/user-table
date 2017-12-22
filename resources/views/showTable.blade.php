@@ -24,7 +24,7 @@
                     <div class="card">
                     <a href="tables/{{$val['id']}}" class="card_link" target="_blank"></a>
                         <div class="text-center">
-                            <h4 class="title"><a href="tables/{{$val['id']}}" target="_blank"> {{$val['table_name']}}</a></h4>
+                            <h1 class="title"><a href="tables/{{$val['id']}}" target="_blank"> {{$val['table_name']}}</a></h1>
 
                             <div class="center-block btn-grp text-center">
                                 <button class="btn btn-primary btn-md" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
