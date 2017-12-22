@@ -28,14 +28,15 @@
             <li><a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin">Register</a></li>
             @else
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
+                   aria-haspopup="true">
                     <!-- {{ Auth::user()->name }}  -->
                     {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </a>
 
                 <ul class="dropdown-menu">
-                <li><a href="{{route('tables')}}">Dashboard</a></li>
-                <li><a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a></li>                
+                    <li><a href="{{route('tables')}}">Dashboard</a></li>
+                    <li><a href="{{env('APP_URL')}}/graph/{{$tableId}}">Table Graph</a></li>
                     <li>
                         <a href="{{ route('profile') }}">
                             Profile
@@ -55,10 +56,13 @@
             </li>
             @endguest
         </ul>
-        <li class="pull-right"><a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user" data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})"><i class="glyphicon glyphicon-plus"></i></a></li>
+        <li class="pull-right"><a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user"
+                                  data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})"><i
+                        class="glyphicon glyphicon-plus"></i></a></li>
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
-            <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom" title="search data"></i></label>
+            <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
+                                        title="search data"></i></label>
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
         </form>
@@ -82,10 +86,12 @@
                             <div class="form-check">
                                 <label class="form-check-label">
                                     @if(isset($activeTabFilter[$k]))
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}" datacoltype="{{$filter['col_type']}}"
-                                            onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
+                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
+                                           datacoltype="{{$filter['col_type']}}"
+                                           onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
                                     @else
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}" datacoltype="{{$filter['col_type']}}"
+                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
+                                           datacoltype="{{$filter['col_type']}}"
                                            onclick="showDiv('condition_{{$k}}')" aria-label="...">
                                     @endif
                                     {{$k}}</label>
@@ -99,43 +105,70 @@
                                     <div class="form-check">
                                         <label class="form-check-label radio-label">
                                             @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" id="{{$k}}_filter_text_{{$key}}" datacoltype="{{$filter['col_type']}}"
-                                                onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                   id="{{$k}}_filter_text_{{$key}}"
+                                                   datacoltype="{{$filter['col_type']}}"
+                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                   type="radio"
                                                    aria-label="..." checked="checked">
                                             @else
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}" id="{{$k}}_filter_text_{{$key}}" datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})" type="radio"
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                   id="{{$k}}_filter_text_{{$key}}"
+                                                   datacoltype="{{$filter['col_type']}}"
+                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                   type="radio"
                                                    aria-label="...">
                                             @endif
                                             {{$key}}
                                             @if($key != "is_unknown" && $key != "has_any_value" && $key!='me')
-                                                @if(isset($activeTabFilter[$k][$key]))
-                                                    @if($filter['col_type'] == 'dropdown' || $filter['col_type'] == 'my teammates')
-                                                        <select class="form-check-input filterinput{{$k}} form-control"
-                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
-                                                            <option value=""></option>
-                                                            @foreach($filter['col_options'] as $ind=>$opt)
-                                                            <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key] == $opt['email'])?'selected':''}}>{{$opt['name']}}</option>
-                                                            @endforeach
-                                                        </select>     
-                                                    @else
-                                                        <input class="form-check-input filterinput{{$k}} form-control"
-                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                                    @endif
-                                                @else
-                                                    @if($filter['col_type'] == 'dropdown' || $filter['col_type'] == 'my teammates')
-                                                        <select class="form-check-input filterinput{{$k}} form-control"
-                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" style="display:none;">
-                                                            <option value=""></option>
-                                                            @foreach($filter['col_options'] as $ind=>$opt)
-                                                            <option value="{{$opt['email']}}">{{$opt['name']}}</option>
-                                                            @endforeach
-                                                        </select>     
-                                                    @else
-                                                        <input class="form-check-input filterinput{{$k}} form-control"
-                                                            name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}" type="text" style="display:none;">
-                                                    @endif
-                                                @endif
+                                            @if(isset($activeTabFilter[$k][$key]))
+                                            @if($filter['col_type'] == 'my teammates')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
+                                                'email'])?'selected':''}}>{{$opt['name']}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'dropdown')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt}}">{{$opt}}</option>
+                                                @endforeach
+                                            </select>
+                                            @else
+                                            <input class="form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                   type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                            @endif
+                                            @else
+                                            @if($filter['col_type'] == 'my teammates')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                    style="display:none;">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt['email']}}">{{$opt['name']}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'dropdown')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                    style="display:none;">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt}}">{{$opt}}</option>
+                                                @endforeach
+                                            </select>
+                                            @else
+                                            <input class="form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_text" id="{{$k}}_filter_text_{{$key}}"
+                                                   type="text" style="display:none;">
+                                            @endif
+                                            @endif
                                             @endif
                                         </label>
                                     </div>
@@ -161,7 +194,8 @@
     </div>
 </div>
 
-<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img id="wiz" src="{{ asset('img/sending.svg') }}"  alt="sending" /></span></a>
+<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
+                id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a>
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -170,7 +204,9 @@
 <script src="{{asset('js/functions.js')}}"></script>
 
 <script type="text/javascript">
-    var API_BASE_URL = '{{env('API_BASE_URL')}}';
+    var API_BASE_URL = '{{env('
+    API_BASE_URL
+    ')}}';
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
 </script>
@@ -216,43 +252,43 @@
                 subDoc[radioname] = radioButtonValue;
                 jsonObject[dataid] = subDoc;
             });
-        var tabName = $('#saveAsInput').val();
-        obj = jsonObject;
-        console.log(obj);
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            var tabName = $('#saveAsInput').val();
+            obj = jsonObject;
+            console.log(obj);
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+                dataType: 'json', // Set datatype - affects Accept header
+                url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+                success: function (data) {
+                    window.setTimeout(function () {
+                        //location.reload()
+                    }, 2000);
+                }
+            });
         });
-        $.ajax({
-    type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-            dataType: 'json', // Set datatype - affects Accept header
-            url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            data: {'filter':JSON.stringify(obj), 'tab':tabName, 'tableId':tableId}, // Some data e.g. Valid JSON as a string
-            success: function (data) {
-            window.setTimeout(function(){
-            //location.reload()
-            }, 2000);
-            }
-    });
-    });
-    $(".form-check-input").on('change', function() {
-        clearInterval(myInterval);
-        //var tableId = '{{ collect(request()->segments())->last() }}';
-        if (globaltimeout != null) clearTimeout(globaltimeout);
-        globaltimeout = setTimeout(function() {
-        makeFilterJsonData(tableId,'Search');
-        }, 600);
-    });
+        $(".form-check-input").on('change', function () {
+            clearInterval(myInterval);
+            //var tableId = '{{ collect(request()->segments())->last() }}';
+            if (globaltimeout != null) clearTimeout(globaltimeout);
+            globaltimeout = setTimeout(function () {
+                makeFilterJsonData(tableId, 'Search');
+            }, 600);
+        });
 
-    $(".form-check-input").on('keyup', function() {
-        clearInterval(myInterval);
-        //var tableId = '{{ collect(request()->segments())->last() }}';
-        if (globaltimeout != null) clearTimeout(globaltimeout);
-        globaltimeout = setTimeout(function() {
-        makeFilterJsonData(tableId,'Search');
-        }, 600);
-    });
+        $(".form-check-input").on('keyup', function () {
+            clearInterval(myInterval);
+            //var tableId = '{{ collect(request()->segments())->last() }}';
+            if (globaltimeout != null) clearTimeout(globaltimeout);
+            globaltimeout = setTimeout(function () {
+                makeFilterJsonData(tableId, 'Search');
+            }, 600);
+        });
 
         $(".form-check-input").blur(function () {
             window.setTimeout(function () {
@@ -331,7 +367,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                            aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Save Tab</h4>
             </div>
 
@@ -370,8 +406,6 @@
 </div>
 
 
-
-
 <!-- add user modal || plus button -->
 <div id="add_user" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-md" role="content">
@@ -381,154 +415,159 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title">Edit User</h4>
             </div> -->
-                <div class="row">
-                    <form id="addUserDetails">
-                        <div class="modal-body pull-left" id="add_users_body">
- 
-                            </div>
-                        </div>
-                    </form>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-success" onclick="editUserData('add')">
-                                Add
-                            </button>
-                        </div>
+            <div class="row">
+                <form id="addUserDetails">
+                    <div class="modal-body pull-left" id="add_users_body">
+
+                    </div>
+            </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="editUserData('add')">
+                    Add
+                </button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- send modal -->
 <div id="send_popup" class="modal fade" role="dialog">
     <div class="modal-dialog modal-md" role="content">
-        <div class="modal-content"> 
-        <ul class="nav nav-tabs" aria-labelledby="menu1">
-            <li class="active"><a href="#email" data-toggle="tab">Email</a></li>
-            <li class=""><a href="#sms" data-toggle="tab">SMS</a></li>
-            <li class=""><a href="#webhook" data-toggle="tab">Webhook</a></li>
-            <li class="pull-right">
-                <a href="javascript:void(0);" onclick="event.stopPropagation();">
-                    <label onclick="timeToSend('now')" class="radio-inline"><input type="radio" name="type" value="">Now</label>
-                    <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value="" name="type">Auto</label>
-                </a>
-            </li>
+        <div class="modal-content">
+            <ul class="nav nav-tabs" aria-labelledby="menu1">
+                <li class="active"><a href="#email" data-toggle="tab">Email</a></li>
+                <li class=""><a href="#sms" data-toggle="tab">SMS</a></li>
+                <li class=""><a href="#webhook" data-toggle="tab">Webhook</a></li>
+                <li class="pull-right">
+                    <a href="javascript:void(0);" onclick="event.stopPropagation();">
+                        <label onclick="timeToSend('now')" class="radio-inline"><input type="radio" name="type"
+                                                                                       value="">Now</label>
+                        <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value=""
+                                                                                        name="type">Auto</label>
+                    </a>
+                </li>
 
-        </ul>
-        <div class="modal-body">
+            </ul>
+            <div class="modal-body">
 
 
-        <div class="option_box" id="now">Send Now option block</div>
-        <div class="option_box" id="auto">Send Auto option block</div>
+                <div class="option_box" id="now">Send Now option block</div>
+                <div class="option_box" id="auto">Send Auto option block</div>
 
-        <div id="setTabs" class="tab-content">
-        <div class="tab-pane active" id="email">
-            <form class="" id="emailForm">
-                <div class="form-group">
-                    <label class="" for="">From Email: </label>
-                    <input type="text" class="form-control" id="from_email" name="from_email" />
+                <div id="setTabs" class="tab-content">
+                    <div class="tab-pane active" id="email">
+                        <form class="" id="emailForm">
+                            <div class="form-group">
+                                <label class="" for="">From Email: </label>
+                                <input type="text" class="form-control" id="from_email" name="from_email"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">From Name: </label>
+                                <input type="text" class="form-control" id="from_name" name="from_name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Email Column: </label>
+                                <input type="text" class="form-control" id="email_column" name="email_column"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Subject: </label>
+                                <input type="text" class="form-control" id="subject" name="subject"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Mail Content: </label>
+                                <textarea id="mailContent" class="form-control" name="mailContent"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')"
+                                        data-dismiss="modal">Send
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="sms">
+                        <form class="" id="smsForm">
+
+                            <div class="form-group">
+                                <label class="" for="">Sender Id : </label>
+                                <input type="" class="form-control " id="sender" name="sender">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Route : </label>
+                                <input type="" class="form-control " id="route" name="route">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Message Content : </label>
+                                <input type="" class="form-control " id="message" name="message">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="" for="">Mobile Column : </label>
+                                <input type="" class="form-control " id="mobile_columnn" name="mobile_columnn">
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')"
+                                    data-dismiss="modal">Send
+                            </button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="webhook">
+
+                        <div class="form-group">
+                            <label class="" for="">URL : </label>
+                            <input type="" class="form-control " id="url" name="mobile_columnn">
+                        </div>
+                        <button type="button" class="btn btn-primary btn-md" onclick="" data-dismiss="modal">Send
+                        </button>
+                    </div>
+
+
                 </div>
-
-                <div class="form-group">
-                    <label class="" for="">From Name: </label>
-                    <input type="text" class="form-control" id="from_name" name="from_name" />
-                </div>
-
-                <div class="form-group">
-                    <label class="" for="">Email Column: </label>
-                    <input type="text" class="form-control" id="email_column" name="email_column" />
-                </div>
-
-                <div class="form-group">
-                    <label class="" for="">Subject: </label>
-                    <input type="text" class="form-control" id="subject" name="subject" />
-                </div>
-
-                <div class="form-group">
-                    <label class="" for="">Mail Content: </label>
-                    <textarea id="mailContent" class="form-control" name="mailContent"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')" data-dismiss="modal">Send</button>
-                </div>
-                                
-            </form>
-        </div>
-        <div class="tab-pane" id="sms">
-            <form class="" id="smsForm">
-
-            <div class="form-group">
-                <label class="" for="">Sender Id : </label>
-                <input type="" class="form-control " id="sender" name="sender">
             </div>
-            
-            <div class="form-group">
-                <label class="" for="">Route : </label>
-                <input type="" class="form-control " id="route" name="route">
-            </div>
-
-            <div class="form-group">
-                <label class="" for="">Message Content : </label>
-                <input type="" class="form-control " id="message" name="message">
-            </div>
-
-            <div class="form-group">
-                <label class="" for="">Mobile Column : </label>
-                <input type="" class="form-control " id="mobile_columnn" name="mobile_columnn">
-            </div>
-
-                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')" data-dismiss="modal">Send</button>
-            </form>
-        </div>
-        <div class="tab-pane" id="webhook">
-            
-            <div class="form-group">
-                <label class="" for="">URL : </label>
-                <input type="" class="form-control " id="url" name="mobile_columnn">
-            </div>
-            <button type="button" class="btn btn-primary btn-md" onclick="" data-dismiss="modal">Send</button>
-        </div>
-        
-
-
-
-
-
-        </div>
         </div>
     </div>
-</div>
 
 
+    @stop
+    <script type="text/javascript">
+        var API_BASE_URL = '{{env('
+        API_BASE_URL
+        ')}}';
+        var activeTab = '{{$activeTab}}';
+        var tableId = '{{$tableId}}';
 
-@stop
-<script type="text/javascript">
-var API_BASE_URL = '{{env('API_BASE_URL')}}';
-var activeTab = '{{$activeTab}}';
-var tableId = '{{$tableId}}';
-function sendMailSMS(type){
-    if(type == 'email'){
-        var formData = $("#emailForm").serializeArray();
-    }
-    if(type == 'sms'){
-        var formData = $("#smsForm").serializeArray();
-    }
-    var result = { };
-    $.each(formData, function() {
-        result[this.name] = this.value;
-    });
-    var JsonData =  makeFilterJsonData(tableId,'returnData');
-    sendData(type,JsonData,result,tableId);
-}
+        function sendMailSMS(type) {
+            if (type == 'email') {
+                var formData = $("#emailForm").serializeArray();
+            }
+            if (type == 'sms') {
+                var formData = $("#smsForm").serializeArray();
+            }
+            var result = {};
+            $.each(formData, function () {
+                result[this.name] = this.value;
+            });
+            var JsonData = makeFilterJsonData(tableId, 'returnData');
+            sendData(type, JsonData, result, tableId);
+        }
 
-function timeToSend(type) {
-    if (type == 'auto') {
-        $('#auto').removeClass('hide');
-        $('#now').addClass('hide');
-    } else {
-        $('#auto').addClass('hide');
-        $('#now').removeClass('hide');
-    }
-}
+        function timeToSend(type) {
+            if (type == 'auto') {
+                $('#auto').removeClass('hide');
+                $('#now').addClass('hide');
+            } else {
+                $('#auto').addClass('hide');
+                $('#now').removeClass('hide');
+            }
+        }
 
-</script>
+    </script>
