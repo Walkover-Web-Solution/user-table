@@ -279,15 +279,6 @@
 
 </script>
 
-<link type="text/css" rel="stylesheet" href="{{url('css/jquery.dataTables.min.css')}}" />
-<script type="text/javascript" src="{{url('js/jquery.dataTables.min.js')}}"></script>
-<script>
-    $(document).ready(function(){
-        $('#myTable').DataTable();
-    });
-</script>
-
-
 @stop
 @section('models')
 <!-- Modal -->

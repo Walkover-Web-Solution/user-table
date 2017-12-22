@@ -628,11 +628,11 @@ th {
     margin-bottom: 5px;
 }
 
-/* .fixed-header {
+.fixed-header {
     position: absolute;
     text-transform: capitalize;
     top: 8px;
-} */
+}
 
 .table tr:hover {
     background: #f5f5f5;
