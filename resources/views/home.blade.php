@@ -58,7 +58,7 @@
         </ul>
 
         <li class="pull-right">
-            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#add_user"
+            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
                                   data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})">
                 <i class="glyphicon glyphicon-plus"></i>
             </a>

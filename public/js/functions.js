@@ -191,47 +191,36 @@ function getUserDetails(id, tableId) {
             type: 'GET', // Use GET
             url: API_BASE_URL + '/tables/structure/' + tableId, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (res) {
-
-                var tableStructure = res.structure;
                 var COL_FIELD = res.colDetails;
                 var tableData = res.tableData;
                 var teammates = res.teammates
                 var authKey = tableData['auth'];
-                var idElem = {
-                    column_name: "id",
-                    column_type_id: 0,
-                    unique: 0,
-                    default_value: {options: [""]},
-                    column_type: {id: 1, column_name: "id"}
-                }
-                //tableStructure.unshift(idElem);
+
                 $('#tokenKey').val(authKey);
                 var editForm = '';
 
-                for (var k in tableStructure) {
-                    var field = tableStructure[k]
-                    var currentField = COL_FIELD[field['column_name']];
-                    var column_type = tableStructure[k]['column_type'];
-
-                    var label = tableStructure[k]['column_name'];
-                    if (currentField.unique === 1) label = label + '*';
-                    editForm += `<div class="form-group col-xs-6" id="label_` + tableStructure[k]['column_name'] + `"  name="label_` + tableStructure[k]['column_name'] + `"  ><label>` + label + `</label>`;
-
-                    if (column_type.id !== 6 && column_type.id !== 10) {
-                        editForm += createInputElement('', tableStructure[k]['column_name'], currentField, inputTypeArr[currentField.column_type_id]);
-                    } else if (column_type.id == 6) {
-                        editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
-                    } else if (column_type.id == 10) {
-                        currentField['value_arr']['options'] = teammates;
-                        editForm += createSelectElement(currentField, tableStructure[k]['column_name'], tableStructure[k]['column_name']);
+                for (var k in COL_FIELD) {
+                    var currentField = COL_FIELD[k];
+                    var label = k;
+                    if (currentField.unique === 1) {
+                        label = label + '*';
                     }
-                    editForm += '</div>';
+                    editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + label + `</label>`;
+                    if (currentField.column_type_id == 9) { // if column type is date
+                        editForm += createInputElement('', k, currentField, inputTypeArr[currentField.column_type_id]);
+                    } else if (currentField.column_type_id == 6) { // if column type is dropdown
+                        editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
+                    } else if (currentField.column_type_id == 10) { // if column type is teammates
+                        currentField['value_arr']['options'] = teammates;
+                        editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
+                    } else {
+                        editForm += createInputElement('', k, currentField, inputTypeArr[currentField.column_type_id]);
+                    }
+                    editForm += '</div></div>';
                 }
-                $("#add_users_body").html(editForm);
+                $("#edit_users_body").html(editForm);
                 $('#follow_up_date').attr('type', 'date');
-                // $('#label_username').removeClass('col-xs-6').addClass('col-xs-12');
                 return false;
-
             }
         });
     }
