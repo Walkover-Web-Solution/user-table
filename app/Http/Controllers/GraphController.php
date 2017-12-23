@@ -71,19 +71,8 @@ class GraphController extends Controller {
             $data = Tabs::getTabsByTableId($tableId);
             $tabs = json_decode(json_encode($data), true);
 
-            if (!empty($tabs)) {
-                foreach ($tabs as $val) {
-                    $tab_name = $val['tab_name'];
-                    $tabCountData = Tables::TabDataBySavedFilter($tableId, $tab_name);
-                    $tabCount = count($tabCountData);
-
-                    $arrTabCount[] = array($tab_name => $tabCount);
-                }
-            } else {
-                $arrTabCount = array();
-            }
-            
-            $allTabCount = count($allTabsData);
+            $arrTabCount = Tables::getAllTabsCount($tableId, $tabs);
+            $allTabCount = Tables::getCountOfTabsData($tableId, "All");
 
             return view('graph', array(
                 'activeTab' => 'All',

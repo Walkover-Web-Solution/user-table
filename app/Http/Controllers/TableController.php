@@ -153,7 +153,6 @@ class TableController extends Controller
 
     public function processTableData($tableId, $tabName)
     {
-        info(" In Process: tabName is " . $tabName);
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
@@ -173,7 +172,7 @@ class TableController extends Controller
             }
 
             $tabData = $this->loadContacts($tableIdMain, $tabName);
-            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All");
+
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
@@ -185,15 +184,9 @@ class TableController extends Controller
                 $teammatesOptions[] = $tvalue['name'];
             }
             $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
-            if (!empty($tabs)) {
-                foreach ($tabs as $val) {
-                    $tab_name = $val['tab_name'];
-                    $tabCount = Tables::getCountOfTabsData($tableIdMain, $tab_name);
-                    $arrTabCount[] = array($tab_name => $tabCount);
-                }
-            } else {
-                $arrTabCount = array();
-            }
+
+            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All");
+            $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
 
             return array(
                 'activeTab' => $tabName,

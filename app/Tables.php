@@ -174,13 +174,26 @@ class Tables extends Model
         return $count;
     }
 
+    public static function getAllTabsCount($tableId, $tabs)
+    {
+        $arrTabCount = array();
+        if (!empty($tabs)) {
+            foreach ($tabs as $val) {
+                $tab_name = $val['tab_name'];
+                $tabCount = Tables::getCountOfTabsData($tableId, $tab_name);
+                $arrTabCount[] = array($tab_name => $tabCount);
+            }
+        }
+        return $arrTabCount;
+    }
+
     public static function makeFilterQuery($req, $users)
     {
         foreach (array_keys($req) as $paramName) {
 
             if (isset($req[$paramName]->is)) {
                 $val = $req[$paramName]->is;
-                if($val == 'me')
+                if ($val == 'me')
                     $users->where($paramName, '=', Auth::user()->email);
                 else
                     $users->where($paramName, '=', $req[$paramName]->is);
