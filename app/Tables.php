@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,7 @@ class Tables extends Model
 {
     public static function getSQLData($sql)
     {
-        $tableData = \DB::select($sql);
+        $tableData = DB::select($sql);
         return $tableData;
     }
 
@@ -100,24 +101,29 @@ class Tables extends Model
         return $data;
     }
 
-    public static function TabDataBySavedFilter($tableId, $tabName)
+    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize)
     {
         if ($tabName == "All") {
-            $data = \DB::table($tableId)->selectRaw('*')->latest('id')->limit(100)->get();
+            $data = DB::table($tableId)->selectRaw('*')->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query);
-            $data = Tables::getFilteredUsersDetailsData($req, $tableId);
+            $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize);
         }
         return $data;
     }
 
-    public static function getFilteredUsersDetailsData($req, $tableId)
+    /**
+     * @param $req
+     * @param $tableId
+     * @param $pageSize
+     * @return mixed
+     */
+    public static function getFilteredUsersDetailsData($req, $tableId, $pageSize)
     {
-        $users = \DB::table($tableId)->selectRaw('*');
+        $users = DB::table($tableId)->selectRaw('*');
         $users = Tables::makeFilterQuery($req, $users);
-        $data = $users->latest('id')->limit(100)->get();
-        return $data;
+        return $users->latest('id')->paginate($pageSize);
     }
 
     public static function createMainTable($tableName, $data)
@@ -155,7 +161,7 @@ class Tables extends Model
     public static function getCountOfTabsData($tableId, $tabName)
     {
         if ($tabName == "All") {
-            $count = \DB::table($tableId)->count();
+            $count = DB::table($tableId)->count();
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query);
@@ -167,7 +173,7 @@ class Tables extends Model
     public static function getCountOfFilteredData($req, $tableId)
     {
 
-        $users = \DB::table($tableId);
+        $users = DB::table($tableId);
         $users = Tables::makeFilterQuery($req, $users);
         $count = $users->count();
         return $count;

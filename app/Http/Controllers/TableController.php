@@ -145,9 +145,9 @@ class TableController extends Controller
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName)
+    public function loadContacts($tableIdMain, $tabName , $pageSize)
     {
-        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName);
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName,$pageSize);
         return json_decode(json_encode($tabDataJson), true);
     }
 
@@ -171,8 +171,8 @@ class TableController extends Controller
                 $tabArray = json_decode($tabSql['query'], true);
             }
 
-            $tabData = $this->loadContacts($tableIdMain, $tabName);
-
+            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100);
+            $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
@@ -469,8 +469,9 @@ class TableController extends Controller
     {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
+
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
-        return $this->loadContacts($tableDetails['table_id'], $tabName);
+        return $this->loadContacts($tableDetails['table_id'], $tabName,$pageSize);
     }
 
     public function sendEmailSMS(Request $request)
