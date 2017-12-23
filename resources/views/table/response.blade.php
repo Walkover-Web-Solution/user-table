@@ -33,8 +33,8 @@
             <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
+                    <option value="">select none</option>
                 @foreach($options['options'] as $info)
-                <option value="">select none</option>
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
@@ -44,10 +44,9 @@
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
-                <option value="">select none</option>
-                <option value="{{$team['email']}}" @if($team[
-                'email'] == $colValue) selected="selected" @endif
-                >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
+                <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif>
+                    @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif
+                </option>
                 @endforeach
             </select>
         </td>
@@ -61,14 +60,15 @@
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
                 <?php if($colValue){
-                    //$carbonDate = new Carbon($colValue);
                     $carbonDate = Carbon::createFromTimestamp($colValue);
                     $carbonDate->setTimezone('UTC');
                     $date = $carbonDate->diffForHumans();
+                    $dateActual = $carbonDate->toDateTimeString();
                 }else{
                     $date = '';
+                    $dateActual='';
                 } ?>
-                <td>{{$date}}</td>
+                <td><span data-toggle="tooltip" data-placement="top"  title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
         <td hidden>{{$colValue}}</td>
         @else
@@ -93,8 +93,8 @@
         <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
+                    <option value="">select none</option>
                 @foreach($options['options'] as $info)
-                <option value="">select none</option>
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
@@ -104,9 +104,8 @@
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
-                <option value="{{$team['email']}}" @if($team[
-                'email'] == $colValue) selected="selected" @endif
-                >@if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
+                <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif>
+                    @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                 @endforeach
             </select>
         </td>
@@ -120,14 +119,15 @@
         </td>
             @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
             <?php if($colValue){
-                //$carbonDate = new Carbon($colValue);
-                    $carbonDate = Carbon::createFromTimestamp($colValue);
-                    $carbonDate->setTimezone('UTC');
+                $carbonDate = Carbon::createFromTimestamp($colValue);
+                $carbonDate->setTimezone('UTC');
                 $date = $carbonDate->diffForHumans();
+                $dateActual = $carbonDate->toDateTimeString();
             }else{
                 $date = '';
+                $dateActual ='';
                 } ?>
-                <td>{{$date}}</td>
+                <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
         <td hidden>{{$colValue}}</td>
         @else
