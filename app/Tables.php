@@ -103,7 +103,7 @@ class Tables extends Model
     public static function TabDataBySavedFilter($tableId, $tabName)
     {
         if ($tabName == "All") {
-            $data = \DB::table($tableId)->selectRaw('*')->limit(100)->get();
+            $data = \DB::table($tableId)->selectRaw('*')->latest('id')->limit(100)->get();
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query);
@@ -114,10 +114,9 @@ class Tables extends Model
 
     public static function getFilteredUsersDetailsData($req, $tableId)
     {
-
         $users = \DB::table($tableId)->selectRaw('*');
         $users = Tables::makeFilterQuery($req, $users);
-        $data = $users->limit(100)->get();
+        $data = $users->latest('id')->limit(100)->get();
         return $data;
     }
 
