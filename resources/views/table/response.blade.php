@@ -1,4 +1,4 @@
-<?php use Carbon\Carbon;?>
+<?php use Carbon\Carbon; ?>
 <table class="table basic table-bordred">
 
     @foreach($allTabs as $key=>$val)
@@ -11,7 +11,7 @@
         @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
         @else
-        <th hidden  class="fixed-header"><span>{{$k}}</span></th>
+        <th hidden class="fixed-header"><span>{{$k}}</span></th>
         @endif
         @endforeach
     </tr>
@@ -25,7 +25,8 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
-                   value="{{$info}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
+                   value="{{$info}}" @if($info== $colValue) checked @endif
+                   onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
@@ -33,7 +34,7 @@
             <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
-                    <option value="">select none</option>
+                <option value="">select none</option>
                 @foreach($options['options'] as $info)
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
@@ -44,8 +45,9 @@
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
-                <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif>
-                    @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif
+                <option value="{{$team['email']}}" @if($team[
+                'email'] == $colValue) selected="selected" @endif>
+                @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif
                 </option>
                 @endforeach
             </select>
@@ -55,20 +57,21 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
+                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
+                   onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
-            @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
-                <?php if($colValue){
-                    $carbonDate = Carbon::createFromTimestamp($colValue);
-                    $carbonDate->setTimezone('UTC');
-                    $date = $carbonDate->diffForHumans();
-                    $dateActual = $carbonDate->toDateTimeString();
-                }else{
-                    $date = '';
-                    $dateActual='';
-                } ?>
-                <td><span data-toggle="tooltip" data-placement="top"  title="{{$dateActual}}">{{$date}}</span></td>
+        @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
+        <?php if ($colValue) {
+            $carbonDate = Carbon::createFromTimestamp($colValue);
+            $carbonDate->setTimezone('UTC');
+            $date = $carbonDate->diffForHumans();
+            $dateActual = $carbonDate->toDateTimeString();
+        } else {
+            $date = '';
+            $dateActual = '';
+        } ?>
+        <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
         <td hidden>{{$colValue}}</td>
         @else
@@ -76,7 +79,7 @@
         @endif
         @endforeach
     </tr>
-    
+
     @endif
     @if($key!=0)
     <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
@@ -86,14 +89,15 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
-                   value="{{$info}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
+                   value="{{$info}}" @if($info== $colValue) checked @endif
+                   onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
         <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
-                    <option value="">select none</option>
+                <option value="">select none</option>
                 @foreach($options['options'] as $info)
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
@@ -104,8 +108,9 @@
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
-                <option value="{{$team['email']}}" @if($team['email'] == $colValue) selected="selected" @endif>
-                    @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
+                <option value="{{$team['email']}}" @if($team[
+                'email'] == $colValue) selected="selected" @endif>
+                @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                 @endforeach
             </select>
         </td>
@@ -114,20 +119,21 @@
         <td>
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif onclick="event.stopPropagation();">{{$info}}<br>
+                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
+                   onclick="event.stopPropagation();">{{$info}}<br>
             @endforeach
         </td>
-            @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
-            <?php if($colValue){
-                $carbonDate = Carbon::createFromTimestamp($colValue);
-                $carbonDate->setTimezone('UTC');
-                $date = $carbonDate->diffForHumans();
-                $dateActual = $carbonDate->toDateTimeString();
-            }else{
-                $date = '';
-                $dateActual ='';
-                } ?>
-                <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
+        @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
+        <?php if ($colValue) {
+            $carbonDate = Carbon::createFromTimestamp($colValue);
+            $carbonDate->setTimezone('UTC');
+            $date = $carbonDate->diffForHumans();
+            $dateActual = $carbonDate->toDateTimeString();
+        } else {
+            $date = '';
+            $dateActual = '';
+        } ?>
+        <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
         <td hidden>{{$colValue}}</td>
         @else
@@ -142,7 +148,6 @@
     </tbody>
 </table>
 <input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
-
 
 
 <script>
@@ -188,7 +193,7 @@
             });
         }
         jsonDoc[coloumn_name] = new_value;
-        jsonDoc['id']= row_id;
+        jsonDoc['id'] = row_id;
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
         obj = jsonDoc;

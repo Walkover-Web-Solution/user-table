@@ -227,15 +227,16 @@ function getUserDetails(id, tableId) {
         });
     }
 }
+
 function parseDate(unixDateTime) {
     if (unixDateTime == 0) return "";
     else var selectedDate = new Date(unixDateTime * 1000);
     var date = selectedDate.getDate();
-    var month = selectedDate.getMonth() +1;
+    var month = selectedDate.getMonth() + 1;
     var year = selectedDate.getFullYear();
-    if(date<10) date= "0"+date;
-    if(month<10) month= "0"+month;
-    var currentVal = year +"-"+ month +"-"+ date;
+    if (date < 10) date = "0" + date;
+    if (month < 10) month = "0" + month;
+    var currentVal = year + "-" + month + "-" + date;
     return currentVal
 }
 
@@ -345,13 +346,13 @@ function searchKeyword(event, query) {
     if (!q) {
         $("#def_response").show();
         $('#response').hide();
-    }else{
+    } else {
         $.get(API_BASE_URL + "/search/" + tableId + "/" + q, function (response) {
             $("#def_response").hide();
-            $('#response').html(response);    
+            $('#response').html(response);
         });
     }
-    
+
 }
 
 function getOptionList() {
@@ -565,8 +566,12 @@ $(document).ready(function () {
     var title = $('#right_panel .title');
     $(".option_box").addClass('hide');
 });
-$(document).ready(function(){
+$(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover({
+        placement: 'top',
+        trigger: 'hover'
+    });
 });
 
 function sendData(type, JsonData, formData, tableId) {
