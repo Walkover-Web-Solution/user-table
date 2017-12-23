@@ -172,7 +172,6 @@ class Tables extends Model
 
     public static function getCountOfFilteredData($req, $tableId)
     {
-
         $users = DB::table($tableId);
         $users = Tables::makeFilterQuery($req, $users);
         $count = $users->count();
@@ -198,8 +197,8 @@ class Tables extends Model
 
             if (isset($req[$paramName]->is)) {
                 $val = $req[$paramName]->is;
-                if ($val == 'me')
-                    $users->where($paramName, '=', Auth::user()->email);
+                if ($val == 'me' && $loggedInUser = Auth::user())
+                    $users->where($paramName, '=', $loggedInUser);
                 else
                     $users->where($paramName, '=', $req[$paramName]->is);
             } else if (isset($req[$paramName]->is_not)) {

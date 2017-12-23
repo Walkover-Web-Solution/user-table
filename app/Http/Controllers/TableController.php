@@ -254,8 +254,8 @@ class TableController extends Controller
         foreach (array_keys($req) as $paramName) {
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
-                if ($val == 'me') {
-                    $users->where($paramName, '=', Auth::user()->email);
+                if ($val == 'me' && $loggedInUser = Auth::user()) {
+                    $users->where($paramName, '=', $loggedInUser);
                 } else
                     $users->where($paramName, '=', $req[$paramName]['is']);
             } else if (isset($req[$paramName]['is_not'])) {
@@ -334,7 +334,7 @@ class TableController extends Controller
             if (isset($teamData['error'])) {
                 return response()->json($teamData, 400);
             } else {
-                $user = \Auth::user();
+                $user = Auth::user();
                 if ($user) {
                     $webhook_url = '';
                     if ($add_entry_flag && !empty($response['new_entry_api'])) {
@@ -472,6 +472,14 @@ class TableController extends Controller
 
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
         return $this->loadContacts($tableDetails['table_id'], $tabName,$pageSize);
+    }
+
+    public function getFilters(Request $request)
+    {
+        $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
+        $tabData =  Tabs::getTabsByTableId($tableDetails['table_id']);
+        $tabs = json_decode(json_encode($tabData), true);
+        return Tables::getAllTabsCount($tableDetails['table_id'], $tabs);
     }
 
     public function sendEmailSMS(Request $request)
