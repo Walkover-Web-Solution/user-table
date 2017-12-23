@@ -34,7 +34,7 @@
             <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
-                <option value="">select none</option>
+                <option value="">select</option>
                 @foreach($options['options'] as $info)
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
@@ -97,7 +97,7 @@
         <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
-                <option value="">select none</option>
+                <option value="">select</option>
                 @foreach($options['options'] as $info)
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
