@@ -36,7 +36,7 @@ $('body').on('focus', ".calendar_cls", function () {
 function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
-
+    console.log(user_data);
     user_data.forEach(function (val, index) {
 
         userDetails += `<tr data-toggle="modal" data-target="#edit_user" onclick = "getUserDetails('` + index + `')" >
@@ -142,6 +142,7 @@ function getUserDetails(id, tableId) {
             url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (res) {
                 var val = res.data;
+                console.log(val);
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
                 var teammates = res.teammates;
@@ -255,6 +256,7 @@ function editUserData(type) {
         var userDetailsForm = $("#addUserDetails .form-control")
     }
     jsonDoc['data_source'] = 'manual';
+
     userDetailsForm.each(function () {
         fieldChange = $(this).attr('data-change');
         //if (fieldChange) {
@@ -291,7 +293,21 @@ function editUserData(type) {
             },
             success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
-                location.reload();
+                // console.log(data.data);
+                // location.reload();
+                console.log(obj);
+                console.log(myInterval);
+                console.log(id);
+                console.log(data);
+                console.log(data.teamData.data);
+                $("#tr" + id + " .date")
+                // for( k in data.teamData.data){
+                //     $("#tr"+ id + ".k")
+                // }
+                $.each(data.teamData.data, function(idx, val){
+                    $("#tr"+id+ " ."+idx+"").text(val);
+                    console.log(id, idx, val);
+                });
             },
         });
     }
