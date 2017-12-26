@@ -12,7 +12,8 @@ var checkList = [{
 }];
 var numberList = [];
 var dateList = ['relative', 'normal'];
-var customTypes = ['dropdown', 'radio button', 'checkbox']
+var customTypes = ['dropdown', 'radio button', 'checkbox'];
+var time = "";
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -171,7 +172,7 @@ function getUserDetails(id, tableId) {
                         } else {
                             editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
                             if (currentField.column_type_id == 9) { // if column type is date
-                                var currentVal = parseDate(val[k])
+                                var currentVal = parseDate(val[k]);
                                 editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
                             } else if (currentField.column_type_id == 6) { // if column type is dropdown
                                 editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
@@ -235,8 +236,15 @@ function parseDate(unixDateTime) {
     var date = selectedDate.getDate();
     var month = selectedDate.getMonth() + 1;
     var year = selectedDate.getFullYear();
+    var hours = selectedDate.getHours();
+    var minutes = selectedDate.getMinutes();
+    var seconds = selectedDate.getSeconds();
+    if (hours < 10) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+    if (seconds < 10) seconds = "0" + seconds;
     if (date < 10) date = "0" + date;
     if (month < 10) month = "0" + month;
+    time = hours + ":" + minutes + ":" + seconds;
     var currentVal = year + "-" + month + "-" + date;
     return currentVal
 }
@@ -263,6 +271,7 @@ function editUserData(type) {
         dataid = $(this).attr('dataid');
         required = $(this).attr('required');
         val = $(this).val();
+        type= $(this).attr('type');
         if (required && val === "") {
             errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
             $('#add_users_body').append(errMsg);
@@ -275,6 +284,9 @@ function editUserData(type) {
                 val = val.split('/');
                 val = val[2] + "/" + val[1] + "/" + val[0];
             }
+        }
+        if(type === "date"){
+            val = val + " " + time;
         }
         jsonDoc[dataid] = val;
     });
