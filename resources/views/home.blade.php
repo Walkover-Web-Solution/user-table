@@ -148,7 +148,7 @@
                                                     <option value="{{$opt}}">{{$opt}}</option>
                                                     @endforeach
                                                 </select>
-                                                @elseif($filter['col_type'] == 'date')
+                                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
                                                     <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
                                                         name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                         type="date" value="{{$activeTabFilter[$k][$key]}}">
@@ -175,7 +175,7 @@
                                                     <option value="{{$opt}}">{{$opt}}</option>
                                                     @endforeach
                                                 </select>
-                                                @elseif($filter['col_type'] == 'date')
+                                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
                                                     <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
                                                         name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
                                                         type="date" style="display:none;">
