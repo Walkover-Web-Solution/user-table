@@ -66,7 +66,7 @@ class GraphController extends Controller {
                 $tableData = Tables::getSQLData($sql);
                 $allrecords = $tableData[0]->allrecords;
                 $total = $tableData[0]->total;
-                if(($total - $allrecords) > 5 )
+                if(($allrecords != 1 && $allrecords != $total && ($total - $allrecords) > 5 ))
                     $other_columns[] =  $col;
             }
                 
