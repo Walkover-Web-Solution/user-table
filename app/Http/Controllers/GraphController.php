@@ -35,16 +35,18 @@ class GraphController extends Controller {
         }
         $where = "";
         if(!empty($startDate) && !empty($endDate)){
-            $where = "WHERE STR_TO_DATE($dateColumn, '%d/%m/%Y') between STR_TO_DATE('$startDate', '%d/%m/%Y') AND STR_TO_DATE('$endDate', '%d/%m/%Y')";
+            //$where = "WHERE STR_TO_DATE(FROM_UNIXTIME($dateColumn), '%d/%m/%Y') between STR_TO_DATE('$startDate', '%d/%m/%Y') AND STR_TO_DATE('$endDate', '%d/%m/%Y')";
+            $where = "WHERE $dateColumn between strtotime($startDate) AND strtotime($endDate)";
         }
 
         if($column_type == 'date')
-            $sql = "SELECT STR_TO_DATE($secondColumn, '%d/%m/%Y')  LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by STR_TO_DATE($secondColumn, '%d/%m/%Y')";
+            $sql = "SELECT from_unixtime($secondColumn, '%Y-%d-%m') LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by from_unixtime($secondColumn, '%Y-%d-%m')";
         else
             $sql = "SELECT $secondColumn LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by $secondColumn";
+
         $tableData = Tables::getSQLData($sql);
         return json_encode($tableData);
-    }
+    } 
 
     public function showGraphForTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
