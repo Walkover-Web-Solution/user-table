@@ -293,20 +293,16 @@ function editUserData(type) {
             },
             success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
-                // console.log(data.data);
                 // location.reload();
-                console.log(obj);
-                console.log(myInterval);
-                console.log(id);
-                console.log(data);
                 console.log(data.teamData.data);
-                $("#tr" + id + " .date")
-                // for( k in data.teamData.data){
-                //     $("#tr"+ id + ".k")
-                // }
-                $.each(data.teamData.data, function(idx, val){
-                    $("#tr"+id+ " ."+idx+"").text(val);
-                    console.log(id, idx, val);
+                $.each(data.teamData.data, function(idx,val){
+                    if($('#dt_9')){
+                        var date = new Date(val*1000);
+                        var localDate = date.toLocaleDateString();
+                        $("#tr_"+ id +" ."+ idx).text(localDate);
+                    }else{
+                        $("#tr_"+ id +" ."+ idx).text(val);
+                    }
                 });
             },
         });
