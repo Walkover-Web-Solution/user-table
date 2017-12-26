@@ -97,9 +97,9 @@
 
                             <div class="form-group">
                                 <label for="email"  class="control-caption">Date Range</label>
-                                <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text"/>
+                                <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text" value="{{$rangeStart}}"/>
                                 To
-                                <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text"/>
+                                <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text" value="{{$rangeEnd}}"/>
                             </div>
                             <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>
                         </form>
@@ -120,9 +120,9 @@
                         </div>
                         <div class="form-group">
                             <label for="email"  class="control-caption">Date Range</label>
-                            <input class="form-control" id="date" name="pieDate" placeholder="MM/DD/YYY" type="text"/>
+                            <input class="form-control" id="date" name="pieDate" placeholder="MM/DD/YYY" type="text"  value="{{$rangeStart}}"/>
                             To
-                            <input class="form-control" id="date1" name="pieDate1" placeholder="MM/DD/YYY" type="text"/>
+                            <input class="form-control" id="date1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
                         </div>
                         <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
                     </form>

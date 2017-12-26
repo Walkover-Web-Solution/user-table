@@ -86,7 +86,10 @@ class GraphController extends Controller {
 
             $arrTabCount = Tables::getAllTabsCount($tableId, $tabs);
             $allTabCount = Tables::getCountOfTabsData($tableId, "All");
-
+            $d=strtotime("-3 days");
+            $rangeStart = date('m/d/Y',$d);
+            $d1=strtotime("+3 days");
+            $rangeEnd = date('m/d/Y',$d1);
             return view('graph', array(
                 'activeTab' => 'All',
                 'date_columns' => $date_columns,
@@ -97,7 +100,10 @@ class GraphController extends Controller {
                 'allTabCount' => $allTabCount,
                 'tableId' => $tableName,
                 'userTableName' => $userTableName,
-                'structure' => $userTableStructure));
+                'structure' => $userTableStructure,
+                'rangeStart' => $rangeStart,
+                'rangeEnd' => $rangeEnd
+                ));
         }
     }
 }
