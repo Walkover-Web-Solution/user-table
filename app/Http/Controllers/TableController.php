@@ -291,9 +291,9 @@ class TableController extends Controller
             } else if (isset($req[$paramName]['before'])) {
                 if($colomntype == 'date'){
                     $timestamp = strtotime($req[$paramName]['before']);
-                    $users->where($paramName, '<=',  $timestamp);
+                    $users->where($paramName, '<=',  $timestamp)->where($paramName, '>',  0);
                 }else{
-                    $users->where($paramName, '<=', $req[$paramName]['after']);
+                    $users->where($paramName, '<=', $req[$paramName]['before']);
                 }
             } else if (isset($req[$paramName]['after'])) {
                 if($colomntype == 'date'){
@@ -305,7 +305,7 @@ class TableController extends Controller
             }else if (isset($req[$paramName]['days_before'])) {
                 $days = $req[$paramName]['days_before'];
                 $daysbefore = time() - ($days * 24 * 60 * 60);
-                $users->where($paramName, '<=', $daysbefore);
+                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>',  0);
             }else if (isset($req[$paramName]['days_after'])) {
                 $days = $req[$paramName]['days_after'];
                 $daysafter = time() + ($days * 24 * 60 * 60);

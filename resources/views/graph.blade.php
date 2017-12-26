@@ -256,19 +256,19 @@
                 var others_count = 0;
                 for (index = 0; index < data.length; index++) {
                     var item = data[index];
-                    if(item.Total > thurshold) {
+                   // if(item.Total > thurshold) {
                         dates.push(item.LabelColumn);
                         values.push(item.Total);
                         colors.push(random_rgba());
                         bcolors.push("rgba(100,100,100,1)");
-                    }else{
-                        others_count += item.Total;
-                    }
+                   // }else{
+                   //     others_count += item.Total;
+                  //  }
                 }
-                dates.push("Others");
-                values.push(others_count);
-                colors.push(random_rgba());
-                bcolors.push("rgba(100,100,100,1)");
+                //dates.push("Others");
+                //values.push(others_count);
+                //colors.push(random_rgba());
+               // bcolors.push("rgba(100,100,100,1)");
                 //console.log(colors);
                 CreateBarChart("myChart", dates,values,colors,bcolors);
                 $(".top-chart-container .ajax-loader-container").hide();
