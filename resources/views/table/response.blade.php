@@ -152,9 +152,7 @@
 
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
-    var API_BASE_URL = '{{env('
-    API_BASE_URL
-    ')}}';
+    var API_BASE_URL = '{{env('API_BASE_URL')}}';
 
     function updateData(ths, method) {
         var authKey = $("#tableAuthKey").val();

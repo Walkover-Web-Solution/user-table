@@ -60,6 +60,7 @@ function showFilterInputText(ths, val, tableId) {
     dataid = $(ths).attr('dataid');
     if (dataid != "has_any_value" && dataid != 'is_unknown') {
         $(ths).parent().find("input:text").show();
+        $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
     } else {
         makeFilterJsonData(tableId, 'Search');
@@ -70,6 +71,7 @@ function showFilterInputText(ths, val, tableId) {
 function showDiv(id) {
     $("#" + id).toggleClass('hide');
     $("#" + id).find("input:text").hide();
+    $("#" + id).find("input.date-filter-input").hide();
     $(ths).parent().find("select").hide();
 }
 

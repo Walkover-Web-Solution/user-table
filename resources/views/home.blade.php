@@ -108,74 +108,87 @@
                                 <div id="condition_{{$k}}" class="hide filter-option">
                                     @endif
                                     @foreach($filter['col_filter'] as $key =>$option)
-                                    <div class="form-check">
-                                        <label class="form-check-label radio-label">
-                                            @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                   id="{{$k}}_filter_text_{{$key}}"
-                                                   datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                   type="radio"
-                                                   aria-label="..." checked="checked">
-                                            @else
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                   id="{{$k}}_filter_text_{{$key}}"
-                                                   datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                   type="radio"
-                                                   aria-label="...">
-                                            @endif
-                                            {{$key}}
-                                            @if($key != "is_unknown" && $key != "has_any_value")
-                                            @if(isset($activeTabFilter[$k][$key]))
-                                            @if($filter['col_type'] == 'my teammates')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
-                                                'email'])?'selected':''}}>{{$opt['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'dropdown')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                <option value=""></option>
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt}}">{{$opt}}</option>
-                                                @endforeach
-                                            </select>
-                                            @else
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                            @endif
-                                            @else
-                                            @if($filter['col_type'] == 'my teammates')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                    style="display:none;">
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt['email']}}">{{$opt['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'dropdown')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                    style="display:none;">
-                                                <option value=""></option>
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt}}">{{$opt}}</option>
-                                                @endforeach
-                                            </select>
-                                            @else
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="text" style="display:none;">
-                                            @endif
-                                            @endif
-                                            @endif
-                                        </label>
-                                    </div>
+                                        @if(!empty($option) && $option == 'group')
+                                            <div class="filter_group">{{$key}}</div>
+                                        @endif
+                                        @if($option != 'group')
+                                        <div class="form-check">
+                                            <label class="form-check-label radio-label">
+                                                @if(isset($activeTabFilter[$k][$key]))
+                                                <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                    id="{{$k}}_filter_text_{{$key}}"
+                                                    datacoltype="{{$filter['col_type']}}"
+                                                    onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                    type="radio"
+                                                    aria-label="..." checked="checked">
+                                                @else
+                                                <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                    id="{{$k}}_filter_text_{{$key}}"
+                                                    datacoltype="{{$filter['col_type']}}"
+                                                    onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                    type="radio"
+                                                    aria-label="...">
+                                                @endif
+                                                {{str_replace("days_","",$key)}} 
+                                                @if($key != "is_unknown" && $key != "has_any_value")
+                                                @if(isset($activeTabFilter[$k][$key]))
+                                                @if($filter['col_type'] == 'my teammates')
+                                                <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
+                                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                                    <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
+                                                    'email'])?'selected':''}}>{{$opt['name']}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @elseif($filter['col_type'] == 'dropdown')
+                                                <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
+                                                    <option value=""></option>
+                                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                                    <option value="{{$opt}}">{{$opt}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @elseif($filter['col_type'] == 'date')
+                                                    <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                                @else
+                                                    <input class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                @endif
+                                                @else
+                                                @if($filter['col_type'] == 'my teammates')
+                                                <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        style="display:none;">
+                                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                                    <option value="{{$opt['email']}}">{{$opt['name']}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @elseif($filter['col_type'] == 'dropdown')
+                                                <select class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        style="display:none;">
+                                                    <option value=""></option>
+                                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                                    <option value="{{$opt}}">{{$opt}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @elseif($filter['col_type'] == 'date')
+                                                    <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        type="date" style="display:none;">
+                                                @else
+                                                    <input class="form-check-input filterinput{{$k}} form-control"
+                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                        type="text" style="display:none;">
+                                                @endif
+                                                @endif
+                                                @endif
+                                            </label>
+                                        </div>
+                                        @endif
                                     @endforeach
                                 </div>
                         </li>
@@ -211,9 +224,7 @@
 <script src="{{asset('js/functions.js')}}"></script>
 
 <script type="text/javascript">
-    var API_BASE_URL = '{{env('
-    API_BASE_URL
-    ')}}';
+    var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
 </script>
@@ -550,9 +561,7 @@
 
     @stop
     <script type="text/javascript">
-        var API_BASE_URL = '{{env('
-        API_BASE_URL
-        ')}}';
+        var API_BASE_URL = "{{env('API_BASE_URL')}}";
         var activeTab = '{{$activeTab}}';
         var tableId = '{{$tableId}}';
 

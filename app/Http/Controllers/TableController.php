@@ -204,7 +204,7 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId, $pageSize = 100)
+    public function processFilterData($req, $tableId,$coltype, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
@@ -214,7 +214,7 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'],$coltype, $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -239,7 +239,7 @@ class TableController extends Controller
         $coltype = ($request->coltype);
 
         $tableId = $request->tableId;
-        $responseArray = $this->processFilterData($req, $tableId, 30);
+        $responseArray = $this->processFilterData($req, $tableId, $coltype,30);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                 ->header('Content-Type', 'application/json');
@@ -248,10 +248,11 @@ class TableController extends Controller
         }
     }
 
-    public static function getAppliedFiltersData($req, $tableId, $pageSize = 100)
+    public static function getAppliedFiltersData($req, $tableId, $coltype, $pageSize = 100)
     {
         $users = DB::table($tableId)->selectRaw('*');
         foreach (array_keys($req) as $paramName) {
+            $colomntype = $coltype[$paramName];
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
                 if ($val == 'me' && $loggedInUser = Auth::user()) {
@@ -284,10 +285,31 @@ class TableController extends Controller
                 $users->where($paramName, '>=', $req[$paramName]['from']);
             } else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
+            }else if (isset($req[$paramName]['on'])) {
+                $timestamp = strtotime($req[$paramName]['on']);
+                $users->where($paramName, '=',  $timestamp);
             } else if (isset($req[$paramName]['before'])) {
-                $users->where($paramName, '<=', $req[$paramName]['to']);
+                if($colomntype == 'date'){
+                    $timestamp = strtotime($req[$paramName]['before']);
+                    $users->where($paramName, '<=',  $timestamp);
+                }else{
+                    $users->where($paramName, '<=', $req[$paramName]['after']);
+                }
             } else if (isset($req[$paramName]['after'])) {
-                $users->where($paramName, '>=', $req[$paramName]['to']);
+                if($colomntype == 'date'){
+                    $timestamp = strtotime($req[$paramName]['after']);
+                    $users->where($paramName, '>=',  $timestamp);
+                }else{
+                    $users->where($paramName, '>=', $req[$paramName]['after']);
+                }
+            }else if (isset($req[$paramName]['days_before'])) {
+                $days = $req[$paramName]['days_before'];
+                $daysbefore = time() - ($days * 24 * 60 * 60);
+                $users->where($paramName, '<=', $daysbefore);
+            }else if (isset($req[$paramName]['days_after'])) {
+                $days = $req[$paramName]['days_after'];
+                $daysafter = time() + ($days * 24 * 60 * 60);
+                $users->where($paramName, '>=', $daysafter);
             }
 
         }

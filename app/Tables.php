@@ -35,11 +35,14 @@ class Tables extends Model
             'is_unknown' => null,
             'has_any_value' => null
         );
-        $forDate = array('from' => null,
-            'to' => null,
-            'before' => null,
+        $forDate = array('Relative' => 'group',
+            'days_after' => null,
+            'days_exactly' => null,
+            'days_before' => null,
+            'Absolute' => 'group',
             'after' => null,
-            'exactly' => null,
+            'on' => null,
+            'before' => null,
             'is_unknown' => null,
             'has_any_value' => null
         );
