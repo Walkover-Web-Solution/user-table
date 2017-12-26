@@ -313,7 +313,7 @@ function editUserData(type) {
                     alert("something went wrong in updating data");
                 }else{
                     $.each(data.teamData.data, function(idx,val){
-                        if($('#dt_9')){
+                        if($("#tr_"+ id +" ."+ idx + '  #dt_9').attr('type') === 'date'){
                             var date = new Date(val*1000);
                             var localDate = date.toLocaleDateString();
                             $("#tr_"+ id +" ."+ idx).text(localDate);
