@@ -308,16 +308,20 @@ function editUserData(type) {
             success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
                 // location.reload();
-                console.log(data.teamData.data);
-                $.each(data.teamData.data, function(idx,val){
-                    if($('#dt_9')){
-                        var date = new Date(val*1000);
-                        var localDate = date.toLocaleDateString();
-                        $("#tr_"+ id +" ."+ idx).text(localDate);
-                    }else{
-                        $("#tr_"+ id +" ."+ idx).text(val);
-                    }
-                });
+                // console.log(data.teamData.data);
+                if(!data.teamData.data){
+                    alert("something went wrong in updating data");
+                }else{
+                    $.each(data.teamData.data, function(idx,val){
+                        if($('#dt_9')){
+                            var date = new Date(val*1000);
+                            var localDate = date.toLocaleDateString();
+                            $("#tr_"+ id +" ."+ idx).text(localDate);
+                        }else{
+                            $("#tr_"+ id +" ."+ idx).text(val);
+                        }
+                    });
+                }
             },
         });
     }
