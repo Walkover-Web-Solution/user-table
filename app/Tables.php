@@ -37,7 +37,6 @@ class Tables extends Model
         );
         $forDate = array('Relative' => 'group',
             'days_after' => null,
-            'days_exactly' => null,
             'days_before' => null,
             'Absolute' => 'group',
             'after' => null,
