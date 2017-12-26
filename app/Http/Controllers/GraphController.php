@@ -36,7 +36,9 @@ class GraphController extends Controller {
         $where = "";
         if(!empty($startDate) && !empty($endDate)){
             //$where = "WHERE STR_TO_DATE(FROM_UNIXTIME($dateColumn), '%d/%m/%Y') between STR_TO_DATE('$startDate', '%d/%m/%Y') AND STR_TO_DATE('$endDate', '%d/%m/%Y')";
-            $where = "WHERE $dateColumn between strtotime($startDate) AND strtotime($endDate)";
+            $starttime = strtotime($startDate);
+            $endtime = strtotime($endDate);
+            $where = "WHERE $dateColumn between $starttime AND $endtime";
         }
 
         if($column_type == 'date')
