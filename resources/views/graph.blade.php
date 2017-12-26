@@ -310,10 +310,11 @@
                     bcolors.push("rgba(100,100,100,1)");
                 }
                 
-
                 //console.log(colors);
-                CreatePieChart(element, dates,values,colors,bcolors);
-                //$(".top-chart-container .ajax-loader-container").hide();
+                if( dates.length > 1)
+                    CreatePieChart(element, dates,values,colors,bcolors);
+                else  
+                    $("#" + element ).parent().hide();
             });
         }
         function loadGraph() {
