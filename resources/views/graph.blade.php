@@ -294,7 +294,7 @@
                 var others_count = 0;
                 for (index = 0; index < data.length; index++) {
                     var item = data[index];
-                    if(item.Total > thurshold) {
+                    if((item.Total > thurshold) || data.length < 5 ) {
                         dates.push(item.LabelColumn);
                         values.push(item.Total);
                         colors.push(random_rgba());
@@ -303,10 +303,13 @@
                         others_count += item.Total;
                     }
                 }
-                dates.push("Others");
-                values.push(others_count);
-                colors.push(random_rgba());
-                bcolors.push("rgba(100,100,100,1)");
+                if( data.length > 5){
+                    dates.push("Others");
+                    values.push(others_count);
+                    colors.push(random_rgba());
+                    bcolors.push("rgba(100,100,100,1)");
+                }
+                
 
                 //console.log(colors);
                 CreatePieChart(element, dates,values,colors,bcolors);
