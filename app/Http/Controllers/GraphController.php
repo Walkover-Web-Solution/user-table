@@ -50,6 +50,7 @@ class GraphController extends Controller {
 
     public function showGraphForTable($tableName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $actualTableName = $tableNames['table_id'];
         $userTableName = $tableNames['table_name'];
         $userTableStructure = $tableNames['table_structure'];
         $date_columns = array();
@@ -57,8 +58,16 @@ class GraphController extends Controller {
         foreach ($userTableStructure as $key => $value) {
             if ($value['column_type']['column_name'] == 'date')
                 $date_columns[] = $value['column_name'];
-            else if ($value['is_unique'] == "false")
-                $other_columns[] = $value['column_name'];;
+            else if ($value['is_unique'] == "false"){
+                $col = $value['column_name'];
+                $sql = "SELECT count(distinct $col) allrecords,count($col) total  FROM $actualTableName";
+                $tableData = Tables::getSQLData($sql);
+                $allrecords = $tableData[0]->allrecords;
+                $total = $tableData[0]->total;
+                if(($total - $allrecords) > 5 )
+                    $other_columns[] =  $col;
+            }
+                
         }
 
         if (empty($tableNames['table_id'])) {
