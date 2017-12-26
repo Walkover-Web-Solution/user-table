@@ -5,7 +5,7 @@
     @if($key==0)
 
     <thead id="userThead">
-    <tr>
+    <tr id="tr_{{$val['id']}}">
         <!-- <th><span class="fixed-header"></span></th> -->
         @foreach($val as $k => $colName)
         @if($k!='id')
@@ -17,12 +17,12 @@
     </tr>
     </thead>
     <tbody id="all_users">
-    <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
         <!-- <td></td> -->
-        @foreach($val as $k => $colValue)
+        @foreach($val as $k => $colValue)        
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
-        <?php $options = json_decode($structure[$k]['value'], true); ?>
-        <td>
+        <?php $options = json_decode($structure[$k]['value'], true);?>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
                    value="{{$info}}" @if($info== $colValue) checked @endif
@@ -30,7 +30,7 @@
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
@@ -41,7 +41,7 @@
             </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
@@ -54,7 +54,7 @@
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
         <?php $options = json_decode($structure[$k]['value'], true); ?>
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
                    value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
@@ -71,22 +71,22 @@
             $date = '';
             $dateActual = '';
         } ?>
-        <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
-        <td hidden>{{$colValue}}</td>
+        <td hidden class="{{$k}}">{{$colValue}}</td>
         @else
-        <td>{{$colValue}}</td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">{{$colValue}}</td>
         @endif
         @endforeach
     </tr>
 
     @endif
     @if($key!=0)
-    <tr data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
         @foreach($val as $k => $colValue)
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'], true); ?>
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             @foreach($options['options'] as $info)
             <input type="radio" onchange="updateData(this, 'radio_button')" name="{{$k}}:_:{{$val['id']}}"
                    value="{{$info}}" @if($info== $colValue) checked @endif
@@ -94,7 +94,7 @@
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
-        <td><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
                 <option value="">select</option>
@@ -104,7 +104,7 @@
             </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
@@ -116,7 +116,7 @@
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
         <?php $options = json_decode($structure[$k]['value'], true); ?>
-        <td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
             @foreach($options['options'] as $info)
             <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
                    value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
@@ -133,11 +133,11 @@
             $date = '';
             $dateActual = '';
         } ?>
-        <td><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
-        <td hidden>{{$colValue}}</td>
+        <td hidden class="{{$k}}">{{$colValue}}</td>
         @else
-        <td>{{$colValue}}</td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">{{$colValue}}</td>
         @endif
 
         @endforeach

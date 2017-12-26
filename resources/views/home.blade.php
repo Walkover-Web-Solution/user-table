@@ -369,7 +369,7 @@
                 <div class="modal-body" id="edit_users_body">
                 </div>
 
-                <div class="modal-footer">
+                <div class="modal-footer" style="overflow: hidden">
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
                     <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
