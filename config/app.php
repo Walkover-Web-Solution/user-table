@@ -178,6 +178,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Yajra\Datatables\DatatablesServiceProvider::class,
+        App\Providers\TableDetailServiceProvider::class,
 		
     ],
 

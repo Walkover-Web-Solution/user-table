@@ -49,7 +49,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for alter user table in database
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
-    Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
+    Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
     #serach by filters
     Route::post('/filter', 'TableController@applyFilters');
 
