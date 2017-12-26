@@ -71,7 +71,8 @@ Route::group(['middleware' => ['socketMasterKey']], function() {
 
 # to create or add user
 Route::post('/add_update', 'TableController@add');
-Route::get('/add_update', 'TableController@add');
+
+Route::post('/addactivity/{tableId}','ActivityController@addLog')->name('addactivity');
 
 //Auth::routes();
 // Authentication Routes...
