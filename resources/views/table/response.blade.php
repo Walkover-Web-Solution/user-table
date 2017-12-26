@@ -207,7 +207,7 @@
             success: function (data) {
                 // ALL_USERS[selectedRow] = data.data;
                 //console.log(data)
-                location.reload();
+//                location.reload();
             },
         });
     }
