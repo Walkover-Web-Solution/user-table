@@ -141,6 +141,21 @@ class TableController extends Controller
 
     public function loadSelectedTable($tableId, $tabName = 'All')
     {
+        //First Validate if the user has access to Table
+        $teams = session()->get('team_array');
+        $teamIdArr = array();
+        $teamNameArr = array();
+
+        foreach ($teams as $teamId => $teamName) {
+            $teamNameArr[] = $teamName;
+            $teamIdArr[] = $teamId;
+        }
+
+        $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
+        if(count($tableLst) == 0){
+            return redirect()->route('tables');
+        }
+        
         $results = $this->processTableData($tableId, $tabName);
         return view('home', $results);
     }
