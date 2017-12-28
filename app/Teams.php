@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp;
+use Illuminate\Support\Facades\Auth;
 
 class Teams extends Model
 {
@@ -16,8 +17,11 @@ class Teams extends Model
             $response = $request->getBody()->getContents();
             $team_response_arr = json_decode($response, true);
 
-
-            $member_array = array(0 => array('email' => '', 'name' => 'No One'),1=>array('email' => 'me', 'name' => 'Me'));
+            if($loggedInUser = Auth::user())
+                $email = $loggedInUser->email;
+            else
+                $email = 'me';
+            $member_array = array(0 => array('email' => '', 'name' => 'No One'),1=>array('email' => $email, 'name' => 'Me'));
             foreach ($team_response_arr['memberships'] as $member) {
                 $email = $member['user']['email'];
                 if (empty($member['user']['first_name']) && empty($member['user']['last_name'])) {
