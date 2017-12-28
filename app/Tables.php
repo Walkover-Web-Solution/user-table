@@ -150,14 +150,20 @@ class Tables extends Model
         });
     }
 
-    public static function createLogTable($logTableName, $data)
+    public static function createLogTable($logTableName)
     {
-        Schema::create($logTableName, function (Blueprint $table) use ($data) {
+        Schema::create($logTableName, function (Blueprint $table) {
             $table->increments('id');
-            foreach ($data as $value) {
-                $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
-                $table->string($value['name'])->nullable();
-            }
+            $table->string('user_id')->nullable();
+            $table->string('content_type', 72)->nullable();
+            $table->integer('content_id')->nullable();
+            $table->string('action', 32)->nullable();
+            $table->string('description')->nullable();
+            $table->text('details')->nullable();
+            $table->text('old_data')->nullable();
+            $table->string('ip_address', 64);
+            $table->string('user_agent');
+            $table->nullableTimestamps();
         });
     }
 
