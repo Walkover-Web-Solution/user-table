@@ -9,6 +9,7 @@ use App\Tabs;
 use App\team_table_mapping;
 use App\Teams;
 use App\Viasocket;
+use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -301,8 +302,12 @@ class TableController extends Controller
             } else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
             } else if (isset($req[$paramName]['on'])) {
-                $timestamp = strtotime($req[$paramName]['on']);
-                $users->where($paramName, '=', $timestamp);
+               $d = $req[$paramName]['on'];
+               $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
+               $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
+               $sttimestamp = strtotime($st);
+               $endtimestamp = strtotime($enddt);
+               $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
             } else if (isset($req[$paramName]['before'])) {
                 if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['before']);
