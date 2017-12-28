@@ -120,12 +120,21 @@ class team_table_mapping extends Model {
             $responseObj = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
             $response = json_decode(json_encode($responseObj));
         }
-
+        $updatedData = array();
+        $old_data = array();
         if (empty($response)) {
             $message = 'Entry Added';
+            $action = 'Create';
             $table->insert($input_param);
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         } else {
+            $oldRow = $table->select('*')
+                ->where($unique_key, $input_param[$unique_key])
+                ->first();
+
+            foreach ($oldRow as $k => $val) {
+                $old_data[$k] = $val;
+            }
             foreach ($input_param as $key => $value) {
                 if(isset($structure[$key]))
                 {
@@ -138,25 +147,24 @@ class team_table_mapping extends Model {
                             $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
                         }
                     }
-                }else if($key == 'id'){
-                    //$update_data[$key] = $input_param[$key];
+                    if ($old_data[$key] != $input_param[$key]) {
+                        $updatedData[$key] = $input_param[$key];
+                    } else {
+                        unset($old_data[$key]);
+                    }
+                } else if ($key == 'id') {
+                    unset($old_data[$key]);
                 }
             }
             $message = 'Entry Updated';
+            $action = 'Update';
             $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             $update_data = $table->select('*')
                 ->where($unique_key, $input_param[$unique_key])
                 ->first();
         }
-        $log_table = 'log' . substr($table_name, 4);
-        if(isset($input_param['id'])){
-            unset($input_param['id']);
-        }
-        DB::table($log_table)
-                ->insert($input_param);
-
-        return array('success' => $message, 'data' => $update_data);
+        return array('success' => $message, 'data' => $update_data, 'action' => $action, 'details' => $updatedData, 'old_data' => $old_data);
     }
 
     public static function updateTableStructure($paramArr, $tableId) {

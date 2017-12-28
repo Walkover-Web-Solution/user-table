@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Activity as Act;
+use App\Entity\Activity;
 use App\Http\Helpers;
+use App\Repositories\TableDetailRepositoryInterface;
 use App\Tables;
 use App\TableStructure;
 use App\Tabs;
@@ -18,6 +21,13 @@ use Illuminate\Support\Facades\Schema;
 
 class TableController extends Controller
 {
+    protected $activity;
+    protected $tableDetail;
+
+    public function __construct(TableDetailRepositoryInterface $tableDetail)
+    {
+        $this->tableDetail = $tableDetail;
+    }
 
     public function createTable(Request $request)
     {
@@ -48,7 +58,7 @@ class TableController extends Controller
 
         if (!Schema::hasTable($tableName)) {
             Tables::createMainTable($tableName, $data);
-            Tables::createLogTable($logTableName, $data);
+            Tables::createLogTable($logTableName);
 
             $arr['msg'] = "Table Successfully created";
             // Make entry of table in team table mapping & store table structure
@@ -156,7 +166,7 @@ class TableController extends Controller
         if(count($tableLst) == 0){
             return redirect()->route('tables');
         }
-        
+
         $results = $this->processTableData($tableId, $tabName);
         return view('home', $results);
     }
@@ -302,12 +312,12 @@ class TableController extends Controller
             } else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
             } else if (isset($req[$paramName]['on'])) {
-               $d = $req[$paramName]['on'];
-               $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
-               $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
-               $sttimestamp = strtotime($st);
-               $endtimestamp = strtotime($enddt);
-               $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                $d = $req[$paramName]['on'];
+                $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
+                $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
+                $sttimestamp = strtotime($st);
+                $endtimestamp = strtotime($enddt);
+                $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
             } else if (isset($req[$paramName]['before'])) {
                 if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['before']);
@@ -403,6 +413,7 @@ class TableController extends Controller
                     }
                 }
                 team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
+                $this->insertActivityData($table_name,$teamData);
                 $arr['teamData'] = $teamData;
                 $arr['user'] = $user;
                 return response()->json($arr);
@@ -412,6 +423,31 @@ class TableController extends Controller
             $arr['exception'] = $ex->getMessage();
             return response()->json($arr);
         }
+    }
+
+    public function insertActivityData($table_name, $teamData)
+    {
+        $data['description'] = $teamData['success'];
+        $data['action'] = $teamData['action'];
+        $data['content_type'] = 'Entry';
+        $data['content_id'] = $teamData['data']->id;
+        if($teamData['action'] =='Update')
+            $data['updated_at'] = date('Y-m-d H:i:s');
+        else {
+            $data['created_at'] = date('Y-m-d H:i:s');
+        }
+        $loggedInUser = Auth::user();
+        if($loggedInUser)
+            $data['userId'] = $loggedInUser->email;
+        else
+            $data['userId'] = '';
+        $data['details'] = $teamData['details'];
+        $data['old_data'] = $teamData['old_data'];
+        $data['ipAddress'] = \Request::getClientIp(true);
+        $log_table = 'log' . substr($table_name, 4);
+        $this->activity = new Activity($log_table);
+        $activityData = Act::getActivityData($data);
+        $this->activity->addActivity($activityData);
     }
 
     public function getSelectedTableStructure($tableName, Request $request)
