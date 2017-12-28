@@ -1,4 +1,12 @@
 <?php use Carbon\Carbon; ?>
+<style>
+    table th, table td{
+        overflow:hidden;
+        max-width:320px;
+        text-overflow: ellipsis;
+        /* width: 100%; */
+    }
+</style>
 <table class="table basic table-bordred">
 
     @foreach($allTabs as $key=>$val)
