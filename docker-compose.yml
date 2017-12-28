@@ -31,7 +31,7 @@ services:
       - "MYSQL_USER=homestead"
       - "MYSQL_PASSWORD=homestead"
     ports:
-        - "3305:3305"
+        - "3306:3306"
 
 #  pgsql:
 #    image: postgres:9.6-alpine

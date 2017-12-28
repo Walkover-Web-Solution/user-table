@@ -9,6 +9,7 @@ use App\Tabs;
 use App\team_table_mapping;
 use App\Teams;
 use App\Viasocket;
+use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -141,13 +142,28 @@ class TableController extends Controller
 
     public function loadSelectedTable($tableId, $tabName = 'All')
     {
+        //First Validate if the user has access to Table
+        $teams = session()->get('team_array');
+        $teamIdArr = array();
+        $teamNameArr = array();
+
+        foreach ($teams as $teamId => $teamName) {
+            $teamNameArr[] = $teamName;
+            $teamIdArr[] = $teamId;
+        }
+
+        $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
+        if(count($tableLst) == 0){
+            return redirect()->route('tables');
+        }
+        
         $results = $this->processTableData($tableId, $tabName);
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName , $pageSize)
+    public function loadContacts($tableIdMain, $tabName, $pageSize)
     {
-        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName,$pageSize);
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize);
         return json_decode(json_encode($tabDataJson), true);
     }
 
@@ -204,7 +220,7 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId,$coltype, $pageSize = 100)
+    public function processFilterData($req, $tableId, $coltype, $pageSize = 100)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
@@ -214,7 +230,7 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'],$coltype, $pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype, $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -239,7 +255,7 @@ class TableController extends Controller
         $coltype = ($request->coltype);
 
         $tableId = $request->tableId;
-        $responseArray = $this->processFilterData($req, $tableId, $coltype,30);
+        $responseArray = $this->processFilterData($req, $tableId, $coltype, 100);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                 ->header('Content-Type', 'application/json');
@@ -256,7 +272,7 @@ class TableController extends Controller
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
                 if ($val == 'me' && $loggedInUser = Auth::user()) {
-                    $users->where($paramName, '=', $loggedInUser);
+                    $users->where($paramName, '=', $loggedInUser->email);
                 } else
                     $users->where($paramName, '=', $req[$paramName]['is']);
             } else if (isset($req[$paramName]['is_not'])) {
@@ -285,35 +301,39 @@ class TableController extends Controller
                 $users->where($paramName, '>=', $req[$paramName]['from']);
             } else if (isset($req[$paramName]['to'])) {
                 $users->where($paramName, '<=', $req[$paramName]['to']);
-            }else if (isset($req[$paramName]['on'])) {
-                $timestamp = strtotime($req[$paramName]['on']);
-                $users->where($paramName, '=',  $timestamp);
+            } else if (isset($req[$paramName]['on'])) {
+               $d = $req[$paramName]['on'];
+               $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
+               $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
+               $sttimestamp = strtotime($st);
+               $endtimestamp = strtotime($enddt);
+               $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
             } else if (isset($req[$paramName]['before'])) {
-                if($colomntype == 'date'){
+                if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['before']);
-                    $users->where($paramName, '<=',  $timestamp)->where($paramName, '>',  0);
-                }else{
+                    $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
+                } else {
                     $users->where($paramName, '<=', $req[$paramName]['before']);
                 }
             } else if (isset($req[$paramName]['after'])) {
-                if($colomntype == 'date'){
+                if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['after']);
-                    $users->where($paramName, '>=',  $timestamp);
-                }else{
+                    $users->where($paramName, '>=', $timestamp);
+                } else {
                     $users->where($paramName, '>=', $req[$paramName]['after']);
                 }
-            }else if (isset($req[$paramName]['days_before'])) {
+            } else if (isset($req[$paramName]['days_before'])) {
                 $days = $req[$paramName]['days_before'];
                 $daysbefore = time() - ($days * 24 * 60 * 60);
-                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>',  0);
-            }else if (isset($req[$paramName]['days_after'])) {
+                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
+            } else if (isset($req[$paramName]['days_after'])) {
                 $days = $req[$paramName]['days_after'];
                 $daysafter = time() + ($days * 24 * 60 * 60);
                 $users->where($paramName, '>=', $daysafter);
             }
 
         }
-        $data = $users->paginate($pageSize);
+        $data = $users->latest('id')->paginate($pageSize);
 
         return $data;
     }
@@ -413,7 +433,7 @@ class TableController extends Controller
 
     public function getSearchedData($tableId, $query)
     {
-        $array = $this->getTableSearchData($tableId, $query, 30);
+        $array = $this->getTableSearchData($tableId, $query, 100);
         return view('table.response', $array);
     }
 
@@ -440,7 +460,7 @@ class TableController extends Controller
                 $count++;
             }
 
-            $data = $users->paginate($pageSize);
+            $data = $users->latest('id')->paginate($pageSize);
             $results = json_decode(json_encode($data), True);
             $allTabs = $results['data'];
             unset($results['data']);
@@ -493,13 +513,13 @@ class TableController extends Controller
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
 
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
-        return $this->loadContacts($tableDetails['table_id'], $tabName,$pageSize);
+        return $this->loadContacts($tableDetails['table_id'], $tabName, $pageSize);
     }
 
     public function getFilters(Request $request)
     {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        $tabData =  Tabs::getTabsByTableId($tableDetails['table_id']);
+        $tabData = Tabs::getTabsByTableId($tableDetails['table_id']);
         $tabs = json_decode(json_encode($tabData), true);
         return Tables::getAllTabsCount($tableDetails['table_id'], $tabs);
     }

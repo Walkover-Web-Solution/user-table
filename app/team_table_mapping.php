@@ -22,6 +22,14 @@ class team_table_mapping extends Model {
         return $data;
     }
 
+    public static function getUserTablesByTeamAndTableId($teamIdArr,$tableId) {
+        $data = team_table_mapping::with('tableStructure.columnType')
+                ->whereIn('team_id', $teamIdArr)
+                ->where('id', $tableId)
+                ->get();
+        return $data;
+    }
+
     public static function makeNewTableEntry($paramArr) {
         $data = team_table_mapping::create($paramArr);
         return $data;
