@@ -428,6 +428,8 @@ class TableController extends Controller
 
     public function insertActivityData($table_name, $teamData)
     {
+        if(empty($teamData['action']))
+            return false;
         $data['description'] = $teamData['success'];
         $data['action'] = $teamData['action'];
         $data['content_type'] = 'Entry';
