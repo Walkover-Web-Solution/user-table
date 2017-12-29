@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Contact;
 use App\Repositories\TableDetailRepositoryInterface;
+use App\Teams;
 
 class ContactController extends Controller
 {
@@ -21,13 +22,15 @@ class ContactController extends Controller
         $structure = $this->formatStructure($table->tableStructure);
         $this->contact = new Contact($table->table_id);
         $data = $this->contact->getContactById($id);
+        $teamId = $table->team_id;
+        $teammates = Teams::getTeamMembers($teamId);
 
         $newData = json_decode(json_encode($data), true);
 
         return response(
             json_encode(
                 array('data' => $newData, 'colDetails' => $structure,
-                    'authKey' => $table->auth, 'teammates' => array())
+                    'authKey' => $table->auth, 'teammates' => $teammates)
             ), 200
         )->header('Content-Type', 'application/json');
     }
