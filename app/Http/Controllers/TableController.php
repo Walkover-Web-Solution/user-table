@@ -201,7 +201,9 @@ class TableController extends Controller
             }
             $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
 
-            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All");
+            $coltypes = TableStructure::getTableColumnTypesArray($tableIdMain);
+
+            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All",$coltypes);
             $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
 
             return array(
@@ -267,74 +269,8 @@ class TableController extends Controller
     public static function getAppliedFiltersData($req, $tableId, $coltype, $pageSize = 100)
     {
         $users = DB::table($tableId)->selectRaw('*');
-        foreach (array_keys($req) as $paramName) {
-            $colomntype = $coltype[$paramName];
-            if (isset($req[$paramName]['is'])) {
-                $val = $req[$paramName]['is'];
-                if ($val == 'me' && $loggedInUser = Auth::user()) {
-                    $users->where($paramName, '=', $loggedInUser);
-                } else
-                    $users->where($paramName, '=', $req[$paramName]['is']);
-            } else if (isset($req[$paramName]['is_not'])) {
-                $users->where($paramName, '<>', $req[$paramName]['is_not']);
-            } else if (isset($req[$paramName]['starts_with'])) {
-                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
-            } else if (isset($req[$paramName]['ends_with'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
-            } else if (isset($req[$paramName]['contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
-            } else if (isset($req[$paramName]['not_contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
-            } else if (isset($req[$paramName]['is_unknown'])) {
-                $users->whereNull($paramName)->orWhere($paramName, '');
-            } else if (isset($req[$paramName]['has_any_value'])) {
-                $users->whereNotNull($paramName)->where($paramName, '<>', '');
-            } else if (isset($req[$paramName]['greater_than'])) {
-                $users->where($paramName, '>', $req[$paramName]['greater_than']);
-            } else if (isset($req[$paramName]['less_than'])) {
-                $users->where($paramName, '<', $req[$paramName]['less_than']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['from'])) {
-                $users->where($paramName, '>=', $req[$paramName]['from']);
-            } else if (isset($req[$paramName]['to'])) {
-                $users->where($paramName, '<=', $req[$paramName]['to']);
-            } else if (isset($req[$paramName]['on'])) {
-               $d = $req[$paramName]['on'];
-               $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
-               $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
-               $sttimestamp = strtotime($st);
-               $endtimestamp = strtotime($enddt);
-               $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
-            } else if (isset($req[$paramName]['before'])) {
-                if ($colomntype == 'date') {
-                    $timestamp = strtotime($req[$paramName]['before']);
-                    $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
-                } else {
-                    $users->where($paramName, '<=', $req[$paramName]['before']);
-                }
-            } else if (isset($req[$paramName]['after'])) {
-                if ($colomntype == 'date') {
-                    $timestamp = strtotime($req[$paramName]['after']);
-                    $users->where($paramName, '>=', $timestamp);
-                } else {
-                    $users->where($paramName, '>=', $req[$paramName]['after']);
-                }
-            } else if (isset($req[$paramName]['days_before'])) {
-                $days = $req[$paramName]['days_before'];
-                $daysbefore = time() - ($days * 24 * 60 * 60);
-                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
-            } else if (isset($req[$paramName]['days_after'])) {
-                $days = $req[$paramName]['days_after'];
-                $daysafter = time() + ($days * 24 * 60 * 60);
-                $users->where($paramName, '>=', $daysafter);
-            }
-
-        }
+        $users = Tables::makeFilterQuery($req, $users,$coltype);
         $data = $users->latest('id')->paginate($pageSize);
-
         return $data;
     }
 
