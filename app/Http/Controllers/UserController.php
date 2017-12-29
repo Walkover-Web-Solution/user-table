@@ -13,41 +13,6 @@ use App\Http\Helpers;
 
 class UserController extends Controller {
 
-    public function getDetailsOfUserById($tableId, $id) {
-        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-
-        if (empty($tableNames['table_id'])) {
-            echo "no table found";
-            exit();
-        } else {
-            $data = \DB::table($tableNames['table_id'])->selectRaw('*')->where('id', $id)->first();
-        }
-
-        $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
-        $teamId = $tableNames['team_id'];
-        $teammates = Teams::getTeamMembers($teamId);
-
-        foreach($tableNames['table_structure'] as $k=>$v)
-        {
-            $newarr[$v['column_name']] = $v;
-        }
-
-        foreach($newarr as $k=>$v)
-        {
-            $orderNeed[] = $k;
-        }
-
-        $data = json_decode(json_encode($data),true);
-        $newData = Helpers::orderDataArray($data, $orderNeed);
-
-        return response(
-                        json_encode(
-                                array('data' => $newData, 'colDetails' => $colDetails,
-                                    'authKey' => $tableNames['auth'], 'teammates' => $teammates)
-                        ), 200
-                )->header('Content-Type', 'application/json');
-    }
-
     public function saveFilter(Request $request) {
         $messages = [
             'tab.required' => 'The tab field is required.',

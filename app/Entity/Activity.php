@@ -40,16 +40,6 @@ class Activity extends Model
         return Activity::where('id','=',$id)->first();
     }
 
-    /**
-     * Get the user that the activity belongs to.
-     *
-     * @return object
-     */
-    public function user()
-    {
-        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
-    }
-
     public function addActivity($data){
         return Activity::insert($data);
     }
