@@ -119,32 +119,15 @@ class team_table_mapping extends Model {
             }
         }
         $table = DB::table($table_name);
-
-        if (empty($input_param[$unique_key])) {
-            $response=array();
-        } else {
+        $old_data = $updatedData = array();
+        if (!empty($input_param[$unique_key])) {
             $responseObj = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
-            $response = json_decode(json_encode($responseObj));
+            $old_data = json_decode(json_encode($responseObj),true);
         }
-        $updatedData = array();
-        $old_data = array();
-        if (empty($response)) {
-            $message = 'Entry Added';
-            $action = 'Create';
-            $table->insert($input_param);
-            $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
-        } else {
-            $oldRow = $table->select('*')
-                ->where($unique_key, $input_param[$unique_key])
-                ->first();
-
-            foreach ($oldRow as $k => $val) {
-                $old_data[$k] = $val;
-            }
-            foreach ($input_param as $key => $value) {
-                if(isset($structure[$key]))
-                {
-                    if ($structure[$key]['type'] != 'airthmatic number') {
+        if(!empty($old_data)) {
+            foreach ($structure as $key => $column) {
+                if (isset($input_param[$key])) {
+                    if ($column['column_type_id'] != 4) {
                         if (!empty($input_param[$key])) {
                             $update_data[$key] = $input_param[$key];
                         }
@@ -156,19 +139,29 @@ class team_table_mapping extends Model {
                     if ($old_data[$key] != $input_param[$key]) {
                         $updatedData[$key] = $input_param[$key];
                     } else {
+                        unset($update_data[$key]);
                         unset($old_data[$key]);
                     }
-                } else if ($key == 'id') {
+                } else {
                     unset($old_data[$key]);
                 }
             }
+            unset($old_data['id']);
             $message = 'Entry Updated';
-            $action = 'Update';
-            $table->where($unique_key, $input_param[$unique_key])
+            $action = '';
+            if(!empty($update_data)) {
+                $action = 'Update';
+                $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
+            }
             $update_data = $table->select('*')
                 ->where($unique_key, $input_param[$unique_key])
                 ->first();
+        }else{
+            $message = 'Entry Added';
+            $action = 'Create';
+            $table->insert($input_param);
+            $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         }
         return array('success' => $message, 'data' => $update_data, 'action' => $action, 'details' => $updatedData, 'old_data' => $old_data);
     }
