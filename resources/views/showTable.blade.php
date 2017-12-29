@@ -8,7 +8,7 @@
                 <div class="card" onclick="location.href='{{ route('createTable') }}'">
                     <div>
                         <div class="text-center">
-                             <i>+</i><br>
+                             <i id="iii">+</i><br>
                              <span id="new_table">New Table</span>
                         </div>
 
