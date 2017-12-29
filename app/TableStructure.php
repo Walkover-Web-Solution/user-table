@@ -22,6 +22,22 @@ class TableStructure extends Model {
         return TableStructure::with('columnType')->where('table_id',$tableId)->get()->toArray();
     }
 
+    public static function withColumnTypes($tableId){
+        return TableStructure::select('table_structures.column_name','column_types.column_name as coltype')
+            ->join('column_types','column_type_id','=','column_types.id')
+            ->where('table_id',$tableId)->get()->toArray();
+    }
+
+    public static function getTableColumnTypesArray($user_table_id){
+        $dt = team_table_mapping::getUserTableByTableId($user_table_id);
+            $table_id = $dt['id'];
+            $coltypes = TableStructure::withColumnTypes($table_id);
+            $arrColType = [];
+            foreach($coltypes as $col){
+                $arrColType[$col['column_name']] = $col['coltype'];
+            }
+        return $arrColType;    
+    }
 
     public static function insertTableStructure($tableStructure) {
         TableStructure::insert($tableStructure);

@@ -57,6 +57,12 @@ class team_table_mapping extends Model {
         return $data;
     }
 
+    public static function getUserTableByTableId($tableId) {
+        $data = team_table_mapping::select('*')->where('table_id', $tableId)
+            ->first()->toArray();
+        return $data;
+    }
+
     public static function getDataById($id) {
         $data = DB::table('team_table_mappings')
                 ->select('*')

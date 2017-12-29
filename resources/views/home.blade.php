@@ -129,7 +129,13 @@
                                                     type="radio"
                                                     aria-label="...">
                                                 @endif
-                                                {{str_replace("days_","",$key)}}
+                                                @if($key == 'days_after')
+                                                    More than (in days)
+                                                @elseif($key == 'days_before')
+                                                    less than (in days)
+                                                @else
+                                                    {{str_replace("days_","",$key)}}
+                                                @endif
                                                 @if($key != "is_unknown" && $key != "has_any_value")
                                                 @if(isset($activeTabFilter[$k][$key]))
                                                 @if($filter['col_type'] == 'my teammates')
