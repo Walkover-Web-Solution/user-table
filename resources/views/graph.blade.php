@@ -239,7 +239,8 @@
         }
         function getGraphData(dateColumn, secondColumn,startDate,endDate) {
             var tableName = "{{$tableId}}";
-            var dataUrl = "{{env('APP_URL')}}/graphdata?startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
+            var tabName = "{{$activeTab}}";
+            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName=" + tabName + "&startDate="+ startDate + "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
             $.get(dataUrl, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
@@ -280,7 +281,8 @@
             var endDate = $("#pieDate1").val();
 
             var tableName = "{{$tableId}}";
-            var dataUrl = "{{env('APP_URL')}}/graphdata?startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
+            var tabName = "{{$activeTab}}";
+            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName="+ tabName + "&startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
             $.get(dataUrl, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;

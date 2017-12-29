@@ -53,10 +53,10 @@ class GraphController extends Controller {
             $endtime = strtotime($endDate);
             $users->where($dateColumn, '>=', $starttime)->where($dateColumn, '<=', $endtime);
         }
-        if (!empty($tabName)) {
-            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableName]])->first(['query']);
-            $req = (array)json_decode($tabSql->query); 
-            $coltypes = TableStructure::getTableColumnTypesArray($tableId);
+        if (!empty($tabName) && $tabName != 'All') {
+            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query']);
+            $req = (array)json_decode($tabSql->query,true); 
+            $coltypes = TableStructure::getTableColumnTypesArray($userTableName);
             $users = Tables::makeFilterQuery($req, $users, $coltypes);
         } 
         $tableData = $users->get();// Tables::getSQLData($sql);
