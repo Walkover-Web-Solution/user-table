@@ -24,12 +24,17 @@ class ContactController extends Controller
         $data = $this->contact->getContactById($id);
         $teamId = $table->team_id;
         $teammates = Teams::getTeamMembers($teamId);
-
         $newData = json_decode(json_encode($data), true);
+        foreach($table->tableStructure as $k=>$v)
+        {
+            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
+        }
+
+        $inner_ordered['id'] = $newData['id'];
 
         return response(
             json_encode(
-                array('data' => $newData, 'colDetails' => $structure,
+                array('data' => $inner_ordered, 'colDetails' => $structure,
                     'authKey' => $table->auth, 'teammates' => $teammates)
             ), 200
         )->header('Content-Type', 'application/json');
