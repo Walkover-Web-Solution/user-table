@@ -129,7 +129,7 @@
                                                     type="radio"
                                                     aria-label="...">
                                                 @endif
-                                                {{str_replace("days_","",$key)}} 
+                                                {{str_replace("days_","",$key)}}
                                                 @if($key != "is_unknown" && $key != "has_any_value")
                                                 @if(isset($activeTabFilter[$k][$key]))
                                                 @if($filter['col_type'] == 'my teammates')
@@ -182,7 +182,7 @@
                                                 @else
                                                     <input class="form-check-input filterinput{{$k}} form-control"
                                                         name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        type="text" style="display:none;">
+                                                        type="text" style="display:none;" size="4">
                                                 @endif
                                                 @endif
                                                 @endif
