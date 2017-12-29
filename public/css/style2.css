@@ -10,9 +10,15 @@
 body,
 html {
     height: 100%;
-    /* background: #fafafa; */
-    /* -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale; */
+}
+
+i{
+    font-size: 30px;
+    /* margin-bottom: 15px; */
+    color: #636b6f;
+    opacity: 0.7;
+    font-style: normal;
+    /* line-height: 34px; */
 }
 
 body {
@@ -24,16 +30,11 @@ body {
     text-transform: lowercase !important;
 }
 
-
-/* textarea.form-control {
-    height: 100px;
-} */
-
 .card {
     width: 100%;
     background: #fafafa;
     padding: 15px;
-    height: 170px;
+    height: 115px;
     border: 1px solid #d9d9d9;
     display: table;
     margin-bottom: 20px;
@@ -52,49 +53,15 @@ body {
 }
 
 #heads-up{
-    font-size: 30px;
-    margin-top: 30px;
-    margin-bottom: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-.card h1 {
-    font-size: 2em;
-    /* margin: 0 0 20px; */
-    text-align: center;
-}
-
-.card .title {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.card-new i {
-    font-size: 64px;
-    margin-bottom: 15px;
-    color: #636b6f;
-    opacity: 0.7;
-    font-style: normal;
-    line-height: 34px;
-}
-
-.cp {
+    font-size: 22px;
     cursor: pointer;
+    padding-left: 16px;
+    padding-bottom: 8px;
+    padding-top: 8px;
 }
 
 .more-option {
     margin-left: 20px;
-}
-
-.card_link {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 0;
 }
 
 .card .btn-grp,
@@ -153,11 +120,16 @@ body {
     text-transform: lowercase;
 }
 
-.card{
-    height: auto;
-}
-
 .btn{
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.tab_name{
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+#new_table{
+    font-size: 22px;
 }
