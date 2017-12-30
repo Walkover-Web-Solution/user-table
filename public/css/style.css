@@ -875,3 +875,16 @@ side bar component end
     margin-top: 20%;
 }
 .filter_group{font-weight: bold;margin-left:-15px;}
+
+.custom-input{
+    background-color:#ccc;
+    border-style: none;
+    box-shadow: none;
+    margin-top: 5px;
+}
+
+.custom-input:focus{
+    background-color:#fff;
+    border: 1px solid #fff;
+    box-shadow: none;
+}

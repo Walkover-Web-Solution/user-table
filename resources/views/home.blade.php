@@ -366,10 +366,10 @@
 <div id="edit_user" class="modal fade" role="dialog">
     <div class="modal-dialog" style="width:800px">
         <!-- Modal content-->
-        <div class="modal-content">
+        <div style="background:rgb(237,239,240)" class="modal-content">
             <div class="modal-header">
                 <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
-                <span style="font-size:18px;vertical-align:middle;margin-left:5px" class="modal-title">Edit User</span>
+                <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head" class="modal-title">Edit User</span>
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <form id="editUserDetails">
@@ -387,11 +387,11 @@
                     </div>
                 </div>
 
-                <div class="modal-footer" style="overflow: hidden;width:800px">
+                <div class="modal-footer" style="overflow: hidden;width:750px">
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
                     <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
                         Update
                     </button>
                 </div>
