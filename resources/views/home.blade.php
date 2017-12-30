@@ -378,14 +378,12 @@
                     <div style="width:20px" class="col-xs-1">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-3" id="sec_edit_users_body"></div>
                     <div class="col-xs-12">
-                    <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
-                    <br>
-                    <br>
-                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id)</p>
-                    <br>
-                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id) </p>
-                    <br>
-                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id) </p>
+                        <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
+                        <br>
+                        <br>
+                        <div id="activity_log">
+
+                        </div>
                     </div>
                 </div>
 

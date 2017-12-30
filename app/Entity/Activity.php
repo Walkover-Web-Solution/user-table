@@ -44,4 +44,23 @@ class Activity extends Model
         return Activity::insert($data);
     }
 
+    /**
+     * Get’s a table by it’s Auth
+     * @param $content_id
+     * @return collection
+     */
+    public function getByContentId($content_id)
+    {
+        return Activity::where('content_id', $content_id)->get();
+    }
+
+    public function getDescription($act){
+        $desc = '';
+        if(strtolower($act->action) == 'create')
+            $desc .= $act->user_id.' '.$act->action.' '.$act->content_type;
+        else
+            $desc .= $act->user_id.' '.$act->action.' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
+        return $desc;
+    }
+
 }
