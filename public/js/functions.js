@@ -220,7 +220,7 @@ function getUserDetails(id, tableId) {
             type: 'GET', // Use GET
             url: API_BASE_URL + '/table/' + tableId+'/activity_data/'+id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (resData) {
-                var logs = resData.data;
+                var logs = resData.data.data;
                 var desc ='';
                 for(var key in logs){
                     desc+= '<p style="margin-left:25px">'+logs[key].log+'</p><br>';
@@ -284,7 +284,6 @@ function parseDate(unixDateTime) {
     if (month < 10) month = "0" + month;
     time = hours + ":" + minutes + ":" + seconds;
     var currentVal = year + "-" + month + "-" + date;
-    console.log(currentVal,time);
     return currentVal
 }
 
@@ -316,17 +315,9 @@ function editUserData(type) {
             $('#add_users_body').append(errMsg);
             is_valid = false;
         }
-        if (dataid == 'follow_up_date') {
-            if (!val) {
-                var date = new Date();
-                val = date.toLocaleDateString();
-                val = val.split('/');
-                val = val[2] + "/" + val[1] + "/" + val[0];
-            }
-        }
+
         if(type === "date"){
             val = val + " " + time;
-            console.log(val);
         }
         jsonDoc[dataid] = val;
     });

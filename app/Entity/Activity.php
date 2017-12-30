@@ -51,7 +51,7 @@ class Activity extends Model
      */
     public function getByContentId($content_id)
     {
-        return Activity::where('content_id', $content_id)->get();
+        return Activity::where('content_id', $content_id)->orderBy('id','desc')->paginate(10);
     }
 
     public function getDescription($act){
