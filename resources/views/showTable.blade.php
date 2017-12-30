@@ -29,8 +29,8 @@
                             <div class="tab_name"><a href="tables/{{$val['id']}}" target="_blank"> {{$val['table_name']}}</a></div>
 
                             <div class="btn-grp text-center">
-                                <button class="btn btn-primary" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
-                                <button id="srcbtn" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-default" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
+                                <button class="btn btn-primary btn-sm" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
+                                <button id="srcbtn" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-default btn-sm" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
                             </div>
                         </div>
                     </div>

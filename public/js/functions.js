@@ -150,6 +150,7 @@ function getUserDetails(id, tableId) {
                 var authKey = res.authKey;
                 var teammates = res.teammates;
                 var editForm = '';
+                var sec_editForm = '';
                 if (val) {
                     $("#eId").val(val.id);
                     $('#tokenKey').val(authKey);
@@ -172,22 +173,46 @@ function getUserDetails(id, tableId) {
                             editForm += createHiddenElement(val[k], k);
                             editForm += '</div></div>';
                         } else {
-                            editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                            if (currentField.column_type_id == 9) { // if column type is date
-                                var currentVal = parseDate(val[k]);
-                                editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
-                            } else if (currentField.column_type_id == 6) { // if column type is dropdown
-                                editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                            } else if (currentField.column_type_id == 10) { // if column type is teammates
-                                currentField['value_arr']['options'] = teammates;
-                                editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                            } else {
+                           
+                             if (currentField.column_type_id !== 6 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9){
+                                 if(currentField.column_type_id === 3){
+                                    editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;     
+                                 }else{
+                                    editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                                 }
                                 editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
+                            }else{
+                                    if (currentField.column_type_id == 9) { // if column type is date
+                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                                        var currentVal = parseDate(val[k]);
+                                        sec_editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
+                                    } else if (currentField.column_type_id == 6) { // if column type is dropdown
+                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                                        sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                                    } else if (currentField.column_type_id == 10) { // if column type is teammates
+                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                                        currentField['value_arr']['options'] = teammates;
+                                        sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                                    }
                             }
-                            editForm += '</div></div>';
+                            editForm += '</div>';
+                            sec_editForm += '</div>';
+
+                            // else if (currentField.column_type_id == 6) { // if column type is dropdown
+                            //     editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                            // } else if (currentField.column_type_id == 10) { // if column type is teammates
+                            //     currentField['value_arr']['options'] = teammates;
+                            //     editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                            // }
+                            // if (currentField.column_type_id == 9) { // if column type is date
+                            //     editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
+                            //     var currentVal = parseDate(val[k]);
+                            //     editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
+                            // } 
                         }
                     }
                     $("#edit_users_body").html(editForm);
+                    $("#sec_edit_users_body").html(sec_editForm);
                     $('#follow_up_date').attr('type', 'date');
                 }
             }
