@@ -49,7 +49,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for alter user table in database
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
-    Route::get('/table/{tableid}/user_data/{id}', 'UserController@getDetailsOfUserById');
+    Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
+    Route::get('/table/{table_id}/activity_data/{content_id}','ActivityController@show');
     #serach by filters
     Route::post('/filter', 'TableController@applyFilters');
 
@@ -71,7 +72,8 @@ Route::group(['middleware' => ['socketMasterKey']], function() {
 
 # to create or add user
 Route::post('/add_update', 'TableController@add');
-Route::get('/add_update', 'TableController@add');
+
+Route::post('/addactivity/{tableId}','ActivityController@addLog')->name('addactivity');
 
 //Auth::routes();
 // Authentication Routes...
