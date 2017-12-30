@@ -271,12 +271,12 @@ function getUserDetails(id, tableId) {
 function parseDate(unixDateTime) {
     if (unixDateTime == 0 || unixDateTime == null) return "";
     else var selectedDate = new Date(unixDateTime * 1000);
-    var date = selectedDate.getDate();
-    var month = selectedDate.getMonth() + 1;
-    var year = selectedDate.getFullYear();
-    var hours = selectedDate.getHours();
-    var minutes = selectedDate.getMinutes();
-    var seconds = selectedDate.getSeconds();
+    var date = selectedDate.getUTCDate();
+    var month = selectedDate.getUTCMonth() + 1;
+    var year = selectedDate.getUTCFullYear();
+    var hours = selectedDate.getUTCHours();
+    var minutes = selectedDate.getUTCMinutes();
+    var seconds = selectedDate.getUTCSeconds();
     if (hours < 10) hours = "0" + hours;
     if (minutes < 10) minutes = "0" + minutes;
     if (seconds < 10) seconds = "0" + seconds;
@@ -284,6 +284,7 @@ function parseDate(unixDateTime) {
     if (month < 10) month = "0" + month;
     time = hours + ":" + minutes + ":" + seconds;
     var currentVal = year + "-" + month + "-" + date;
+    console.log(currentVal,time);
     return currentVal
 }
 
@@ -325,6 +326,7 @@ function editUserData(type) {
         }
         if(type === "date"){
             val = val + " " + time;
+            console.log(val);
         }
         jsonDoc[dataid] = val;
     });
