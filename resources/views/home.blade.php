@@ -364,18 +364,32 @@
 
 <!-- Modal -->
 <div id="edit_user" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width:800px">
         <!-- Modal content-->
         <div class="modal-content">
-            <!-- <div class="modal-header login-header">
+            <div class="modal-header">
+                <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
+                <span style="font-size:18px;vertical-align:middle;margin-left:5px" class="modal-title">Edit User</span>
                 <button type="button" class="close" data-dismiss="modal">×</button>
-                <h4 class="modal-title">Edit User</h4>
-            </div> -->
+            </div>
             <form id="editUserDetails">
-                <div class="modal-body" id="edit_users_body">
+                <div class="modal-body" style="width:800px">
+                    <div class="col-xs-8" id="edit_users_body"></div>
+                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="padding-right:0px;padding-left:0px" class="col-xs-3" id="sec_edit_users_body"></div>
+                    <div class="col-xs-12">
+                    <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
+                    <br>
+                    <br>
+                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id)</p>
+                    <br>
+                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id) </p>
+                    <br>
+                    <p style="margin-left:25px">fghtbrt gbntnytnd htrhbrth (provide email id) </p>
+                    </div>
                 </div>
 
-                <div class="modal-footer" style="overflow: hidden">
+                <div class="modal-footer" style="overflow: hidden;width:800px">
                     <input type="hidden" id="eId"/>
                     <input type="hidden" id="tokenKey"/>
                     <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
