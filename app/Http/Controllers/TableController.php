@@ -437,6 +437,13 @@ class TableController extends Controller
             $data = $users->latest('id')->paginate($pageSize);
             $results = json_decode(json_encode($data), True);
             $allTabs = $results['data'];
+
+            $orderNeed = Helpers::orderData($tableNames);
+            array_unshift($orderNeed, 'id');
+			
+            if (!empty($allTabs))
+                $allTabs = Helpers::orderArray($allTabs, $orderNeed);			
+
             unset($results['data']);
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);
