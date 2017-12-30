@@ -50,6 +50,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
     Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
+    Route::get('/table/{table_id}/activity_data/{content_id}','ActivityController@show');
     #serach by filters
     Route::post('/filter', 'TableController@applyFilters');
 

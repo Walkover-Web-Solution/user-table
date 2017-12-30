@@ -145,7 +145,6 @@ function getUserDetails(id, tableId) {
             url: API_BASE_URL + '/table/' + tableId + "/user_data/" + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (res) {
                 var val = res.data;
-                console.log(val);
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
                 var teammates = res.teammates;
@@ -215,6 +214,18 @@ function getUserDetails(id, tableId) {
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#follow_up_date').attr('type', 'date');
                 }
+            }
+        });
+        $.ajax({
+            type: 'GET', // Use GET
+            url: API_BASE_URL + '/table/' + tableId+'/activity_data/'+id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            success: function (resData) {
+                var logs = resData.data;
+                var desc ='';
+                for(var key in logs){
+                    desc+= '<p style="margin-left:25px">'+logs[key].log+'</p><br>';
+                }
+                $("#activity_log").html(desc);
             }
         });
     } else {
