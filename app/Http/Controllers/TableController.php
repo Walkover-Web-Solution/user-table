@@ -335,6 +335,7 @@ class TableController extends Controller
                         $incoming_data = json_decode(json_encode($teamData['data']), true);
                         $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
                         $incoming_data['auth_email'] = $user->email;
+                        $incoming_data['change_log'] = $teamData['details'];
                         $data_string = json_encode($incoming_data);
 
                         $ch = curl_init($webhook_url);
