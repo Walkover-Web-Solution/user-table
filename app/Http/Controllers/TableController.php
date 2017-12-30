@@ -90,7 +90,6 @@ class TableController extends Controller
 
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
         $teamTables = $table_incr_id_arr = array();
-
         foreach ($tableLst as $key => $value) {
             $teamTables[$value['team_id']][] = $value;
             $table_incr_id_arr[] = $value['id'];
