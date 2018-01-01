@@ -35,9 +35,11 @@
                           
                             <div class="sources-container sources-{{$val['id']}}">
                             <ul>
+                            @if(isset($source_arr[$val['id']]))
                                 @foreach($source_arr[$val['id']] as $key => $sources)
                                 <li>{{$sources}}</li>
                                 @endforeach
+                            @endif    
                             </ul>    
                             </div>
                         </div>
