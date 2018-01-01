@@ -322,7 +322,7 @@ th {
     padding-left: 10px;
     padding-right: 10px;
     vertical-align: middle;
-    float: right;
+    /* float: right; */
 }
 
 .nav-side-menu ul .sub-menu li.active,
@@ -672,8 +672,6 @@ side bar component start
     height: 100%;
 }
 
-.cd-panel::after {}
-
 .cd-panel.is-visible {
     display: block;
 }
@@ -888,3 +886,4 @@ side bar component end
     border: 1px solid #fff;
     box-shadow: none;
 }
+.sources-container{display: none;}

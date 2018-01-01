@@ -18,6 +18,13 @@ class Viasocket extends Model
         $request = $client->get(env('SOCKET_API_URL') . '/teams.json', ['headers' => ['Authorization' => $authToken]]);
         return $request->getBody()->getContents();
     }
+
+    public static function sendUserToAPI($email){
+        $client = new GuzzleHttp\Client();
+        $request = $client->get("https://sokt.io/vsnxPNqGEsNdN3umwTtF/usertable-new-user?email=$email" , ['headers' => []]);
+        return $request->getBody()->getContents();
+    }
+
     public static function getTeamArray($response){
         $team_response_arr = json_decode($response, true);
         $team_response = $team_response_arr['teams'];

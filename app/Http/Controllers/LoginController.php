@@ -33,6 +33,8 @@ class LoginController extends Controller {
                 $password = str_random(8);
                 $user->password = Hash::make($password); //md5($password);
                 $user->save();
+                //Call the API to send email
+                $r = Viasocket::sendUserToAPI($userdata['email']);
             }
             $this->getUserTeam($authToken);
             // attempt to do the login

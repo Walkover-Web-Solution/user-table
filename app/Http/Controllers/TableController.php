@@ -100,7 +100,6 @@ class TableController extends Controller
 
         $tableLst = $this->getUserTablesByTeamId($teamIdArr);
         $teamTables = $table_incr_id_arr = array();
-
         foreach ($tableLst as $key => $value) {
             $teamTables[$value['team_id']][] = $value;
             $table_incr_id_arr[] = $value['id'];
@@ -400,6 +399,7 @@ class TableController extends Controller
                         $incoming_data = json_decode(json_encode($teamData['data']), true);
                         $incoming_data['auth_name'] = $user->first_name . " " . $user->last_name;
                         $incoming_data['auth_email'] = $user->email;
+                        $incoming_data['change_log'] = $teamData['details'];
                         $data_string = json_encode($incoming_data);
 
                         $ch = curl_init($webhook_url);
@@ -502,6 +502,13 @@ class TableController extends Controller
             $data = $users->latest('id')->paginate($pageSize);
             $results = json_decode(json_encode($data), True);
             $allTabs = $results['data'];
+
+            $orderNeed = Helpers::orderData($tableNames);
+            array_unshift($orderNeed, 'id');
+			
+            if (!empty($allTabs))
+                $allTabs = Helpers::orderArray($allTabs, $orderNeed);			
+
             unset($results['data']);
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);

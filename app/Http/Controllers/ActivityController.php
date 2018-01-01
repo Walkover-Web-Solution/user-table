@@ -33,7 +33,7 @@ class ActivityController extends Controller
 
         return response(
             json_encode(
-                array('data' => $activityData)
+                array('data'=>$activity)
             ), 200
         )->header('Content-Type', 'application/json');
     }
