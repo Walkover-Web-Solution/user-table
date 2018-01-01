@@ -14,6 +14,7 @@ var numberList = [];
 var dateList = ['relative', 'normal'];
 var customTypes = ['dropdown', 'radio button', 'checkbox'];
 var time = "";
+var img = '';
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -227,10 +228,22 @@ function getUserDetails(id, tableId) {
             success: function (resData) {
                 var logs = resData.data.data;
                 var desc ='';
-                for(var key in logs){
-                    desc+= '<p style="margin-left:25px">'+logs[key].log+'</p><br>';
-                }
-                $("#activity_log").html(desc);
+                $("#activity_log").html('');
+                var logsLength = logs.length;
+                console.log(logs);
+                function getImg(index){
+                    var user_id = logs[index].user_id;
+                    var log = logs[index].log;                    
+                    $.get('http://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function(result){
+                        img = result.entry.gphoto$thumbnail.$t;
+                        desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+img+'"><p style="margin-left:25px;width:450px">'+ log +'</p><br><br>';                        
+                        $("#activity_log").append(desc);
+                        if(index < logsLength){
+                            getImg(index+1);                            
+                        }
+                    });
+                }                                
+                getImg(0);
             }
         });
     } else {
