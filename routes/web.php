@@ -38,6 +38,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/graph/{tableName}/filter/{filterName}', 'GraphController@showGraphForTable');
 # Route for saved filters
     Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTable');
+# Route for mark records as deleted.
+    Route::post('/deleterecords/{tableName}', 'TableController@deleteTableRecords');
 # For create table view
     Route::get('/createTable', function() {
         return view('createTable');

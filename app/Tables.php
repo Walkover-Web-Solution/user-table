@@ -17,6 +17,9 @@ class Tables extends Model
         return $tableData;
     }
 
+    public static function markRecordsAsDeleted($tableId, $records){
+        DB::table($tableId)->whereIn('id',$records)->update(['is_deleted' => 1]);
+    }
     public static function getFiltrableData($tableId, $userTableStructure, $teammates)
     {
         $forStr = array('is' => null,
@@ -107,7 +110,7 @@ class Tables extends Model
     public static function TabDataBySavedFilter($tableId, $tabName,$pageSize)
     {
         if ($tabName == "All") {
-            $data = DB::table($tableId)->selectRaw('*')->latest('id')->paginate($pageSize);
+            $data = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted')->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true);
@@ -134,6 +137,7 @@ class Tables extends Model
     {
         Schema::create($tableName, function (Blueprint $table) use ($data) {
             $table->increments('id');
+            $table->string('is_deleted')->nullable();
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             foreach ($data as $value) {
@@ -270,7 +274,7 @@ class Tables extends Model
             }
 
         }
-        return $users;
+        return $users->whereNull('is_deleted');
     }
 
 }

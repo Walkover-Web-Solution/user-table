@@ -20,6 +20,7 @@
         </li>
         @endforeach
         @endforeach
+        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords();return false;">Delete</a></li>
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
             <!-- Authentication Links -->
@@ -72,6 +73,7 @@
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
         </form>
+       
     </ul>
 </div>
 

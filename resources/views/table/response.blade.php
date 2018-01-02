@@ -15,6 +15,7 @@
     <thead id="userThead">
     <tr id="tr_{{$val['id']}}">
         <!-- <th><span class="fixed-header"></span></th> -->
+        <th><span class="fixed-header"></span></th>
         @foreach($val as $k => $colName)
         @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
@@ -25,8 +26,9 @@
     </tr>
     </thead>
     <tbody id="all_users">
-    <tr id="tr_{{$val['id']}}" data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
         <!-- <td></td> -->
+        <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/></td>
         @foreach($val as $k => $colValue)        
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'], true);?>
@@ -90,7 +92,8 @@
 
     @endif
     @if($key!=0)
-    <tr id="tr_{{$val['id']}}" data-toggle="modal" data-target="#edit_user" onclick="getUserDetails('{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
+    <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/></td>
         @foreach($val as $k => $colValue)
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'], true); ?>
@@ -161,7 +164,28 @@
 <script>
     var table_incr_id = '<?php echo $tableId;?>';
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
-
+    $(document).ready(function(){
+        $(".delete-rows-btn").hide();    
+    });
+    function enableDelete(){
+        var elements = $(".row-delete:checked");
+        if(elements.length > 0)
+            $(".delete-rows-btn").show();
+        else
+            $(".delete-rows-btn").hide();    
+        
+    }
+    function DeleteRecords(){
+          var elements = $(".row-delete:checked");
+          var deletedRecords = [];
+          $(elements).each((index,item) => {
+              deletedRecords.push(item.value);
+          });
+          var url = API_BASE_URL + "/deleterecords/{{$tableId}}";
+          $.post(url,{"ids":deletedRecords},(response) => {
+              console.log(response);
+          });
+    }
     function updateData(ths, method) {
         var authKey = $("#tableAuthKey").val();
         var obj;
