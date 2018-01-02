@@ -596,6 +596,7 @@ function createSelectElement(arr, selected, k) {
     $('.title').text('Choose One Option');
 
     var lists = '';
+    lists += `<option value="">select</option>`;
     for (i = 0; i <= arrList.length - 1; i++) {
         if (arr.column_type_id != 10) {
             if (arrList[i] == selected) {
