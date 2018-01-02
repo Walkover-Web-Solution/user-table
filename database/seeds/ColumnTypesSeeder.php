@@ -5,7 +5,7 @@ use App\ColumnType;
 
 class ColumnTypesSeeder extends Seeder {
 
-    private $columnNames = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date','my teammates'];
+    private $columnNames = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date','my teammates','long text'];
 
     /**
      * Run the database seeds.

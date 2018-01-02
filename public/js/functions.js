@@ -38,7 +38,6 @@ $('body').on('focus', ".calendar_cls", function () {
 function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
-    console.log(user_data);
     user_data.forEach(function (val, index) {
 
         userDetails += `<tr data-toggle="modal" data-target="#edit_user" onclick = "getUserDetails('` + index + `')" >
@@ -137,7 +136,7 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
     });
 }
 
-var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select'];
+var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select','textarea'];
 
 function getUserDetails(id, tableId) {
     if (id) {
@@ -194,24 +193,11 @@ function getUserDetails(id, tableId) {
                                         currentField['value_arr']['options'] = teammates;
                                         sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                     }else if(currentField.unique === 1){
-                                        console.log(val[k]);
                                         $("#mod-head").text(val[k]);
                                     }
                             }
                             editForm += '</div>';
                             sec_editForm += '</div>';
-
-                            // else if (currentField.column_type_id == 6) { // if column type is dropdown
-                            //     editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                            // } else if (currentField.column_type_id == 10) { // if column type is teammates
-                            //     currentField['value_arr']['options'] = teammates;
-                            //     editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                            // }
-                            // if (currentField.column_type_id == 9) { // if column type is date
-                            //     editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label>` + k + `</label>`;
-                            //     var currentVal = parseDate(val[k]);
-                            //     editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
-                            // } 
                         }
                     }
                     // editForm += '<textarea class="form-group col-xs-12 custom-input" col="100" row="5"></textarea>';
@@ -230,7 +216,6 @@ function getUserDetails(id, tableId) {
                 var desc ='';
                 $("#activity_log").html('');
                 var logsLength = logs.length;
-                console.log(logs);
                 function getImg(index){
                     var user_id = logs[index].user_id;
                     var log = logs[index].log;                    
@@ -238,7 +223,7 @@ function getUserDetails(id, tableId) {
                         img = result.entry.gphoto$thumbnail.$t;
                         desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+img+'"><p style="margin-left:25px;width:450px">'+ log +'</p><br><br>';                        
                         $("#activity_log").append(desc);
-                        if(index < logsLength){
+                        if(index < logsLength-1){
                             getImg(index+1);                            
                         }
                     });
@@ -353,9 +338,7 @@ function editUserData(type) {
                 xhr.setRequestHeader('Auth-Key', authKey);
             },
             success: function (data) {
-                // ALL_USERS[selectedRow] = data.data;
-                // location.reload();
-                // console.log(data.teamData.data);
+
                 if(!data.teamData.data){
                     alert("something went wrong in updating data");
                 }else{

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Helpers;
-use Illuminate\Http\Request;
 use App\ColumnType;
-use App\team_table_mapping;
+use App\Http\Helpers;
 use App\TableStructure;
+use App\team_table_mapping;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class ConfigureTable extends Controller
@@ -64,7 +64,6 @@ class ConfigureTable extends Controller
         team_table_mapping::updateTableStructure($paramArr, $tableAutoIncId);
 
         $tableName = $tableNames['table_id'];
-        //$logTableName = strtolower("log_" . $tableNames['table_name'] . "_" . $tableNames['team_id']);
 
 
         if (!empty($newTableStructure)) {
@@ -72,13 +71,15 @@ class ConfigureTable extends Controller
                 Schema::table($tableName, function (Blueprint $table) use ($newTableStructure,$tableName) {
                     foreach ($newTableStructure as $value) {
                         $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
-                        if(Schema::hasColumn($tableName, $value['name'])) //check whether users table has email column
+                        if (Schema::hasColumn($tableName, $value['name'])) //check whether table has this column
                         {
                             if ($value['unique'] == 'true') {
                                 //$table->string($value['name'])->unique($value['name'])->change();
                             } else {
                                 if($value['type']==9){
                                     $table->integer($value['name'])->unsigned()->nullable()->change();
+                                } else if ($value['type'] == 11) {
+                                    $table->longText($value['name'])->nullable()->change();
                                 }else {
                                     $table->string($value['name'])->nullable()->change();
                                 }
@@ -89,12 +90,13 @@ class ConfigureTable extends Controller
                             } else {
                                 if($value['type']==9){
                                     $table->integer($value['name'])->unsigned()->nullable();
+                                } else if ($value['type'] == 11) {
+                                    $table->longText($value['name'])->nullable();
                                 }else {
                                     $table->string($value['name'])->nullable();
                                 }
                             }
                         }
-
                     }
                 });
             } catch (\Illuminate\Database\QueryException $ex) {
