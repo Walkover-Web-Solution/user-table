@@ -129,6 +129,9 @@ class team_table_mapping extends Model {
                 if (isset($input_param[$key])) {
                     if ($column['column_type_id'] != 4) {
                         if (!empty($input_param[$key])) {
+                            if(is_array($input_param[$key]))
+                                $update_data[$key] = json_encode($input_param[$key]);
+                            else
                             $update_data[$key] = $input_param[$key];
                         }
                     } else {

@@ -63,13 +63,18 @@
             </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
-        <?php $options = json_decode($structure[$k]['value'], true); ?>
+        <?php $options = json_decode($structure[$k]['value'], true);
+                $colValueArr = is_null(json_decode($colValue))?array():json_decode($colValue);
+        ?>
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+            <select id="{{$k}}:_:{{$val['id']}}" class="multi_select{{$val['id']}}" size="5" multiple="multiple" tabindex="1" onclick="event.stopPropagation();"
+                    onchange="updateData(this, 'multiselect')">
+                <option value="">select</option>
             @foreach($options['options'] as $info)
-            <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
-                   onclick="event.stopPropagation();">{{$info}}<br>
+                <option value="{{$info}}" @if(in_array($info,$colValueArr)) selected="selected" @endif>{{$info}}</option>
+                {{$info}}<br>
             @endforeach
+            </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
@@ -126,14 +131,19 @@
             </select>
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
-        <?php $options = json_decode($structure[$k]['value'], true); ?>
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
-            @foreach($options['options'] as $info)
-            <input type="checkbox" onchange="updateData(this, 'checkbox')" class="{{$k}}{{$val['id']}}"
-                   value="{{$info}}" datacol="{{$k}}" dataid="{{$val['id']}}" @if($info== $colValue) checked @endif
-                   onclick="event.stopPropagation();">{{$info}}<br>
-            @endforeach
-        </td>
+                <?php $options = json_decode($structure[$k]['value'], true);
+                $colValueArr = is_null(json_decode($colValue))?array():json_decode($colValue);
+                ?>
+                <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+                    <select id="{{$k}}:_:{{$val['id']}}" class="multi_select{{$val['id']}}" size="5" multiple="multiple" tabindex="1" onclick="event.stopPropagation();"
+                            onchange="updateData(this, 'multiselect')">
+                        <option value="">select</option>
+                        @foreach($options['options'] as $info)
+                            <option value="{{$info}}" @if(in_array($info,$colValueArr)) selected="selected" @endif>{{$info}}</option>
+                            {{$info}}<br>
+                        @endforeach
+                    </select>
+                </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
             $carbonDate = Carbon::createFromTimestamp($colValue);
@@ -212,14 +222,14 @@
             row_id = key_name[1];
             new_value = $(ths).find(":selected").val();
         }
-        else if (method == 'checkbox') {
-            var key_name = $(ths).attr('class');
-            coloumn_name = $(ths).attr('datacol');
-            row_id = $(ths).attr('dataid');
-            var new_value = [];
-            $("input:checkbox[class=" + key_name + "]:checked").each(function () {
-                //new_value.push($(this).val());
-                new_value = $(this).val();
+        else if (method == 'multiselect') {
+            var key_name = $(ths).attr('id');
+            key_name = key_name.split(":_:");
+            coloumn_name = key_name[0];
+            row_id = key_name[1];
+            new_value = [];
+            $.each($(".multi_select"+row_id+" option:selected"), function(){
+                new_value.push($(this).val());
             });
         }
         jsonDoc[coloumn_name] = new_value;
