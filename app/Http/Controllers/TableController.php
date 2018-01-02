@@ -275,6 +275,12 @@ class TableController extends Controller
         }
     }
 
+    public function deleteTableRecords($tableId, Request $request){
+        $ids =(array)$request->ids;
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $tableIdMain = $tableNames['table_id'];
+        Tables::markRecordsAsDeleted($tableIdMain, $ids);
+    }
     public static function getAppliedFiltersData($req, $tableId, $coltype, $pageSize = 100)
     {
         $users = DB::table($tableId)->selectRaw('*');

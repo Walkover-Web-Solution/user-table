@@ -138,7 +138,8 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
 
 var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select','textarea'];
 
-function getUserDetails(id, tableId) {
+function getUserDetails(event,id, tableId) {
+    if(event.target.className == "row-delete") return;
     if (id) {
         $.ajax({
             type: 'GET', // Use GET
@@ -204,7 +205,7 @@ function getUserDetails(id, tableId) {
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#follow_up_date').attr('type', 'date');
-                    // $('#follow_up_date').attr('style', 'margin-top:5px');
+                    $('#edit_user').modal('show');
                 }
             }
         });

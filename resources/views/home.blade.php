@@ -20,6 +20,7 @@
         </li>
         @endforeach
         @endforeach
+        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords();return false;">Delete</a></li>
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
             <!-- Authentication Links -->
@@ -59,7 +60,7 @@
 
         <li class="pull-right">
             <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-                                  data-toggle="modal" onclick="getUserDetails(false,{{$tableId}})">
+                                  data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
                 <i class="glyphicon glyphicon-plus"></i>
             </a>
         </li>
@@ -72,6 +73,7 @@
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
         </form>
+       
     </ul>
 </div>
 
