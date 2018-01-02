@@ -226,6 +226,12 @@ function getUserDetails(id, tableId) {
                         if(index < logsLength-1){
                             getImg(index+1);                            
                         }
+                    }).error(function(){
+                        desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src=" {{ asset("img/user_img.jpg") }} "><p style="margin-left:25px;width:450px">'+ log +'</p><br><br>';                        
+                        $("#activity_log").append(desc);
+                        if(index < logsLength){
+                            getImg(index+1);
+                        }
                     });
                 }                                
                 getImg(0);
@@ -573,6 +579,7 @@ function createSelectElement(arr, selected, k) {
     $('.title').text('Choose One Option');
 
     var lists = '';
+    lists += `<option value="">select</option>`;
     for (i = 0; i <= arrList.length - 1; i++) {
         if (arr.column_type_id != 10) {
             if (arrList[i] == selected) {
