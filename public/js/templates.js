@@ -49,15 +49,15 @@ function createInputElement(val, key, field, inputType) {
     console.log(inputType);
     if (field.unique === 1) {
         // $("#mod-head").text(val);
-        // inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" ` + is_disable + ` data-change="true" required>`;
+        // inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" ` + is_disable + ` data-change="true" required>`;
     } else {
-        // inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">`;
+        // inputElem += `<input type="` + inputType + `" class="form-control" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;
         if(inputType === "radio"){
-            inputElem += `<input type="` + inputType + `" class="custom-input" id="` + key + `" style="display: block"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">`;            
+            inputElem += `<input type="` + inputType + `" class="custom-input" id="` + key + `" style="display: block"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;            
         }else if(inputType === "tel"){
-            inputElem += `<input type="` + inputType + `" class="form-control custom-input" maxlength="14" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">`;
+            inputElem += `<input type="` + inputType + `" class="form-control custom-input" maxlength="14" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;
         }else{
-            inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">`;
+            inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;
         }
     }
     return inputElem;
