@@ -215,7 +215,7 @@ class Tables extends Model
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
                 if ($val == 'me' && $loggedInUser = Auth::user()) {
-                    $users->where($paramName, '=', $loggedInUser);
+                    $users->where($paramName, '=', $loggedInUser->email);
                 } else
                     $users->where($paramName, '=', $req[$paramName]['is']);
             } else if (isset($req[$paramName]['is_not'])) {

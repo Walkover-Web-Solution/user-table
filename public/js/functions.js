@@ -174,7 +174,7 @@ function getUserDetails(event,id, tableId) {
                             editForm += '</div></div>';
                         } else {
                            
-                             if (currentField.column_type_id !== 6 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9 && currentField.unique !==1){
+                             if (currentField.column_type_id !== 6 && currentField.column_type_id !== 8 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9 && currentField.unique !==1){
                                  if(currentField.column_type_id === 3){
                                     editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;     
                                  }else{
@@ -186,7 +186,7 @@ function getUserDetails(event,id, tableId) {
                                         sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
                                         var currentVal = parseDate(val[k]);
                                         sec_editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
-                                    } else if (currentField.column_type_id == 6 && currentField.unique !==1) { // if column type is dropdown
+                                    } else if ( (currentField.column_type_id == 6 || currentField.column_type_id == 8 ) && currentField.unique !==1) { // if column type is dropdown
                                         sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:10px;color:#292929">` + k + `</label>`;
                                         sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                     } else if (currentField.column_type_id == 10 && currentField.unique !==1) { // if column type is teammates
@@ -265,7 +265,9 @@ function getUserDetails(event,id, tableId) {
                     } else if (currentField.column_type_id == 10) { // if column type is teammates
                         currentField['value_arr']['options'] = teammates;
                         editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
-                    } else {
+                    } else if(currentField.column_type_id == 8){
+                        editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
+                    }else {
                         editForm += createInputElement('', k, currentField, inputTypeArr[currentField.column_type_id]);
                     }
                     editForm += '</div></div>';
@@ -597,7 +599,11 @@ function createSelectElement(arr, selected, k) {
         }
 
     }
-    var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
+    if (arr.column_type_id == 8) {
+        var formGrp = `<select multiple="multiple" class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
+    }else {
+        var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
+    }
     return formGrp;
 };
 

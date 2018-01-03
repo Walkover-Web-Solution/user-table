@@ -29,7 +29,10 @@
     <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
         <!-- <td></td> -->
         <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/></td>
-        @foreach($val as $k => $colValue)        
+        @foreach($val as $k => $colValue)
+            @if($k == 'is_deleted')
+                @continue
+            @endif
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'], true);?>
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
@@ -100,6 +103,9 @@
     <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
     <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/></td>
         @foreach($val as $k => $colValue)
+            @if($k == 'is_deleted')
+                @continue
+            @endif
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
         <?php $options = json_decode($structure[$k]['value'], true); ?>
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
