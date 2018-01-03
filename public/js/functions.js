@@ -220,7 +220,7 @@ function getUserDetails(event,id, tableId) {
                 function getImg(index){
                     var user_id = logs[index].user_id;
                     var log = logs[index].log;                    
-                    $.get('http://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function(result){
+                    $.get('https://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function(result){
                         img = result.entry.gphoto$thumbnail.$t;
                         desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+img+'"><p style="margin-left:25px;width:450px">'+ log +'</p><br><br>';                        
                         $("#activity_log").append(desc);
