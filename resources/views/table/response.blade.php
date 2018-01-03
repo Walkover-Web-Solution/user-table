@@ -183,7 +183,10 @@
           });
           var url = API_BASE_URL + "/deleterecords/{{$tableId}}";
           $.post(url,{"ids":deletedRecords},(response) => {
-              console.log(response);
+              //console.log(response);
+             $(elements).each((index,item) => {
+            $(item).parent().parent().hide(); 
+          });
           });
     }
     function updateData(ths, method) {
