@@ -57,9 +57,9 @@ class Activity extends Model
     public function getDescription($act){
         $desc = '';
         if(strtolower($act->action) == 'create')
-            $desc .= $act->user_id.' '.$act->action.' '.$act->content_type;
+            $desc .= $act->action.' '.$act->content_type;
         else {
-            $desc .= $act->user_id . ' ' . $act->action;//' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
+            $desc .= $act->action;//' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
             $oldData = json_decode($act->old_data, true);
             unset($oldData['is_deleted']);
             $newData = json_decode($act->details, true);
