@@ -137,3 +137,16 @@ body {
 .modal-header{
     border-bottom-style: none;
 }
+p span.column-name{
+    font-weight: bold;
+}
+
+p span.new-val{
+    font-style: italic;
+    background-color: #ddd;
+}
+
+p span.old-val{
+    font-style: italic;
+    background-color: #ddd;
+}

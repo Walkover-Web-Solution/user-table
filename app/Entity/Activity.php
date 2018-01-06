@@ -69,8 +69,10 @@ class Activity extends Model
                     $newData[$column] = json_encode($newData[$column]);
                 if(is_array($value))
                     $value = json_encode($value);
+                if(empty($value))
+                    $value='NULL';
 
-                $desc .= ' ' . $column . ' "' . $newData[$column] . '" from "' . $value . '" ,';
+                $desc .= ' <span class="column-name">' . $column . '</span><span class="new-val"> ' . $newData[$column] . '</span> from <span class="old-val"> ' . $value . '</span>, ';
             }
 
             $desc = rtrim($desc, ',');
