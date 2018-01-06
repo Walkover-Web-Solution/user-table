@@ -26,7 +26,7 @@
     </tr>
     </thead>
     <tbody id="all_users">
-    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
         <!-- <td></td> -->
         <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/></td>
         @foreach($val as $k => $colValue)
@@ -100,7 +100,7 @@
 
     @endif
     @if($key!=0)
-    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')">
+    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
     <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/></td>
         @foreach($val as $k => $colValue)
             @if($k == 'is_deleted')

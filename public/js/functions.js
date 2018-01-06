@@ -205,7 +205,7 @@ function getUserDetails(event,id, tableId) {
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#follow_up_date').attr('type', 'date');
-                    $('#edit_user').modal('show');
+                    //$('#edit_user').modal('show');
                 }
             }
         });
@@ -655,6 +655,13 @@ $(document).ready(function () {
         placement: 'top',
         trigger: 'hover'
     });
+
+    $('#edit_user').on('hidden.bs.modal', function () {
+        $("#edit_users_body").html('');
+        $("#sec_edit_users_body").html('');
+        $("#activity_log").html('');
+        $("#mod-head").text('');
+    })
 });
 
 function sendData(type, JsonData, formData, tableId) {
