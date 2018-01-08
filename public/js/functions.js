@@ -246,6 +246,11 @@ function getUserDetails(event,id, tableId) {
                             getImg(index+1);                            
                         }
                     }).fail(function(){
+                        if(logs[index].action=='Update'){
+                            var logTime = logs[index].updated_at;
+                        }else{
+                            var logTime = logs[index].created_at;
+                        }
                         desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src=" {{ asset("img/user_img.jpg") }} "><p style="margin-left:25px;width:450px">'+ log +'</p><span>'+logTime+'</span><br><br>';
                         $("#activity_log").append(desc);
                         if(index < logsLength){
