@@ -226,7 +226,7 @@ function getUserDetails(event,id, tableId) {
                 var desc ='';
                 $("#activity_log").html('');
                 var logsLength = logs.length;
-                function getImg(index){
+                function getImg(index,logs){
                     var user_id = logs[index].user_id;
                     var log = logs[index].log;                    
                     $.get('https://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function(result){
@@ -258,7 +258,7 @@ function getUserDetails(event,id, tableId) {
                         }
                     });
                 }                                
-                getImg(0);
+                getImg(0,logs);
             }
         });
     } else {
