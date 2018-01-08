@@ -257,8 +257,11 @@ function getUserDetails(event,id, tableId) {
                             getImg(index+1,logs);
                         }
                     });
-                }                                
-                getImg(0,logs);
+                }
+
+                if (logsLength > 0) {
+                    getImg(0, logs);
+                }
             }
         });
     } else {
