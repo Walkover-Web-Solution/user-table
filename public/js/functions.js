@@ -150,6 +150,7 @@ function getUserDetails(event,id, tableId) {
                 var authKey = res.authKey;
                 var teammates = res.teammates;
                 var editForm = '';
+                var form_text = '';
                 var sec_editForm = '';
                 if (val) {
                     $("#eId").val(val.id);
@@ -176,11 +177,17 @@ function getUserDetails(event,id, tableId) {
                            
                              if (currentField.column_type_id !== 6 && currentField.column_type_id !== 8 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9 && currentField.unique !==1){
                                  if(currentField.column_type_id === 3){
-                                    editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;     
+                                    editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`; 
+                                    editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);    
                                  }else{
-                                    editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                    if(currentField.column_type_id === 11){
+                                        form_text += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                        form_text += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
+                                    }else{
+                                        editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                        editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
+                                    }
                                  }
-                                editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
                             }else{
                                     if (currentField.column_type_id == 9 && currentField.unique !==1) { // if column type is date
                                         sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
@@ -197,11 +204,13 @@ function getUserDetails(event,id, tableId) {
                                         $("#mod-head").text(val[k]);
                                     }
                             }
+                            form_text += '</div>'; 
                             editForm += '</div>';
                             sec_editForm += '</div>';
                         }
                     }
                     // editForm += '<textarea class="form-group col-xs-12 custom-input" col="100" row="5"></textarea>';
+                    editForm += form_text;
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#follow_up_date').attr('type', 'date');

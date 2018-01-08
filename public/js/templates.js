@@ -56,7 +56,7 @@ function createInputElement(val, key, field, inputType) {
         }else if(inputType === "tel"){
             inputElem += `<input type="` + inputType + `" class="form-control custom-input" maxlength="14" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;
         }else if(field.column_type_id == 11) {
-            inputElem += `<textarea id="` + key + `" class="form-control custom-input" rows="5" cols="70" name="` + key + `" dataid="` + key + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">` + val + `</textarea>`;
+            inputElem += `<textarea id="` + key + `" class="form-control custom-input" rows="4" cols="70" name="` + key + `" dataid="` + key + `" placeholder="` + key + `" onchange="watchOnchange(` + key + `)">` + val + `</textarea>`;
         }else{
             inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;
         }
