@@ -4,6 +4,7 @@ namespace App;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class team_table_mapping extends Model {
 
@@ -127,7 +128,7 @@ class team_table_mapping extends Model {
         if(!empty($old_data)) {
             foreach ($structure as $key => $column) {
                 if (isset($input_param[$key])) {
-                    if ($column['column_type_id'] != 4) {
+                    if ($column['column_type_id'] != 4 && $column['column_type_id']!=10) {
                         if (!empty($input_param[$key])) {
                             if(is_array($input_param[$key]))
                                 $update_data[$key] = json_encode($input_param[$key]);
@@ -135,8 +136,14 @@ class team_table_mapping extends Model {
                             $update_data[$key] = $input_param[$key];
                         }
                     } else {
-                        if (!empty($input_param[$key])) {
+                        if ($column['column_type_id'] ==4 && !empty($input_param[$key])) {
                             $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
+                        }
+                        if($column['column_type_id'] == 10 && !empty($input_param[$key])){
+                            if($input_param[$key] == 'me' && $loggedInUser = Auth::user())
+                                $update_data[$key] = $loggedInUser->email;
+                            else
+                                $update_data[$key] = $input_param[$key];
                         }
                     }
                     if ($old_data[$key] != $input_param[$key]) {
