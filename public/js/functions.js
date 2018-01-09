@@ -272,7 +272,7 @@ function getUserDetails(event,id, tableId) {
             success: function (res) {
                 var COL_FIELD = res.colDetails;
                 var tableData = res.tableData;
-                var teammates = res.teammates
+                var teammates = teamMateList
                 var authKey = tableData['auth'];
 
                 $('#tokenKey').val(authKey);
@@ -467,14 +467,16 @@ function getOptionList() {
 }
 
 function getTeamMates() {
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: API_BASE_URL + "/getTeamMateList/"+tableId,
-        success: function (response) {
-            teamMateList = response.data;
-        }
-    });
+    if(tableId) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: API_BASE_URL + "/getTeamMateList/" + tableId,
+            success: function (response) {
+                teamMateList = response.data;
+            }
+        });
+    }
 }
 
 // add new field row

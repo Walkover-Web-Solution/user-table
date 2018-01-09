@@ -129,6 +129,7 @@
 
 <script type="text/javascript">
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
+    var tableId = '<?php echo $tableData['id'];?>';
 </script>
 <script>
 $(document).ready(function(){
@@ -197,7 +198,6 @@ $(document).ready(function(){
             tableData2[idy] = {'name': name, 'type': type, 'display': display, 'ordering': order, 'unique': unique, 'value': value};
         });
 
-        var tableId = $("#tableId").text();
         var socketApi = $("#socketApi").val();
         var newEntryApi = $("#newEntryApi").val();
 

@@ -465,14 +465,11 @@ class TableController extends Controller
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr['id']);
         $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
-        $teamId = $tableNames['team_id'];
-        $teammates = Teams::getTeamMembers($teamId);
 
         return response()->json(array(
             'tableData' => $tableNameArr,
             'structure' => $tableStructure,
-            'colDetails' => $colDetails,
-            'teammates' => $teammates
+            'colDetails' => $colDetails
         ));
     }
 

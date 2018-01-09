@@ -94,6 +94,7 @@
 
 <script type="text/javascript">
         var API_BASE_URL = '{{env('API_BASE_URL')}}';
+        var tableId = false;
 </script>
 <script type="text/javascript">
     var tableData= [];
