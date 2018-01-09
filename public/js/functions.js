@@ -15,6 +15,7 @@ var dateList = ['relative', 'normal'];
 var customTypes = ['dropdown', 'radio button', 'checkbox'];
 var time = "";
 var img = '';
+var teamMateList = {};
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -148,7 +149,7 @@ function getUserDetails(event,id, tableId) {
                 var val = res.data;
                 var COL_FIELD = res.colDetails;
                 var authKey = res.authKey;
-                var teammates = res.teammates;
+                var teammates = teamMateList;
                 var editForm = '';
                 var form_text = '';
                 var sec_editForm = '';
@@ -465,6 +466,17 @@ function getOptionList() {
     });
 }
 
+function getTeamMates() {
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: API_BASE_URL + "/getTeamMateList/"+tableId,
+        success: function (response) {
+            teamMateList = response.data;
+        }
+    });
+}
+
 // add new field row
 function addRow(check) {
 
@@ -662,6 +674,7 @@ function showDiv(id) {
 
 $(document).ready(function () {
     getOptionList();
+    getTeamMates();
     $('#right_panel').hide();
     var title = $('#right_panel .title');
     $(".option_box").addClass('hide');

@@ -22,8 +22,6 @@ class ContactController extends Controller
         $structure = $this->formatStructure($table->tableStructure);
         $this->contact = new Contact($table->table_id);
         $data = $this->contact->getContactById($id);
-        $teamId = $table->team_id;
-        $teammates = Teams::getTeamMembers($teamId);
         $newData = json_decode(json_encode($data), true);
         foreach($table->tableStructure as $k=>$v)
         {
@@ -35,7 +33,7 @@ class ContactController extends Controller
         return response(
             json_encode(
                 array('data' => $inner_ordered, 'colDetails' => $structure,
-                    'authKey' => $table->auth, 'teammates' => $teammates)
+                    'authKey' => $table->auth)
             ), 200
         )->header('Content-Type', 'application/json');
     }
