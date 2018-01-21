@@ -111,4 +111,16 @@ class ConfigureTable extends Controller
 
         return response()->json($arr);
     }
+
+    public function addNewDropDownValue(Request $request)
+    {
+        $tableId = $request->input('tableId');
+        $columnName = $request->input('name');
+        $newVal = $request->input('value');
+        $tableStructure = TableStructure::getTableColumnStructure($tableId,$columnName);
+        $oldValue = json_decode($tableStructure['default_value'],true);
+        $options = $oldValue['options'];
+        $newValue = json_encode(array('options'=>array_merge($options,array($newVal))));
+        return TableStructure::updateTableStructureColumn($tableStructure['id'],'default_value',$newValue);
+    }
 }

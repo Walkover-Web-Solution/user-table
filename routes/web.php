@@ -50,6 +50,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/tables/structure/{tableName}', 'TableController@getSelectedTableStructure');
 # for alter user table in database
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
+    Route::Post('/addDropDown','ConfigureTable@addNewDropDownValue');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
     Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
     Route::get('/table/{table_id}/activity_data/{content_id}','ActivityController@show');

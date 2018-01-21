@@ -28,6 +28,19 @@ class TableStructure extends Model {
             ->where('table_id',$tableId)->get()->toArray();
     }
 
+    public static function getTableColumnStructure($tableId,$columnName){
+        return TableStructure::with('columnType')
+            ->where('table_id',$tableId)
+            ->where('column_name',$columnName)
+            ->first()->toArray();
+    }
+
+    public static function updateTableStructureColumn($id,$name,$value)
+    {
+        return TableStructure::where('id', $id)
+            ->update(array($name => $value));
+    }
+
     public static function getTableColumnTypesArray($user_table_id){
         $dt = team_table_mapping::getUserTableByTableId($user_table_id);
             $table_id = $dt['id'];

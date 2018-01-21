@@ -378,7 +378,7 @@
                 <div class="modal-body" style="width:800px">
                     <div class="col-xs-8" id="edit_users_body"></div>
                     <div style="width:20px" class="col-xs-1">&nbsp;</div>
-                    <div style="padding-right:0px;padding-left:0px" class="col-xs-3" id="sec_edit_users_body"></div>
+                    <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-8">
                         <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
                         <br>

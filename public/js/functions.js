@@ -642,11 +642,50 @@ function createSelectElement(arr, selected, k) {
     if (arr.column_type_id == 8) {
         var formGrp = `<select multiple="multiple" class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
     }else {
-        var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
+        if(arr.column_type_id == 6)
+            lists += `<option value="Other">Other</option>`;
+
+        var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `" onchange="addOtherOption(this)">` + lists + ` </select>`;
     }
     return formGrp;
 };
 
+//  create select option
+function addOtherOption(element) {
+    if(element.value == "Other")
+    {
+        $("#"+$(element).parent().attr("id")).after("<div class=\"form-group col-xs-12\" id=\"label_other_"+element.id+"\" name=\"label_other_"+element.id+"\"><label style=\"font-weight:600;margin-bottom:10px;color:#292929\">Other "+element.id+"</label><input type='text' id=\"other_"+element.id+"\" name=\"other_"+element.id+"\" class=\"form-control\" style=\"width: 160px;float: left;\"/><a id=\"add_other_"+element.id+"\" class=\"btn btn-success\" style=\"float: right;\" onclick=\"addDropDown('"+element.id+"');\">Add</a></div>" );
+    }
+    else
+    {
+        $("#label_other_"+element.id).remove();
+    }
+}
+function addDropDown(id){
+    console.log(id,tableId);
+    var elementId = "other_"+id;
+    var newValue = $('#'+elementId).val();
+    console.log(newValue);
+    $('#'+id).append( '<option value="'+newValue+'">' + newValue + '</option>' );
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: API_BASE_URL + "/addDropDown",
+        data: {'name': id, 'value': newValue, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+        // headers: { 'token': tokenKey },
+        success: function (data) {
+            if(data==1) {
+                $("#" + id + " option[value='" + newValue + "']").attr("selected", "selected");
+                $("#label_other_" + id).remove();
+            }
+        }
+    });
+}
 
 // radioType behavior on checkbox
 function radioBehavior() {
