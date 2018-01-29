@@ -58,10 +58,34 @@
             @endguest
         </ul>
 
+        <li class="pull-right dropdown">
+                <a href="" id="addBtn" class="dropdown-toggle"  data-toggle="dropdown" onclick="">
+                    <i class="fa fa-columns"></i>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">show/hide</a></li>
+                        <li><a href="#">edit...</a></li>
+                        <li><a href="#">change type</a></li>
+                        <li><a href="javascript:void(0);" data-keyboard="true" data-target="#default_type" data-toggle="modal">default value</a></li>
+                    </ul>
+                </a>
+        </li>
+
         <li class="pull-right">
             <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
                                   data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
                 <i class="glyphicon glyphicon-plus"></i>
+            </a>
+        </li>
+
+
+        <li class="pull-right dropdown">
+            <a href="" id="addBtn" class="dropdown-toggle" data-toggle="dropdown" onclick="">
+                <i class="fa fa-eye"></i>
+                <ul class="dropdown-menu">
+                    <li><i class="fa fa-eye"></i><a href="">hidden ele 1..</a></li>
+                    <li><i class="fa fa-eye"></i><a href="">hidden ele 2..</a></li>
+                    <li><i class="fa fa-eye"></i><a href="">hidden ele 3..</a></li>
+                </ul>
             </a>
         </li>
 
@@ -402,6 +426,41 @@
     </div>
 </div>
 <!-- End Modal -->
+
+<!-- default type -->
+<div id="default_type" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div style="background:rgb(237,239,240)" class="modal-content">
+            <div class="modal-header">
+                <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
+                <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head" class="modal-title">default values</span>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div>
+                        <h3>Activity</h3>
+                        <br>
+                        <br>
+                        <div class="form-group col-xs-12">
+                            <label class="">
+                                <textarea class="form-control custom-input" data-role="tagsinput" name="" id="" cols="73" rows="5"></textarea>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end modal -->
 
 <!-- tab modal -->
 <div class="modal fade" id="saveTabModel" tabindex="-1" role="dialog">
