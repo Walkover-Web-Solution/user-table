@@ -82,9 +82,9 @@
             <a href="" id="addBtn" class="dropdown-toggle" data-toggle="dropdown" onclick="">
                 <i class="fa fa-eye"></i>
                 <ul class="dropdown-menu">
-                    <li><i class="fa fa-eye"></i><a href="">hidden ele 1..</a></li>
-                    <li><i class="fa fa-eye"></i><a href="">hidden ele 2..</a></li>
-                    <li><i class="fa fa-eye"></i><a href="">hidden ele 3..</a></li>
+                    <li><a href="">hidden ele 1..</a></li>
+                    <li><a href="">hidden ele 2..</a></li>
+                    <li><a href="">hidden ele 3..</a></li>
                 </ul>
             </a>
         </li>
@@ -445,7 +445,7 @@
                         <br>
                         <div class="form-group col-xs-12">
                             <label class="">
-                                <textarea class="form-control custom-input" data-role="tagsinput" name="" id="" cols="73" rows="5"></textarea>
+                                <textarea class="form-control custom-input" name="" id="" cols="73" rows="5"></textarea>
                             </label>
                         </div>
                     </div>
