@@ -135,6 +135,12 @@ textarea {
 
 .prpl_txt {
     color: #5a3e9e;
+    font-size:22px !important;
+    font-weight:400 !important;
+}
+
+.ffsb{
+    font-weight:600;
 }
 
 .head_txt,
@@ -343,11 +349,23 @@ footer a.und {
 .signup-btn {
     margin-left: 10px;
     border-color: #fff;
+    font-size: 15px;
+}
+
+.login-btn{
+    font-size: 15px;
+}
+
+.ex{
+    color:#6A777f;
+    font-weight:500;
+    font-size:16px;
 }
 
 .signup-btn:hover {
     color: #fff;
-    background: #8b72ca;
+    background: #22193f;
+    border-color: #22193f !important;
 }
 
 .content_wrap {

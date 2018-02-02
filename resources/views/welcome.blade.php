@@ -58,8 +58,9 @@
         </button>
                     <a class="navbar-brand" href="#" id="logo">
                         <span><img src="./img/logo.png" alt="user table logo" /></span>
+                        <!-- <span><img src="./img/oldlogo.png" alt="user table logo" /></span>
                         <span class="extrabold">user</span>
-                        <span class="light">TABLE</span>
+                        <span class="light">TABLE</span> -->
                     </a>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
@@ -72,7 +73,7 @@
                         <a href="{{ url('/tables') }}" class="navbar-btn link signup-btn btn pull-right">Dashboard</a>
                         @else
                         <a href="{{env('SOCKET_SIGNUP_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin" class="navbar-btn typeform-share link signup-btn btn pull-right">Sign up</a>
-                        <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="navbar-btn btn pull-right">Log in</a>
+                        <a href="{{env('SOCKET_LOGIN_URL')}}&redirect_uri={{env('APP_URL')}}/socketlogin"  class="navbar-btn btn pull-right login-btn">Log in</a>
                         <!--<a href="https://viasocket.com/login?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Login</a>-->
                         <!--<a href="https://viasocket.com/signup?token_required=true&redirect_uri=http://contact-crm-test.herokuapp.com/socketlogin">Register</a>-->
                         @endauth
@@ -132,7 +133,7 @@
             <div class="row">
                 <div class="col-xs-12 heading">
                     <h3>Collect all your user data here</h3>
-                    <p>Ex. Signup date, total purchase, feature used, source or anything.</p>
+                    <p class="ex">Ex. Signup date, total purchase, feature used, source or anything.</p>
                 </div>
             </div>
             <div class="row">
@@ -148,17 +149,17 @@
                 <div class="col-md-4 col-sm-12">
                     <figure><img src="./img/data.png" alt="segregated data"></figure>
                     <h4>ALL DATA, SEGREGATED</h4>
-                    <p><strong>Collect all data here </strong>from different sources and manage.</p>
+                    <p><strong class="ffsb">Collect all data here </strong>from different sources and manage.</p>
                 </div>
                 <div class="col-md-4 col-sm-12">
                     <figure><img src="./img/analyse.png" alt="analyse data"></figure>
                     <h4>ANALYSE</h4>
-                    <p>Create different filters for <strong>different purpose</strong> and know what is going on with your client?</p>
+                    <p>Create different filters for <strong class="ffsb">different purpose</strong> and know what is going on with your client?</p>
                 </div>
                 <div class="col-md-4 col-sm-12">
                     <figure><img src="./img/automate.png" alt="automate data"></figure>
                     <h4>AUTOMATE</h4>
-                    <p>Automate SMS, Email on Different filter, Eg, Purchase above 1M, <strong>send some rewards</strong>.</p>
+                    <p>Automate SMS, Email on Different filter, Eg, Purchase above 1M, <strong class="ffsb">send some rewards</strong>.</p>
                 </div>
             </div>
         </div>
@@ -198,7 +199,7 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="jumbotron">
-                        <div class="fs50 wht_txt extrabold">Setup $100 + $50/mo</div>
+                        <div class="fs50 wht_txt extrabold">Setup $100 + $149/mo</div>
                         <p class="fs22 prpl_txt">Unlimited User | Unlimited Admin</p>
                     </div>
                 </div>
