@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class team_table_mapping extends Model {
 
     protected $table = 'team_table_mappings';
-    protected $fillable = ['id', 'table_name', 'table_id', 'team_id', 'table_structure', 'auth','socket_api', 'new_entry_api'];
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id', 'table_structure', 'auth','socket_api', 'new_entry_api','parent_table_id'];
     public $timestamps = false;
 
     public function tableStructure() {
@@ -30,12 +30,16 @@ class team_table_mapping extends Model {
                 ->get();
         return $data;
     }
+    
 
     public static function makeNewTableEntry($paramArr) {
         $data = team_table_mapping::create($paramArr);
         return $data;
     }
 
+    public static function updateTableAccess($tableId){
+
+    }
     public static function getTableSourcesByTableIncrId($team_incr_id_arr) {
         $data = DB::table('user_data_source')
                 ->select('*')
@@ -48,6 +52,12 @@ class team_table_mapping extends Model {
         $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('id', $tableId)
                 ->first()->toArray();
+        return $data;
+    }
+
+    public static function getUserTablesNameByParentId($tableId) {
+        $data = team_table_mapping::select('*')->where('parent_table_id', $tableId)
+                ->get()->toArray();
         return $data;
     }
 

@@ -150,3 +150,12 @@ p span.old-val{
     font-style: italic;
     background-color: #ddd;
 }
+.column-name{
+    margin:5px 10px;
+    display:inline-block;
+}
+.column-name label{
+    margin-left:5px;
+    margin-top: -2px;
+    vertical-align: top;
+}

@@ -6,7 +6,16 @@
                 <!--  new field form -->
                 <div class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Configure</div>
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                   <a href="{{env('APP_URL')}}/configure/{{$tableData['id']}}">Configure</a>
+                                </div>
+                                <div class="col-xs-2">
+                                   <a href="{{env('APP_URL')}}/tableaccess/{{$tableData['id']}}">Table Access</a>
+                                </div>
+                            </div>
+                        </div>
                         <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
                         <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
                         <div class="panel-body">
