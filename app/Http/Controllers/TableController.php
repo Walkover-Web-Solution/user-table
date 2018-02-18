@@ -91,6 +91,13 @@ class TableController extends Controller
         $teamIdArr = array();
         $teamNameArr = array();
 
+        $user =  Auth::user();
+        $email = $user['email'];
+        //print_r($email);
+        $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
+
+
+
         foreach ($teams as $teamId => $teamName) {
             $teamNameArr[] = $teamName;
             $teamIdArr[] = $teamId;
@@ -114,7 +121,8 @@ class TableController extends Controller
         return view('showTable', array(
             'teamsArr' => $teams,
             'source_arr' => $source_arr,
-            'teamTables' => $teamTables
+            'teamTables' => $teamTables,
+            'readOnlyTables'=> $readOnlytableLst
         ));
     }
 
@@ -162,6 +170,13 @@ class TableController extends Controller
         }
 
         $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
+
+        if(count($tableLst) == 0){
+            $user =  Auth::user();
+            $email = $user['email'];
+            $tableLst = team_table_mapping::getUserTablesByEmailAndTableId($email,$tableId);
+        }
+
         if(count($tableLst) == 0){
             return redirect()->route('tables');
         }

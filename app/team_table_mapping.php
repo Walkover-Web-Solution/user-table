@@ -30,6 +30,13 @@ class team_table_mapping extends Model {
                 ->get();
         return $data;
     }
+    public static function getUserTablesByEmailAndTableId($email,$tableId) {
+        $data = team_table_mapping::with('tableStructure.columnType')
+                ->where('team_id', $email)
+                ->where('id', $tableId)
+                ->get();
+        return $data;
+    }
     
 
     public static function makeNewTableEntry($paramArr) {
@@ -57,6 +64,12 @@ class team_table_mapping extends Model {
 
     public static function getUserTablesNameByParentId($tableId) {
         $data = team_table_mapping::select('*')->where('parent_table_id', $tableId)
+                ->get()->toArray();
+        return $data;
+    }
+
+    public static function getUserTablesNameByEmail($email) {
+        $data = team_table_mapping::select('*')->where('team_id', $email)
                 ->get()->toArray();
         return $data;
     }
