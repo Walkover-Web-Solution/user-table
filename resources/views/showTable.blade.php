@@ -60,20 +60,6 @@
                         <a href="tables/{{$table['id']}}" target="_blank"></a>
                             <div class="text-center">
                                 <div class="tab_name"><a href="tables/{{$table['id']}}" target="_blank"> {{$table['table_name']}}</a></div>
-
-                                <div class="center-block btn-grp text-center">
-                                    <button id="srcbtn" dataid="{{$table['id']}}" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-default btn-sources" title="{{ isset($source_arr[$table['id']]) ? implode(',',$source_arr[$table['id']]) : "Your content goes here" }}">{{isset($source_arr[$table['id']] )? count($source_arr[$table['id']]) : 0}} sources</button>
-                                </div>
-                            
-                                <div class="sources-container sources-{{$table['id']}}">
-                                    <ul>
-                                    @if(isset($source_arr[$table['id']]))
-                                        @foreach($source_arr[$table['id']] as $key => $sources)
-                                        <li>{{$sources}}</li>
-                                        @endforeach
-                                    @endif    
-                                    </ul>    
-                                </div>
                             </div>
                         </div>
                     </div>

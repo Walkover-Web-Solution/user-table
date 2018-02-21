@@ -163,18 +163,22 @@ class TableController extends Controller
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
-
+        $isGuestAccess = false;
+        
         foreach ($teams as $teamId => $teamName) {
             $teamNameArr[] = $teamName;
             $teamIdArr[] = $teamId;
         }
 
         $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
-
+       // print_r($tableLst);
         if(count($tableLst) == 0){
             $user =  Auth::user();
             $email = $user['email'];
             $tableLst = team_table_mapping::getUserTablesByEmailAndTableId($email,$tableId);
+            if(!empty($tableLst[0]->parent_table_id)){
+                $isGuestAccess = true;
+            }
         }
 
         if(count($tableLst) == 0){

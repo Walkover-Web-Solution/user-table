@@ -35,6 +35,12 @@ class TableStructure extends Model {
             ->first()->toArray();
     }
 
+    public static function getTableStructure($tableId){
+        return TableStructure::select("*")
+            ->where('table_id',$tableId)
+            ->get()->toArray();
+    }
+
     public static function updateTableStructureColumn($id,$name,$value)
     {
         return TableStructure::where('id', $id)
