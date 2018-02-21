@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+<h1>{{$isGuestAccess}}</h1>
 <div class="tablist">
     <ul id="tablist">
         <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li>
@@ -20,7 +21,9 @@
         </li>
         @endforeach
         @endforeach
-        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords();return false;">Delete</a></li>
+         @if(!$isGuestAccess)
+            <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords();return false;">Delete</a></li>
+        @endif
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
             <!-- Authentication Links -->
@@ -69,15 +72,14 @@
                     </ul>
                 </a>
         </li>
-
-        <li class="pull-right">
-            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-                                  data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
-                <i class="glyphicon glyphicon-plus"></i>
-            </a>
-        </li>
-
-
+        @if(!$isGuestAccess)
+                <li class="pull-right">
+                    <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
+                                        data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
+                        <i class="glyphicon glyphicon-plus"></i>
+                    </a>
+                </li>
+        @endif
         <li class="pull-right dropdown">
             <a href="" id="addBtn" class="dropdown-toggle" data-toggle="dropdown" onclick="">
                 <i class="fa fa-eye"></i>

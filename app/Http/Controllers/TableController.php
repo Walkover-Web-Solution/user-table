@@ -186,6 +186,7 @@ class TableController extends Controller
         }
 
         $results = $this->processTableData($tableId, $tabName);
+        $results['isGuestAccess'] = $isGuestAccess;
         return view('home', $results);
     }
 

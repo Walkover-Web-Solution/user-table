@@ -15,7 +15,9 @@
     <thead id="userThead">
     <tr id="tr_{{$val['id']}}">
         <!-- <th><span class="fixed-header"></span></th> -->
-        <th><span class="fixed-header"></span></th>
+         @if(!$isGuestAccess)
+            <th><span class="fixed-header"></span></th>
+        @endif
         @foreach($val as $k => $colName)
         @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
@@ -25,10 +27,15 @@
         @endforeach
     </tr>
     </thead>
-    <tbody id="all_users">
-    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
-        <!-- <td></td> -->
-        <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/></td>
+    <tbody id="all_users">    
+         @if(!$isGuestAccess)
+            <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
+                <td class="delete-row">
+                    <input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/>
+                </td>
+        @else
+            <tr id="tr_{{$val['id']}}">    
+        @endif
         @foreach($val as $k => $colValue)
             @if($k == 'is_deleted')
                 @continue
@@ -44,6 +51,7 @@
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+         @if(!$isGuestAccess)
             <select id="{{$k}}:_:{{$val['id']}}" name="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
@@ -52,9 +60,13 @@
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
+        @else
+            {{$colValue}}
+        @endif    
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+          @if(!$isGuestAccess)
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
@@ -64,12 +76,16 @@
                 </option>
                 @endforeach
             </select>
+         @else
+            {{$colValue}}
+        @endif 
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
         <?php $options = json_decode($structure[$k]['value'], true);
                 $colValueArr = is_null(json_decode($colValue))?array():json_decode($colValue);
         ?>
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+         @if(!$isGuestAccess)
             <select id="{{$k}}:_:{{$val['id']}}" class="multi_select{{$val['id']}}" size="5" multiple="multiple" tabindex="1" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'multiselect')">
                 <option value="">select</option>
@@ -78,6 +94,9 @@
                 {{$info}}<br>
             @endforeach
             </select>
+        @else
+            {{$colValue}}
+        @endif 
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
@@ -99,9 +118,15 @@
     </tr>
 
     @endif
-    @if($key!=0)
-    <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
-    <td class="delete-row"><input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/></td>
+    @if($key!=0)    
+      @if(!$isGuestAccess)
+        <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
+            <td class="delete-row">
+                <input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/>
+            </td>
+      @else
+        <tr id="tr_{{$val['id']}}">
+      @endif  
         @foreach($val as $k => $colValue)
             @if($k == 'is_deleted')
                 @continue
@@ -116,7 +141,9 @@
             @endforeach
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '6')
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+        @if(!$isGuestAccess)
+            <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'dropdown')">
                 <?php $options = json_decode($structure[$k]['value'], true); ?>
                 <option value="">select</option>
@@ -124,9 +151,13 @@
                 <option value="{{$info}}" @if($info== $colValue) selected="selected" @endif>{{$info}}</option>
                 @endforeach
             </select>
+        @else
+            {{$colValue}}
+        @endif 
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '10')
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+        @if(!$isGuestAccess)
             <select id="{{$k}}:_:{{$val['id']}}" onclick="event.stopPropagation();"
                     onchange="updateData(this, 'teammates')">
                 @foreach($teammates as $team)
@@ -135,12 +166,16 @@
                 @if(!empty($team['name'])){{$team['name']}}@else{{$team['email']}}@endif</option>
                 @endforeach
             </select>
+        @else
+            {{$colValue}}
+        @endif 
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '8')
                 <?php $options = json_decode($structure[$k]['value'], true);
                 $colValueArr = is_null(json_decode($colValue))?array():json_decode($colValue);
                 ?>
                 <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">
+                @if(!$isGuestAccess)
                     <select id="{{$k}}:_:{{$val['id']}}" class="multi_select{{$val['id']}}" size="5" multiple="multiple" tabindex="1" onclick="event.stopPropagation();"
                             onchange="updateData(this, 'multiselect')">
                         <option value="">select</option>
@@ -149,6 +184,9 @@
                             {{$info}}<br>
                         @endforeach
                     </select>
+                @else
+                    {{$colValue}}
+                @endif 
                 </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
