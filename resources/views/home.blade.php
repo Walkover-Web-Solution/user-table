@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<h1>{{$isGuestAccess}}</h1>
 <div class="tablist">
     <ul id="tablist">
         <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li>
