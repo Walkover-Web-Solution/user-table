@@ -90,7 +90,7 @@ class TableAccess extends Controller
                     'column_type_id' => $detail['column_type_id'],
                     'default_value' => $detail['default_value'],
                     'ordering' => $detail['ordering'],
-                    'display' => $detail['display'],
+                    'display' => true,
                     'is_unique' => $detail['is_unique'],
                     'created_at' => Carbon::now()->toDateTimeString(),
                     'updated_at' => Carbon::now()->toDateTimeString()
