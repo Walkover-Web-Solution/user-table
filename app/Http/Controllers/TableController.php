@@ -222,7 +222,13 @@ class TableController extends Controller
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
             $teamId = $tableNames['team_id'];
-            $teammates = Teams::getTeamMembers($teamId);
+            $parentTableId = $tableNames['parent_table_id'];
+            if(!empty($parentTableId)){
+                $table = $this->tableDetail->get($parentTableId);
+                $teammates = Teams::getTeamMembers($table->team_id);
+            }else{
+                $teammates = Teams::getTeamMembers($teamId);
+            }
 
             $teammatesOptions = array();
             foreach ($teammates as $tkey => $tvalue) {
@@ -269,13 +275,19 @@ class TableController extends Controller
         $teamId = $tableNames['team_id'];
         $teammates = Teams::getTeamMembers($teamId);
 
+        if(!empty($tableNames['parent_table_id'])){
+            $isGuestAccess = true;
+        }else
+            $isGuestAccess =false;
+
         return array(
             'allTabs' => $results,
             'tableId' => $tableId,
             'teammates' => $teammates,
             'pagination' => $data,
             'structure' => $userTableStructure,
-            'tableAuth' => $tableAuth);
+            'tableAuth' => $tableAuth,
+            'isGuestAccess'=>$isGuestAccess);
     }
 
     # function get search for selected filters

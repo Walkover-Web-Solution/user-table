@@ -19,6 +19,9 @@
             <th><span class="fixed-header"></span></th>
         @endif
         @foreach($val as $k => $colName)
+            @if($k == 'is_deleted')
+                @continue;
+            @endif
         @if($k!='id')
         <th><span class="fixed-header">{{$k}}</span></th>
         @else
