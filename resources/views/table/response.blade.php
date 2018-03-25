@@ -26,7 +26,8 @@
                 @continue;
             @endif
         @if($k!='id')
-        <th>
+        @if(!$isGuestAccess)
+            <th>
             <div class="dropdowncolumn">
                 <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}
                     <span class="caret"></span>
@@ -37,6 +38,11 @@
             </ul>
             </div>
         </th>
+        @else
+        <th>
+           <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
+        </th>
+        @endif
         @else
         <th hidden class="fixed-header"><span>{{$k}}</span></th>
         @endif
