@@ -6,6 +6,9 @@
         text-overflow: ellipsis;
         /* width: 100%; */
     }
+    .dropdowncolumn { position: absolute; top: 0px;}
+    .dropdown-menu { position:relative; top:30px;}
+    .dropdowncolumn span.caret { display: none;}
 </style>
 <table class="table basic table-bordred">
 
@@ -23,7 +26,17 @@
                 @continue;
             @endif
         @if($k!='id')
-        <th><span class="fixed-header">{{$k}}</span></th>
+        <th>
+            <div class="dropdowncolumn">
+                <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}
+                    <span class="caret"></span>
+                </span>
+            <ul class="dropdown-menu">
+                <li><a href="Javascript:;" class="hidecolumn">Hide</a></li>
+                <li><a href="Javascript:;" onClick="editcolumn('{{$k}}');">Edit</a></li>
+            </ul>
+            </div>
+        </th>
         @else
         <th hidden class="fixed-header"><span>{{$k}}</span></th>
         @endif
@@ -216,14 +229,165 @@
     </tbody>
 </table>
 <input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
+<!-- Modal -->
+<div id="edit_column" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:800px">
+        <!-- Modal content-->
+        <div style="background:rgb(237,239,240)" class="modal-content">
+            <div class="modal-header">
+                <img style="width:21px;height:21px;vertical-align:middle" src="http://localhost:8080/img/docs.svg" alt="docs">
+                <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head" class="modal-title">Edit Column</span>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <form id="editColumnDetails">
+                <div class="modal-body" style="width:800px">
+                    <div class="col-xs-8" id="edit_column_body"></div>
+                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_column_body"></div>
+                    <div class="col-xs-12">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group col-xs-2">
+                                    Name
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    Type
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    Display
+                                </div>
+                                <div class="form-group col-xs-1">
+                                    Sequence
+                                </div>
+                                <div class="form-group col-xs-3">
+                                    Default value
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    Unique
+                                </div>
+                            </div>
+                            <div id="ColumnStructure">
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="modal-footer" style="overflow: hidden;width:750px">
+                    <input type="hidden" id="eId"/>
+                    <input type="hidden" id="tokenKey"/>
+                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editColumnData()">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End Modal -->
 <script>
+    $(document).ready(function(){
+        $('.dropdowncolumn').hover(
+            function() {
+                //console.log('hover over');
+                $(this).find('span.caret').css({'display' : 'inline-block'});
+                $(this).children('.dropdown-menu').show();
+            },
+            function() {
+                //console.log('hover out');
+                $(this).find('span.caret').css({'display' : 'none'});
+                $(this).children('.dropdown-menu').hide();
+        });
+        $('.hidecolumn').click(function () {
+            var parent = $(this).parent().parent().parent().parent();
+            var index = parent.index();
+            var columnname = parent.find("div.dropdowncolumn span").text();
+            $.ajax({
+                url: API_BASE_URL + '/hidetablecolumn',
+                type: 'POST',
+                data: {id: {{$tableId}}, columnname: columnname},
+                dataType: 'json',
+                success: function (info) {
+                    if(info.error)
+                    {
+                        alert(info.error);
+                        return false;
+                    }
+                    $('table tr').each(function() {
+                        $(this).find("td").eq(index).hide();
+                        $(this).find("th").eq(index).hide();
+                    });
+                }
+            });
+        });
+    });
     var table_incr_id = '<?php echo $tableId;?>';
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
     $(document).ready(function(){
         $(".delete-rows-btn").hide();    
     });
+    function editcolumn(ColumnName)
+    {
+        $.ajax({
+            url: API_BASE_URL + '/gettablecolumndetails',
+            type: 'GET',
+            data: {tableid: table_incr_id, columnname: ColumnName},
+            dataType: 'json',
+            success: function (info) {
+                if(info.error)
+                {
+                    alert(info.error);
+                    return false;
+                }
+                var lists = '<option value="">Select Field Type</option>';
+                for (i = 0; i <= optionList.length - 1; i++) {
+                    var selected = (info.column_type.id == optionList[i].id) ? 'selected' : '';
+                    lists += '<option value="' + optionList[i].id + '" '+selected+'>' + optionList[i].column_name + '</option>'
+                }
+                var textarea = '';
+                var default_value = jQuery.parseJSON(info.default_value);
+                for(var i = 0; i < default_value.options.length; i++)
+                {
+                    if((default_value.options.length-1) == i)
+                        textarea += default_value.options[i];
+                    else
+                        textarea += default_value.options[i]+', ';
+                }
+                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><input type="hidden" id="edit_column_name" name ="edit_column_name" value="'+info.column_name+'"/><div class="form-group col-xs-2">'+info.column_name+'</div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-1"><input type="text" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Default value" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="radio" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
+                $('#ColumnStructure').html(html);
+                $('#edit_column').modal('show');
+            }
+        });
+    }
+    function editColumnData()
+    {
+        var updateData={};
+        updateData['name']=$('#edit_column_name').val();
+        updateData['type']=$('#edit_column_type').val();
+        updateData['display']=$('#edit_column_display').val();
+        updateData['ordering']=$('#edit_column_fieldOrder').val();
+        updateData['unique']=$('edit_column_uniqe').is(":checked");
+        updateData['value']=$('#edit_column_default_value').val();
+        var newArr = [];
+        newArr.push(updateData);
+        
+        $.ajax({
+            url: API_BASE_URL + '/configureTable',
+            type: 'POST',
+            data: {tableId: table_incr_id, columnId: $('#edit_column_id').val(),tableOldData:newArr},
+            dataType: 'json',
+            success: function (info) {
+                if(info.error)
+                {
+                    alert(info.error);
+                    return false;
+                }
+                alert(info.msg);
+                location.reload();
+            }
+        });
+    }
     function enableDelete(){
         var elements = $(".row-delete:checked");
         if(elements.length > 0)

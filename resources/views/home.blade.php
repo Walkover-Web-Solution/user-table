@@ -60,17 +60,6 @@
             @endguest
         </ul>
 
-        <li class="pull-right dropdown">
-                <a href="" id="addBtn" class="dropdown-toggle"  data-toggle="dropdown" onclick="">
-                    <i class="fa fa-columns"></i>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">show/hide</a></li>
-                        <li><a href="#">edit...</a></li>
-                        <li><a href="#">change type</a></li>
-                        <li><a href="javascript:void(0);" data-keyboard="true" data-target="#default_type" data-toggle="modal">default value</a></li>
-                    </ul>
-                </a>
-        </li>
         @if(!$isGuestAccess)
                 <li class="pull-right">
                     <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
@@ -79,18 +68,7 @@
                     </a>
                 </li>
         @endif
-        <li class="pull-right dropdown">
-            <a href="" id="addBtn" class="dropdown-toggle" data-toggle="dropdown" onclick="">
-                <i class="fa fa-eye"></i>
-                <ul class="dropdown-menu">
-                    <li><a href="">hidden ele 1..</a></li>
-                    <li><a href="">hidden ele 2..</a></li>
-                    <li><a href="">hidden ele 3..</a></li>
-                </ul>
-            </a>
-        </li>
-
-
+      
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
             <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"

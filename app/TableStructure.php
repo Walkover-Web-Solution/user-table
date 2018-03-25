@@ -46,6 +46,13 @@ class TableStructure extends Model {
         return TableStructure::where('id', $id)
             ->update(array($name => $value));
     }
+    
+    public static function updateTableStructureColumnByTableId($tableId,$columnName,$name,$value)
+    {
+        return TableStructure::where('table_id', $tableId)
+                ->where('column_name',$columnName)
+            ->update(array($name => $value));
+    }
 
     public static function getTableColumnTypesArray($user_table_id){
         $dt = team_table_mapping::getUserTableByTableId($user_table_id);

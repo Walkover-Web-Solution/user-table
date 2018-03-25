@@ -111,6 +111,48 @@ class ConfigureTable extends Controller
 
         return response()->json($arr);
     }
+    
+    public function hideTableColumn(Request $request)
+    {
+        $tableId = $request->input('id');
+        $columnname = $request->input('columnname');
+        if(empty($tableId)){
+            return response()->json(array('error' => 'Table id does not blank.'));
+        }
+        if(empty($columnname))
+        {
+            return response()->json(array('error' => 'Table column name does not blank.'));
+        }
+        
+        $tableStructure = TableStructure::getTableStructure($tableId);
+        if(empty($tableStructure))
+        {
+            return response()->json(array('error' => 'Table id does not exit.'));
+        }
+        //echo $id;echo $columnname;die;
+        TableStructure::updateTableStructureColumnByTableId($tableId, $columnname, 'display', 0);
+        return response()->json(array('success'=>'column updated successfully'));
+    }
+    
+    public function getTableColumnDetails(Request $request)
+    {
+        $tableId = $request->input('tableid');
+        $columnName = $request->input('columnname');
+        if(empty($tableId)){
+            return response()->json(array('error' => 'Table id does not blank.'));
+        }
+        if(empty($columnName))
+        {
+            return response()->json(array('error' => 'Table column name does not blank.'));
+        }
+        
+        $tableStructure = TableStructure::getTableColumnStructure($tableId, $columnName);
+        if(empty($tableStructure))
+        {
+            return response()->json(array('error' => 'Table column id does not exit.'));
+        }
+        return response()->json($tableStructure);
+    }
 
     public function addNewDropDownValue(Request $request)
     {

@@ -50,6 +50,9 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/tables/structure/{tableName}', 'TableController@getSelectedTableStructure');
 # for alter user table in database
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
+    Route::post('/hidetablecolumn', 'ConfigureTable@hideTableColumn');
+    Route::get('/gettablecolumndetails', 'ConfigureTable@getTableColumnDetails');
+    Route::get('/updatetablecolumndetails', 'ConfigureTable@updateTableColumnDetails');
     Route::Post('/addDropDown','ConfigureTable@addNewDropDownValue');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
     Route::get('/tableaccess/{tableName}', 'TableAccess@configureTableAccess');
