@@ -149,6 +149,8 @@ class Tables extends Model
                         $table->integer($value['name'])->unsigned()->nullable();
                     }else if($value['type'] == 11){
                         $table->longText($value['name'])->nullable();
+                    }else if($value['type']==4){
+                        $table->float($value['name'], 15, 2)->default(0);
                     } else {
                         $table->string($value['name'])->nullable();
                     }

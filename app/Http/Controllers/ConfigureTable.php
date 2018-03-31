@@ -80,6 +80,8 @@ class ConfigureTable extends Controller
                                     $table->integer($value['name'])->unsigned()->nullable()->change();
                                 } else if ($value['type'] == 11) {
                                     $table->longText($value['name'])->nullable()->change();
+                                }else if($value['type']==4){
+                                    $table->float($value['name'], 15, 2)->default(0)->change();
                                 }else {
                                     $table->string($value['name'])->nullable()->change();
                                 }
@@ -92,6 +94,8 @@ class ConfigureTable extends Controller
                                     $table->integer($value['name'])->unsigned()->nullable();
                                 } else if ($value['type'] == 11) {
                                     $table->longText($value['name'])->nullable();
+                                }else if($value['type']==4){
+                                    $table->float($value['name'], 15, 2)->default(0);
                                 }else {
                                     $table->string($value['name'])->nullable();
                                 }
