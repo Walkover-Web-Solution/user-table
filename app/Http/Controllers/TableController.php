@@ -428,7 +428,7 @@ class TableController extends Controller
         } catch (Exception $ex) {
             $arr['msg'] = "Error occurred";
             $arr['exception'] = $ex->getMessage();
-            return response()->json($arr);
+            return response()->json($arr,500);
         }
     }
 
