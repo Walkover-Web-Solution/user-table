@@ -66,11 +66,6 @@
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:;" id="createTable">
-                                Create Table
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">

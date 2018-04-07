@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-3">
-            <div class="card" onclick="location.href ='{{ route('createTable') }}'">
+            <div class="card" id="createTable">
                 <div>
                     <div class="text-center">
                         <i id="iii">+</i><br>
