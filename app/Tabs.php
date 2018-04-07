@@ -40,5 +40,17 @@ class Tabs extends Model {
                 ->get();
         return $data;
     }
+    
+    public static function deleteById($id) {
+        Tabs::destroy($id);
+    }
+    
+    public static function getTabsListByTableId($tableId) {
+        $data = \DB::table('tabs')
+                ->select(array('tab_name','table_id','id'))
+                ->where('table_id', $tableId)
+                ->get();
+        return $data;
+    }
 
 }

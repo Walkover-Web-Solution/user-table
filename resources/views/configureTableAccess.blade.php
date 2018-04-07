@@ -8,11 +8,14 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <div class="row">
-                                <div class="col-xs-2">
+                                <div class="col-xs-2 active">
                                    <a href="{{env('APP_URL')}}/tableaccess/{{$tableData['id']}}">Table Access</a>
                                 </div>
                                 <div class="col-xs-2">
                                    <a href="{{env('APP_URL')}}/configure/{{$tableData['id']}}">Configure</a>
+                                </div>
+                                <div class="col-xs-2">
+                                   <a href="{{env('APP_URL')}}/listFilters/{{$tableData['id']}}">Filters</a>
                                 </div>
                             </div>
                         </div>

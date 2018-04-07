@@ -55,6 +55,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/updatetablecolumndetails', 'ConfigureTable@updateTableColumnDetails');
     Route::Post('/addDropDown','ConfigureTable@addNewDropDownValue');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
+    Route::get('/listFilters/{tableName}', 'ConfigureTable@listTableFilters');
     Route::get('/tableaccess/{tableName}', 'TableAccess@configureTableAccess');
     Route::post('/tableaccessmanage', 'TableAccess@manageTableAccess');
     Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
@@ -73,6 +74,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/profile', 'UserController@getKey')->name('profile');
     Route::post('/update', 'TableController@updateEntry');
     Route::get('/getTeamMateList/{tableid}', 'TeamController@list');
+    Route::post('/deleteFilter','UserController@deleteFilter');
 });
 
 Route::group(['middleware' => ['socketMasterKey']], function() {

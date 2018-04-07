@@ -62,6 +62,26 @@ class UserController extends Controller {
         }
     }
 
+    public function deleteFilter(Request $request) {
+        $messages = [
+            'filterId.required' => 'The tab id field is required.',
+        ];
+        $this->validate($request, [
+            'filterId' => 'required'], $messages);
+        $filterId = $request->filterId;
+        $tableId = $request->tableId;
+        if (empty($tableId)) {
+            return response(json_encode(array('error' => "something went wrong.")), 403)->header('Content-Type', 'application/json');
+        } else {
+            $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+            if (empty($tableNames['table_id'])) {
+                return response(json_encode(array('error' => "something went wrong.")),
+                        403)->header('Content-Type', 'application/json');
+            }
+            Tabs::deleteById($filterId);
+            return response(json_encode(array('message' => 'Filter deleted successfully')), 200)->header('Content-Type', 'application/json');
+        }
+    }
     # logout api
 
     public function logOut(Request $request) {

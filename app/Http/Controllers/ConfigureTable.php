@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\ColumnType;
 use App\Http\Helpers;
 use App\TableStructure;
+use App\Tabs;
+use App\Tables;
 use App\team_table_mapping;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -26,12 +28,23 @@ class ConfigureTable extends Controller
         foreach ($tableNames['table_structure'] as $k => $v) {
             $new_arr[$v['column_name']] = $v;
         }
-
+        
         return view('configureTable', array(
             'tableData' => $tableNames,
             'structure' => $tableStructure,
             'sequence' => $new_arr,
             'columnList' => $ColumnType));
+    }
+    public function listTableFilters($tableName){
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $tabData = Tabs::getTabsListByTableId($tableNames['table_id']);
+        $tabs = json_decode(json_encode($tabData), true);
+        $tabCount = Tables::getAllTabsCount($tableNames['table_id'], $tabs);
+        
+        return view('tableFilterList', array(
+            'tableData' => $tableNames,
+            'tabData' => $tabs,
+            'tabCount' => $tabCount));
     }
 
     public function configureSelectedTable(Request $request)
