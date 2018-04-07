@@ -33,14 +33,17 @@ class TableController extends Controller
     {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
-        $data = Helpers::aasort($data1, "ordering"); // Array sort by abhishek jain
+        if(!empty($data1)){
+            $data = Helpers::aasort($data1, "ordering"); // Array sort by abhishek jain
 
-        $resp = TableStructure::validateStructure($data);
+            $resp = TableStructure::validateStructure($data);
 
-        if (!empty($resp['error'])) {
-            return response()->json($resp);
+            if (!empty($resp['error'])) {
+                return response()->json($resp);
+            }
+        }else{
+            $data = array();
         }
-
         $userTableName = $request->input('tableName');
 
         if (empty($userTableName)) {
@@ -71,12 +74,14 @@ class TableController extends Controller
 
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
-            foreach ($resp['data'] as $key => $value) {
-                $value['table_id'] = $autoIncId;
-                $resp['data'][$key] = $value;
+            if(!empty($resp['data'])){
+                foreach ($resp['data'] as $key => $value) {
+                    $value['table_id'] = $autoIncId;
+                    $resp['data'][$key] = $value;
+                }
+                #insert table structure in table
+                TableStructure::insertTableStructure($resp['data']);
             }
-            #insert table structure in table
-            TableStructure::insertTableStructure($resp['data']);
 
             return response()->json($arr);
         } else {
