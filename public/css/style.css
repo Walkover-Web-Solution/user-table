@@ -887,3 +887,7 @@ side bar component end
     box-shadow: none;
 }
 .sources-container{display: none;}
+.sp_view_count{
+    display: block;
+    padding:10px 0 0 8px;
+}

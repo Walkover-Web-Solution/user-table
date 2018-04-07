@@ -34,7 +34,7 @@ body {
     width: 100%;
     background: #fafafa;
     padding: 15px;
-    height: 115px;
+    height: 138px;
     border: 1px solid #d9d9d9;
     display: table;
     margin-bottom: 20px;
@@ -158,4 +158,13 @@ p span.old-val{
     margin-left:5px;
     margin-top: -2px;
     vertical-align: top;
+}
+.btn-xs-small{
+    font-size: 10px;
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+.source-row{
+    position: relative;
 }

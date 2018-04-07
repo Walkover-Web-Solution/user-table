@@ -22,18 +22,24 @@
         <div id="heads-up">{{$teamsArr[$teamId]}}</div>
         <div>
             @foreach($tables as $key=>$val)
-            <div class="col-xs-3">
+            <div class="col-xs-4">
                 <div class="card">
                     <a href="tables/{{$val['id']}}" target="_blank"></a>
                     <div class="text-center">
                         <div class="tab_name"><a href="tables/{{$val['id']}}" target="_blank"> {{$val['table_name']}}</a></div>
 
                         <div class="center-block btn-grp text-center">
+
                             <div class="row">
+                            <button class="btn btn-primary">Graph</button>
                                 <button class="btn btn-primary" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
                                 <button class="btn btn-primary" onclick="location.href='listFilters/{{$val['id']}}'">list filters</button>
                             </div>
-                            <button id="srcbtn" dataid="{{$val['id']}}" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-default btn-sources" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
+                            <div class="row">
+                            <button id="srcbtn" dataid="{{$val['id']}}" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-default btn-sources btn-sm btn-xs-small" title="{{ isset($source_arr[$val['id']]) ? implode(',',$source_arr[$val['id']]) : "Your content goes here" }}">{{isset($source_arr[$val['id']] )? count($source_arr[$val['id']]) : 0}} sources</button>
+                            </div>
+
+                          
                         </div>
 
                         <div class="sources-container sources-{{$val['id']}}">

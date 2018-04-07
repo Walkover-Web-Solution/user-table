@@ -87,6 +87,7 @@
             <button type="button" class="btn btn-primary btn-sm" onclick="saveTab()" data-dismiss="modal">Save
                 filter
             </button>
+            <span class="sp_view_count">7 users match of 4,412</span>
         </header>
         <div class="nav-side-menu cd-panel-container">
             <div class="filter-list ">

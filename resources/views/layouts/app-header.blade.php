@@ -48,9 +48,9 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{route('tables')}}" id="logo">
-                        <span><img src="{{ asset('img/logo.png') }}" alt="user table logo" /></span>
-                        <span class="extrabold">user</span>
-                        <span class="light">TABLE</span>
+                       <img src="{{ asset('img/logo.png') }}" alt="user table logo" />
+                        <!-- <p><span class="extrabold">user</span>
+                        <span class="light">TABLE</span></p> -->
                     </a>
                 </div>
 

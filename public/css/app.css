@@ -4978,10 +4978,14 @@ tbody.collapse.in {
 
 .navbar-brand {
     float: left;
-    padding: 14px 15px;
+    padding: 0 15px;
     font-size: 18px;
     line-height: 22px;
-    height: 50px
+    height: 50px;
+    
+}
+.navbar-brand img{
+    margin-left:-42px;
 }
 
 .navbar-brand:focus,
