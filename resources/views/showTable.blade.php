@@ -75,8 +75,11 @@
             @endforeach
 
             @endif
+           
         </div>
+        
     </div>
+   
     @stop
 
     @section('pagescript')
