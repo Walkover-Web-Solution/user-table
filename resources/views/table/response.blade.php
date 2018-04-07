@@ -53,7 +53,7 @@
          @if(!$isGuestAccess)
             <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
                 <td class="delete-row">
-                    <input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="enableDelete()"/>
+                    <input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="event.stopPropagation();enableDelete();"/>
                 </td>
         @else
             <tr id="tr_{{$val['id']}}">    
@@ -144,7 +144,7 @@
       @if(!$isGuestAccess)
         <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
             <td class="delete-row">
-                <input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="enableDelete()"/>
+                <input value="{{$val['id']}}" class="row-delete" type="checkbox"  onclick="event.stopPropagation();enableDelete();"/>
             </td>
       @else
         <tr id="tr_{{$val['id']}}">
