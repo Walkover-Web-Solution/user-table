@@ -11,6 +11,7 @@ use App\team_table_mapping;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use DB;
 
 class ConfigureTable extends Controller
 {
@@ -49,6 +50,7 @@ class ConfigureTable extends Controller
 
     public function configureSelectedTable(Request $request)
     {
+        DB::beginTransaction();
         $tableData = $request->input('tableData');
         $tableOldData = $request->input('tableOldData');
         if (!empty($tableData) && !empty($tableOldData))
@@ -87,7 +89,7 @@ class ConfigureTable extends Controller
                         if (Schema::hasColumn($tableName, $value['name'])) //check whether table has this column
                         {
                             if ($value['unique'] == 'true') {
-                                //$table->string($value['name'])->unique($value['name'])->change();
+                                $table->string($value['name'])->unique($value['name'])->change();
                             } else {
                                 if($value['type']==9){
                                     $table->integer($value['name'])->unsigned()->nullable()->change();
@@ -116,9 +118,11 @@ class ConfigureTable extends Controller
                         }
                     }
                 });
+                DB::commit();
             } catch (\Illuminate\Database\QueryException $ex) {
                 $arr['msg'] = "Error in updation";
                 $arr['exception'] = $ex;
+                DB::rollback();
                 return response()->json($arr);
             }
         }
