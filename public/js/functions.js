@@ -86,6 +86,7 @@ function saveTab() {
 }
 
 function makeFilterJsonData(tableId, type) {
+    debugger;
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};

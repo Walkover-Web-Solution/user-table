@@ -211,7 +211,29 @@
         </div>
     </div>
 </div>
-
+<div class="mt20 mtb20">
+    <div class="col-sm-10 col-sm-offset-1">
+    <div class="dropdown dropdown-filter-main">
+    <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-indent-left"></i> that match all filters </i></span></a>
+    <ul class="dropdown-menu dropdown-menu-filter">
+        <li class="dropdown-header">User Data</li>
+        <li><a href=""> That match all filter <i class="glyphicon glyphicon glyphicon-ok pull-right"></i></a></li>
+        <li><a href=""> That match any filter</a></li>
+    </ul>
+    </div>
+    <a class="label label-filter"><span><i class="glyphicon glyphicon-stats"></i> stats <i class="glyphicon glyphicon glyphicon-trash"></i></span></a>
+   
+    <div class="dropdown dropdown-filter-main">
+    <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
+    <ul class="dropdown-menu dropdown-menu-filter">
+        <li class="dropdown-header">User Data</li>
+        <li><a href=""> Stats</a></li>
+        <li><a href=""> Folder</a></li>
+    </ul>
+    </div>
+    <!-- <a href="" class="filter-link"><i class="glyphicon glyphicon-plus"></i> Filter</a> -->
+    </div>
+</div>
 <div class="nav-and-table  from-right">
     <div id="user-board" class="user-dashboard">
         <!-- Tab panes -->

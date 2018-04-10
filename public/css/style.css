@@ -891,3 +891,7 @@ side bar component end
     display: block;
     padding:10px 0 0 8px;
 }
+.dropdown-menu{
+    position: absolute !important;
+    top:100% !important;
+}

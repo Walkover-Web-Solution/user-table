@@ -40,23 +40,34 @@
             <nav class="navbar navbar-default">
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{route('tables')}}" id="logo">
-                       <img src="{{ asset('img/logo.png') }}" alt="user table logo" />
-                        <!-- <p><span class="extrabold">user</span>
-                        <span class="light">TABLE</span></p> -->
-                    </a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
+                <div style="display:flex;flex-direction:row;">
+                        <div style="-webkit-flex:1;">  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="{{route('tables')}}" id="logo">
+                                <img src="{{ asset('img/logo.png') }}" alt="user table logo" />
+                                    <!-- <p><span class="extrabold">user</span>
+                                    <span class="light">TABLE</span></p> -->
+                                </a>
+                    </div>
+                        <div style="-webkit-flex:1;">
+                         <ul class="nav navbar-nav navbar-search">
+                                <li>
+                                        <div class="input-group input-group-search">
+                                                <input type="text" class="input-search-h">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                        </div>
+                                </li>
+                        </ul>
+                      </div>
+                    <div style="-webkit-flex:1;">
+                    <ul class="nav navbar-nav navbar-right">
+                <li>
+                        <button class="btn btn-primary btn-sm mt10" id="createTable"><span class="glyphicon glyphicon-plus"></span> Create table</button>
+                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{{ isset(Auth::user()->first_name) ? Auth::user()->first_name : Auth::user()->email }}} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -77,6 +88,13 @@
                         </li>
 
                     </ul>
+                    </div>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+               
+               
                 </li>
 
                 </ul>

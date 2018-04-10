@@ -1,4 +1,5 @@
 function filterTmpl(data) {
+    console.log(data);
     var html = '<form id="filterForm" >';
     $.each(data, function (key, val) {
         html += `<li class="active">
@@ -68,4 +69,10 @@ function createHiddenElement(val, key) {
     var inputElem = '';
     inputElem += `<input type="hidden" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" >`;
     return inputElem;
+}
+
+
+function createFilterDropdown(obj,type) {
+    console.log(obj,type);
+    
 }
