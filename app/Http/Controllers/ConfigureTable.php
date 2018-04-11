@@ -50,7 +50,6 @@ class ConfigureTable extends Controller
 
     public function configureSelectedTable(Request $request)
     {
-        DB::beginTransaction();
         $tableData = $request->input('tableData');
         $tableOldData = $request->input('tableOldData');
         if (!empty($tableData) && !empty($tableOldData))
@@ -72,67 +71,95 @@ class ConfigureTable extends Controller
             return response()->json($resp);
         }
 
-        TableStructure::updateStructureInBulk($resp['data']);
-
         $paramArr['socket_api'] = $request->input('socketApi');
         $paramArr['new_entry_api'] = $request->input('newEntryApi');
         team_table_mapping::updateTableStructure($paramArr, $tableAutoIncId);
 
         $tableName = $tableNames['table_id'];
 
-
+        $arr = array();
         if (!empty($newTableStructure)) {
-            try {
-                Schema::table($tableName, function (Blueprint $table) use ($newTableStructure,$tableName) {
-                    foreach ($newTableStructure as $value) {
-                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
-                        if (Schema::hasColumn($tableName, $value['name'])) //check whether table has this column
-                        {
-                            if ($value['unique'] == 'true') {
-                                $table->string($value['name'])->unique($value['name'])->change();
-                            } else {
-                                if($value['type']==9){
-                                    $table->integer($value['name'])->unsigned()->nullable()->change();
-                                } else if ($value['type'] == 11) {
-                                    $table->longText($value['name'])->nullable()->change();
-                                }else if($value['type']==4){
-                                    $table->float($value['name'], 15, 2)->default(0)->change();
-                                }else {
-                                    $table->string($value['name'])->nullable()->change();
-                                }
+            Schema::table($tableName, function (Blueprint $table) use ($newTableStructure,$tableName,&$arr) {
+                foreach ($newTableStructure as $value) {
+                    $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                    if (Schema::hasColumn($tableName, $value['name'])) //check whether table has this column
+                    {
+                        if ($value['unique'] == 'true') {
+                            $flag =$this->checkDuplicateValue($tableName, 'edit',$value['name']);
+                            if($flag)
+                            {
+                                $arr['error'] = "Error in update. Duplicate entry for key '".$value['name']."'.";
+                                break;
+                            } 
+                            $table->string($value['name'])->unique($value['name'])->change();
+                        } else {
+                            if($value['type']==9){
+                                $table->integer($value['name'])->unsigned()->nullable()->change();
+                            } else if ($value['type'] == 11) {
+                                $table->longText($value['name'])->nullable()->change();
+                            }else if($value['type']==4){
+                                $table->float($value['name'], 15, 2)->default(0)->change();
+                            }else {
+                                $table->string($value['name'])->nullable()->change();
                             }
-                        }else{
-                            if ($value['unique'] == 'true') {
-                                $table->string($value['name'])->unique($value['name']);
-                            } else {
-                                if($value['type']==9){
-                                    $table->integer($value['name'])->unsigned()->nullable();
-                                } else if ($value['type'] == 11) {
-                                    $table->longText($value['name'])->nullable();
-                                }else if($value['type']==4){
-                                    $table->float($value['name'], 15, 2)->default(0);
-                                }else {
-                                    $table->string($value['name'])->nullable();
-                                }
+                        }
+                    }else{
+                        if ($value['unique'] == 'true') {
+                            $flag = $this->checkDuplicateValue($tableName, 'add',$value['name']);
+                            if($flag)
+                            {
+                                $arr['error'] = "Error in create column. Duplicate entry for key '".$value['name']."'";
+                                break;
+                            } 
+                            $table->string($value['name'])->unique($value['name']);
+                        } else {
+                            if($value['type']==9){
+                                $table->integer($value['name'])->unsigned()->nullable();
+                            } else if ($value['type'] == 11) {
+                                $table->longText($value['name'])->nullable();
+                            }else if($value['type']==4){
+                                $table->float($value['name'], 15, 2)->default(0);
+                            }else {
+                                $table->string($value['name'])->nullable();
                             }
                         }
                     }
-                });
-                DB::commit();
-            } catch (\Illuminate\Database\QueryException $ex) {
-                $arr['msg'] = "Error in updation";
-                $arr['exception'] = $ex;
-                DB::rollback();
-                return response()->json($arr);
-            }
+                }
+            });
         }
-
-        $arr['msg'] = "Table Updated Successfuly";
-        $arr['newTableStructure'] = $newTableStructure;
-
+        
+        if(!isset($arr['error'])){
+            TableStructure::updateStructureInBulk($resp['data']);
+            $arr['msg'] = "Table Updated Successfuly";
+            $arr['newTableStructure'] = $newTableStructure;
+        }
         return response()->json($arr);
     }
-    
+    public function checkDuplicateValue($tablename, $type,$columnName)
+    {
+        if($type == 'add')
+        {
+            $count = DB::table($tablename)->selectRaw('*')->count();
+            if($count>1)
+                return true;
+            else {
+                return false;
+            }
+        }else if($type == 'edit'){
+            $rows = DB::table($tablename)->select($columnName, DB::raw('COUNT(*) as `count`'))
+            ->groupBy($columnName)
+            ->having('count', '>', 1)->get()->toArray();
+            $count = count($rows);
+            if($count)
+                return true;
+            else {
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+
     public function hideTableColumn(Request $request)
     {
         $tableId = $request->input('id');
