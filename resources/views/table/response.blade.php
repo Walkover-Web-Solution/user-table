@@ -11,12 +11,38 @@
     .dropdowncolumn span.caret { display: none;}
 </style>
 <table class="table basic table-bordred">
-
+    @if(empty($structure) && !$isGuestAccess)
+        <thead id="userThead">
+            <tr><th><span class="fixed-header"></span></th><th><span class="fixed-header"><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
+        </thead>
+    @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
+        <thead id="userThead">
+            <tr>
+                <th><span class="fixed-header"></span></th>
+                <th hidden><span class="fixed-header"></span></th>
+                @foreach($structure as $key => $val)
+                <th>
+                    <div class="dropdowncolumn">
+                        <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$key}}
+                            <span class="caret"></span>
+                        </span>
+                    <ul class="dropdown-menu">
+                        <li><a href="Javascript:;" class="hidecolumn">Hide</a></li>
+                        <li><a href="Javascript:;" onClick="editcolumn('{{$key}}');">Edit</a></li>
+                        <li><a href="Javascript:;" class="addcolumnleft">Add to left</a></li>
+                        <li><a href="Javascript:;" class="addcolumnright">Add to right</a></li>
+                    </ul>
+                    </div>
+                </th>
+                @endforeach
+            </tr>
+        </thead>
+    @endif
     @foreach($allTabs as $key=>$val)
     @if($key==0)
 
     <thead id="userThead">
-    <tr id="tr_{{$val['id']}}">
+    <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
          <th><span class="fixed-header"><input type="checkbox" id="selectall" /></span></th>
@@ -316,6 +342,18 @@
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index();
             var columnname = parent.find("div.dropdowncolumn span").text();
+            var lists = '<option value="">Select Field Type</option>';
+            for (i = 0; i <= optionList.length - 1; i++) {
+                lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
+            }
+            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-1">'+index+'</div><div class="form-group col-xs-3"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Default value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            $('#mod-head').html('Add Column');
+            $('#ColumnStructure').html(html);
+            $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
+            $('#edit_column').modal('show');
+        });
+        $('.addcolumn').click(function () {
+            var index = 1;
             var lists = '<option value="">Select Field Type</option>';
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
