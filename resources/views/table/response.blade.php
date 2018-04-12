@@ -489,7 +489,7 @@
                     else
                         textarea += default_value.options[i]+', ';
                 }
-                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><input type="hidden" id="edit_column_name" name ="edit_column_name" value="'+info.column_name+'"/><div class="form-group col-xs-2">'+info.column_name+'</div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-1"><input type="text" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Default value" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
+                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><div class="form-group col-xs-2"><input type="hidden" name="old_edit_column_name" id="old_edit_column_name" value="'+info.column_name+'" /><input type="text" id="edit_column_name" class="form-control" name ="edit_column_name" value="'+info.column_name+'"/></div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-1"><input type="text" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Default value" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
                 $('#mod-head').html('Edit Column');
                 $('#ColumnStructure').html(html);
                 $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="editColumnData()">Update</button>');
@@ -507,6 +507,9 @@
             return false;
         }else{
             var updateData={};
+            updateData['name_edit']= $('#edit_column_name').val() != $('#old_edit_column_name').val() ?true:false;
+            updateData['id'] =$('#edit_column_id').val();
+            updateData['old_name']=$('#old_edit_column_name').val();
             updateData['name']=$('#edit_column_name').val();
             updateData['type']=$('#edit_column_type').val();
             updateData['display']=$('#edit_column_display').val();

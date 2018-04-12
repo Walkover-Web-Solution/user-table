@@ -79,20 +79,39 @@ class ConfigureTable extends Controller
 
         $arr = array();
         if (!empty($newTableStructure)) {
+            Schema::table($tableName, function (Blueprint $table) use ($newTableStructure, &$resp) {
+                foreach ($newTableStructure as $k => $value) {
+                    if(isset($value['name_edit']) && $value['name_edit'] == 'true')
+                    {
+                        $table->renameColumn($value['old_name'], $value['name']);
+                        $resp['data'][$k]['id'] = $value['id'];
+                        $resp['data'][$k]['column_name'] = $value['name'];
+                        TableStructure::updateStructureInBulk($resp['data'][$k]);
+                    }
+                }
+            });
             Schema::table($tableName, function (Blueprint $table) use ($newTableStructure,$tableName,&$arr) {
                 foreach ($newTableStructure as $value) {
                     $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                     if (Schema::hasColumn($tableName, $value['name'])) //check whether table has this column
                     {
+                        $sm = Schema::getConnection()->getDoctrineSchemaManager();
+                        $doctrineTable = $sm->listTableDetails($tableName);
                         if ($value['unique'] == 'true') {
                             $flag =$this->checkDuplicateValue($tableName, 'edit',$value['name']);
                             if($flag)
                             {
                                 $arr['error'] = "Error in update. Duplicate entry for key '".$value['name']."'.";
                                 break;
+                            }
+                            
+                            if (! $doctrineTable->hasIndex($value['name'])) {
+                                $table->string($value['name'])->unique($value['name'])->change();
                             } 
-                            $table->string($value['name'])->unique($value['name'])->change();
                         } else {
+                            if ($doctrineTable->hasIndex($value['name'])) {
+                                $table->dropIndex($value['name']);
+                            }
                             if($value['type']==9){
                                 $table->integer($value['name'])->unsigned()->nullable()->change();
                             } else if ($value['type'] == 11) {
