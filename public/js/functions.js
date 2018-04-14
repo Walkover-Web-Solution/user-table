@@ -139,7 +139,7 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
 
 var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select', 'textarea'];
 
-function getUserDetails(event, id, tableId) {
+function getUserDetails(event, id, tableId, mod_head_edit = false) {
     if (event.target.className == "row-delete")
         return;
     if (id) {
@@ -215,6 +215,7 @@ function getUserDetails(event, id, tableId) {
                     editForm += form_text;
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
+                    $('#is_edit').val(1);
                     $('#follow_up_date').attr('type', 'date');
                     //$('#edit_user').modal('show');
                 }
@@ -289,11 +290,15 @@ function getUserDetails(event, id, tableId) {
                     editForm += '</div></div>';
                 }
                 $("#edit_users_body").html(editForm);
+                $('#is_edit').val(0);
                 $('#follow_up_date').attr('type', 'date');
                 return false;
             }
         });
     }
+    
+    if(mod_head_edit == 'Add')
+        $('#mod-head_edit').html('Add Column Value');
 }
 
 function parseDate(unixDateTime) {
@@ -330,6 +335,7 @@ function editUserData(type) {
     var jsonDoc = {};
     var fieldChange = false;
     var is_valid = true;
+    var is_edit = $('#is_edit').val();
     if (type == 'edit') {
         var userDetailsForm = $("#editUserDetails .form-control")
         jsonDoc['edit_url_callback'] = true;
@@ -370,19 +376,24 @@ function editUserData(type) {
                 xhr.setRequestHeader('Auth-Key', authKey);
             },
             success: function (data) {
-
+                
                 if (!data.teamData.data) {
                     alert("something went wrong in updating data");
                 } else {
-                    $.each(data.teamData.data, function (idx, val) {
-                        if ($("#tr_" + id + " ." + idx).attr('id') === 'dt_9') {
-                            var date = new Date(val * 1000);
-                            var localDate = date.toLocaleDateString();
-                            $("#tr_" + id + " ." + idx).text(localDate);
-                        } else {
-                            $("#tr_" + id + " ." + idx).text(val);
-                        }
-                    });
+                    if (is_edit == 1) {
+                        $.each(data.teamData.data, function (idx, val) {
+                            if ($("#tr_" + id + " ." + idx).attr('id') === 'dt_9') {
+                                var date = new Date(val * 1000);
+                                var localDate = date.toLocaleDateString();
+                                $("#tr_" + id + " ." + idx).text(localDate);
+                            } else {
+                                $("#tr_" + id + " ." + idx).text(val);
+                            }
+                        });
+                    }else{
+                        alert("Entry added successfully.");
+                        location.reload();
+                    }
                 }
             },
         });
@@ -660,10 +671,8 @@ function addOtherOption(element) {
     }
 }
 function addDropDown(id) {
-    console.log(id, tableId);
     var elementId = "other_" + id;
     var newValue = $('#' + elementId).val();
-    console.log(newValue);
     $('#' + id).append('<option value="' + newValue + '">' + newValue + '</option>');
 
     $.ajaxSetup({

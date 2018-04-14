@@ -424,15 +424,19 @@
             $('.default_value_div').css("display", "none");
     }
     function showHiddenColumnInfo(){
-        $('#showHiddenColumnInfo').css("display", "none");
+        var li_value = false;
+        var li = '';
         for (i = 0; i < table_old_data.length; i++) {
             if(table_old_data[i].display == 0)
             {
-                var li = '<li><a onclick="updatehiddencolumn('+table_old_data[i].id+')">'+table_old_data[i].column_name+'</a></li>';
-                $('#showHiddenColumnInfo').append(li);
-                $('#showHiddenColumnInfo').css("display", "block");
+                li += '<li><a onclick="updatehiddencolumn('+table_old_data[i].id+')">'+table_old_data[i].column_name+'</a></li>';
+                li_value = true;
             }
         }
+        if(li_value)
+            $('#showHiddenColumnInfo').html(li);
+        else
+            $('#showHiddenColumnInfo').html('<li><a href="Javascript:;">There is no hidden column</a></li>');
     }
     function addColumn()
     {   

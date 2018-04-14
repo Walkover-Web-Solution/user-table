@@ -63,7 +63,7 @@
         @if(!$isGuestAccess)
         <li class="pull-right">
             <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-               data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
+               data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')">
                 <i class="glyphicon glyphicon-plus"></i>
             </a>
         </li>
@@ -388,12 +388,13 @@
         <div style="background:rgb(237,239,240)" class="modal-content">
             <div class="modal-header">
                 <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
-                <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head" class="modal-title">Edit User</span>
+                <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head_edit" class="modal-title">Edit User</span>
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <form id="editUserDetails">
                 <div class="modal-body" style="width:800px">
                     <div class="col-xs-8" id="edit_users_body"></div>
+                    <input type='hidden' id="is_edit" value="">
                     <div style="width:20px" class="col-xs-1">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-8">
