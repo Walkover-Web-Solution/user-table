@@ -67,6 +67,12 @@
                 <i class="glyphicon glyphicon-plus"></i>
             </a>
         </li>
+        <li class="pull-right">
+            <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" data-target="#column_sequence"
+               data-toggle="modal">
+                <i class="glyphicon glyphicon-sort"></i>
+            </a>
+        </li>
         @endif
 
         <form class="search-form pull-right" action="" name="queryForm"
@@ -81,7 +87,7 @@
             <li class="dropdown pull-right">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
                    aria-haspopup="true" onclick="showHiddenColumnInfo();">
-                    <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom"
+                    <i class="glyphicon glyphicon-eye-close" data-toggle="tooltip" data-placement="bottom"
                        title="Column Info"></i>
                 </a>
                 <ul class="dropdown-menu" id="showHiddenColumnInfo">
@@ -405,6 +411,33 @@
                     <input type="hidden" id="tokenKey"/>
                     <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
                     <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End Modal -->
+
+<!-- Modal -->
+<div id="column_sequence" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:800px">
+        <!-- Modal content-->
+        <div style="background:rgb(237,239,240)" class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Reorder Columns</span>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <form id="editColumnSequence">
+                <div class="modal-body">
+                    <div class="col-xs-8" id="edit_column_body"></div>
+                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
+                    
+                </div>
+                <div class="modal-footer" style="overflow: hidden;width:750px">
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="updateColumnSequence()">
                         Update
                     </button>
                 </div>
