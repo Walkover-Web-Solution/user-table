@@ -20,8 +20,8 @@
         </li>
         @endforeach
         @endforeach
-         @if(!$isGuestAccess)
-            <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords();return false;">Delete</a></li>
+        @if(!$isGuestAccess)
+        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li>
         @endif
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
@@ -61,14 +61,14 @@
         </ul>
 
         @if(!$isGuestAccess)
-                <li class="pull-right">
-                    <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-                                        data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
-                        <i class="glyphicon glyphicon-plus"></i>
-                    </a>
-                </li>
+        <li class="pull-right">
+            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
+               data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}})">
+                <i class="glyphicon glyphicon-plus"></i>
+            </a>
+        </li>
         @endif
-      
+
         <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
             <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
@@ -76,7 +76,19 @@
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
         </form>
-       
+        @if(!$isGuestAccess)
+        <ul class="nav navbar-right user_dropdown">
+            <li class="dropdown pull-right">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
+                   aria-haspopup="true" onclick="showHiddenColumnInfo();">
+                    <i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom"
+                       title="Column Info"></i>
+                </a>
+                <ul class="dropdown-menu" id="showHiddenColumnInfo">
+                </ul>
+            </li>
+        </ul>
+        @endif
     </ul>
 </div>
 
@@ -114,93 +126,93 @@
                                 <div id="condition_{{$k}}" class="hide filter-option">
                                     @endif
                                     @foreach($filter['col_filter'] as $key =>$option)
-                                        @if(!empty($option) && $option == 'group')
-                                            <div class="filter_group">{{$key}}</div>
-                                        @endif
-                                        @if($option != 'group')
-                                        <div class="form-check">
-                                            <label class="form-check-label radio-label">
-                                                @if(isset($activeTabFilter[$k][$key]))
-                                                <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                    id="{{$k}}_filter_text_{{$key}}"
-                                                    datacoltype="{{$filter['col_type']}}"
-                                                    onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                    type="radio"
-                                                    aria-label="..." checked="checked">
-                                                @else
-                                                <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                    id="{{$k}}_filter_text_{{$key}}"
-                                                    datacoltype="{{$filter['col_type']}}"
-                                                    onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                    type="radio"
-                                                    aria-label="...">
-                                                @endif
-                                                @if($key == 'days_after')
-                                                    More than (in days)
-                                                @elseif($key == 'days_before')
-                                                    less than (in days)
-                                                @else
-                                                    {{str_replace("days_","",$key)}}
-                                                @endif
-                                                @if($key != "is_unknown" && $key != "has_any_value")
-                                                @if(isset($activeTabFilter[$k][$key]))
-                                                @if($filter['col_type'] == 'my teammates')
-                                                <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                    @foreach($filter['col_options'] as $ind=>$opt)
-                                                    <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
-                                                    'email'])?'selected':''}}>{{$opt['name']}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @elseif($filter['col_type'] == 'dropdown')
-                                                <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                    <option value=""></option>
-                                                    @foreach($filter['col_options'] as $ind=>$opt)
-                                                    <option value="{{$opt}}">{{$opt}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
-                                                    <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        type="date" value="{{$activeTabFilter[$k][$key]}}">
-                                                @else
-                                                    <input class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                                @endif
-                                                @else
-                                                @if($filter['col_type'] == 'my teammates')
-                                                <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        style="display:none;">
-                                                    @foreach($filter['col_options'] as $ind=>$opt)
-                                                    <option value="{{$opt['email']}}">{{$opt['name']}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @elseif($filter['col_type'] == 'dropdown')
-                                                <select class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        style="display:none;">
-                                                    <option value=""></option>
-                                                    @foreach($filter['col_options'] as $ind=>$opt)
-                                                    <option value="{{$opt}}">{{$opt}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
-                                                    <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        type="date" style="display:none;">
-                                                @else
-                                                    <input class="form-check-input filterinput{{$k}} form-control"
-                                                        name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                        type="text" style="display:none;" size="4">
-                                                @endif
-                                                @endif
-                                                @endif
-                                            </label>
-                                        </div>
-                                        @endif
+                                    @if(!empty($option) && $option == 'group')
+                                    <div class="filter_group">{{$key}}</div>
+                                    @endif
+                                    @if($option != 'group')
+                                    <div class="form-check">
+                                        <label class="form-check-label radio-label">
+                                            @if(isset($activeTabFilter[$k][$key]))
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                   id="{{$k}}_filter_text_{{$key}}"
+                                                   datacoltype="{{$filter['col_type']}}"
+                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                   type="radio"
+                                                   aria-label="..." checked="checked">
+                                            @else
+                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                   id="{{$k}}_filter_text_{{$key}}"
+                                                   datacoltype="{{$filter['col_type']}}"
+                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                   type="radio"
+                                                   aria-label="...">
+                                            @endif
+                                            @if($key == 'days_after')
+                                            More than (in days)
+                                            @elseif($key == 'days_before')
+                                            less than (in days)
+                                            @else
+                                            {{str_replace("days_","",$key)}}
+                                            @endif
+                                            @if($key != "is_unknown" && $key != "has_any_value")
+                                            @if(isset($activeTabFilter[$k][$key]))
+                                            @if($filter['col_type'] == 'my teammates')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
+                                                        'email'])?'selected':''}}>{{$opt['name']}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'dropdown')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt}}">{{$opt}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
+                                            <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                   type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                            @else
+                                            <input class="form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                   type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                            @endif
+                                            @else
+                                            @if($filter['col_type'] == 'my teammates')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                    style="display:none;">
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt['email']}}">{{$opt['name']}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'dropdown')
+                                            <select class="form-check-input filterinput{{$k}} form-control"
+                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                    style="display:none;">
+                                                <option value=""></option>
+                                                @foreach($filter['col_options'] as $ind=>$opt)
+                                                <option value="{{$opt}}">{{$opt}}</option>
+                                                @endforeach
+                                            </select>
+                                            @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
+                                            <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                   type="date" style="display:none;">
+                                            @else
+                                            <input class="form-check-input filterinput{{$k}} form-control"
+                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
+                                                   type="text" style="display:none;" size="4">
+                                            @endif
+                                            @endif
+                                            @endif
+                                        </label>
+                                    </div>
+                                    @endif
                                     @endforeach
                                 </div>
                         </li>
@@ -220,14 +232,14 @@
                 @include('table.response')
             </div>
             <div class="scroll-y flex" id="response">
-                
+
             </div>
         </div>
     </div>
 </div>
 
 <a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
-                id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a>
+            id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a>
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -236,108 +248,103 @@
 <script src="{{asset('js/functions.js')}}"></script>
 
 <script type="text/javascript">
-    var API_BASE_URL = "{{env('API_BASE_URL')}}";
-    var activeTab = '{{$activeTab}}';
-    var tableId = '{{$tableId}}';
-</script>
+                                                       var API_BASE_URL = "{{env('API_BASE_URL')}}";
+                                                       var activeTab = '{{$activeTab}}';
+                                                       var tableId = '{{$tableId}}';</script>
 <!-- inline scripts -->
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
-        initFilterSlider();
-        if (activeTab != 'All') {
-            $('.cd-panel').addClass('is-visible');
-        }
-        // toggle navigation
-        $('[data-toggle="offcanvas"]').click(function () {
-            $("#navigation").toggleClass("hidden-xs");
-        });
-        // init tooltip
-        $("[data-toggle=tooltip]").tooltip();
-        // toggle checkboxes
-        $("#mytable #checkall").click(function () {
-            if ($("#mytable #checkall").is(':checked')) {
-                $("#mytable input[type=checkbox]").each(function () {
-                    $(this).prop("checked", true);
-                });
-            } else {
-                $("#mytable input[type=checkbox]").each(function () {
-                    $(this).prop("checked", false);
-                });
-            }
-        });
-        $('#saveTabModel').hide();
-        $('#saveAsInput').hide();
-        $('#saveTabButton').click(function () {
-            var filterChecked = [];
-            var jsonObject = {};
-            var filterCheckedElement = $(".filterConditionName:checked");
-            filterCheckedElement.each(function () {
-                dataid = $(this).attr('dataid');
-                filterChecked.push($(this).attr('dataid'));
-                var radioButton = $("#condition_" + dataid + " input:checked");
-                var radioname = radioButton.attr('dataid');
-                var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
-                if (radioname == "has_any_value" || radioname == 'is_unknown') {
-                    radioButtonValue = "1";
-                }
-                var subDoc = {};
-                subDoc[radioname] = radioButtonValue;
-                jsonObject[dataid] = subDoc;
-            });
-            var tabName = $('#saveAsInput').val();
-            obj = jsonObject;
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-                dataType: 'json', // Set datatype - affects Accept header
-                url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
-                success: function (data) {
-                    window.setTimeout(function () {
-                        location.reload()
-                    }, 2000);
-                }
-            });
-        });
-        $(".form-check-input").on('change', function () {
-            clearInterval(myInterval);
-            //var tableId = '{{ collect(request()->segments())->last() }}';
-            if (globaltimeout != null) clearTimeout(globaltimeout);
-            globaltimeout = setTimeout(function () {
-                makeFilterJsonData(tableId, 'Search');
-            }, 600);
-        });
-
-        $(".form-check-input").on('keyup', function () {
-            clearInterval(myInterval);
-            //var tableId = '{{ collect(request()->segments())->last() }}';
-            if (globaltimeout != null) clearTimeout(globaltimeout);
-            globaltimeout = setTimeout(function () {
-                makeFilterJsonData(tableId, 'Search');
-            }, 600);
-        });
-
-        $(".form-check-input").blur(function () {
-            window.setTimeout(function () {
-                //startInterval();
-            }, 20000);
-        });
+    initFilterSlider();
+    if (activeTab != 'All') {
+    $('.cd-panel').addClass('is-visible');
+    }
+    // toggle navigation
+    $('[data-toggle="offcanvas"]').click(function () {
+    $("#navigation").toggleClass("hidden-xs");
     });
-
+    // init tooltip
+    $("[data-toggle=tooltip]").tooltip();
+    // toggle checkboxes
+    $("#mytable #checkall").click(function () {
+    if ($("#mytable #checkall").is(':checked')) {
+    $("#mytable input[type=checkbox]").each(function () {
+    $(this).prop("checked", true);
+    });
+    } else {
+    $("#mytable input[type=checkbox]").each(function () {
+    $(this).prop("checked", false);
+    });
+    }
+    });
+    $('#saveTabModel').hide();
+    $('#saveAsInput').hide();
+    $('#saveTabButton').click(function () {
+    var filterChecked = [];
+    var jsonObject = {};
+    var filterCheckedElement = $(".filterConditionName:checked");
+    filterCheckedElement.each(function () {
+    dataid = $(this).attr('dataid');
+    filterChecked.push($(this).attr('dataid'));
+    var radioButton = $("#condition_" + dataid + " input:checked");
+    var radioname = radioButton.attr('dataid');
+    var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
+    if (radioname == "has_any_value" || radioname == 'is_unknown') {
+    radioButtonValue = "1";
+    }
+    var subDoc = {};
+    subDoc[radioname] = radioButtonValue;
+    jsonObject[dataid] = subDoc;
+    });
+    var tabName = $('#saveAsInput').val();
+    obj = jsonObject;
+    $.ajaxSetup({
+    headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+    });
+    $.ajax({
+    type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+            dataType: 'json', // Set datatype - affects Accept header
+            url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+            success: function (data) {
+            window.setTimeout(function () {
+            location.reload()
+            }, 2000);
+            }
+    });
+    });
+    $(".form-check-input").on('change', function () {
+    clearInterval(myInterval);
+    //var tableId = '{{ collect(request()->segments())->last() }}';
+    if (globaltimeout != null) clearTimeout(globaltimeout);
+    globaltimeout = setTimeout(function () {
+    makeFilterJsonData(tableId, 'Search');
+    }, 600);
+    });
+    $(".form-check-input").on('keyup', function () {
+    clearInterval(myInterval);
+    //var tableId = '{{ collect(request()->segments())->last() }}';
+    if (globaltimeout != null) clearTimeout(globaltimeout);
+    globaltimeout = setTimeout(function () {
+    makeFilterJsonData(tableId, 'Search');
+    }, 600);
+    });
+    $(".form-check-input").blur(function () {
+    window.setTimeout(function () {
+    //startInterval();
+    }, 20000);
+    });
+    });
     function SaveAsNew(state) {
-        if (state) {
-            $('#saveAsInput').val('');
-            $('#saveAsInput').show();
-        } else {
-            $('#saveAsInput').hide();
-            $('#saveAsInput').val(activeTab);
-        }
+    if (state) {
+    $('#saveAsInput').val('');
+    $('#saveAsInput').show();
+    } else {
+    $('#saveAsInput').hide();
+    $('#saveAsInput').val(activeTab);
+    }
     }
 
 </script>
@@ -448,7 +455,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                        aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Save Tab</h4>
             </div>
 
@@ -623,30 +630,29 @@
         var API_BASE_URL = "{{env('API_BASE_URL')}}";
         var activeTab = '{{$activeTab}}';
         var tableId = '{{$tableId}}';
-
         function sendMailSMS(type) {
-            if (type == 'email') {
-                var formData = $("#emailForm").serializeArray();
-            }
-            if (type == 'sms') {
-                var formData = $("#smsForm").serializeArray();
-            }
-            var result = {};
-            $.each(formData, function () {
-                result[this.name] = this.value;
-            });
-            var JsonData = makeFilterJsonData(tableId, 'returnData');
-            sendData(type, JsonData, result, tableId);
+        if (type == 'email') {
+        var formData = $("#emailForm").serializeArray();
+        }
+        if (type == 'sms') {
+        var formData = $("#smsForm").serializeArray();
+        }
+        var result = {};
+        $.each(formData, function () {
+        result[this.name] = this.value;
+        });
+        var JsonData = makeFilterJsonData(tableId, 'returnData');
+        sendData(type, JsonData, result, tableId);
         }
 
         function timeToSend(type) {
-            if (type == 'auto') {
-                $('#auto').removeClass('hide');
-                $('#now').addClass('hide');
-            } else {
-                $('#auto').addClass('hide');
-                $('#now').removeClass('hide');
-            }
+        if (type == 'auto') {
+        $('#auto').removeClass('hide');
+        $('#now').addClass('hide');
+        } else {
+        $('#auto').addClass('hide');
+        $('#now').removeClass('hide');
+        }
         }
 
     </script>

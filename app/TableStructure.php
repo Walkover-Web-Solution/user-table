@@ -159,6 +159,7 @@ class TableStructure extends Model {
                 'column_type_id' => $columnType['id'],
                 'unique' => $detail['is_unique'],
                 'value' => $detail['default_value'],
+                'display' => $detail['display'],
                 'value_arr' => json_decode($detail['default_value'],TRUE)
                 );
         }

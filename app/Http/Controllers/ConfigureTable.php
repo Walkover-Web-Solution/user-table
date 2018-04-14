@@ -232,4 +232,13 @@ class ConfigureTable extends Controller
         $newValue = json_encode(array('options'=>array_merge($options,array($newVal))));
         return TableStructure::updateTableStructureColumn($tableStructure['id'],'default_value',$newValue);
     }
+    public function showcolumntable(Request $request)
+    {
+        $columnId = $request->input('columnId');
+        if(empty($columnId))
+            return response()->json(array('error' => 'Table column name does not blank.'));
+        
+        TableStructure::updateTableStructureColumn($columnId, 'display', 1);
+        return response()->json(array('success'=>'column updated successfully'));
+    }
 }

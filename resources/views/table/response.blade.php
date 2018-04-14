@@ -9,6 +9,7 @@
     .dropdowncolumn { position: absolute; top: 0px;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
+    .default_value_div {display: none;}
 </style>
 <table class="table basic table-bordred">
     @if(empty($structure) && !$isGuestAccess)
@@ -21,6 +22,7 @@
                 <th><span class="fixed-header"></span></th>
                 <th hidden><span class="fixed-header"></span></th>
                 @foreach($structure as $key => $val)
+                @if($val['display'] != 0)
                 <th>
                     <div class="dropdowncolumn">
                         <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$key}}
@@ -34,6 +36,7 @@
                     </ul>
                     </div>
                 </th>
+                @endif
                 @endforeach
             </tr>
         </thead>
@@ -290,11 +293,11 @@
                                 <div class="form-group col-xs-2">
                                     Display
                                 </div>
-                                <div class="form-group col-xs-1">
+                                <div class="form-group col-xs-2 hidden">
                                     Sequence
                                 </div>
-                                <div class="form-group col-xs-3">
-                                    Default value
+                                <div class="form-group col-xs-3 default_value_div">
+                                    Drop Down values
                                 </div>
                                 <div class="form-group col-xs-2">
                                     Unique
@@ -325,6 +328,7 @@
             enableDelete();
         });
         $('.addcolumnleft').click(function () {
+            $('.default_value_div').css("display", "none");
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index()-1;
             var columnname = parent.find("div.dropdowncolumn span").text();
@@ -332,13 +336,14 @@
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="left"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-1">'+index+'</div><div class="form-group col-xs-3"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Default value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="left"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down values" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
             $('#edit_column').modal('show');
         });
         $('.addcolumnright').click(function () {
+            $('.default_value_div').css("display", "none");
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index();
             var columnname = parent.find("div.dropdowncolumn span").text();
@@ -346,19 +351,20 @@
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-1">'+index+'</div><div class="form-group col-xs-3"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Default value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
             $('#edit_column').modal('show');
         });
         $('.addcolumn').click(function () {
+            $('.default_value_div').css("display", "none");
             var index = 1;
             var lists = '<option value="">Select Field Type</option>';
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-1">'+index+'</div><div class="form-group col-xs-3"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Default value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
@@ -390,10 +396,8 @@
                         alert(info.error);
                         return false;
                     }
-                    $('table tr').each(function() {
-                        $(this).find("td").eq(index).hide();
-                        $(this).find("th").eq(index).hide();
-                    });
+                    alert(info.success);
+                    location.reload();
                 }
             });
         });
@@ -412,6 +416,24 @@
             }
         });
     });
+    function show_default_value_div(value)
+    {
+        if(value == 6)
+            $('.default_value_div').css("display", "block");
+        else
+            $('.default_value_div').css("display", "none");
+    }
+    function showHiddenColumnInfo(){
+        $('#showHiddenColumnInfo').css("display", "none");
+        for (i = 0; i < table_old_data.length; i++) {
+            if(table_old_data[i].display == 0)
+            {
+                var li = '<li><a onclick="updatehiddencolumn('+table_old_data[i].id+')">'+table_old_data[i].column_name+'</a></li>';
+                $('#showHiddenColumnInfo').append(li);
+                $('#showHiddenColumnInfo').css("display", "block");
+            }
+        }
+    }
     function addColumn()
     {   
         var tableolddata_1 = [];
@@ -462,6 +484,24 @@
             });
         }
     }
+    function updatehiddencolumn(id)
+    {
+        $.ajax({
+            url: API_BASE_URL + '/showcolumntable',
+            type: 'POST',
+            data: {columnId:id},
+            dataType: 'json',
+            success: function (info) {
+                if(info.error)
+                {
+                    alert(info.error);
+                    return false;
+                }
+                alert(info.success);
+                location.reload();
+            }
+        });
+    }
     function editcolumn(ColumnName)
     {
         $.ajax({
@@ -489,10 +529,11 @@
                     else
                         textarea += default_value.options[i]+', ';
                 }
-                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><div class="form-group col-xs-2"><input type="hidden" name="old_edit_column_name" id="old_edit_column_name" value="'+info.column_name+'" /><input type="text" id="edit_column_name" class="form-control" name ="edit_column_name" value="'+info.column_name+'"/></div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-1"><input type="text" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Default value" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
+                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><div class="form-group col-xs-2"><input type="hidden" name="old_edit_column_name" id="old_edit_column_name" value="'+info.column_name+'" /><input type="text" id="edit_column_name" class="form-control" name ="edit_column_name" value="'+info.column_name+'"/></div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-2 hidden"><input type="hidden" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Drop down values" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
                 $('#mod-head').html('Edit Column');
                 $('#ColumnStructure').html(html);
                 $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="editColumnData()">Update</button>');
+                show_default_value_div(info.column_type.id);
                 $('#edit_column').modal('show');
             }
         });
