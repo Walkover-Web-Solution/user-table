@@ -160,6 +160,8 @@ class TableStructure extends Model {
                 'unique' => $detail['is_unique'],
                 'value' => $detail['default_value'],
                 'display' => $detail['display'],
+                'ordering' =>$detail['ordering'],
+                'id' =>$detail['id'],
                 'value_arr' => json_decode($detail['default_value'],TRUE)
                 );
         }

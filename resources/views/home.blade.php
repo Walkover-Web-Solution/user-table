@@ -68,8 +68,7 @@
             </a>
         </li>
         <li class="pull-right">
-            <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" data-target="#column_sequence"
-               data-toggle="modal">
+            <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()">
                 <i class="glyphicon glyphicon-sort"></i>
             </a>
         </li>
@@ -252,11 +251,12 @@
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{asset('js/templates.js')}}"></script>
 <script src="{{asset('js/functions.js')}}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
 <script type="text/javascript">
-                                                       var API_BASE_URL = "{{env('API_BASE_URL')}}";
-                                                       var activeTab = '{{$activeTab}}';
-                                                       var tableId = '{{$tableId}}';</script>
+    var API_BASE_URL = "{{env('API_BASE_URL')}}";
+    var activeTab = '{{$activeTab}}';
+    var tableId = '{{$tableId}}';
+</script>
 <!-- inline scripts -->
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -352,9 +352,63 @@
     $('#saveAsInput').val(activeTab);
     }
     }
+        var API_BASE_URL = "{{env('API_BASE_URL')}}";
+        var activeTab = '{{$activeTab}}';
+        var tableId = '{{$tableId}}';
+        function sendMailSMS(type) {
+        if (type == 'email') {
+        var formData = $("#emailForm").serializeArray();
+        }
+        if (type == 'sms') {
+        var formData = $("#smsForm").serializeArray();
+        }
+        var result = {};
+        $.each(formData, function () {
+        result[this.name] = this.value;
+        });
+        var JsonData = makeFilterJsonData(tableId, 'returnData');
+        sendData(type, JsonData, result, tableId);
+        }
 
-</script>
-
+        function timeToSend(type) {
+        if (type == 'auto') {
+        $('#auto').removeClass('hide');
+        $('#now').addClass('hide');
+        } else {
+        $('#auto').addClass('hide');
+        $('#now').removeClass('hide');
+        }
+        }
+        function openColumnModal(){
+            $('#column_sequence').modal('show');
+            $("#table-1q").tableDnD();
+        }
+        function updateColumnSequence(){
+            var tablearray = [];
+            $("#table-1q tr").each(function() {
+                if(this.id != 0)
+                    tablearray.push(this.id);
+            });
+            if(tablearray.length > 1)
+            {
+                $.ajax({
+                    url: API_BASE_URL + '/rearrangeSequenceColumn',
+                    type: 'POST',
+                    data: {tableArray : tablearray},
+                    dataType: 'json',
+                    success: function (info) {
+                        if(info.error)
+                        {
+                            alert(info.error);
+                            return false;
+                        }
+                        alert(info.success);
+                        location.reload();
+                    }
+                });
+            }
+        }
+    </script> 
 @stop
 @section('models')
 <!-- Modal -->
@@ -435,10 +489,19 @@
                     <div class="col-xs-8" id="edit_column_body"></div>
                     <div style="width:20px" class="col-xs-1">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
-                    
+                    <div class="col-xs-12">
+                    @if(!empty($structure) && !$isGuestAccess)
+                    <table id="table-1q" class="table basic table-bordred" >
+                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th></tr></thead>
+                    @foreach($structure as $key => $val)
+                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td></tr>
+                    @endforeach
+                    </table>
+                    @endif
+                    </div>
                 </div>
                 <div class="modal-footer" style="overflow: hidden;width:750px">
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="updateColumnSequence()">
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="updateColumnSequence()">
                         Update
                     </button>
                 </div>
@@ -660,33 +723,3 @@
 
 
     @stop
-    <script type="text/javascript">
-        var API_BASE_URL = "{{env('API_BASE_URL')}}";
-        var activeTab = '{{$activeTab}}';
-        var tableId = '{{$tableId}}';
-        function sendMailSMS(type) {
-        if (type == 'email') {
-        var formData = $("#emailForm").serializeArray();
-        }
-        if (type == 'sms') {
-        var formData = $("#smsForm").serializeArray();
-        }
-        var result = {};
-        $.each(formData, function () {
-        result[this.name] = this.value;
-        });
-        var JsonData = makeFilterJsonData(tableId, 'returnData');
-        sendData(type, JsonData, result, tableId);
-        }
-
-        function timeToSend(type) {
-        if (type == 'auto') {
-        $('#auto').removeClass('hide');
-        $('#now').addClass('hide');
-        } else {
-        $('#auto').addClass('hide');
-        $('#now').removeClass('hide');
-        }
-        }
-
-    </script>

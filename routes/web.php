@@ -51,6 +51,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for alter user table in database
     Route::post('/showcolumntable', 'ConfigureTable@showcolumntable');
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
+    Route::post('/rearrangeSequenceColumn', 'ConfigureTable@rearrangeSequenceColumn');
     Route::post('/hidetablecolumn', 'ConfigureTable@hideTableColumn');
     Route::get('/gettablecolumndetails', 'ConfigureTable@getTableColumnDetails');
     Route::get('/updatetablecolumndetails', 'ConfigureTable@updateTableColumnDetails');

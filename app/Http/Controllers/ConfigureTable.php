@@ -241,4 +241,12 @@ class ConfigureTable extends Controller
         TableStructure::updateTableStructureColumn($columnId, 'display', 1);
         return response()->json(array('success'=>'column updated successfully'));
     }
+    public function rearrangeSequenceColumn(Request $request)
+    {
+        $columnId = $request->input('tableArray');
+        foreach ($columnId as $key => $val)
+            TableStructure::updateTableStructureColumn($val, 'ordering', $key+1);
+        
+        return response()->json(array('success'=>'column rearrange successfully'));
+    }
 }
