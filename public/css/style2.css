@@ -168,9 +168,145 @@ p span.old-val{
 .source-row{
     position: relative;
 }
+.mt10{
+    margin-top:10px;
+}
 .mt20{
     margin-top:20px;
 }
 .mt30{
     margin-top:30px;
+}
+.mt8{
+    margin-top:8px;
+}
+.input-group-search{
+    position:relative;
+}
+.input-group-search span{
+        position: absolute;
+        top: 23px;
+        transform: translateY(-50%);
+        right: 10px;
+}
+.input-search-h{
+    min-width: 300px;
+    border: 1px solid #d3e0e9;
+    padding: 5px;
+    background: #fff;
+    border-radius: 5px;
+    margin-top: 8px;
+}
+.input-search-h:focus{
+    outline:none;
+}
+.table-user-h > tbody > tr > td{
+    border:1px solid transparent;
+}
+.table-user-h > tbody > tr > td a{
+    color:#333;
+    padding:0 5px;
+    cursor: pointer;
+    margin:0 10px;
+    font-size:16px;
+}
+.table-user-h > tbody > tr > td a .glyphicon{
+    padding: 6px;
+    border: 1px solid #636b6f;
+    border-radius: 2px;
+}
+.text-blue{
+    color:#3097D1 !important;
+}
+.font-16{
+    font-size:16px;
+}
+.pb0{
+    padding-bottom:0 !important;
+}
+.mtb20{
+    margin-top:20px;
+    margin-bottom:20px;
+}
+.btn-submit{
+    width: 75px;
+    height: 40px;
+    margin-left: 30px;
+    margin-bottom: 30px;
+}
+.panel-table input[type="text"], select{
+    margin-top:10px;
+}
+.label-filter{
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    color: #222;
+    min-width: 100px;
+    padding: 10px 20px;
+    background:#eee;
+}
+.label-filter .glyphicon{
+    margin:0 5px;
+}
+.label-filter:hover{
+    background:#e8f0ff;
+}
+
+.label-filter:hover span{
+    color:#286efa;
+}
+.label-filter:not(:nth-child(1)){
+        margin-left:15px;
+}
+.filter-link{
+    /* margin-left:15px; */
+    padding:10px 0;
+    color:#286efa;
+    font-weight:bold;
+}
+.filter-link .glyphicon-plus{
+    font-size: 10px;
+    vertical-align: top;
+}
+.label-filter .glyphicon-indent-left{
+    transform:rotate(-90deg);
+}
+.filter-link:hover{
+    text-decoration: none;
+    color:#0549d1;
+}
+
+.btn-plus-ic i{
+    font-size:18px;
+
+}
+.dropdown-filter-main{
+    display:inline-block;
+    position: relative;
+    margin-left:15px;
+}
+.dropdown-filters{
+    display:inline-block;
+}
+.dropdown-menu-filter{
+    position:absolute !important;
+    top:100% !important;
+    min-width:272px;
+    left:0;
+}
+.dropdown-menu-filter .dropdown-header{
+    font-size:14px;
+    color:#888;
+}
+.dropdown-menu-filter > li >a{
+    padding:6px 20px;
+}
+.dropdown-menu-filter > li > a:hover{
+    background: #357ede;
+    color:#fff;
+}
+.dropdown-menu-filter > li >a .glyphicon{
+    margin-right:5px;
+    font-size:11px;
 }
