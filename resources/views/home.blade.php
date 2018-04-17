@@ -59,41 +59,6 @@
             </li>
             @endguest
         </ul>
-
-        @if(!$isGuestAccess)
-        <!-- <li class="pull-right">
-            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-               data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')">
-                <i class="glyphicon glyphicon-plus"></i>
-            </a>
-        </li> -->
-        <!-- <li class="pull-right">
-            <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()">
-                <i class="glyphicon glyphicon-sort"></i>
-            </a>
-        </li> -->
-        @endif
-
-        <!-- <form class="search-form pull-right" action="" name="queryForm"
-              onsubmit="searchKeyword(event, query.value)">
-            <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
-                                        title="search data"></i></label>
-            <input type="text" name="query" class="form-control" placeholder="Search for..."
-                   aria-label="Search for..." id="searchInput">
-        </form> -->
-        @if(!$isGuestAccess)
-        <ul class="nav navbar-right user_dropdown">
-            <li class="dropdown pull-right">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
-                   aria-haspopup="true" onclick="showHiddenColumnInfo();">
-                    <i class="glyphicon glyphicon-eye-close" data-toggle="tooltip" data-placement="bottom"
-                       title="Column Info"></i>
-                </a>
-                <ul class="dropdown-menu" id="showHiddenColumnInfo">
-                </ul>
-            </li>
-        </ul>
-        @endif
     </ul>
 </div>
 
