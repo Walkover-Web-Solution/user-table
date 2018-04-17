@@ -44,9 +44,6 @@ class team_table_mapping extends Model {
         return $data;
     }
 
-    public static function updateTableAccess($tableId){
-
-    }
     public static function getTableSourcesByTableIncrId($team_incr_id_arr) {
         $data = DB::table('user_data_source')
                 ->select('*')
