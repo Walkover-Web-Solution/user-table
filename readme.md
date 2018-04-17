@@ -28,9 +28,28 @@ Docker
 get logged in into docker bash (use `docker login` command)
 Then run docker composer scripts.
 
-  docker-compose up
+  `docker-compose up`
 
 Docker will start Msg91-panel at localhost:8080
+
+
+Without Docker
+=========
+
+In project root directory, to start project server
+
+    `php artisan serve --port=8080`
+
+This will start server at localhost:8080
+
+
+To migrate DB
+
+    `php artisan migrate`
+ 
+To seed data
+
+    `php artisan db:seed`
 
 
 Generate key for Laravel
