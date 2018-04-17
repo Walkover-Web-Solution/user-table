@@ -2826,7 +2826,7 @@ th {
 .table>tfoot>tr>th,
 .table>thead>tr>td,
 .table>thead>tr>th {
-    padding: 8px;
+    padding: 14px 8px;
     line-height: 1.42857143;
     vertical-align: top;
     border-top: 1px solid #ddd
@@ -3793,7 +3793,7 @@ fieldset[disabled] .btn-default:hover {
 
 .btn-primary.focus,
 .btn-primary:focus {
-    color: #fff;
+    color: #ccc;
     background-color: #286090;
     border-color: #122b40
 }
@@ -5816,9 +5816,10 @@ fieldset[disabled] .navbar-inverse .btn-link:hover {
 
 a.label:focus,
 a.label:hover {
-    color: #fff;
+    color: #000 !important;
     text-decoration: none;
-    cursor: pointer
+    cursor: pointer;
+    outline:none !important;
 }
 
 .label:empty {
@@ -7071,12 +7072,9 @@ button.close {
     background-color: #fff;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
-    border: 1px solid #999;
-    border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 6px;
     outline: 0;
-    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
-    box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+   
 }
 
 .modal-backdrop {
@@ -7149,10 +7147,6 @@ button.close {
     .modal-dialog {
         width: 600px;
         margin: 30px auto
-    }
-    .modal-content {
-        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
     }
     .modal-sm {
         width: 300px

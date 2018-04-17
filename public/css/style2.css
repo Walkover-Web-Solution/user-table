@@ -242,15 +242,30 @@ p span.old-val{
     font-size: 14px;
     font-weight: normal;
     color: #222;
-    min-width: 100px;
+    /* min-width: 100px; */
     padding: 10px 20px;
     background:#eee;
 }
 .label-filter .glyphicon{
-    margin:0 5px;
+    margin:0;
+    margin-right:5px;
+}
+.label-filter .glyphicon-plus{
+    margin-right:0;
 }
 .label-filter:hover{
     background:#e8f0ff;
+}
+.label-filter:hover .glyphicon-trash{
+    color:#222;
+}
+
+.label-search-icon{
+    display: inline-block;
+    padding: 14px !important;
+    line-height: 0;
+    position: relative;
+    z-index:2;
 }
 
 .label-filter:hover span{
@@ -258,6 +273,19 @@ p span.old-val{
 }
 .label-filter:not(:nth-child(1)){
         margin-left:15px;
+}
+.label-filter-bordered{
+    background:#fff;
+    border:1px solid rgba(34,34,34,.2);
+    padding:5px 12px 7px;
+}
+.label-filter-bordered:hover{
+    background:#fff;
+    border:1px solid #0549d1;
+    
+}
+.bold{
+    font-weight:bold;
 }
 .filter-link{
     /* margin-left:15px; */

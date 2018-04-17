@@ -9,6 +9,7 @@
     .dropdowncolumn { position: absolute; top: 0px;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
+    .dropdowncolumn .dropdown-menu{top:37px !important;}
     .default_value_div {display: none;}
 </style>
 <table class="table basic table-bordred">
@@ -25,7 +26,7 @@
                 @if($val['display'] != 0)
                 <th>
                     <div class="dropdowncolumn">
-                        <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$key}}
+                        <span class="fixed-header dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
                             <span class="caret"></span>
                         </span>
                     <ul class="dropdown-menu">
@@ -82,7 +83,7 @@
     </thead>
     <tbody id="all_users">    
          @if(!$isGuestAccess)
-            <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user">
+            <tr id="tr_{{$val['id']}}" onclick="getUserDetails(event,'{{$val['id']}}','{{$tableId}}')" data-toggle="modal" data-target="#edit_user"  class="test">
                 <td class="delete-row">
                     <input value="{{$val['id']}}" class="row-delete" type="checkbox" onclick="event.stopPropagation();enableDelete();"/>
                 </td>
@@ -407,6 +408,7 @@
     var table_old_data = [];
     $(document).ready(function(){
         $(".delete-rows-btn").hide();
+        $
         $.ajax({
             url: API_BASE_URL + '/tables/structure/'+table_incr_id,
             type: 'GET',
@@ -586,7 +588,7 @@
         if(elements.length > 0)
             $(".delete-rows-btn").show();
         else
-            $(".delete-rows-btn").hide();    
+            $(".delete-rows-btn").hide(); 
         
     }
     function DeleteRecords(){
@@ -660,4 +662,13 @@
             },
         });
     }
+    
+
+    $(document).ready(function(){
+    $('.dropdowncolumn').hover(function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+}, function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+});
+}); 
 </script>

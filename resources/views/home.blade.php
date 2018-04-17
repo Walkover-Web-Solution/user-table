@@ -21,7 +21,7 @@
         @endforeach
         @endforeach
         @if(!$isGuestAccess)
-        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li>
+        <!-- <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li> -->
         @endif
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
@@ -61,26 +61,26 @@
         </ul>
 
         @if(!$isGuestAccess)
-        <li class="pull-right">
+        <!-- <li class="pull-right">
             <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
                data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')">
                 <i class="glyphicon glyphicon-plus"></i>
             </a>
-        </li>
-        <li class="pull-right">
+        </li> -->
+        <!-- <li class="pull-right">
             <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()">
                 <i class="glyphicon glyphicon-sort"></i>
             </a>
-        </li>
+        </li> -->
         @endif
 
-        <form class="search-form pull-right" action="" name="queryForm"
+        <!-- <form class="search-form pull-right" action="" name="queryForm"
               onsubmit="searchKeyword(event, query.value)">
             <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
                                         title="search data"></i></label>
             <input type="text" name="query" class="form-control" placeholder="Search for..."
                    aria-label="Search for..." id="searchInput">
-        </form>
+        </form> -->
         @if(!$isGuestAccess)
         <ul class="nav navbar-right user_dropdown">
             <li class="dropdown pull-right">
@@ -97,7 +97,7 @@
     </ul>
 </div>
 
-<div class="cd-panel">
+<!-- <div class="cd-panel">
     <div class="cd-wrp">
         <header class="cd-panel-header">
             <a href="javascript:void(0);" class="pull-right cd-panel-close">Close</a>
@@ -110,9 +110,9 @@
            
         </div>
     </div>
-</div>
+</div> -->
 <div class="mt20 mtb20">
-    <div class="col-sm-10 col-sm-offset-1">
+    <div class="col-sm-10">
     <div class="dropdown dropdown-filter-main">
     <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-indent-left"></i> that match all filters </i></span></a>
     <ul class="dropdown-menu dropdown-menu-filter">
@@ -124,6 +124,61 @@
     <div class="dropdown dropdown-filter-main">
               <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> stats <i class="glyphicon glyphicon glyphicon-trash"></i></span></a>
               <ul class="dropdown-menu dropdown-menu-filter">
+                 <li class="li-radio">
+                     <form>
+                         <li>
+                             <div class="form-check">
+                                 <label for="" class="form-check-label radio-label">
+                                     <input type="radio" class="form-check-radio">is
+                                 </label>
+                             </div>
+                         </li>
+                         
+                     </form>
+                 </li>
+                 <li class="li-radio">
+                     <form>
+                         <li>
+                             <div class="form-check">
+                                 <label for="" class="form-check-label radio-label">
+                                     <input type="radio" class="form-check-radio">is_not
+                                 </label>
+                             </div>
+                         </li>
+                         
+                     </form>
+                 </li>
+                 <li class="li-radio">
+                     <form>
+                         <li>
+                             <div class="form-check">
+                                 <label for="" class="form-check-label radio-label">
+                                     <input type="radio" class="form-check-radio">Start_with
+                                 </label>
+                             </div>
+                         </li>
+                         
+                     </form>
+                 </li>
+                 <li class="li-radio">
+                     <form>
+                         <li>
+                             <div class="form-check">
+                                 <label for="" class="form-check-label radio-label">
+                                     <input type="radio" class="form-check-radio">Ends_with
+                                 </label>
+                             </div>
+                         </li>
+                         
+                     </form>
+                 </li>
+              </ul>
+             
+    </div>
+   
+    <div class="dropdown dropdown-filter-main">
+            <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
+            <ul class="dropdown-menu dropdown-menu-filter">
                     <li class="li-checkbox">
                         <div class="checkbox">
                         <div class="filter-list ">
@@ -133,14 +188,14 @@
                         <li class="active">
                             <div class="form-check">
                                 <label class="form-check-label">
-                                    @if(isset($activeTabFilter[$k]))
+                                    <!-- @if(isset($activeTabFilter[$k]))
                                     <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
                                            datacoltype="{{$filter['col_type']}}"
                                            onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
                                     @else
                                     <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
                                            datacoltype="{{$filter['col_type']}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="...">
+                                           onclick="showDiv('condition_{{$k}}')" aria-label="..."> -->
                                     @endif
                                     {{$k}}</label>
                             </div>
@@ -249,24 +304,51 @@
                    
               </ul>
     </div>
+    <a class="filter-link m-l-15" href="#" onclick="saveTab()" data-dismiss="modal">Save segment </a>
+    
    
-    <div class="dropdown dropdown-filter-main">
-    <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
-    <ul class="dropdown-menu dropdown-menu-filter">
-        <li class="dropdown-header">User Data</li>
-        <li><a href=""> Stats</a>
-    </li>
-        <li><a href=""> Folder</a></li>
-    </ul>
-    </div>
+
     <!-- <a href="" class="filter-link"><i class="glyphicon glyphicon-plus"></i> Filter</a> -->
+    </div>
+</div>
+<div>
+    <div class="topborder">
+                <div class="col-sm-5 mb20">
+                <span class="sp_view_count">7 users match </span><span class="total_count">of 4,412</span>
+                    <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
+                    @if(!$isGuestAccess)
+                    <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
+                    @endif
+                </div>
+                <div class="col-sm-5 pull-right">
+                    <div class="pull-right">
+                        <div class="inline-b">
+                        <form class="search-form" action="" name="queryForm"
+                            onsubmit="searchKeyword(event, query.value)">
+                            <label for="searchInput" class="label label-filter label-filter-bordered label-search-icon bold m-l-5"><i class="fa fa-search"></i></label>
+                            <input type="text" name="query" class="form-control" placeholder="Search for..."
+                                aria-label="Search for..." id="searchInput">
+                        </form>
+                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
+                        data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')" class="label label-filter label-filter-bordered bold m-l-5">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </a>
+                             <a class="label label-filter label-filter-bordered bold m-l-5" href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()"><span><i class="fa fa-columns"></i>
+                            <i class="caret"></i></span></a>
+                        </div>
+                        <div class="btn-group m-l-5" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default btn-lable"><span><i class="fa fa-list"></i></span></button>
+                        <button type="button" class="btn btn-default btn-lable"><span><i class="fa fa-globe"></i></span></button>
+                        </div>
+                    </div>
+                </div>
     </div>
 </div>
 <div class="nav-and-table  from-right">
     <div id="user-board" class="user-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex">
-            <div class="scroll-y flex" id="def_response">
+            <div class="scroll-y flex w-100per" id="def_response">
                 @include('table.response')
             </div>
             <div class="scroll-y flex" id="response">
@@ -276,8 +358,8 @@
     </div>
 </div>
 
-<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
-            id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a>
+<!-- <a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
+            id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a> -->
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -317,7 +399,7 @@
     }
     });
     $('#saveTabModel').hide();
-    $('#saveAsInput').hide();
+    // $('#saveAsInput').hide();
     $('#saveTabButton').click(function () {
     var filterChecked = [];
     var jsonObject = {};
@@ -586,28 +668,32 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Save Tab</h4>
+                <h4 class="modal-title text-center"><strong>Save segment</strong></h4>
             </div>
 
             <div class="modal-body">
                 <form class="clearfix">
-                    <div class="checkbox">
+                    <div class="row">
+                    <div class="checkbox col-sm-12">
                         <label class="radio inline no_indent">
-                            <input type="radio" value="" name="tabName" onChange='SaveAsNew(false)'>Update in
-                            current tab
+                            <input type="radio" value="" name="tabName" onChange='SaveAsNew(false)'>
+Save changes to the segment<span> 'vijay'</span>
                         </label>
                     </div>
+                    </div>
+                    <div class="row">
 
-                    <div class="checkbox">
+                    <div class="checkbox col-sm-4 p-r-zero">
                         <label class="radio inline no_indent">
-                            <input type="radio" value="" name="tabName" id="showSaveAs" onChange='SaveAsNew(true)'>Save
-                            as
+                            <input type="radio" value="" name="tabName" id="showSaveAs" onChange='SaveAsNew(true)' checked>Create new segment
                         </label>
                     </div>
-
-                    <div class="col-xs-8">
-                        <input type="text" class="form-control" value="" id="saveAsInput">
+                    <div class="col-sm-4 col-xs-5 p-l-zero">
+                        <input type="text" class="form-control newSegment" value="" id="saveAsInput">
                     </div>
+                    </div>
+
+                   
                 </form>
             </div>
 

@@ -20,8 +20,8 @@
                             </div>
                         </div>
                         <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
-                        <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
-                        <div class="panel-body">
+                        <!-- <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div> -->
+                        <!-- <div class="panel-body">
                             <form class="">
 
                                 <div class="row" id="column_"`+i+`>
@@ -55,11 +55,11 @@
                                             <label>{{$value['column_name']}}</label>
                                             @if(array_key_exists($value['column_name'], $sequence))
                                                 {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? '(Unique)' : '' }}
-                                            @endif
+                                            @endif -->
                                             <!-- @if($value['is_unique'])
                                             <span>(Unique)</span>
                                             @endif -->
-                                        </div>
+                                        <!-- </div>
                                         <div class="form-group col-xs-2">
                                             <select class="form-control type">
                                                 <option value="">Select Field Type</option>
@@ -102,7 +102,7 @@
                             <div class="form-group">
                                 <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="panel-body">
                             <div class="container-fluid">
                                 <div class="row">
