@@ -500,16 +500,20 @@
         }
         function updateColumnSequence(){
             var tablearray = [];
+            var displayarray = [];
             $("#table-1q tr").each(function() {
                 if(this.id != 0)
+                {
+                    displayarray[this.id] = $('#reorder_column_'+this.id+':checked').val() ? 0 : 1;
                     tablearray.push(this.id);
+                }
             });
             if(tablearray.length > 1)
             {
                 $.ajax({
                     url: API_BASE_URL + '/rearrangeSequenceColumn',
                     type: 'POST',
-                    data: {tableArray : tablearray},
+                    data: {tableArray : tablearray, displayArray : displayarray},
                     dataType: 'json',
                     success: function (info) {
                         if(info.error)
@@ -607,9 +611,9 @@
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)
                     <table id="table-1q" class="table basic table-bordred" >
-                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th></tr></thead>
+                        <thead><tr id="0"><th>Sequence</th><<th>Column Name</th><th>Hidden</th></tr></thead>
                     @foreach($structure as $key => $val)
-                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td></tr>
+                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td><td><input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /></td></tr>
                     @endforeach
                     </table>
                     @endif
