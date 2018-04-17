@@ -522,6 +522,10 @@ class TableController extends Controller
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
         $tableAuth = $tableNames['auth'];
+        if(!empty($tableNames['parent_table_id'])){
+            $isGuestAccess = true;
+        }else
+            $isGuestAccess =false;
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
@@ -559,6 +563,7 @@ class TableController extends Controller
                 'tableAuth' => $tableAuth,
                 'pagination' => $results,
                 'structure' => $userTableStructure,
+                'isGuestAccess'=>$isGuestAccess
             );
         }
     }
