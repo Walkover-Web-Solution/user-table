@@ -246,11 +246,12 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 }
                 if (logsLength > 0) {
                     for(var i in logs){
-                        if (logs[i].action == 'Update') {
-                            var logTime = logs[i].updated_at;
-                        } else {
-                            var logTime = logs[i].created_at;
-                        }
+//                        if (logs[i].action == 'Update') {
+//                            var logTime = logs[i].updated_at;
+//                        } else {
+//                            var logTime = logs[i].created_at;
+//                        }
+                        var logTime = logs[i].activityDate;
                         getImg(logs[i].user_id,logs[i].log, logTime);
                     }
                 }
