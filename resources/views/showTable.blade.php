@@ -16,7 +16,8 @@
                                 <tr>
                                     <td><a href="tables/{{$val['id']}}" target="_blank" class="text-blue font-16"> {{$val['table_name']}}</a></td>
                                     <td>
-                                    
+
+                                     <a href="tables/{{$val['id']}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
                                         <a href="{{env('APP_URL')}}/graph/{{$val['id']}}"><span class="glyphicon glyphicon-stats"></span></a>
                                         <a onclick="location.href='configure/{{$val['id']}}'"><span class="glyphicon glyphicon-cog" ></span></a>
                                         <a onclick="location.href='listFilters/{{$val['id']}}'"><span class="glyphicon glyphicon-filter" ></span></a>
@@ -32,7 +33,7 @@
             </div>
             </div>
             </div>
-            @foreach($tables as $key=>$val)
+            <!-- @foreach($tables as $key=>$val)
             <div class="col-xs-4">
                 <div class="card">
                     <a href="tables/{{$val['id']}}" target="_blank"></a>
@@ -65,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @endforeach -->
         </div>
     </div>
     @endforeach

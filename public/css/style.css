@@ -483,7 +483,8 @@ th {
 }
 
 #filter-content .form-check-label .form-control {
-    margin-left: 16px;
+    margin-left: 21px;
+    margin-top: 10px;
 }
 
 .form-check-label {
@@ -502,6 +503,14 @@ th {
     display: block;
     float: left;
 }
+#tablist>li a:hover, #tablist>li a:focus, #tablist>li a:active, #tablist>li a:visited{
+    background: #333 !important;
+}
+
+#tablist>li.active a{
+    background: #333 !important;
+}
+
 
 #tablist>li>a {
     /* color: #fff !important; */
@@ -534,7 +543,7 @@ th {
     background: #f6f7fa;
     position: absolute;
     border-color: #525252;
-    top: -1px;
+    top: -4px;
     left: -1px;
     width: 18px;
     height: 18px;
@@ -555,7 +564,7 @@ th {
     transform: rotate(45deg);
     position: absolute;
     left: 4.66667px;
-    top: .22222px;
+    top: -2.77778px;
     display: table;
     width: 6.66667px;
     height: 13.33333px;
@@ -586,6 +595,9 @@ th {
 
 .filter-option {
     margin-left: 22px;
+}
+.filter-option .form-check{
+    padding:10px 0;
 }
 
 .user-dashboard {
@@ -766,6 +778,7 @@ side bar component end
 
 .tablist {
     background: #357ede;
+    height: 35px;
 }
 
 .user_dropdown {
@@ -894,4 +907,11 @@ side bar component end
 .dropdown-menu{
     position: absolute !important;
     top:100% !important;
+}
+.li-checkbox{
+    padding:0 20px;
+}
+.li-checkbox .checkbox{
+    margin-top:6px;
+    margin-bottom:6px;
 }
