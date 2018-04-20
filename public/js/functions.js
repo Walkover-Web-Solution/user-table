@@ -85,30 +85,27 @@ function saveTab() {
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId, type) {
-    debugger;
+function makeFilterJsonData(tableId, type,column_name) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked");
+    
+    var radio_type = $("input[type='radio']:checked");
+    var radioname = radio_type.attr('dataid');
+    var coltype = radio_type.attr('datacoltype');
+    var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname).val();
+    
+    var dataid = column_name;
+    
+    if (radioname == "has_any_value" || radioname == 'is_unknown') {
+        radioButtonValue = "1";
+    }
 
-    filterCheckedElement.each(function () {
-        dataid = $(this).attr('dataid');
-        filterChecked.push($(this).attr('dataid'));
-        var radioButton = $("#condition_" + dataid + " input:checked");
-        var radioname = radioButton.attr('dataid');
-        var coltype = radioButton.attr('datacoltype');
-
-        var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
-        if (radioname == "has_any_value" || radioname == 'is_unknown') {
-            radioButtonValue = "1";
-        }
-
-        var subDoc = {};
-        subDoc[radioname] = radioButtonValue
-        jsonObject[dataid] = subDoc;
-        coltypeObject[dataid] = coltype;
-    });
+    var subDoc = {};
+    subDoc[radioname] = radioButtonValue;
+    jsonObject[dataid] = subDoc;
+    coltypeObject[dataid] = coltype;
+   
     console.log("we are here to check data");
     if (type == "returnData") {
         return jsonObject;

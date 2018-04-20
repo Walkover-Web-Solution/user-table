@@ -14,7 +14,6 @@
         @foreach($tabDetail as $tabName => $tabCount)
 
         <li role="presentation">
-            <!--<a href="{{ collect(request()->segments())->last() }}/{{$tabName}}">{{$tabName}}-->
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>
         </li>
@@ -33,7 +32,6 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
                    aria-haspopup="true">
-                    <!-- {{ Auth::user()->name }}  -->
                     {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </a>
 
@@ -62,20 +60,6 @@
     </ul>
 </div>
 
-<!-- <div class="cd-panel">
-    <div class="cd-wrp">
-        <header class="cd-panel-header">
-            <a href="javascript:void(0);" class="pull-right cd-panel-close">Close</a>
-            <button type="button" class="btn btn-primary btn-sm" onclick="saveTab()" data-dismiss="modal">Save
-                filter
-            </button>
-            <span class="sp_view_count">7 users match of 4,412</span>
-        </header>
-        <div class="nav-side-menu cd-panel-container">
-           
-        </div>
-    </div>
-</div> -->
 <div class="mt20 mtb20">
     <div class="col-sm-10">
     <div class="dropdown dropdown-filter-main">
@@ -85,60 +69,6 @@
             <li><a href=""> That match all filter <i class="glyphicon glyphicon glyphicon-ok pull-right"></i></a></li>
             <li><a href=""> That match any filter</a></li>
         </ul>
-    </div>
-    <div class="dropdown dropdown-filter-main">
-              <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> stats <i class="glyphicon glyphicon glyphicon-trash"></i></span></a>
-              <ul class="dropdown-menu dropdown-menu-filter">
-                 <li class="li-radio">
-                     <form>
-                         <li>
-                             <div class="form-check">
-                                 <label for="" class="form-check-label radio-label">
-                                     <input type="radio" class="form-check-radio">is
-                                 </label>
-                             </div>
-                         </li>
-                         
-                     </form>
-                 </li>
-                 <li class="li-radio">
-                     <form>
-                         <li>
-                             <div class="form-check">
-                                 <label for="" class="form-check-label radio-label">
-                                     <input type="radio" class="form-check-radio">is_not
-                                 </label>
-                             </div>
-                         </li>
-                         
-                     </form>
-                 </li>
-                 <li class="li-radio">
-                     <form>
-                         <li>
-                             <div class="form-check">
-                                 <label for="" class="form-check-label radio-label">
-                                     <input type="radio" class="form-check-radio">Start_with
-                                 </label>
-                             </div>
-                         </li>
-                         
-                     </form>
-                 </li>
-                 <li class="li-radio">
-                     <form>
-                         <li>
-                             <div class="form-check">
-                                 <label for="" class="form-check-label radio-label">
-                                     <input type="radio" class="form-check-radio">Ends_with
-                                 </label>
-                             </div>
-                         </li>
-                         
-                     </form>
-                 </li>
-              </ul>
-             
     </div>
    
     <div class="dropdown dropdown-filter-main" id="add_column_filter">
@@ -152,15 +82,6 @@
                         <li class="active">
                             <div class="form-check">
                                 <label class="form-check-label" onclick="show_column_type('{{$k}}');">
-                                    <!-- @if(isset($activeTabFilter[$k]))
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           datacoltype="{{$filter['col_type']}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
-                                    @else
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           datacoltype="{{$filter['col_type']}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="..."> -->
-                                    @endif
                                     {{$k}}</label>
                             </div>
                             @if(isset($activeTabFilter[$k]))
@@ -267,7 +188,7 @@
                             @endforeach
                                         <li class="li-radio">
                                             <div class="form-check">
-                                                <label class="form-check-label radio-label"><a href="Javascript:;" onclick="submit_filter_table('{{$k}}')">Done</a></label>
+                                                <label class="form-check-label radio-label"><a href="Javascript:;" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}')">Done</a></label>
                                             </div>
                                         </li>
                             
@@ -284,10 +205,6 @@
               </ul>
     </div>
     <a class="filter-link m-l-15" href="#" onclick="saveTab()" data-dismiss="modal">Save segment </a>
-    
-   
-
-    <!-- <a href="" class="filter-link"><i class="glyphicon glyphicon-plus"></i> Filter</a> -->
     </div>
 </div>
 <div>
@@ -336,9 +253,6 @@
         </div>
     </div>
 </div>
-
-<!-- <a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
-            id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a> -->
 @stop
 @section('pagescript')
 <!-- Scripts -->
@@ -358,6 +272,7 @@
         var add_filter_html='<div class="dropdown dropdown-filter-main open" id="delete_filter_'+column_name+'"><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
         $('#add_column_filter').before(add_filter_html);
         $('#add_column_filter ul').hide();
+        //$('#delete_filter_'+column_name+' a').trigger('click');
     }
     function delete_filter_div(filter_name)
     {
@@ -371,158 +286,167 @@
     }
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
-    initFilterSlider();
-    if (activeTab != 'All') {
-    $('.cd-panel').addClass('is-visible');
-    }
-    // toggle navigation
-    $('[data-toggle="offcanvas"]').click(function () {
-    $("#navigation").toggleClass("hidden-xs");
-    });
-    // init tooltip
-    $("[data-toggle=tooltip]").tooltip();
-    // toggle checkboxes
-    $("#mytable #checkall").click(function () {
-    if ($("#mytable #checkall").is(':checked')) {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", true);
-    });
-    } else {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", false);
-    });
-    }
-    });
-    $('#saveTabModel').hide();
-    // $('#saveAsInput').hide();
-    $('#saveTabButton').click(function () {
-    var filterChecked = [];
-    var jsonObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked");
-    filterCheckedElement.each(function () {
-    dataid = $(this).attr('dataid');
-    filterChecked.push($(this).attr('dataid'));
-    var radioButton = $("#condition_" + dataid + " input:checked");
-    var radioname = radioButton.attr('dataid');
-    var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
-    if (radioname == "has_any_value" || radioname == 'is_unknown') {
-    radioButtonValue = "1";
-    }
-    var subDoc = {};
-    subDoc[radioname] = radioButtonValue;
-    jsonObject[dataid] = subDoc;
-    });
-    var tabName = $('#saveAsInput').val();
-    obj = jsonObject;
-    $.ajaxSetup({
-    headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-    });
-    $.ajax({
-    type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-            dataType: 'json', // Set datatype - affects Accept header
-            url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
-            success: function (data) {
-            window.setTimeout(function () {
-            location.reload()
-            }, 2000);
+        initFilterSlider();
+        if (activeTab != 'All') {
+            $('.cd-panel').addClass('is-visible');
+        }
+        // toggle navigation
+        $('[data-toggle="offcanvas"]').click(function () {
+            $("#navigation").toggleClass("hidden-xs");
+        });
+        // init tooltip
+        $("[data-toggle=tooltip]").tooltip();
+        // toggle checkboxes
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", true);
+                    });
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
             }
-    });
-    });
-    $(".form-check-input").on('change', function () {
-    clearInterval(myInterval);
-    //var tableId = '{{ collect(request()->segments())->last() }}';
-    if (globaltimeout != null) clearTimeout(globaltimeout);
-    globaltimeout = setTimeout(function () {
-    makeFilterJsonData(tableId, 'Search');
-    }, 600);
-    });
-    $(".form-check-input").on('keyup', function () {
-    clearInterval(myInterval);
-    //var tableId = '{{ collect(request()->segments())->last() }}';
-    if (globaltimeout != null) clearTimeout(globaltimeout);
-    globaltimeout = setTimeout(function () {
-    makeFilterJsonData(tableId, 'Search');
-    }, 600);
-    });
-    $(".form-check-input").blur(function () {
-    window.setTimeout(function () {
-    //startInterval();
-    }, 20000);
-    });
+        });
+        $('#saveTabModel').hide();
+        // $('#saveAsInput').hide();
+        $('#saveTabButton').click(function () {
+            var filterChecked = [];
+            var jsonObject = {};
+            var filterCheckedElement = $(".filterConditionName:checked");
+            filterCheckedElement.each(function () {
+            dataid = $(this).attr('dataid');
+            filterChecked.push($(this).attr('dataid'));
+            var radioButton = $("#condition_" + dataid + " input:checked");
+            var radioname = radioButton.attr('dataid');
+            var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
+            if (radioname == "has_any_value" || radioname == 'is_unknown') {
+                radioButtonValue = "1";
+            }
+            var subDoc = {};
+            subDoc[radioname] = radioButtonValue;
+            jsonObject[dataid] = subDoc;
+        });
+        var tabName = $('#saveAsInput').val();
+        obj = jsonObject;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+                dataType: 'json', // Set datatype - affects Accept header
+                url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+                success: function (data) {
+                    window.setTimeout(function () {
+                        location.reload()
+                    }, 2000);
+                }
+            });
+        });
+        $(".form-check-input").on('change', function () {
+            clearInterval(myInterval);
+            //var tableId = '{{ collect(request()->segments())->last() }}';
+            if (globaltimeout != null) clearTimeout(globaltimeout);
+                globaltimeout = setTimeout(function () {
+                makeFilterJsonData(tableId, 'Search');
+            }, 600);
+        });
+        $(".form-check-input").on('keyup', function () {
+            clearInterval(myInterval);
+            //var tableId = '{{ collect(request()->segments())->last() }}';
+            if (globaltimeout != null) 
+                clearTimeout(globaltimeout);
+            globaltimeout = setTimeout(function () {
+                makeFilterJsonData(tableId, 'Search');
+            }, 600);
+        });
+        $(".form-check-input").blur(function () {
+            window.setTimeout(function () {
+            //startInterval();
+            }, 20000);
+        });
     });
     function SaveAsNew(state) {
     if (state) {
-    $('#saveAsInput').val('');
-    $('#saveAsInput').show();
-    } else {
-    $('#saveAsInput').hide();
-    $('#saveAsInput').val(activeTab);
+            $('#saveAsInput').val('');
+            $('#saveAsInput').show();
+        } else {
+            $('#saveAsInput').hide();
+            $('#saveAsInput').val(activeTab);
+        }
     }
-    }
-        var API_BASE_URL = "{{env('API_BASE_URL')}}";
-        var activeTab = '{{$activeTab}}';
-        var tableId = '{{$tableId}}';
-        function sendMailSMS(type) {
+    var API_BASE_URL = "{{env('API_BASE_URL')}}";
+    var activeTab = '{{$activeTab}}';
+    var tableId = '{{$tableId}}';
+    function sendMailSMS(type) {
         if (type == 'email') {
-        var formData = $("#emailForm").serializeArray();
+            var formData = $("#emailForm").serializeArray();
         }
         if (type == 'sms') {
-        var formData = $("#smsForm").serializeArray();
+            var formData = $("#smsForm").serializeArray();
         }
         var result = {};
         $.each(formData, function () {
-        result[this.name] = this.value;
+            result[this.name] = this.value;
         });
         var JsonData = makeFilterJsonData(tableId, 'returnData');
         sendData(type, JsonData, result, tableId);
-        }
+    }
 
-        function timeToSend(type) {
+    function timeToSend(type) {
         if (type == 'auto') {
-        $('#auto').removeClass('hide');
-        $('#now').addClass('hide');
+            $('#auto').removeClass('hide');
+            $('#now').addClass('hide');
         } else {
-        $('#auto').addClass('hide');
-        $('#now').removeClass('hide');
+            $('#auto').addClass('hide');
+            $('#now').removeClass('hide');
         }
-        }
-        function openColumnModal(){
-            $('#column_sequence').modal('show');
-            $("#table-1q").tableDnD();
-        }
-        function updateColumnSequence(){
-            var tablearray = [];
-            var displayarray = [];
-            $("#table-1q tr").each(function() {
-                if(this.id != 0)
-                {
-                    displayarray[this.id] = $('#reorder_column_'+this.id+':checked').val() ? 0 : 1;
-                    tablearray.push(this.id);
+    }
+    function openColumnModal(){
+        $('#column_sequence').modal('show');
+        $("#table-1q").tableDnD();
+    }
+    function updateColumnSequence(){
+        var tablearray = [];
+        var displayarray = [];
+        $("#table-1q tr").each(function() {
+            if(this.id != 0)
+            {
+                displayarray[this.id] = $('#reorder_column_'+this.id+':checked').val() ? 0 : 1;
+                tablearray.push(this.id);
+            }
+        });
+        if(tablearray.length > 1)
+        {
+            $.ajax({
+                url: API_BASE_URL + '/rearrangeSequenceColumn',
+                type: 'POST',
+                data: {tableArray : tablearray, displayArray : displayarray},
+                dataType: 'json',
+                success: function (info) {
+                    if(info.error)
+                    {
+                        alert(info.error);
+                        return false;
+                    }
+                    alert(info.success);
+                    location.reload();
                 }
             });
-            if(tablearray.length > 1)
-            {
-                $.ajax({
-                    url: API_BASE_URL + '/rearrangeSequenceColumn',
-                    type: 'POST',
-                    data: {tableArray : tablearray, displayArray : displayarray},
-                    dataType: 'json',
-                    success: function (info) {
-                        if(info.error)
-                        {
-                            alert(info.error);
-                            return false;
-                        }
-                        alert(info.success);
-                        location.reload();
-                    }
-                });
-            }
         }
+    }
     </script> 
+    <script>
+        $(".tablist li").click(function() {
+           if ($(".tablist li").removeClass("active")) {
+               $(this).removeClass("active");
+           }
+           $(this).addClass("active");
+       });
+    </script>
 @stop
 @section('models')
 <!-- Modal -->
@@ -733,7 +657,6 @@ Save changes to the segment<span> 'vijay'</span>
         </div>
     </div>
 </div>
-</div>
 
 <!-- send modal -->
 <div id="send_popup" class="modal fade" role="dialog">
@@ -838,21 +761,9 @@ Save changes to the segment<span> 'vijay'</span>
             </div>
         </div>
     </div>
-    <script>
-             $(".tablist li").click(function() {
-                if ($(".tablist li").removeClass("active")) {
-                    $(this).removeClass("active");
-                }
-                $(this).addClass("active");
-            });
-    </script>
+</div>
 
-    
-}
-
-setDefaultActive()
-
-    @stop
+@stop
 
 
  
