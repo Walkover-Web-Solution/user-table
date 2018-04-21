@@ -1035,3 +1035,74 @@ side bar component end
 .p-l-zero{
     padding-left:0;
 }
+
+.loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+}
+.loader:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255,255, 0.9);
+    z-index: 9;
+}
+.loading-box {
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    position: absolute;
+    padding: 20px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    z-index: 9;
+  }
+  [class*="loader-"] {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    pointer-events: none;
+  }
+  .loader-icon {
+    border: 5px solid transparent;
+    border-top-color: #61c6e8;
+    border-radius: 50%;
+    animation: 1s loader-icon linear infinite;
+    position: relative;
+    &:before {
+      content: "";
+      width: inherit;
+      height: inherit;
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      border: 5px solid rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+  }
+  @keyframes loader-icon {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+
+
+

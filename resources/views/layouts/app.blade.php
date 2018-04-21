@@ -36,6 +36,9 @@
             <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-523353K"
             height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- End Google Tag Manager (noscript) -->
+<div class="loading-box">
+    <div class="loader-icon"></div>
+</div>
             <div id="main-wrp">
                 <div class="body">
                     @yield('content')
