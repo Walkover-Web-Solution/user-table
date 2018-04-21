@@ -79,9 +79,9 @@
                         <div class="filter-list ">
                 <ul id="filter-content" class="menu-content cd-panel-content">
                         @foreach($filters as $k=>$filter)
-                        <li class="active">
+                        <li class="active" onclick="show_column_type('{{$k}}');">
                             <div class="form-check">
-                                <label class="form-check-label" onclick="show_column_type('{{$k}}');">
+                                <label class="form-check-label">
                                     {{$k}}
                                     </label>
                             </div>
@@ -272,22 +272,19 @@
     {
         var add_filter_html='<div class="dropdown dropdown-filter-main open" id="delete_filter_'+column_name+'"><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
         $('#add_column_filter').before(add_filter_html);
-        $('#add_column_filter ul').hide();
-        //$('#delete_filter_'+column_name+' a').trigger('click');
+        
+        var elemToOpen = $('#delete_filter_'+column_name)[0];
+        setTimeout(function() {
+            $(elemToOpen).addClass('open');            
+        }, 300)
     }
     function delete_filter_div(filter_name)
     {
         $('#delete_filter_'+filter_name).remove();
     }
-    function submit_filter_table(column_name)
-    {
-        var radio_type = $("input[type='radio']:checked");
-        var radio_name = radio_type.attr('dataid');
-        var radio_val = $('#'+column_name+'_filter_val_'+radio_name).val();
-    }
+    
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
-        initFilterSlider();
         if (activeTab != 'All') {
             $('.cd-panel').addClass('is-visible');
         }
@@ -346,28 +343,6 @@
                     }, 2000);
                 }
             });
-        });
-        $(".form-check-input").on('change', function () {
-            clearInterval(myInterval);
-            //var tableId = '{{ collect(request()->segments())->last() }}';
-            if (globaltimeout != null) clearTimeout(globaltimeout);
-                globaltimeout = setTimeout(function () {
-                makeFilterJsonData(tableId, 'Search');
-            }, 600);
-        });
-        $(".form-check-input").on('keyup', function () {
-            clearInterval(myInterval);
-            //var tableId = '{{ collect(request()->segments())->last() }}';
-            if (globaltimeout != null) 
-                clearTimeout(globaltimeout);
-            globaltimeout = setTimeout(function () {
-                makeFilterJsonData(tableId, 'Search');
-            }, 600);
-        });
-        $(".form-check-input").blur(function () {
-            window.setTimeout(function () {
-            //startInterval();
-            }, 20000);
         });
     });
     function SaveAsNew(state) {
