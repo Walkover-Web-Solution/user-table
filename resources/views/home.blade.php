@@ -82,7 +82,8 @@
                         <li class="active">
                             <div class="form-check">
                                 <label class="form-check-label" onclick="show_column_type('{{$k}}');">
-                                    {{$k}}</label>
+                                    {{$k}}
+                                    </label>
                             </div>
                             @if(isset($activeTabFilter[$k]))
                                 <div id="condition_{{$k}}" class="filter-option">
@@ -446,8 +447,8 @@
            }
            $(this).addClass("active");
        });
-       function hideDropdown(type) {
-            $('#delete_filter_'+type).removeClass('open');
+       function hideDropdown(col_name) {
+            $('#delete_filter_'+col_name).removeClass('open');
         }
     </script>
 @stop
@@ -765,16 +766,6 @@ Save changes to the segment<span> 'vijay'</span>
         </div>
     </div>
 </div>
-<script>
-$(document).ready(function(){
-    $("#show").click(function(){
-        $("#filterbox").show();
-    });
-    $("#hide").click(function(){
-        $("#filterbox").hide();
-    });
-});
-</script>
 @stop
 
 
