@@ -128,9 +128,14 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
         data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
-
+        beforeSend: function() {
+            $('body').addClass('loader');
+        },
         success: function (data) {
             $('#def_response').html(data);
+        },
+        complete: function() {
+            $('body').removeClass('loader');
         }
     });
 }

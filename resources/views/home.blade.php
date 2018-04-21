@@ -268,9 +268,6 @@
 </script>
 <!-- inline scripts -->
 <script>
-    $('body').addClass('loader');
-</script>
-<script>
     function show_column_type(column_name)
     {
         var add_filter_html='<div class="dropdown dropdown-filter-main open" id="delete_filter_'+column_name+'"><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
