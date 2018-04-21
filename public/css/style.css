@@ -1054,7 +1054,7 @@ side bar component end
     background: rgba(255, 255,255, 0.9);
     z-index: 9;
 }
-.loading-box {
+.loader  .loading-box {
     background: white;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -1076,7 +1076,7 @@ side bar component end
     vertical-align: middle;
     pointer-events: none;
   }
-  .loader-icon {
+  .loader .loader-icon {
     border: 5px solid transparent;
     border-top-color: #61c6e8;
     border-radius: 50%;
