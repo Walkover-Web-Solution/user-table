@@ -72,7 +72,7 @@
     </div>
    
     <div class="dropdown dropdown-filter-main" id="add_column_filter">
-            <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
+            <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown" id="show"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
             <ul class="dropdown-menu dropdown-menu-filter">
                     <li class="li-checkbox">
                         <div class="checkbox">
@@ -188,7 +188,7 @@
                             @endforeach
                                         <li class="li-radio">
                                             <div class="form-check">
-                                                <label class="form-check-label radio-label"><a href="Javascript:;" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}')">Done</a></label>
+                                                <label class="form-check-label radio-label"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}');hideDropdown('{{$k}}')">Done</a></label>
                                             </div>
                                         </li>
                             
@@ -446,6 +446,9 @@
            }
            $(this).addClass("active");
        });
+       function hideDropdown(type) {
+            $('#delete_filter_'+type).removeClass('open');
+        }
     </script>
 @stop
 @section('models')
@@ -762,7 +765,16 @@ Save changes to the segment<span> 'vijay'</span>
         </div>
     </div>
 </div>
-
+<script>
+$(document).ready(function(){
+    $("#show").click(function(){
+        $("#filterbox").show();
+    });
+    $("#hide").click(function(){
+        $("#filterbox").hide();
+    });
+});
+</script>
 @stop
 
 
