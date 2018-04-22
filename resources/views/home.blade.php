@@ -62,14 +62,10 @@
 
 <div class="mt20 mtb20">
     <div class="col-sm-10">
-    <div class="dropdown dropdown-filter-main">
-        <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-indent-left"></i> that match all filters </i></span></a>
-        <ul class="dropdown-menu dropdown-menu-filter">
-            <!-- <li class="dropdown-header">User Data</li> -->
-            <li><a href=""> That match all filter <i class="glyphicon glyphicon glyphicon-ok pull-right"></i></a></li>
-            <li><a href=""> That match any filter</a></li>
-        </ul>
-    </div>
+    <select id="filter_condition">
+        <option value="and"><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
+        <option value="or"><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
+        </select>
    
     <div class="dropdown dropdown-filter-main" id="add_column_filter">
             <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown" id="show"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
@@ -422,8 +418,15 @@
            }
            $(this).addClass("active");
        });
-       function hideDropdown(col_name) {
+       function hideDropdown(col_name)
+       {
             $('#delete_filter_'+col_name).removeClass('open');
+            var radio_type = $("#delete_filter_"+col_name+" input[type='radio']:checked");
+            var radioname = radio_type.attr('dataid');
+            var coltype = radio_type.attr('datacoltype');
+            var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname).val();
+            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column__input_type[]" value="'+coltype+'"/>';
+            $('#delete_filter_'+col_name+' a:first').html(a_html);
         }
     </script>
 @stop

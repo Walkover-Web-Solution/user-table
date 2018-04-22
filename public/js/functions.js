@@ -90,7 +90,19 @@ function makeFilterJsonData(tableId, type,column_name) {
     var jsonObject = {};
     var coltypeObject = {};
     
-    var radio_type = $("input[type='radio']:checked");
+    var filter_done_column_name = $("input[name='filter_done_column_name[]']");
+    var filter_done_column_type = $("input[name='filter_done_column_type[]']");
+    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
+    var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
+    for(var i = 0; i < filter_done_column_name.length; i++)
+    {
+        var subDoc = {};
+        subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
+        jsonObject[filter_done_column_name[i].value] = subDoc;
+        coltypeObject[filter_done_column_name[i].value] = filter_done_column_input_type[i].value;
+    }
+    
+    var radio_type = $("#delete_filter_"+column_name+" input[type='radio']:checked");
     var radioname = radio_type.attr('dataid');
     var coltype = radio_type.attr('datacoltype');
     var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname).val();
@@ -105,15 +117,16 @@ function makeFilterJsonData(tableId, type,column_name) {
     subDoc[radioname] = radioButtonValue;
     jsonObject[dataid] = subDoc;
     coltypeObject[dataid] = coltype;
-   
+    var condition = $('#filter_condition').val();
+    
     console.log("we are here to check data");
     if (type == "returnData") {
         return jsonObject;
     }
-    applyFilterData(jsonObject, tableId, coltypeObject);
+    applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
-function applyFilterData(jsonObject, tableId, coltypeObject) {
+function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -127,7 +140,7 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
-        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject, 'condition' : condition}, // Some data e.g. Valid JSON as a string
         beforeSend: function() {
             $('body').addClass('loader');
         },
