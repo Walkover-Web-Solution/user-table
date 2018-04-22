@@ -77,8 +77,8 @@ function showDiv(id) {
 var globaltimeout = null;
 
 function saveTab() {
-
     $('#saveTabModel').modal('show');
+    $('#replacetabName').html("'"+activeTab+"'")
     var tabName = $("#saveAsInput").val();
 }
 
@@ -93,6 +93,9 @@ function makeFilterJsonData(tableId, type,column_name) {
     var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
     for(var i = 0; i < filter_done_column_name.length; i++)
     {
+        if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
+            filter_done_column_type_val[i].value = "1";
+        }
         var subDoc = {};
         subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
         jsonObject[filter_done_column_name[i].value] = subDoc;

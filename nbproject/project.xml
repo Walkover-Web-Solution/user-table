@@ -6,6 +6,7 @@
             <name>Contact_crm</name>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>endif</word>
             <word>foreach</word>
             <word>js</word>
         </spellchecker-wordlist>
