@@ -425,6 +425,9 @@
             var radioname = radio_type.attr('dataid');
             var coltype = radio_type.attr('datacoltype');
             var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname).val();
+            if (typeof radioButtonValue === "undefined") {
+                radioButtonValue ='';
+            }
             var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column__input_type[]" value="'+coltype+'"/>';
             $('#delete_filter_'+col_name+' a:first').html(a_html);
         }

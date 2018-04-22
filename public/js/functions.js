@@ -64,10 +64,7 @@ function showFilterInputText(ths, val, tableId) {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
-    } else {
-        makeFilterJsonData(tableId, 'Search');
     }
-
 }
 
 function showDiv(id) {
@@ -119,7 +116,6 @@ function makeFilterJsonData(tableId, type,column_name) {
     coltypeObject[dataid] = coltype;
     var condition = $('#filter_condition').val();
     
-    console.log("we are here to check data");
     if (type == "returnData") {
         return jsonObject;
     }
