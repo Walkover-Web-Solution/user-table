@@ -58,6 +58,14 @@ class team_table_mapping extends Model {
                 ->first()->toArray();
         return $data;
     }
+    
+    public static function getUserTablesColumnNameById($tableId) {
+        $data = DB::table('table_structures')
+            ->select('column_name')
+            ->where('table_id', $tableId)
+            ->get();
+        return json_decode(json_encode($data), true);
+    }
 
     public static function getUserTablesNameByParentId($tableId) {
         $data = team_table_mapping::select('*')->where('parent_table_id', $tableId)

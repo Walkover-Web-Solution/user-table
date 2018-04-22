@@ -264,6 +264,11 @@ class TableController extends Controller
 
     public function processFilterData($req, $tableId, $coltype,$condition='and', $pageSize = 100)
     {
+        $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
+        $colArr = array(0=>'id');
+        foreach ($columnsonly as $col){
+            $colArr[] =$col['column_name'];
+        }
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
@@ -272,7 +277,7 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype,$condition, $pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype,$condition,$colArr, $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -318,9 +323,12 @@ class TableController extends Controller
         $tableIdMain = $tableNames['table_id'];
         Tables::markRecordsAsDeleted($tableIdMain, $ids);
     }
-    public static function getAppliedFiltersData($req, $tableId, $coltype,$condition, $pageSize = 100)
+    public static function getAppliedFiltersData($req, $tableId, $coltype,$condition,$colArr=array(),$pageSize = 100)
     {
-        $users = DB::table($tableId)->selectRaw('*');
+        if(empty($colArr))
+            $users = DB::table($tableId)->selectRaw('*');
+        else
+            $users = DB::table($tableId)->selectRaw(implode(",", $colArr));
         $flag=0;
         foreach (array_keys($req) as $paramName) {
             $colomntype = $coltype[$paramName];
