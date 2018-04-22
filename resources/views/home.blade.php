@@ -62,7 +62,7 @@
 
 <div class="mt20 mtb20">
     <div class="col-sm-10">
-    <select id="filter_condition">
+        <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')">
         <option value="and"><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or"><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
@@ -401,6 +401,7 @@
     function delete_filter_div(filter_name)
     {
         $('#delete_filter_'+filter_name).remove();
+        makeFilterJsonData(tableId, 'search', filter_name);
     }
     
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
