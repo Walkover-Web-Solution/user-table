@@ -330,13 +330,19 @@
 </div>
 <div>
     <div class="topborder">
-                <div class="col-sm-5 mb20">
-                <span class="sp_view_count">7 users match </span><span class="total_count">of 4,412</span>
-                    <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
-                    @if(!$isGuestAccess)
-                    <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
-                    @endif
-                </div>
+        <div class="col-sm-5 mb20">
+            @foreach($arrTabCount as $tabDetail)
+                @foreach($tabDetail as $tabName => $tabCount)
+                @if($activeTab == $tabName)
+                    <span class="sp_view_count">{{$tabDetail[$activeTab]}} users match</span><span class="total_count">of {{$allTabCount}}</span>
+                @endif
+                @endforeach
+            @endforeach
+            <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
+            @if(!$isGuestAccess)
+            <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
+            @endif
+        </div>
                 <div class="col-sm-5 pull-right">
                     <div class="pull-right">
                         <div class="inline-b">
