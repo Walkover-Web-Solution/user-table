@@ -36,38 +36,11 @@
             <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-523353K"
             height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- End Google Tag Manager (noscript) -->
+<div class="loading-box">
+    <div class="loader-icon"></div>
+</div>
             <div id="main-wrp">
                 <div class="body">
-                    <!--
-                    <nav class="navbar navbar-default navbar-static-top">
-                        <div class="container">
-                            <div class="navbar-header">
-
-                                 Collapsed Hamburger
-                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
-                                    <span class="sr-only">Toggle Navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
-
-                                Branding Image
-                                <a class="navbar-brand" href="{{ url('/') }}">
-                                    {{ config('app.name', 'Laravel') }}
-                                </a>
-                            </div>
-
-                            <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                                 Left Side Of Navbar
-                                <ul class="nav navbar-nav">
-                                    &nbsp;
-                                </ul>
-
-
-                            </div>
-                        </div>
-                    </nav> -->
-
                     @yield('content')
                 </div>
             </div>

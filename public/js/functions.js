@@ -7,9 +7,9 @@ var myInterval;
 var interval = 3000; // after every 3s
 var optionList = ['text', 'phone', 'any number', 'airthmatic number', 'email', 'dropdown', 'radio button', 'checkbox', 'date'];
 var checkList = [{
-    name: 'Unique',
-    priority: ['high', 'medium', 'low']
-}];
+        name: 'Unique',
+        priority: ['high', 'medium', 'low']
+    }];
 var numberList = [];
 var dateList = ['relative', 'normal'];
 var customTypes = ['dropdown', 'radio button', 'checkbox'];
@@ -19,9 +19,9 @@ var teamMateList = {};
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -64,10 +64,7 @@ function showFilterInputText(ths, val, tableId) {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
-    } else {
-        makeFilterJsonData(tableId, 'Search');
     }
-
 }
 
 function showDiv(id) {
@@ -80,42 +77,82 @@ function showDiv(id) {
 var globaltimeout = null;
 
 function saveTab() {
-
     $('#saveTabModel').modal('show');
+    $('#replacetabName').html("'"+activeTab+"'")
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId, type) {
+function makeFilterJsonData(tableId, type,column_name) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked");
-
-    filterCheckedElement.each(function () {
-        dataid = $(this).attr('dataid');
-        filterChecked.push($(this).attr('dataid'));
-        var radioButton = $("#condition_" + dataid + " input:checked");
-        var radioname = radioButton.attr('dataid');
-        var coltype = radioButton.attr('datacoltype');
-
-        var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
-        if (radioname == "has_any_value" || radioname == 'is_unknown') {
-            radioButtonValue = "1";
+    
+    var filter_done_column_name = $("input[name='filter_done_column_name[]']");
+    var filter_done_column_type = $("input[name='filter_done_column_type[]']");
+    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
+    var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
+    for(var i = 0; i < filter_done_column_name.length; i++)
+    {
+        if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
+            filter_done_column_type_val[i].value = "1";
         }
-
         var subDoc = {};
-        subDoc[radioname] = radioButtonValue
-        jsonObject[dataid] = subDoc;
-        coltypeObject[dataid] = coltype;
-    });
-    console.log("we are here to check data");
+        subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
+        jsonObject[filter_done_column_name[i].value] = subDoc;
+        coltypeObject[filter_done_column_name[i].value] = filter_done_column_input_type[i].value;
+    }
+    
+    var radio_type = $("#delete_filter_"+column_name+" input[type='radio']:checked");
+    var radioname = radio_type.attr('dataid');
+    var coltype = radio_type.attr('datacoltype');
+    var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname).val();
+    
+    var dataid = column_name;
+    
+    if (radioname == "has_any_value" || radioname == 'is_unknown') {
+        radioButtonValue = "1";
+    }
+
+    var subDoc = {};
+    subDoc[radioname] = radioButtonValue;
+    jsonObject[dataid] = subDoc;
+    coltypeObject[dataid] = coltype;
+    var condition = $('#filter_condition').val();
+    
     if (type == "returnData") {
         return jsonObject;
     }
-    applyFilterData(jsonObject, tableId, coltypeObject);
+    applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
-function applyFilterData(jsonObject, tableId, coltypeObject) {
+function changeFilterJsonData(tableId, type) {
+    var jsonObject = {};
+    var coltypeObject = {};
+    
+    var filter_done_column_name = $("input[name='filter_done_column_name[]']");
+    var filter_done_column_type = $("input[name='filter_done_column_type[]']");
+    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
+    var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
+    for(var i = 0; i < filter_done_column_name.length; i++)
+    {
+        if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
+            filter_done_column_type_val[i].value = "1";
+        }
+        var subDoc = {};
+        subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
+        jsonObject[filter_done_column_name[i].value] = subDoc;
+        coltypeObject[filter_done_column_name[i].value] = filter_done_column_input_type[i].value;
+    }
+    
+    var condition = $('#filter_condition').val();
+    
+    if (type == "returnData") {
+        return jsonObject;
+    }
+    applyFilterData(jsonObject, tableId, coltypeObject, condition);
+}
+
+function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -129,18 +166,24 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
-        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
-
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject, 'condition' : condition}, // Some data e.g. Valid JSON as a string
+        beforeSend: function() {
+            $('body').addClass('loader');
+        },
         success: function (data) {
             $('#def_response').html(data);
+        },
+        complete: function() {
+            $('body').removeClass('loader');
         }
     });
 }
 
-var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select','textarea'];
+var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select', 'textarea'];
 
-function getUserDetails(event,id, tableId) {
-    if(event.target.className == "row-delete") return;
+function getUserDetails(event, id, tableId, mod_head_edit = false) {
+    if (event.target.className == "row-delete")
+        return;
     if (id) {
         $.ajax({
             type: 'GET', // Use GET
@@ -175,37 +218,37 @@ function getUserDetails(event,id, tableId) {
                             editForm += createHiddenElement(val[k], k);
                             editForm += '</div></div>';
                         } else {
-                           
-                             if (currentField.column_type_id !== 6 && currentField.column_type_id !== 8 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9 && currentField.unique !==1){
-                                 if(currentField.column_type_id === 3){
-                                    editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`; 
-                                    editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);    
-                                 }else{
-                                    if(currentField.column_type_id === 11){
+
+                            if (currentField.column_type_id !== 6 && currentField.column_type_id !== 8 && currentField.column_type_id !== 10 && currentField.column_type_id !== 9 && currentField.unique !== 1) {
+                                if (currentField.column_type_id === 3) {
+                                    editForm += `<div class="form-group col-xs-6" maxlength="14" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                    editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
+                                } else {
+                                    if (currentField.column_type_id === 11) {
                                         form_text += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
                                         form_text += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
-                                    }else{
+                                    } else {
                                         editForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
                                         editForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
                                     }
-                                 }
-                            }else{
-                                    if (currentField.column_type_id == 9 && currentField.unique !==1) { // if column type is date
-                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
-                                        var currentVal = parseDate(val[k]);
-                                        sec_editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
-                                    } else if ( (currentField.column_type_id == 6 || currentField.column_type_id == 8 ) && currentField.unique !==1) { // if column type is dropdown
-                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:10px;color:#292929">` + k + `</label>`;
-                                        sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                    } else if (currentField.column_type_id == 10 && currentField.unique !==1) { // if column type is teammates
-                                        sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:10px;color:#292929">` + k + `</label>`;
-                                        currentField['value_arr']['options'] = teammates;
-                                        sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
-                                    }else if(currentField.unique === 1){
-                                        $("#mod-head").text(val[k]);
-                                    }
+                                }
+                            } else {
+                                if (currentField.column_type_id == 9 && currentField.unique !== 1) { // if column type is date
+                                    sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                    var currentVal = parseDate(val[k]);
+                                    sec_editForm += createInputElement(currentVal, k, currentField, inputTypeArr[currentField.column_type_id]);
+                                } else if ((currentField.column_type_id == 6 || currentField.column_type_id == 8) && currentField.unique !== 1) { // if column type is dropdown
+                                    sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:10px;color:#292929">` + k + `</label>`;
+                                    sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                                } else if (currentField.column_type_id == 10 && currentField.unique !== 1) { // if column type is teammates
+                                    sec_editForm += `<div class="form-group col-xs-12" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:10px;color:#292929">` + k + `</label>`;
+                                    currentField['value_arr']['options'] = teammates;
+                                    sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
+                                } else if (currentField.unique === 1) {
+                                    $("#mod-head").text(val[k]);
+                                }
                             }
-                            form_text += '</div>'; 
+                            form_text += '</div>';
                             editForm += '</div>';
                             sec_editForm += '</div>';
                         }
@@ -214,6 +257,7 @@ function getUserDetails(event,id, tableId) {
                     editForm += form_text;
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
+                    $('#is_edit').val(1);
                     $('#follow_up_date').attr('type', 'date');
                     //$('#edit_user').modal('show');
                 }
@@ -221,47 +265,36 @@ function getUserDetails(event,id, tableId) {
         });
         $.ajax({
             type: 'GET', // Use GET
-            url: API_BASE_URL + '/table/' + tableId+'/activity_data/'+id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+            url: API_BASE_URL + '/table/' + tableId + '/activity_data/' + id, // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
             success: function (resData) {
                 var logs = resData.data.data;
-                var desc ='';
+                var desc = '';
                 $("#activity_log").html('');
                 var logsLength = logs.length;
-                function getImg(index,logs){
-                    var user_id = logs[index].user_id;
-                    var log = logs[index].log;                    
-                    $.get('https://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function(result){
+                function getImg(user_id, log,logTime) {
+                    $.get('https://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function (result) {
                         img = result.entry.gphoto$thumbnail.$t;
                         var name = result.entry.gphoto$nickname.$t;
-                        if(!name){
-                            name=user_id;
+                        if (!name) {
+                            name = user_id;
                         }
-                        if(logs[index].action=='Update'){
-                            var logTime = logs[index].updated_at;
-                        }else{
-                            var logTime = logs[index].created_at;
-                        }
-                        desc = '<h3 style="font-weight:700;margin-left:25px">'+ name +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+img+'"><p style="margin-left:25px;width:450px">'+ log +'</p><span>'+logTime+'</span><br><br>';
+                        desc = '<h3 style="font-weight:700;margin-left:25px">' + name + '</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="' + img + '"><p style="margin-left:25px;width:450px">' + log + '</p><span>' + logTime + '</span><br><br>';
                         $("#activity_log").append(desc);
-                        if(index < logsLength-1){
-                            getImg(index+1);                            
-                        }
-                    }).fail(function(){
-                        if(logs[index].action=='Update'){
-                            var logTime = logs[index].updated_at;
-                        }else{
-                            var logTime = logs[index].created_at;
-                        }
-                        desc = '<h3 style="font-weight:700;margin-left:25px">'+ user_id +'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src=" {{ asset("img/user_img.jpg") }} "><p style="margin-left:25px;width:450px">'+ log +'</p><span>'+logTime+'</span><br><br>';
+                    }).fail(function () {
+                        desc = '<h3 style="font-weight:700;margin-left:25px">' + user_id + '</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+API_BASE_URL+'/img/user_img.jpg"><p style="margin-left:25px;width:450px">' + log + '</p><span>' + logTime + '</span><br><br>';
                         $("#activity_log").append(desc);
-                        if(index < logsLength){
-                            getImg(index+1,logs);
-                        }
                     });
                 }
-
                 if (logsLength > 0) {
-                    getImg(0, logs);
+                    for(var i in logs){
+//                        if (logs[i].action == 'Update') {
+//                            var logTime = logs[i].updated_at;
+//                        } else {
+//                            var logTime = logs[i].created_at;
+//                        }
+                        var logTime = logs[i].activityDate;
+                        getImg(logs[i].user_id,logs[i].log, logTime);
+                    }
                 }
             }
         });
@@ -292,35 +325,46 @@ function getUserDetails(event,id, tableId) {
                     } else if (currentField.column_type_id == 10) { // if column type is teammates
                         currentField['value_arr']['options'] = teammates;
                         editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
-                    } else if(currentField.column_type_id == 8){
+                    } else if (currentField.column_type_id == 8) {
                         editForm += createSelectElement(currentField, '', k, inputTypeArr[currentField.column_type_id]);
-                    }else {
+                    } else {
                         editForm += createInputElement('', k, currentField, inputTypeArr[currentField.column_type_id]);
                     }
                     editForm += '</div></div>';
                 }
                 $("#edit_users_body").html(editForm);
+                $('#is_edit').val(0);
                 $('#follow_up_date').attr('type', 'date');
                 return false;
             }
         });
     }
+    
+    if(mod_head_edit == 'Add')
+        $('#mod-head_edit').html('Add Column Value');
 }
 
 function parseDate(unixDateTime) {
-    if (unixDateTime == 0 || unixDateTime == null) return "";
-    else var selectedDate = new Date(unixDateTime * 1000);
+    if (unixDateTime == 0 || unixDateTime == null)
+        return "";
+    else
+        var selectedDate = new Date(unixDateTime * 1000);
     var date = selectedDate.getUTCDate();
     var month = selectedDate.getUTCMonth() + 1;
     var year = selectedDate.getUTCFullYear();
     var hours = selectedDate.getUTCHours();
     var minutes = selectedDate.getUTCMinutes();
     var seconds = selectedDate.getUTCSeconds();
-    if (hours < 10) hours = "0" + hours;
-    if (minutes < 10) minutes = "0" + minutes;
-    if (seconds < 10) seconds = "0" + seconds;
-    if (date < 10) date = "0" + date;
-    if (month < 10) month = "0" + month;
+    if (hours < 10)
+        hours = "0" + hours;
+    if (minutes < 10)
+        minutes = "0" + minutes;
+    if (seconds < 10)
+        seconds = "0" + seconds;
+    if (date < 10)
+        date = "0" + date;
+    if (month < 10)
+        month = "0" + month;
     time = hours + ":" + minutes + ":" + seconds;
     var currentVal = year + "-" + month + "-" + date;
     return currentVal
@@ -334,6 +378,7 @@ function editUserData(type) {
     var jsonDoc = {};
     var fieldChange = false;
     var is_valid = true;
+    var is_edit = $('#is_edit').val();
     if (type == 'edit') {
         var userDetailsForm = $("#editUserDetails .form-control")
         jsonDoc['edit_url_callback'] = true;
@@ -348,14 +393,14 @@ function editUserData(type) {
         dataid = $(this).attr('dataid');
         required = $(this).attr('required');
         val = $(this).val();
-        type= $(this).attr('type');
+        type = $(this).attr('type');
         if (required && val === "") {
             errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
             $('#add_users_body').append(errMsg);
             is_valid = false;
         }
 
-        if(type === "date"){
+        if (type === "date") {
             val = val + " " + time;
         }
         jsonDoc[dataid] = val;
@@ -374,38 +419,28 @@ function editUserData(type) {
                 xhr.setRequestHeader('Auth-Key', authKey);
             },
             success: function (data) {
-
-                if(!data.teamData.data){
+                
+                if (!data.teamData.data) {
                     alert("something went wrong in updating data");
-                }else{
-                    $.each(data.teamData.data, function(idx,val){
-                        if($("#tr_"+ id +" ."+ idx).attr('id') === 'dt_9'){
-                            var date = new Date(val*1000);
-                            var localDate = date.toLocaleDateString();
-                            $("#tr_"+ id +" ."+ idx).text(localDate);
-                        }else{
-                            $("#tr_"+ id +" ."+ idx).text(val);
-                        }
-                    });
+                } else {
+                    if (is_edit == 1) {
+                        $.each(data.teamData.data, function (idx, val) {
+                            if ($("#tr_" + id + " ." + idx).attr('id') === 'dt_9') {
+                                var date = new Date(val * 1000);
+                                var localDate = date.toLocaleDateString();
+                                $("#tr_" + id + " ." + idx).text(localDate);
+                            } else {
+                                $("#tr_" + id + " ." + idx).text(val);
+                            }
+                        });
+                    }else{
+                        alert("Entry added successfully.");
+                        location.reload();
+                    }
                 }
             },
         });
     }
-}
-
-function initFilterSlider() {
-    //open the lateral panel
-    $('.cd-btn').on('click', function (event) {
-        event.preventDefault();
-        $('.cd-panel').addClass('is-visible');
-    });
-    //clode the lateral panel
-    $('.cd-panel').on('click', function (event) {
-        if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
-            $('.cd-panel').removeClass('is-visible');
-            event.preventDefault();
-        }
-    });
 }
 
 function watchOnchange(ele) {
@@ -467,7 +502,7 @@ function getOptionList() {
 }
 
 function getTeamMates() {
-    if(tableId) {
+    if (tableId) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -522,7 +557,8 @@ function addRow(check) {
     tableData.push(obj);
     return $('#tableField').append(formGrp);
 
-};
+}
+;
 
 function addMoreRow(check) {
 
@@ -566,7 +602,8 @@ function addMoreRow(check) {
     formGrp += '';
     tableData1.push(obj1);
     return $('#tableFieldRow').append(formGrp);
-};
+}
+;
 
 
 // on select field type
@@ -641,32 +678,30 @@ function createSelectElement(arr, selected, k) {
     }
     if (arr.column_type_id == 8) {
         var formGrp = `<select multiple="multiple" class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `">` + lists + ` </select>`;
-    }else {
-        if(arr.column_type_id == 6)
+    } else {
+        if (arr.column_type_id == 6)
             lists += `<option value="Other">Other</option>`;
 
         var formGrp = `<select class="form-control" id="` + k + `" dataid="` + k + `" name="` + k + `" onchange="addOtherOption(this)">` + lists + ` </select>`;
     }
     return formGrp;
-};
+}
+;
 
 //  create select option
 function addOtherOption(element) {
-    if(element.value == "Other")
+    if (element.value == "Other")
     {
-        $("#"+$(element).parent().attr("id")).after("<div class=\"form-group col-xs-12\" id=\"label_other_"+element.id+"\" name=\"label_other_"+element.id+"\"><label style=\"font-weight:600;margin-bottom:10px;color:#292929\">Other "+element.id+"</label><input type='text' id=\"other_"+element.id+"\" name=\"other_"+element.id+"\" class=\"form-control\" style=\"width: 160px;float: left;\"/><a id=\"add_other_"+element.id+"\" class=\"btn btn-success\" style=\"float: right;\" onclick=\"addDropDown('"+element.id+"');\">Add</a></div>" );
-    }
-    else
+        $("#" + $(element).parent().attr("id")).after("<div class=\"form-group col-xs-12\" id=\"label_other_" + element.id + "\" name=\"label_other_" + element.id + "\"><label style=\"font-weight:600;margin-bottom:10px;color:#292929\">Other " + element.id + "</label><input type='text' id=\"other_" + element.id + "\" name=\"other_" + element.id + "\" class=\"form-control\" style=\"width: 160px;float: left;\"/><a id=\"add_other_" + element.id + "\" class=\"btn btn-success\" style=\"float: right;\" onclick=\"addDropDown('" + element.id + "');\">Add</a></div>");
+    } else
     {
-        $("#label_other_"+element.id).remove();
+        $("#label_other_" + element.id).remove();
     }
 }
-function addDropDown(id){
-    console.log(id,tableId);
-    var elementId = "other_"+id;
-    var newValue = $('#'+elementId).val();
-    console.log(newValue);
-    $('#'+id).append( '<option value="'+newValue+'">' + newValue + '</option>' );
+function addDropDown(id) {
+    var elementId = "other_" + id;
+    var newValue = $('#' + elementId).val();
+    $('#' + id).append('<option value="' + newValue + '">' + newValue + '</option>');
 
     $.ajaxSetup({
         headers: {
@@ -679,7 +714,7 @@ function addDropDown(id){
         data: {'name': id, 'value': newValue, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
         success: function (data) {
-            if(data==1) {
+            if (data == 1) {
                 $("#" + id + " option[value='" + newValue + "']").attr("selected", "selected");
                 $("#label_other_" + id).remove();
             }

@@ -1,4 +1,5 @@
 function filterTmpl(data) {
+    console.log(data);
     var html = '<form id="filterForm" >';
     $.each(data, function (key, val) {
         html += `<li class="active">
@@ -48,8 +49,8 @@ function createInputElement(val, key, field, inputType) {
     else is_disable = "disabled";
 
     if (field.unique === 1) {
-        // $("#mod-head").text(val);
-        // inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" ` + is_disable + ` data-change="true" required>`;
+         $("#mod-head").text(val);
+         inputElem += `<input type="` + inputType + `" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" ` + is_disable + ` data-change="true" required>`;
     } else {
         if(inputType === "radio"){
             inputElem += `<input type="` + inputType + `" class="custom-input" id="` + key + `" style="display: block"  name="` + key + `" dataid="` + key + `" value="` + val + `" onchange="watchOnchange(` + key + `)">`;            
@@ -68,4 +69,10 @@ function createHiddenElement(val, key) {
     var inputElem = '';
     inputElem += `<input type="hidden" class="form-control custom-input" id="` + key + `"  name="` + key + `" dataid="` + key + `" value="` + val + `" >`;
     return inputElem;
+}
+
+
+function createFilterDropdown(obj,type) {
+    console.log(obj,type);
+    
 }

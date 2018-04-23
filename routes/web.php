@@ -49,9 +49,18 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for Configure user table in database
     Route::get('/tables/structure/{tableName}', 'TableController@getSelectedTableStructure');
 # for alter user table in database
+    Route::post('/showcolumntable', 'ConfigureTable@showcolumntable');
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
+    Route::post('/updateTableStructure','ConfigureTable@updateTableStructure');
+    Route::post('/rearrangeSequenceColumn', 'ConfigureTable@rearrangeSequenceColumn');
+    Route::post('/hidetablecolumn', 'ConfigureTable@hideTableColumn');
+    Route::get('/gettablecolumndetails', 'ConfigureTable@getTableColumnDetails');
+    Route::get('/updatetablecolumndetails', 'ConfigureTable@updateTableColumnDetails');
     Route::Post('/addDropDown','ConfigureTable@addNewDropDownValue');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
+    Route::get('/listFilters/{tableName}', 'ConfigureTable@listTableFilters');
+    Route::get('/tableaccess/{tableName}', 'TableAccess@configureTableAccess');
+    Route::post('/tableaccessmanage', 'TableAccess@manageTableAccess');
     Route::get('/table/{tableid}/user_data/{id}','ContactController@show');
     Route::get('/table/{table_id}/activity_data/{content_id}','ActivityController@show');
     #serach by filters
@@ -68,6 +77,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/profile', 'UserController@getKey')->name('profile');
     Route::post('/update', 'TableController@updateEntry');
     Route::get('/getTeamMateList/{tableid}', 'TeamController@list');
+    Route::post('/deleteFilter','UserController@deleteFilter');
 });
 
 Route::group(['middleware' => ['socketMasterKey']], function() {

@@ -35,9 +35,22 @@ class TableStructure extends Model {
             ->first()->toArray();
     }
 
+    public static function getTableStructure($tableId){
+        return TableStructure::select("*")
+            ->where('table_id',$tableId)
+            ->get()->toArray();
+    }
+
     public static function updateTableStructureColumn($id,$name,$value)
     {
         return TableStructure::where('id', $id)
+            ->update(array($name => $value));
+    }
+    
+    public static function updateTableStructureColumnByTableId($tableId,$columnName,$name,$value)
+    {
+        return TableStructure::where('table_id', $tableId)
+                ->where('column_name',$columnName)
             ->update(array($name => $value));
     }
 
@@ -146,6 +159,9 @@ class TableStructure extends Model {
                 'column_type_id' => $columnType['id'],
                 'unique' => $detail['is_unique'],
                 'value' => $detail['default_value'],
+                'display' => $detail['display'],
+                'ordering' =>$detail['ordering'],
+                'id' =>$detail['id'],
                 'value_arr' => json_decode($detail['default_value'],TRUE)
                 );
         }

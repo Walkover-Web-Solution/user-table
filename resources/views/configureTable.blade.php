@@ -1,96 +1,26 @@
 @extends('layouts.app-header')
 
 @section('content')
-        <div class="container">
+        <div class="container mt20">
             <div class="row">
                 <!--  new field form -->
                 <div class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Configure</div>
-                        <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
-                        <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
-                        <div class="panel-body">
-                            <form class="">
-
-                                <div class="row" id="column_"`+i+`>
-                                    <div class="form-group col-xs-2">
-                                        Name
-                                    </div>
-                                    <div class="form-group col-xs-2">
-                                        Type
-                                    </div>
-                                    <div class="form-group col-xs-2">
-                                        Display
-                                    </div>
-                                    <div class="form-group col-xs-1">
-                                        Sequence
-                                    </div>
-                                    <div class="form-group col-xs-3">
-                                        Default value
-                                    </div>
-                                    <div class="form-group col-xs-2">
-                                        Unique
-                                    </div>
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-2 active">
+                                   <a href="{{env('APP_URL')}}/configure/{{$tableData['id']}}">Configure</a>
                                 </div>
-
-                                <div id="tableStructure">
-                                    <span style="display: none" id="tableId">{{$tableData['id']}}</span>
-                                    @php ($i = 1)
-                                    @foreach($structure as $key => $value)
-                                    <div class="row" id="column_"`+i+`>
-                                        <div class="form-group col-xs-2">
-                                            <input type="hidden" value="{{$value['column_name']}}" class="name">
-                                            <label>{{$value['column_name']}}</label>
-                                            @if(array_key_exists($value['column_name'], $sequence))
-                                                {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? '(Unique)' : '' }}
-                                            @endif
-                                            <!-- @if($value['is_unique'])
-                                            <span>(Unique)</span>
-                                            @endif -->
-                                        </div>
-                                        <div class="form-group col-xs-2">
-                                            <select class="form-control type">
-                                                <option value="">Select Field Type</option>
-                                                @foreach($columnList as $row)
-                                                <option value="{{ $row['id'] }}" {{ ($value['column_type']['column_name'] == $row['column_name']) ? 'selected' : '' }}>{{ $row['column_name'] }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-xs-2">
-                                            <?php $display = $sequence[$value['column_name']]['display']; ?>
-                                            <select class="form-control display">
-                                                @if(array_key_exists($value['column_name'], $sequence))
-                                                <option value="1" {{ ($display == 1) ? 'selected' : '' }}>Show</option>
-                                                <option value="0" {{ ($display == 0) ? 'selected' : '' }}>Hide</option>
-                                                @endif
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-xs-1">
-                                            @if(array_key_exists($value['column_name'], $sequence))
-                                            <input type="text" value="{{ $sequence[$value['column_name']]['ordering'] }}" name="fieldOrder" class="form-control order order-input lowercase">
-                                            @endif
-                                        </div>
-                                        <div class="form-group col-xs-3">
-                                            <?php $options = json_decode($value['default_value'], true); ?>
-                                            <textarea name="" placeholder="Default value" class="form-control value lowercase">{{ implode(",",$options['options'])}}</textarea>
-                                        </div>
-                                        <div class="form-group col-xs-2">
-                                            @if(array_key_exists($value['column_name'], $sequence))
-                                                <label><input type="radio" name="uniqe" class="unique" {{ ($sequence[$value['column_name']]['is_unique'] == 1) ? 'checked' : '' }} disabled=""> Uniqe</label>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @php ($i++)
-                                    @endforeach
+                                <div class="col-xs-2">
+                                   <a href="{{env('APP_URL')}}/tableaccess/{{$tableData['id']}}">Table Access</a>
                                 </div>
-                                <div id="tableFieldRow">
+                                <div class="col-xs-2">
+                                   <a href="{{env('APP_URL')}}/listFilters/{{$tableData['id']}}">Filters</a>
                                 </div>
-                            </form>
-
-                            <div class="form-group">
-                                <button class="btn btn-md btn-success" onclick="addMoreRow()"><i class="glyphicon glyphicon-plus"></i> Add New Field</button>
                             </div>
                         </div>
+                        <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
+                        
                         <div class="panel-body">
                             <div class="container-fluid">
                                 <div class="row">
@@ -144,60 +74,6 @@ $(document).ready(function(){
 
     function createTable() {
 
-        var idx = {};
-        $('.order-input').each(function(){
-            var val = $(this).val();
-            if(val.length)
-            {
-                if(idx[val])
-                {
-                    idx[val]++;
-                }
-                else
-                {
-                  idx[val] = 1;
-                }
-            }
-        });
-        var gt_one = $.map(idx,function(e,i){return e>1 ? e: null});
-        var isUnique = gt_one.length==0;
-        if(isUnique == false)
-        {
-            alert("This order already used before");
-            return false;
-        }
-
-        $("#tableFieldRow .row").each(function (idx) {
-            var name = $('.name', $(this)).val();
-            if(name!=='') {
-                var type = $('.type', $(this)).val();
-                var display = $('.display', $(this)).val();
-                var order = $('.order', $(this)).val();
-                var unique = $('.unique', $(this)).prop("checked");
-                var value = $('.value', $(this)).val();
-
-                tableData1[idx] = {
-                    'name': name,
-                    'type': type,
-                    'display': display,
-                    'ordering': order,
-                    'unique': unique,
-                    'value': value
-                };
-            }
-        });
-
-        $('#tableStructure .row').each(function (idy) {
-            var name = $('.name', $(this)).val();
-            var type = $('.type', $(this)).val();
-            var display = $('.display', $(this)).val();
-            var order = $('.order', $(this)).val();
-            var unique = $('.unique', $(this)).prop("checked");
-            var value = $('.value', $(this)).val();
-
-            tableData2[idy] = {'name': name, 'type': type, 'display': display, 'ordering': order, 'unique': unique, 'value': value};
-        });
-
         var socketApi = $("#socketApi").val();
         var newEntryApi = $("#newEntryApi").val();
 
@@ -206,9 +82,9 @@ $(document).ready(function(){
 
         console.log(tableId, API_BASE_URL);
         $.ajax({
-            url: API_BASE_URL + '/configureTable',
+            url: API_BASE_URL + '/updateTableStructure',
             type: 'POST',
-            data: {tableData: tableData1, tableOldData: tableData2, tableId: tableId, socketApi: socketApi , newEntryApi : newEntryApi},
+            data: {tableId: tableId, socketApi: socketApi , newEntryApi : newEntryApi},
             dataType: 'json',
             success: function (info) {
                 $('#updateTable').attr("disabled", false);

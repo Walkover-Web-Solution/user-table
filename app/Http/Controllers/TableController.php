@@ -33,14 +33,17 @@ class TableController extends Controller
     {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
-        $data = Helpers::aasort($data1, "ordering"); // Array sort by abhishek jain
+        if(!empty($data1)){
+            $data = Helpers::aasort($data1, "ordering"); // Array sort by abhishek jain
 
-        $resp = TableStructure::validateStructure($data);
+            $resp = TableStructure::validateStructure($data);
 
-        if (!empty($resp['error'])) {
-            return response()->json($resp);
+            if (!empty($resp['error'])) {
+                return response()->json($resp);
+            }
+        }else{
+            $data = array();
         }
-
         $userTableName = $request->input('tableName');
 
         if (empty($userTableName)) {
@@ -71,12 +74,14 @@ class TableController extends Controller
 
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
-            foreach ($resp['data'] as $key => $value) {
-                $value['table_id'] = $autoIncId;
-                $resp['data'][$key] = $value;
+            if(!empty($resp['data'])){
+                foreach ($resp['data'] as $key => $value) {
+                    $value['table_id'] = $autoIncId;
+                    $resp['data'][$key] = $value;
+                }
+                #insert table structure in table
+                TableStructure::insertTableStructure($resp['data']);
             }
-            #insert table structure in table
-            TableStructure::insertTableStructure($resp['data']);
 
             return response()->json($arr);
         } else {
@@ -90,6 +95,13 @@ class TableController extends Controller
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
+
+        $user =  Auth::user();
+        $email = $user['email'];
+        //print_r($email);
+        $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
+
+
 
         foreach ($teams as $teamId => $teamName) {
             $teamNameArr[] = $teamName;
@@ -114,7 +126,8 @@ class TableController extends Controller
         return view('showTable', array(
             'teamsArr' => $teams,
             'source_arr' => $source_arr,
-            'teamTables' => $teamTables
+            'teamTables' => $teamTables,
+            'readOnlyTables'=> $readOnlytableLst
         ));
     }
 
@@ -155,18 +168,30 @@ class TableController extends Controller
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
-
+        $isGuestAccess = false;
+        
         foreach ($teams as $teamId => $teamName) {
             $teamNameArr[] = $teamName;
             $teamIdArr[] = $teamId;
         }
 
         $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
+       // print_r($tableLst);
+        if(count($tableLst) == 0){
+            $user =  Auth::user();
+            $email = $user['email'];
+            $tableLst = team_table_mapping::getUserTablesByEmailAndTableId($email,$tableId);
+            if(!empty($tableLst[0]->parent_table_id)){
+                $isGuestAccess = true;
+            }
+        }
+
         if(count($tableLst) == 0){
             return redirect()->route('tables');
         }
 
         $results = $this->processTableData($tableId, $tabName);
+        $results['isGuestAccess'] = $isGuestAccess;
         return view('home', $results);
     }
 
@@ -202,7 +227,13 @@ class TableController extends Controller
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
             $teamId = $tableNames['team_id'];
-            $teammates = Teams::getTeamMembers($teamId);
+            $parentTableId = $tableNames['parent_table_id'];
+            if(!empty($parentTableId)){
+                $table = $this->tableDetail->get($parentTableId);
+                $teammates = Teams::getTeamMembers($table->team_id);
+            }else{
+                $teammates = Teams::getTeamMembers($teamId);
+            }
 
             $teammatesOptions = array();
             foreach ($teammates as $tkey => $tvalue) {
@@ -231,8 +262,13 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId, $coltype, $pageSize = 100)
+    public function processFilterData($req, $tableId, $coltype,$condition='and', $pageSize = 100)
     {
+        $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
+        $colArr = array(0=>'id');
+        foreach ($columnsonly as $col){
+            $colArr[] =$col['column_name'];
+        }
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
@@ -241,7 +277,7 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype, $pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype,$condition,$colArr, $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -249,13 +285,19 @@ class TableController extends Controller
         $teamId = $tableNames['team_id'];
         $teammates = Teams::getTeamMembers($teamId);
 
+        if(!empty($tableNames['parent_table_id'])){
+            $isGuestAccess = true;
+        }else
+            $isGuestAccess =false;
+
         return array(
             'allTabs' => $results,
             'tableId' => $tableId,
             'teammates' => $teammates,
             'pagination' => $data,
             'structure' => $userTableStructure,
-            'tableAuth' => $tableAuth);
+            'tableAuth' => $tableAuth,
+            'isGuestAccess'=>$isGuestAccess);
     }
 
     # function get search for selected filters
@@ -264,9 +306,9 @@ class TableController extends Controller
     {
         $req = (array)($request->filter);
         $coltype = ($request->coltype);
-
         $tableId = $request->tableId;
-        $responseArray = $this->processFilterData($req, $tableId, $coltype, 100);
+        $condition = $request->condition;
+        $responseArray = $this->processFilterData($req, $tableId, $coltype,$condition, 100);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                 ->header('Content-Type', 'application/json');
@@ -281,75 +323,203 @@ class TableController extends Controller
         $tableIdMain = $tableNames['table_id'];
         Tables::markRecordsAsDeleted($tableIdMain, $ids);
     }
-    public static function getAppliedFiltersData($req, $tableId, $coltype, $pageSize = 100)
+    public static function getAppliedFiltersData($req, $tableId, $coltype,$condition,$colArr=array(),$pageSize = 100)
     {
-        $users = DB::table($tableId)->selectRaw('*');
+        if(empty($colArr))
+            $users = DB::table($tableId)->selectRaw('*');
+        else
+            $users = DB::table($tableId)->selectRaw(implode(",", $colArr));
+        $flag=0;
         foreach (array_keys($req) as $paramName) {
             $colomntype = $coltype[$paramName];
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
-                if ($val == 'me' && $loggedInUser = Auth::user()) {
-                    $users->where($paramName, '=', $loggedInUser->email);
-                } else
-                    $users->where($paramName, '=', $req[$paramName]['is']);
-            } else if (isset($req[$paramName]['is_not'])) {
-                $users->where($paramName, '<>', $req[$paramName]['is_not']);
-            } else if (isset($req[$paramName]['starts_with'])) {
-                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
-            } else if (isset($req[$paramName]['ends_with'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
-            } else if (isset($req[$paramName]['contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
-            } else if (isset($req[$paramName]['not_contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
-            } else if (isset($req[$paramName]['is_unknown'])) {
-                $users->whereNull($paramName)->orWhere($paramName, '');
-            } else if (isset($req[$paramName]['has_any_value'])) {
-                $users->whereNotNull($paramName)->where($paramName, '<>', '');
-            } else if (isset($req[$paramName]['greater_than'])) {
-                $users->where($paramName, '>', $req[$paramName]['greater_than']);
-            } else if (isset($req[$paramName]['less_than'])) {
-                $users->where($paramName, '<', $req[$paramName]['less_than']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['from'])) {
-                $users->where($paramName, '>=', $req[$paramName]['from']);
-            } else if (isset($req[$paramName]['to'])) {
-                $users->where($paramName, '<=', $req[$paramName]['to']);
-            } else if (isset($req[$paramName]['on'])) {
+                if($flag && $condition=='or')
+                {
+                    if ($val == 'me' && $loggedInUser = Auth::user()) {
+                        $users->orWhere($paramName, '=', $loggedInUser->email);
+                    } else
+                        $users->orWhere($paramName, '=', $req[$paramName]['is']);
+                }else{
+                    if ($val == 'me' && $loggedInUser = Auth::user()) {
+                        $users->where($paramName, '=', $loggedInUser->email);
+                    } else
+                        $users->where($paramName, '=', $req[$paramName]['is']);
+                }
+                $flag=1;
+            }
+            if (isset($req[$paramName]['is_not'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '<>', $req[$paramName]['is_not']);
+                }else
+                    $users->where($paramName, '<>', $req[$paramName]['is_not']);
+                $flag=1;
+            }
+            if (isset($req[$paramName]['starts_with'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+                }else{
+                    $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+                }
+                $flag=1;
+            }
+            if (isset($req[$paramName]['ends_with'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
+                }
+                else
+                    $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['contains'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
+                }else
+                    $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
+                $flag=1;
+            }
+            if (isset($req[$paramName]['not_contains'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                }else
+                    $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['is_unknown'])) {
+                if($flag && $condition=='or'){
+                    $users->OrWhere(function ($query) use($paramName){
+                        $query->orWhereNull($paramName)
+                        ->orWhere($paramName, '');
+                    });
+                }else{
+                    $users->where(function ($query) use($paramName){
+                        $query->whereNull($paramName)
+                        ->orWhere($paramName, '');
+                    });
+                }
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['has_any_value'])) {
+                if($flag && $condition=='or'){
+                    $users->OrWhere(function ($query) use($paramName){
+                        $query->orWhereNotNull($paramName)
+                        ->where($paramName, '<>', '');
+                    });
+                }else{
+                    $users->where(function ($query) use($paramName){
+                        $query->whereNotNull($paramName)
+                        ->where($paramName, '<>','');
+                    });
+                }
+                $flag=1;
+            }
+            if (isset($req[$paramName]['greater_than'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '>', $req[$paramName]['greater_than']);
+                }else
+                    $users->where($paramName, '>', $req[$paramName]['greater_than']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['less_than'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '<', $req[$paramName]['less_than']);
+                }else
+                    $users->where($paramName, '<', $req[$paramName]['less_than']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['equals_to'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '=', $req[$paramName]['equals_to']);
+                }else
+                    $users->where($paramName, '=', $req[$paramName]['equals_to']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['equals_to'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '=', $req[$paramName]['equals_to']);
+                }else
+                    $users->where($paramName, '=', $req[$paramName]['equals_to']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['from'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '>=', $req[$paramName]['from']);
+                }else
+                    $users->where($paramName, '>=', $req[$paramName]['from']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['to'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '<=', $req[$paramName]['to']);
+                }else
+                    $users->where($paramName, '<=', $req[$paramName]['to']);
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['on'])) {
                 $d = $req[$paramName]['on'];
                 $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
                 $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
                 $sttimestamp = strtotime($st);
                 $endtimestamp = strtotime($enddt);
-                $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
-            } else if (isset($req[$paramName]['before'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                }else
+                    $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                $flag=1;
+            }
+            if (isset($req[$paramName]['before'])) {
                 if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['before']);
-                    $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<=', $timestamp)->where($paramName, '>', 0);
+                    }else
+                        $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
                 } else {
-                    $users->where($paramName, '<=', $req[$paramName]['before']);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<=', $req[$paramName]['before']);
+                    } else {
+                        $users->where($paramName, '<=', $req[$paramName]['before']);
+                    }
                 }
-            } else if (isset($req[$paramName]['after'])) {
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['after'])) {
                 if ($colomntype == 'date') {
                     $timestamp = strtotime($req[$paramName]['after']);
-                    $users->where($paramName, '>=', $timestamp);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>=', $timestamp);
+                    }else
+                        $users->where($paramName, '>=', $timestamp);
                 } else {
-                    $users->where($paramName, '>=', $req[$paramName]['after']);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>=', $req[$paramName]['after']);
+                    }else
+                        $users->where($paramName, '>=', $req[$paramName]['after']);
                 }
-            } else if (isset($req[$paramName]['days_before'])) {
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['days_before'])) {
                 $days = $req[$paramName]['days_before'];
                 $daysbefore = time() - ($days * 24 * 60 * 60);
-                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
-            } else if (isset($req[$paramName]['days_after'])) {
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
+                }else{
+                   $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0); 
+                }
+                $flag=1;
+            } 
+            if (isset($req[$paramName]['days_after'])) {
                 $days = $req[$paramName]['days_after'];
                 $daysafter = time() + ($days * 24 * 60 * 60);
-                $users->where($paramName, '>=', $daysafter);
+                if($flag && $condition=='or'){
+                    $users->orWhere($paramName, '>=', $daysafter);
+                }else{
+                    $users->where($paramName, '>=', $daysafter);
+                }
+                $flag=1;
             }
-
         }
+        //echo $users->toSql();die;
         $data = $users->latest('id')->paginate($pageSize);
         return $data;
     }
@@ -485,6 +655,10 @@ class TableController extends Controller
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
         $tableAuth = $tableNames['auth'];
+        if(!empty($tableNames['parent_table_id'])){
+            $isGuestAccess = true;
+        }else
+            $isGuestAccess =false;
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
@@ -522,6 +696,7 @@ class TableController extends Controller
                 'tableAuth' => $tableAuth,
                 'pagination' => $results,
                 'structure' => $userTableStructure,
+                'isGuestAccess'=>$isGuestAccess
             );
         }
     }
@@ -553,7 +728,7 @@ class TableController extends Controller
         $req = $request->all();
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        return $this->processFilterData($req, $tableDetails['id'], $pageSize);
+        return $this->processFilterData($req, $tableDetails['id'],$condition='and', $pageSize);
     }
 
     public function getContacts(Request $request)

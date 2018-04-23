@@ -14,13 +14,15 @@ class ColumnTypesSeeder extends Seeder {
      */
     public function run() {
         foreach ($this->columnNames as $key => $name) {
-            $insertArray = array(
-                'id' => $key+1,
-                'column_name' => $name,
-                'created_at' => date("Y-m-d H:i:s"),
-                'updated_at' => date("Y-m-d H:i:s")
-            );
-            ColumnType::firstOrCreate(array('id'=>$key+1),$insertArray);
+            if($name != 'radio button' && $name != 'checkbox'){
+                $insertArray = array(
+                    'id' => $key+1,
+                    'column_name' => $name,
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s")
+                );
+                ColumnType::firstOrCreate(array('id'=>$key+1),$insertArray);
+            }
         }
     }
 }

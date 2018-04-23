@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class team_table_mapping extends Model {
 
     protected $table = 'team_table_mappings';
-    protected $fillable = ['id', 'table_name', 'table_id', 'team_id', 'table_structure', 'auth','socket_api', 'new_entry_api'];
+    protected $fillable = ['id', 'table_name', 'table_id', 'team_id', 'table_structure', 'auth','socket_api', 'new_entry_api','parent_table_id'];
     public $timestamps = false;
 
     public function tableStructure() {
@@ -30,6 +30,14 @@ class team_table_mapping extends Model {
                 ->get();
         return $data;
     }
+    public static function getUserTablesByEmailAndTableId($email,$tableId) {
+        $data = team_table_mapping::with('tableStructure.columnType')
+                ->where('team_id', $email)
+                ->where('id', $tableId)
+                ->get();
+        return $data;
+    }
+    
 
     public static function makeNewTableEntry($paramArr) {
         $data = team_table_mapping::create($paramArr);
@@ -48,6 +56,26 @@ class team_table_mapping extends Model {
         $data = team_table_mapping::with('tableStructure.columnType')
                 ->where('id', $tableId)
                 ->first()->toArray();
+        return $data;
+    }
+    
+    public static function getUserTablesColumnNameById($tableId) {
+        $data = DB::table('table_structures')
+            ->select('column_name')
+            ->where('table_id', $tableId)
+            ->get();
+        return json_decode(json_encode($data), true);
+    }
+
+    public static function getUserTablesNameByParentId($tableId) {
+        $data = team_table_mapping::select('*')->where('parent_table_id', $tableId)
+                ->get()->toArray();
+        return $data;
+    }
+
+    public static function getUserTablesNameByEmail($email) {
+        $data = team_table_mapping::select('*')->where('team_id', $email)
+                ->get()->toArray();
         return $data;
     }
 

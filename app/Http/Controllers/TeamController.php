@@ -18,6 +18,9 @@ class TeamController extends Controller
     public function list($tableId)
     {
         $table = $this->tableDetail->get($tableId);
+        $parentTableId = $table->parent_table_id;
+        if(!empty($parentTableId))
+            $table = $this->tableDetail->get($parentTableId);
         $teamId = $table->team_id;
         $teammates = Teams::getTeamMembers($teamId);
 

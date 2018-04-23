@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\TableDetailRepositoryInterface;
 use App\Entity\Activity;
+//use Carbon\Carbon;
 
 class ActivityController extends Controller
 {
@@ -28,6 +29,14 @@ class ActivityController extends Controller
         foreach ($activity as $key=>$act){
             $log = $this->activity->getDescription($act);
             $act->log = $log;
+            
+            if(strtolower($act->action) == 'create')
+                $carbonDate = $act->created_at;
+            else
+                $carbonDate = $act->updated_at;
+            
+            $date = $carbonDate->diffForHumans();
+            $act->activityDate = $date;
             $activityData[$key] = $act;
         }
 

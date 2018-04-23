@@ -130,7 +130,7 @@
                     <div class="charts-container">
                         <div class="pie-chart-container row">
                             @foreach( $other_columns as $other_column)
-                                <div class="pie-chart col-md-3 col-lg-3">
+                                <div class="pie-chart col-md-2 col-lg-2 col-sm-4 col-xs-6">
                                     <div class="column-caption">Column : {{$other_column}}</div>
                                     <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
                                 </div>
@@ -410,5 +410,15 @@
         </div>
     </div>
     <!-- End Modal -->
+<script>
 
+$(document).ready(function(){
+    $('.dropdowncolumn').hover(function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+}, function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+});
+});     
+
+</script>
 @stop

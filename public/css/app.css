@@ -4866,7 +4866,6 @@ tbody.collapse.in {
 .navbar {
     position: relative;
     min-height: 50px;
-    margin-bottom: 22px;
     border: 1px solid transparent
 }
 
@@ -4978,10 +4977,14 @@ tbody.collapse.in {
 
 .navbar-brand {
     float: left;
-    padding: 14px 15px;
+    padding: 0 15px;
     font-size: 18px;
     line-height: 22px;
-    height: 50px
+    height: 50px;
+    
+}
+.navbar-brand img{
+    margin-left:-42px;
 }
 
 .navbar-brand:focus,
@@ -5660,9 +5663,10 @@ fieldset[disabled] .navbar-inverse .btn-link:hover {
 
 a.label:focus,
 a.label:hover {
-    color: #fff;
+    color: #000 !important;
     text-decoration: none;
-    cursor: pointer
+    cursor: pointer;
+    outline:none !important;
 }
 
 .label-default {
@@ -6861,10 +6865,8 @@ button.close {
 .modal-content {
     position: relative;
     background-color: #fff;
-    border: 1px solid #999;
-    border: 1px solid rgba(0, 0, 0, .2);
+   
     border-radius: 6px;
-    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     outline: 0
 }
 
@@ -6935,9 +6937,7 @@ button.close {
         width: 600px;
         margin: 30px auto
     }
-    .modal-content {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-    }
+   
     .modal-sm {
         width: 300px
     }
@@ -7689,4 +7689,7 @@ button.close {
     .hidden-print {
         display: none!important
     }
+}
+.mt20{
+    margin-top:20px !important;
 }
