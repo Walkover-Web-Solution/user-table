@@ -268,7 +268,7 @@
 </script>
 <!-- inline scripts -->
 <script>
-    $('body').addClass('loader');
+    // $('body').addClass('loader');
 </script>
 <script>
     function show_column_type(column_name)
@@ -512,7 +512,7 @@
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)
                     <table id="table-1q" class="table basic table-bordred" >
-                        <thead><tr id="0"><th>Sequence</th><<th>Column Name</th><th>Hidden</th></tr></thead>
+                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th><th>Hidden</th></tr></thead>
                     @foreach($structure as $key => $val)
                     <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td><td><input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /></td></tr>
                     @endforeach

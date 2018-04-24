@@ -624,7 +624,6 @@ th {
     overflow: auto;
     flex: 1;
     background:#fff;
-    max-width: 1000px;
     width: 100%;
 }
 .mb20{

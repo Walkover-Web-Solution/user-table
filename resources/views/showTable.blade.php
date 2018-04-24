@@ -72,7 +72,7 @@
     @endforeach
 
     @if(!empty($readOnlyTables))
-    <div class="row">
+    <div>
         <div id="heads-up">Guest Access</div>
         <div>
             @foreach($readOnlyTables as $table)
