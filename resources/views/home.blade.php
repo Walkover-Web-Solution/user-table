@@ -618,7 +618,7 @@ console.log(window.location.href);
     <div class="modal-dialog" style="width:800px">
         <!-- Modal content-->
         <div style="background:rgb(237,239,240)" class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" id="modal_header_column">
                 <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
                 <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head_edit" class="modal-title">Edit User</span>
                 <button type="button" class="close" data-dismiss="modal">×</button>
