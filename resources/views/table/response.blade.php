@@ -6,13 +6,13 @@
         text-overflow: ellipsis;
         /* width: 100%; */
     }
-    .dropdowncolumn { position: absolute; top: 0px;}
+    .dropdowncolumn { position: absolute; top: 10px;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
-    .dropdowncolumn .dropdown-menu{top:37px !important;}
+   
     .default_value_div {display: none;}
 </style>
-<table class="table basic table-bordred">
+<table class="table basic table-bordred user-table-layout">
     @if(empty($structure) && !$isGuestAccess)
         <thead id="userThead">
             <tr><th><span></span></th><th><span><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
@@ -57,7 +57,7 @@
             @endif
         @if($k!='id')
         @if(!$isGuestAccess)
-            <th>
+            <th style="position:relative;">
             <div class="dropdowncolumn">
                 <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}
                     <span class="caret"></span>

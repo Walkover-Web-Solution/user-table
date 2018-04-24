@@ -237,6 +237,17 @@ p span.old-val{
 .panel-table input[type="text"], select{
     margin-top:10px;
 }
+.select-filter{
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    color: #222;
+    /* min-width: 100px; */
+    padding: 20px 20px;
+    background:#eee;
+    height: 40px;
+    min-width: 200px;
+}
 .label-filter{
     display: inline-block;
     font-size: 14px;
@@ -260,9 +271,10 @@ p span.old-val{
     color:#222;
 }
 
+
 .label-search-icon{
     display: inline-block;
-    padding: 14px !important;
+    padding: 13px !important;
     line-height: 0;
     position: relative;
     z-index:2;
@@ -283,6 +295,9 @@ p span.old-val{
     background:#fff;
     border:1px solid #0549d1;
     
+}
+.label-filter-bordered-blue{
+    border:1px solid #0549d1;
 }
 .bold{
     font-weight:bold;
@@ -338,3 +353,25 @@ p span.old-val{
     margin-right:5px;
     font-size:11px;
 }
+.user-table-layout thead{
+    display: block;
+	overflow: visible !important;
+	color: #fff;
+	
+}
+.user-table-layout tbody{
+    display: block;
+	height: 100vh;
+	overflow: auto;
+}
+#all_users{
+    overflow-y: hidden;
+}
+#userThead tr{
+    width:100%;
+    display: block;
+}
+
+
+
+

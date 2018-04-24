@@ -442,7 +442,14 @@ th {
 #main-wrp {
     display: flex;
     flex-direction: column;
-    height: 100%;
+}
+.fixed-header{
+    position: fixed;
+    width:100%;
+    top:0;
+    background: #fff;
+    border-bottom:1px solid #ececec;
+
 }
 
 .body {
@@ -455,6 +462,9 @@ th {
 .nav-and-table {
     display: flex;
     flex-grow: 1;
+    width: 98%;
+    margin: auto;
+    border: 1px solid #ececec;
 }
 
 .nav-side-menu-header {
@@ -517,7 +527,7 @@ th {
     display: block;
     float: left;
 }
-#tablist>li a:hover, #tablist>li a:focus, #tablist>li a:active, #tablist>li a:visited{
+#tablist>li a:hover, #tablist>li a:focus, #tablist>li a:active, #tablist>li a.visited{
     background: #333 !important;
 }
 
@@ -615,7 +625,7 @@ th {
 }
 
 .user-dashboard {
-    padding: 38px 0 0;
+    padding: 0 0 0;
     /* width: 100%; */
     box-sizing: border-box;
     display: flex;
@@ -654,11 +664,11 @@ th {
     margin-bottom: 5px;
 }
 
-.fixed-header {
+/* .fixed-header {
     position: absolute;
     text-transform: capitalize;
     top: 8px;
-}
+} */
 
 .table tr:hover {
     background: #f5f5f5;
@@ -768,23 +778,24 @@ side bar component end
     color:#000;
     position: absolute;
     cursor: pointer;
-    top: 7px;
+    top: 5px;
     right: 8px;
 }
 .search-form input.form-control{
-    border: none !important;
     box-shadow: none !important;
-    border:1px solid rgba(34,34,34,.2) !important;
-    border-right:0px solid transparent !important;
-    right: -30px;
+    border: 1px solid rgba(34,34,34,.2) !important;
+    border-right: 0px solid transparent !important;
+    right: -32px;
     position: relative;
-    color:#222;
-    height:30px;
+    color: #222;
+    height: 28px;
     border-radius: 2px;
-    width:0;
+    width: 0;
     position: relative;
     z-index: 1;
+    top: 0;
 }
+
 .li-radio{
     padding:10px 20px;
 }
@@ -813,25 +824,32 @@ side bar component end
     box-shadow: none;
     border:1px solid #888;
 }
-
+#user-board .table.basic tbody tr{
+    border-top: 1px solid rgba(34,34,34,.1);
+    display: block;
+}
 #user-board .table.basic td {
     /* border-right: 1px solid #ddd; */
-    border-top: 1px solid rgba(34,34,34,.1);
+   border-top:none !important;
     color:#222;
 }
 #user-board .table.basic th{
     font-weight:bold;
     color:#888;
+    overflow: visible;
+    padding-top:10px !important;
+    padding-bottom:10px !important;
 }
 #user-board .table.basic th .dropdowncolumn span{
     text-decoration: underline;
-    padding:0 0 10px 0;
+    padding:0 0 0 0;
     vertical-align: middle;
 }
 #user-board .table.basic th .dropdowncolumn span span{
     position: relative;
-    top:5px;
+    top:0;
 }
+
 .dropdowncolumn:hover .dropdown-toggle{
     display:block !important;
 }
@@ -1004,7 +1022,7 @@ side bar component end
 }
 .dropdown-menu{
     position: absolute !important;
-    top:100% !important;
+    top:15px !important;
 }
 .li-checkbox{
     padding:0;
