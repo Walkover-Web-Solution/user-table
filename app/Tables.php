@@ -59,6 +59,11 @@ class Tables extends Model
             'is_unknown' => null,
             'has_any_value' => null
         );
+        $forLongText = array(
+            'contains' => null,
+            'is_unknown' => null,
+            'has_any_value' => null
+        );
         $data = array();
 
         foreach ($userTableStructure as $column => $struct) {
@@ -100,6 +105,13 @@ class Tables extends Model
                 $col_detail['col_type'] = $col_type;
                 $col_detail['col_filter'] = $forTeamMates;
                 $col_detail['col_options'] = $teammates;
+                $data[$col_name] = $col_detail;
+            }else if($col_type == 'long text'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forLongText;
+                $col_detail['col_options'] = $col_options;
                 $data[$col_name] = $col_detail;
             }
 
