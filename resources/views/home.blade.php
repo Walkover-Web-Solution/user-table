@@ -2,7 +2,7 @@
 @section('content')
 <div class="tablist">
     <ul id="tablist">
-        <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li>
+        <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
         <li role="presentation">
             <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Graph</a>
         </li>
@@ -62,7 +62,7 @@
 
 <div class="mt20 mtb20">
     <div class="col-sm-10">
-        <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')">
+        <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')" class="select-filter">
         <option value="and"><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or"><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
@@ -392,6 +392,7 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
 </script>
+
 <!-- inline scripts -->
 <script>
     function show_column_type(column_name)
@@ -561,6 +562,26 @@
             $('#delete_filter_'+col_name+' a:first').html(a_html);
         }
     </script>
+  
+    <script>
+            $(window).scroll(function(){
+                    if ($(window).scrollTop() >= 210) {
+                    $('thead').addClass('fixed-header');
+                    }
+                    else {
+                    $('thead').removeClass('fixed-header');
+                    }
+                });
+    </script>
+ <script>
+   $(function(){
+    var current = window.location.href;
+    if(window.location.href == $(#tablist li a[]))
+});
+
+console.log(window.location.href);
+ </script>
+
 @stop
 @section('models')
 <!-- Modal -->
@@ -644,7 +665,7 @@
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)
                     <table id="table-1q" class="table basic table-bordred" >
-                        <thead><tr id="0"><th>Sequence</th><<th>Column Name</th><th>Hidden</th></tr></thead>
+                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th><th>Hidden</th></tr></thead>
                     @foreach($structure as $key => $val)
                     <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td><td><input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /></td></tr>
                     @endforeach
