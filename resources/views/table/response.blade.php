@@ -9,7 +9,7 @@
     .dropdowncolumn { position: absolute; top: 10px;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
-    .dropdowncolumn .dropdown-menu{top:100% !important;}
+   
     .default_value_div {display: none;}
 </style>
 <table class="table basic table-bordred user-table-layout">
