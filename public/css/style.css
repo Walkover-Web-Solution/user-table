@@ -1082,17 +1082,17 @@ side bar component end
     border-radius: 50%;
     animation: 1s loader-icon linear infinite;
     position: relative;
-    &:before {
-      content: "";
-      width: inherit;
-      height: inherit;
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      border: 5px solid rgba(0, 0, 0, 0.2);
-      border-radius: 50%;
-      opacity: 0.5;
-    }
+  }
+  .loader .loader-icon:before {
+    content: "";
+    width: inherit;
+    height: inherit;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    border: 5px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    opacity: 0.5;
   }
   @keyframes loader-icon {
     0% {
