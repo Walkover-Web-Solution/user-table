@@ -256,7 +256,7 @@ class ConfigureTable extends Controller
         foreach ($columnId as $key => $val)
         {
             TableStructure::updateTableStructureColumn($val, 'ordering', $key+1);
-            if($displayArray[$val] != null)
+            if(!empty($displayArray[$val]))
                 TableStructure::updateTableStructureColumn($val, 'display', $displayArray[$val]);
         }
         
