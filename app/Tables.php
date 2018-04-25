@@ -225,7 +225,7 @@ class Tables extends Model
     public static function makeFilterQuery($req, $users,$coltypes)
     {
         foreach (array_keys($req) as $paramName) {
-            $colomntype = $coltypes[$paramName];
+            $colomntype = isset($coltypes[$paramName])?$coltypes[$paramName]:'';
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
                 if ($val == 'me' && $loggedInUser = Auth::user()) {
