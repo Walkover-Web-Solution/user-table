@@ -370,7 +370,7 @@
 <div class="nav-and-table  from-right">
     <div id="user-board" class="user-dashboard">
         <!-- Tab panes -->
-        <div class="scroll-x flex">
+        <div class="scroll-x flex" style="overflow:visible;">
             <div class="scroll-y flex w-100per" id="def_response">
                 @include('table.response')
             </div>
@@ -665,7 +665,7 @@ console.log(window.location.href);
             <form id="editColumnSequence">
                 <div class="modal-body">
                     <div class="col-xs-8" id="edit_column_body"></div>
-                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="width:20px" class="col-xs-2">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)

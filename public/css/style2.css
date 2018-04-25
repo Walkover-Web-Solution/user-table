@@ -234,9 +234,9 @@ p span.old-val{
     margin-left: 30px;
     margin-bottom: 30px;
 }
-.panel-table input[type="text"], select{
+/* .panel-table input[type="text"], select{
     margin-top:10px;
-}
+} */
 .select-filter{
     display: inline-block;
     font-size: 14px;
@@ -361,11 +361,15 @@ p span.old-val{
 }
 .user-table-layout tbody{
     display: block;
-	height: 100vh;
-	overflow: auto;
+	/* height: 100vh; */
+    overflow: auto;
+    height:100%;
 }
-#all_users{
+/* #all_users{
     overflow-y: hidden;
+} */
+#all_users tr td select{
+    margin-top:0 !important;
 }
 #userThead tr{
     width:100%;

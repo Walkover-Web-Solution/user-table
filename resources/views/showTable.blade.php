@@ -1,9 +1,9 @@
 @extends('layouts.app-header')
 
 @section('content')
-
+@foreach($teamTables as $teamId=>$tables)
 <div class="container">
-    @foreach($teamTables as $teamId=>$tables)
+    
     <div class="row">
         <div class="col-sm-12">
                 <div class="col-sm-8">

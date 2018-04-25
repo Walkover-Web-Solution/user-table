@@ -484,6 +484,8 @@ th {
 
 #user-board {
     border-left: 1px solid #ddd;
+    overflow: visible;
+    /* overflow-x: hidden; */
 }
 
 
@@ -833,6 +835,38 @@ side bar component end
    border-top:none !important;
     color:#222;
 }
+#user-board .table.basic  td select{
+    width:100%;
+}
+#user-board .table.basic  td:not(:first-child) {
+    min-width: 120px;
+    width: 200px;
+    padding-left:0;
+    
+}
+#user-board .table.basic  th:not(:first-child) {
+    min-width: 120px;
+    width: 200px;
+    /* width:300px; */
+}
+#user-board .table.basic td .col_value, #user-board .table.basic th .col_value{
+    max-width: 100px;
+}
+@media only screen and (max-width:1366px){
+    #user-board .table.basic  td:not(:first-child) {
+        min-width: 100px;
+        width:100px;
+    }
+    #user-board .table.basic  th:not(:first-child) {
+        min-width: 100px;
+        width: 100px;
+        /* width:300px; */
+    }
+    #user-board .table.basic td .col_value, #user-board .table.basic th .col_value{
+        max-width: 100px;
+    }
+}
+
 #user-board .table.basic th{
     font-weight:bold;
     color:#888;
