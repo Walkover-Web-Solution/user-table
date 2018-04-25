@@ -194,6 +194,7 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 var authKey = res.authKey;
                 var teammates = teamMateList;
                 var editForm = '';
+                var edituniqueForm = '';
                 var form_text = '';
                 var sec_editForm = '';
                 if (val) {
@@ -245,16 +246,19 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                                     currentField['value_arr']['options'] = teammates;
                                     sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.unique === 1) {
-                                    $("#mod-head").text(val[k]);
+                                    edituniqueForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                    edituniqueForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
                                 }
                             }
                             form_text += '</div>';
                             editForm += '</div>';
+                            edituniqueForm += '</div>';
                             sec_editForm += '</div>';
                         }
                     }
                     // editForm += '<textarea class="form-group col-xs-12 custom-input" col="100" row="5"></textarea>';
                     editForm += form_text;
+                    $("#modal_header_column").html(edituniqueForm+'<button type="button" class="close" data-dismiss="modal">×</button>');
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#is_edit').val(1);

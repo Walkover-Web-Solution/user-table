@@ -6,27 +6,27 @@
         text-overflow: ellipsis;
         /* width: 100%; */
     }
-    .dropdowncolumn { position: absolute; top: 0px;}
+    .dropdowncolumn { position: absolute; top: 10px;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
-    .dropdowncolumn .dropdown-menu{top:37px !important;}
+   
     .default_value_div {display: none;}
 </style>
-<table class="table basic table-bordred">
+<table class="table basic table-bordred user-table-layout">
     @if(empty($structure) && !$isGuestAccess)
         <thead id="userThead">
-            <tr><th><span class="fixed-header"></span></th><th><span class="fixed-header"><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
+            <tr><th><span></span></th><th><span><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
         </thead>
     @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
         <thead id="userThead">
             <tr>
-                <th><span class="fixed-header"></span></th>
-                <th hidden><span class="fixed-header"></span></th>
+                <th><span></span></th>
+                <th hidden><span></span></th>
                 @foreach($structure as $key => $val)
                 @if($val['display'] != 0)
                 <th>
                     <div class="dropdowncolumn">
-                        <span class="fixed-header dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
+                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
                             <span class="caret"></span>
                         </span>
                     <ul class="dropdown-menu">
@@ -49,7 +49,7 @@
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
-         <th><span class="fixed-header"><input type="checkbox" id="selectall" /></span></th>
+         <th><span><input type="checkbox" id="selectall" /></span></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
@@ -57,9 +57,9 @@
             @endif
         @if($k!='id')
         @if(!$isGuestAccess)
-            <th>
+            <th style="position:relative;">
             <div class="dropdowncolumn">
-                <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}
+                <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}
                     <span class="caret"></span>
                 </span>
             <ul class="dropdown-menu">
@@ -72,11 +72,11 @@
         </th>
         @else
         <th>
-           <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
+           <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
         </th>
         @endif
         @else
-        <th hidden class="fixed-header"><span>{{$k}}</span></th>
+        <th hidden><span>{{$k}}</span></th>
         @endif
         @endforeach
     </tr>
@@ -164,9 +164,9 @@
         } ?>
         <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
         @elseif($k == 'id')
-        <td hidden class="{{$k}}">{{$colValue}}</td>
+        <td hidden class="{{$k}}"><div class="col_value">{{$colValue}}</div></td>
         @else
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">{{$colValue}}</td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><div class="col_value">{{$colValue}}</div></td>
         @endif
         @endforeach
     </tr>
@@ -280,18 +280,18 @@
             <form id="editColumnDetails">
                 <div class="modal-body" style="width:800px">
                     <div class="col-xs-8" id="edit_column_body"></div>
-                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="width:20px" class="col-xs-2">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_column_body"></div>
                     <div class="col-xs-12">
                         <div class="panel-body">
                             <div class="row">
-                                <div class="form-group col-xs-2">
+                                <div class="form-group col-xs-3">
                                     Name
                                 </div>
-                                <div class="form-group col-xs-2">
+                                <div class="form-group col-xs-3">
                                     Type
                                 </div>
-                                <div class="form-group col-xs-2">
+                                <div class="form-group col-xs-3">
                                     Display
                                 </div>
                                 <div class="form-group col-xs-2 hidden">
@@ -337,7 +337,7 @@
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="left"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down values" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="left"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-3"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-3"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-3"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-3 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down values" class="value form-control"></textarea></div><div class="form-group col-xs-2"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
@@ -347,14 +347,16 @@
             $('.default_value_div').css("display", "none");
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index();
+            console.log(index);
             var columnname = parent.find("div.dropdowncolumn span").text();
             var lists = '<option value="">Select Field Type</option>';
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-3"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-3"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-3"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-3 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-3"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
+           
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
             $('#edit_column').modal('show');
         });
@@ -365,7 +367,7 @@
             for (i = 0; i <= optionList.length - 1; i++) {
                 lists += '<option value="' + optionList[i].id + '">' + optionList[i].column_name + '</option>'
             }
-            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-2"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-2"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-2 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
+            var html = '<input type="hidden" id="column_add_position" value="right"/><input type="hidden" id="add_column_fieldOrder" name="add_column_fieldOrder" value="'+index+'"/><div class="row"><div class="form-group col-xs-3"><input type="text" placeholder="Column Name" class="form-control" name="add_column_name" id="add_column_name"/></div><div class="form-group col-xs-3"><select class="form-control type" name="add_column_type" id="add_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-3"><select class="form-control display" name="add_column_display" id="add_column_display"><option value="1">Show</option><option value="0">Hide</option></select></div><div class="form-group col-xs-3 hidden">'+index+'</div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="add_column_default_value" id="add_column_default_value" placeholder="Drop down value" class="value form-control"></textarea></div><div class="form-group col-xs-3"><label><input type="checkbox" name="add_column_uniqe" id="add_column_uniqe" class="unique"> Uniqe</label></div></div>';
             $('#mod-head').html('Add Column');
             $('#ColumnStructure').html(html);
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
@@ -535,7 +537,7 @@
                     else
                         textarea += default_value.options[i]+', ';
                 }
-                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><div class="form-group col-xs-2"><input type="hidden" name="old_edit_column_name" id="old_edit_column_name" value="'+info.column_name+'" /><input type="text" id="edit_column_name" class="form-control" name ="edit_column_name" value="'+info.column_name+'"/></div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-2 hidden"><input type="hidden" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Drop down values" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-1"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
+                var html = '<div class="row"><input type="hidden" id="edit_column_id" name ="edit_column_id" value="'+info.id+'"/><div class="form-group col-xs-2"><input type="hidden" name="old_edit_column_name" id="old_edit_column_name" value="'+info.column_name+'" /><input type="text" id="edit_column_name" class="form-control" name ="edit_column_name" value="'+info.column_name+'"/></div><div class="form-group col-xs-2"><select class="form-control type" name="edit_column_type" id="edit_column_type" onchange="show_default_value_div(this.value);">'+ lists +'</select></div><div class="form-group col-xs-2"><select class="form-control display" name="edit_column_display" id="edit_column_display"><option value="1" '+(info.display ==  1 ? 'selected' : '')+'>Show</option><option value="0" '+(info.display ==  0 ? 'selected' : '')+'>Hide</option></select></div><div class="form-group col-xs-2 hidden"><input type="hidden" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" value="'+info.ordering+'"></div><div class="form-group col-xs-3 default_value_div"><textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Drop down values" class="value form-control">'+textarea+'</textarea></div><div class="form-group col-xs-2"><label><input type="checkbox" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" '+(info.is_unique == 1 ? 'checked' : '')+'> Uniqe</label></div></div>';
                 $('#mod-head').html('Edit Column');
                 $('#ColumnStructure').html(html);
                 $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="editColumnData()">Update</button>');

@@ -1,9 +1,9 @@
 @extends('layouts.app-header')
 
 @section('content')
-
+@foreach($teamTables as $teamId=>$tables)
 <div class="container">
-    @foreach($teamTables as $teamId=>$tables)
+    
     <div class="row">
         <div class="col-sm-12">
                 <div class="col-sm-8">
@@ -72,7 +72,7 @@
     @endforeach
 
     @if(!empty($readOnlyTables))
-    <div class="row">
+    <div>
         <div id="heads-up">Guest Access</div>
         <div>
             @foreach($readOnlyTables as $table)

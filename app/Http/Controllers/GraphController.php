@@ -57,8 +57,10 @@ class GraphController extends Controller {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true); 
             $coltypes = TableStructure::getTableColumnTypesArray($userTableName);
-            $users = Tables::makeFilterQuery($req, $users, $coltypes);
-        } 
+            $usersNew = Tables::makeFilterQuery($req, $users, $coltypes,$userTableName);
+            if($usersNew)
+                $users = $usersNew;
+        }
         $tableData = $users->get();// Tables::getSQLData($sql);
         return json_encode($tableData);
     } 

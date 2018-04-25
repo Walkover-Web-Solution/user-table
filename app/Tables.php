@@ -59,6 +59,11 @@ class Tables extends Model
             'is_unknown' => null,
             'has_any_value' => null
         );
+        $forLongText = array(
+            'contains' => null,
+            'is_unknown' => null,
+            'has_any_value' => null
+        );
         $data = array();
 
         foreach ($userTableStructure as $column => $struct) {
@@ -101,6 +106,13 @@ class Tables extends Model
                 $col_detail['col_filter'] = $forTeamMates;
                 $col_detail['col_options'] = $teammates;
                 $data[$col_name] = $col_detail;
+            }else if($col_type == 'long text'){
+                $col_detail = array();
+                $col_detail['col_name'] = $col_name;
+                $col_detail['col_type'] = $col_type;
+                $col_detail['col_filter'] = $forLongText;
+                $col_detail['col_options'] = $col_options;
+                $data[$col_name] = $col_detail;
             }
 
         }
@@ -129,8 +141,12 @@ class Tables extends Model
     {
         $users = DB::table($tableId)->selectRaw('*');
         $coltypes = TableStructure::getTableColumnTypesArray($tableId);
-        $users = Tables::makeFilterQuery($req, $users,$coltypes);
-        return $users->latest('id')->paginate($pageSize);
+        $usersNew = Tables::makeFilterQuery($req, $users,$coltypes,$tableId);
+        if($usersNew)
+            return $usersNew->latest('id')->paginate($pageSize);
+        else {
+            return $users->latest('id')->paginate($pageSize);
+        }
     }
 
     public static function createMainTable($tableName, $data)
@@ -191,8 +207,12 @@ class Tables extends Model
     public static function getCountOfFilteredData($req, $tableId, $coltypes)
     {
         $users = DB::table($tableId);
-        $users = Tables::makeFilterQuery($req, $users,$coltypes);
-        $count = $users->count();
+        $usersNew = Tables::makeFilterQuery($req, $users,$coltypes,$tableId);
+        if($usersNew)
+            $count = $usersNew->count();
+        else {
+            $count = $users->count();
+        }
         return $count;
     }
 
@@ -210,10 +230,16 @@ class Tables extends Model
         return $arrTabCount;
     }
 
-    public static function makeFilterQuery($req, $users,$coltypes)
+    public static function makeFilterQuery($req, $users,$coltypes,$tableName)
     {
+        $errorFlag = 0;
         foreach (array_keys($req) as $paramName) {
-            $colomntype = $coltypes[$paramName];
+            $colomntype = isset($coltypes[$paramName])?$coltypes[$paramName]:'';
+            if (!Schema::hasColumn($tableName, $paramName)) //check whether table has this column
+            {
+                $errorFlag =1;
+                break;
+            }
             if (isset($req[$paramName]['is'])) {
                 $val = $req[$paramName]['is'];
                 if ($val == 'me' && $loggedInUser = Auth::user()) {
@@ -277,6 +303,9 @@ class Tables extends Model
                 $users->where($paramName, '>=', $daysafter);
             }
 
+        }
+        if($errorFlag){
+            return false;
         }
         return $users->whereNull('is_deleted');
     }

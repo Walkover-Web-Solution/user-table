@@ -256,8 +256,9 @@ class ConfigureTable extends Controller
         foreach ($columnId as $key => $val)
         {
             TableStructure::updateTableStructureColumn($val, 'ordering', $key+1);
-            if($displayArray[$val] != null)
-                TableStructure::updateTableStructureColumn($val, 'display', $displayArray[$val]);
+        }
+        foreach($displayArray as $obj){
+            TableStructure::updateTableStructureColumn($obj['key'], 'display', $obj['val']);
         }
         
         return response()->json(array('success'=>'column rearrange successfully'));
