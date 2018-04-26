@@ -12,6 +12,7 @@
    
     .default_value_div {display: none;}
 </style>
+<div class="" id="table_data">
 <table class="table basic table-bordred user-table-layout">
     @if(empty($structure) && !$isGuestAccess)
         <thead id="userThead">
@@ -162,7 +163,7 @@
             $date = '';
             $dateActual = '';
         } ?>
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><div class="col_value" data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</div></td>
         @elseif($k == 'id')
         <td hidden class="{{$k}}"><div class="col_value">{{$colValue}}</div></td>
         @else
@@ -252,11 +253,11 @@
             $date = '';
             $dateActual = '';
         } ?>
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><span data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</span></td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><div class="col_value" data-toggle="tooltip" data-placement="top" title="{{$dateActual}}">{{$date}}</div></td>
         @elseif($k == 'id')
-        <td hidden class="{{$k}}">{{$colValue}}</td>
+        <td hidden class="{{$k}}"><div class="col_value">{{$colValue}}</div></td>
         @else
-        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}">{{$colValue}}</td>
+        <td class="{{$k}}" id="dt_{{$structure[$k]['column_type_id']}}"><div class="col_value">{{$colValue}}</div></td>
         @endif
 
         @endforeach
@@ -266,6 +267,7 @@
     @endforeach
     </tbody>
 </table>
+</div>
 <input type="hidden" value="{{$tableAuth}}" id="tableAuthKey"/>
 <!-- Modal -->
 <div id="edit_column" class="modal fade" role="dialog">
@@ -377,12 +379,12 @@
             function() {
                 //console.log('hover over');
                 $(this).find('span.caret').css({'display' : 'inline-block'});
-                $(this).children('.dropdown-menu').show();
+                //$(this).children('.dropdown-menu').show();
             },
             function() {
                 //console.log('hover out');
                 $(this).find('span.caret').css({'display' : 'none'});
-                $(this).children('.dropdown-menu').hide();
+                //$(this).children('.dropdown-menu').hide();
         });
         $('.hidecolumn').click(function () {
             var parent = $(this).parent().parent().parent().parent();
@@ -666,11 +668,11 @@
     }
     
 
-    $(document).ready(function(){
-    $('.dropdowncolumn').hover(function() {
-  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
-}, function() {
-  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
-});
-}); 
+//     $(document).ready(function(){
+//     $('.dropdowncolumn').hover(function() {
+//   $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+// }, function() {
+//   $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+// });
+// }); 
 </script>

@@ -346,7 +346,7 @@
                 <div class="col-sm-5 pull-right">
                     <div class="pull-right">
                         <div class="inline-b">
-                        <form class="search-form" action="" name="queryForm"
+                        <form class="search-form detail-form" action="" name="queryForm"
                             onsubmit="searchKeyword(event, query.value)">
                             <label for="searchInput" class="label label-filter label-filter-bordered label-search-icon bold m-l-5"><i class="fa fa-search"></i></label>
                             <input type="text" name="query" class="form-control" placeholder="Search for..."
@@ -570,13 +570,19 @@
   
     <script>
             $(window).scroll(function(){
-                    if ($(window).scrollTop() >= 210) {
-                    $('thead').addClass('fixed-header');
-                    }
-                    else {
-                    $('thead').removeClass('fixed-header');
-                    }
-                });
+                // $('.nav-and-table').scroll(function(e) {
+                //         console.log(e, this);
+                // });
+                if ($(window).scrollTop() >= 210) {
+                    $('#table_data').addClass('fixed-header');
+                }
+            });
+            $('#all_users').scroll(function(){
+                if ($('#all_users').scrollTop() < 1 ) {
+                    $('#table_data').removeClass('fixed-header');                    
+                } 
+            });                
+
     </script>
  <script>
    $(function(){
@@ -627,7 +633,7 @@ console.log(window.location.href);
                 <div class="modal-body" style="width:800px">
                     <div class="col-xs-8" id="edit_users_body"></div>
                     <input type='hidden' id="is_edit" value="">
-                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <!-- <div style="width:20px" class="col-xs-1">&nbsp;</div> -->
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-8">
                         <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
