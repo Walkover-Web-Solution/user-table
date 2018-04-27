@@ -826,7 +826,7 @@ side bar component end
     color: #222;
     height: 28px;
     border-radius: 2px;
-    width: 0;
+    /* width: 0; */
     position: relative;
     z-index: 1;
     top: 0;
