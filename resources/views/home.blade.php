@@ -367,8 +367,8 @@
                 </div>
     </div>
 </div>
-<div class="nav-and-table  from-right">
-    <div id="user-board" class="user-dashboard">
+<div class="nav-and-table  from-right nav-table-custom-response">
+    <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex" style="overflow:visible;">
             <div class="scroll-y flex w-100per" id="def_response">
@@ -392,7 +392,6 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
 </script>
-
 <!-- inline scripts -->
 <script>
     // $('body').addClass('loader');

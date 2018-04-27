@@ -18,12 +18,13 @@ body {
 }
 
 th:not(:first-child) {
-    min-width: 120px;
+    /* min-width: 120px; */
 }
 
 th {
     padding: 0 8px !important;
     height: 0 !important;
+    position: relative;
 }
 
 td,
@@ -1186,6 +1187,82 @@ side bar component end
       transform: rotate(360deg);
     }
   }
+
+
+  /* new style */
+.user-custom-dashboard{
+    padding-top:0;
+}
+.nav-table-custom-response{
+    display: block  !important;
+}
+.table-custom-res{
+    width:auto !important;
+}
+.table-custom-res tr th{
+font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: #888;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    text-transform: capitalize;
+    position: relative;
+}
+.table-custom-res  thead{
+    border-right:1px solid #ececec;
+}
+.table-custom-res tr td:not(:first-child), .table-custom-res tr th:not(:first-child){
+    min-width: 100px;
+    max-width: 200px;
+}
+
+.table-custom-res tr td, .table-custom-res tr th{
+    overflow: visible;
+    border-bottom:1px solid #ececec;
+    padding:20px !important;
+    color:#222;
+    font-size:14px;
+}
+.table-custom-res tr td:not(:first-child){
+    overflow: hidden;
+}
+.table-custom-res tr th .dropdowncolumn{
+top:10px;
+}
+.table-custom-res .fix-header tr th .dropdowncolumn{
+    top:0;
+    }
+.table-custom-res tr td{
+    padding:10px 10px !important;
+}
+.table-custom-res tr td select{
+    margin-top:0;
+}
+.table-custom-res span.dropdown-toggle{
+    overflow: hidden;
+    max-width: 200px;
+    display: block;
+}
+
+.table-custom-res tbody{
+    border:1px solid #ececec;
+}
+.fix-header div{
+    position:fixed;
+    top:0;
+    background:#fff;
+    width:100%;
+    border-bottom:1px solid #ececec;
+    padding:10px 0;
+}
+.fix-header th:first-child .dropdowncolumn {
+    left: 0;
+}
+.fix-header th:first-child .dropdowncolumn span{
+    display: block;
+    margin-left: 10px;
+}
   
 
 

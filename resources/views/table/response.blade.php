@@ -2,7 +2,7 @@
 <style>
     table th, table td{
         overflow:hidden;
-        max-width:320px;
+        /* max-width:320px; */
         text-overflow: ellipsis;
         /* width: 100%; */
     }
