@@ -18,12 +18,13 @@ body {
 }
 
 th:not(:first-child) {
-    min-width: 120px;
+    /* min-width: 120px; */
 }
 
 th {
     padding: 0 8px !important;
     height: 0 !important;
+    position: relative;
 }
 
 td,
@@ -624,7 +625,7 @@ th {
     overflow: auto;
     flex: 1;
     background:#fff;
-    max-width: 1000px;
+    /* max-width: 1000px; */
     width: 100%;
 }
 .mb20{
@@ -814,6 +815,7 @@ side bar component end
     box-shadow: none;
     border:1px solid #888;
 }
+
 
 #user-board .table.basic td {
     /* border-right: 1px solid #ddd; */
@@ -1082,17 +1084,6 @@ side bar component end
     border-radius: 50%;
     animation: 1s loader-icon linear infinite;
     position: relative;
-    &:before {
-      content: "";
-      width: inherit;
-      height: inherit;
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      border: 5px solid rgba(0, 0, 0, 0.2);
-      border-radius: 50%;
-      opacity: 0.5;
-    }
   }
   @keyframes loader-icon {
     0% {
@@ -1102,6 +1093,31 @@ side bar component end
       transform: rotate(360deg);
     }
   }
+
+.user-custom-dashboard{
+
+}
+.table-custom-res{
+    width:auto !important;
+}
+.table-custom-res tr th{
+font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: #888;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+.table-custom-res tr td, .table-custom-res tr th{
+    min-width: 70px;
+    max-width: 200px;
+    overflow: hidden;
+    border:1px solid;
+}
+
+.table-custom-res tbody{
+    border:1px solid #ececec;
+}
   
 
 

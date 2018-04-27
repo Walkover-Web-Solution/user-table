@@ -2,7 +2,7 @@
 <style>
     table th, table td{
         overflow:hidden;
-        max-width:320px;
+        /* max-width:320px; */
         text-overflow: ellipsis;
         /* width: 100%; */
     }
@@ -12,21 +12,21 @@
     .dropdowncolumn .dropdown-menu{top:37px !important;}
     .default_value_div {display: none;}
 </style>
-<table class="table basic table-bordred">
+<table class="table-custom table-bordred table-custom-res">
     @if(empty($structure) && !$isGuestAccess)
         <thead id="userThead">
-            <tr><th><span class="fixed-header"></span></th><th><span class="fixed-header"><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
+            <tr><th><span class=""></span></th><th><span class=""><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
         </thead>
     @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
         <thead id="userThead">
             <tr>
-                <th><span class="fixed-header"></span></th>
-                <th hidden><span class="fixed-header"></span></th>
+                <th><span class=""></span></th>
+                <th hidden><span class=""></span></th>
                 @foreach($structure as $key => $val)
                 @if($val['display'] != 0)
                 <th>
                     <div class="dropdowncolumn">
-                        <span class="fixed-header dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
+                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
                             <span class="caret"></span>
                         </span>
                     <ul class="dropdown-menu">
@@ -49,7 +49,7 @@
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
-         <th><span class="fixed-header"><input type="checkbox" id="selectall" /></span></th>
+         <th><span class=""><input type="checkbox" id="selectall" /></span></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
@@ -59,7 +59,7 @@
         @if(!$isGuestAccess)
             <th>
             <div class="dropdowncolumn">
-                <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}
+                <span class=" dropdown-toggle" data-toggle="dropdown">{{$k}}
                     <span class="caret"></span>
                 </span>
             <ul class="dropdown-menu">
@@ -72,11 +72,11 @@
         </th>
         @else
         <th>
-           <span class="fixed-header dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
+           <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
         </th>
         @endif
         @else
-        <th hidden class="fixed-header"><span>{{$k}}</span></th>
+        <th hidden class=""><span>{{$k}}</span></th>
         @endif
         @endforeach
     </tr>
