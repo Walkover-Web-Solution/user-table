@@ -7,6 +7,7 @@
         /* width: 100%; */
     }
     .dropdowncolumn { position: absolute; top: 10px;}
+    .dropdowncolumn .dropdown-toggle{text-transform:capitalize;}
     .dropdown-menu { position:relative; top:30px;}
     .dropdowncolumn span.caret { display: none;}
    

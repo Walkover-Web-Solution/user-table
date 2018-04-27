@@ -456,6 +456,8 @@ th {
     right: 0;
     bottom: 0;
     width: 100vw;
+    height:40px;
+    border-bottom:1px solid #ececec;
 
 }
 .fixed-header >table {
@@ -878,11 +880,13 @@ side bar component end
     width: 200px;
     min-width: 120px;
     
+    
 }
 #user-board .table.basic  th:not(:first-child) {
-   max-width: 120px;
+    max-width: 120px;
     width: 200px;
     min-width: 120px;
+    
 }
 #user-board .table.basic td .col_value, #user-board .table.basic th .col_value{
     max-width: 200px;
@@ -895,8 +899,8 @@ side bar component end
     font-weight:bold;
     color:#888;
     overflow: visible;
-    padding-top:10px !important;
-    padding-bottom:10px !important;
+    padding-top: 15px !important;
+    padding-bottom: 10px !important;
     height: 40px !important;
 }
 #user-board .table.basic th .dropdowncolumn span{
@@ -910,7 +914,7 @@ side bar component end
 }
 .table.basic{
     border:1px solid #ececec;
-    background: #fff;
+    
 }
 
 /* .dropdowncolumn:hover .dropdown-toggle{
@@ -959,7 +963,7 @@ side bar component end
 #myChart {
     width: 100%;
     height: 400px;
-    max-width:600px;
+    max-width:800px;
 }
 .m-l-15{
     margin-left:15px;

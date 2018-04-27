@@ -574,14 +574,17 @@
                 //         console.log(e, this);
                 // });
                 if ($(window).scrollTop() >= 210) {
-                    $('#table_data').addClass('fixed-header');
+                    $('thead').addClass('fixed-header');
+                }
+                else{
+                    $('thead').removeClass('fixed-header');
                 }
             });
-            $('#all_users').scroll(function(){
-                if ($('#all_users').scrollTop() < 1 ) {
-                    $('#table_data').removeClass('fixed-header');                    
-                } 
-            });                
+            // $('#all_users').scroll(function(){
+            //     if ($('#all_users').scrollTop() < 1 ) {
+            //         $('#table_data').removeClass('fixed-header');                    
+            //     } 
+            // });                
 
     </script>
  <script>
