@@ -6,10 +6,10 @@
         text-overflow: ellipsis;
         /* width: 100%; */
     }
-    .dropdowncolumn { position: absolute; top: 0px;}
-    .dropdown-menu { position:relative; top:30px;}
+    .dropdowncolumn { position: absolute; top: 20px;}
+    .dropdown-menu { position:relative; top:16px;} /*top:30px;*/
     .dropdowncolumn span.caret { display: none;}
-    .dropdowncolumn .dropdown-menu{top:37px !important;}
+    .dropdowncolumn .dropdown-menu{top:16px !important;}
     .default_value_div {display: none;}
 </style>
 <table class="table-custom table-bordred table-custom-res">
@@ -20,8 +20,8 @@
     @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
         <thead id="userThead">
             <tr>
-                <th><span class=""></span></th>
-                <th hidden><span class=""></span></th>
+                <th><div class="dropdowncolumn"><span class=""></span></div></th>
+                <th hidden> <div class="dropdowncolumn"><span class=""></span></div></th>
                 @foreach($structure as $key => $val)
                 @if($val['display'] != 0)
                 <th>
@@ -49,7 +49,7 @@
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
-         <th><span class=""><input type="checkbox" id="selectall" /></span></th>
+         <th><div class="dropdowncolumn"><span class=""><input type="checkbox" id="selectall" /></span></div></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
@@ -72,11 +72,11 @@
         </th>
         @else
         <th>
-           <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
+        <div class="dropdowncolumn"><span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span></div>
         </th>
         @endif
         @else
-        <th hidden class=""><span>{{$k}}</span></th>
+        <th hidden class=""><div class="dropdowncolumn"><span>{{$k}}</span></div></th>
         @endif
         @endforeach
     </tr>

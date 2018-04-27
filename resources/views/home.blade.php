@@ -367,7 +367,7 @@
                 </div>
     </div>
 </div>
-<div class="nav-and-table  from-right">
+<div class="nav-and-table  from-right nav-table-custom-response">
     <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex">
@@ -391,6 +391,17 @@
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
+</script>
+<script>
+   $(window).scroll(function() {    
+    var scroll = $(window).scrollTop();
+
+    if(scroll >= 200) {
+        $("thead").addClass("fix-header");
+    } else {
+        $("thead").removeClass("fix-header");
+    }
+});
 </script>
 <!-- inline scripts -->
 <script>
