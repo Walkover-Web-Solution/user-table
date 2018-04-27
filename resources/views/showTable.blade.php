@@ -14,7 +14,7 @@
                         <table class="table table-user-h">
                         @foreach($tables as $key=>$val)
                                 <tr>
-                                    <td><a href="tables/{{$val['id']}}" target="_blank" class="text-blue font-16"> {{$val['table_name']}}</a></td>
+                                    <td><a href="/tables/{{$val['id']}}" target="_blank" class="text-blue font-16"> {{$val['table_name']}}</a></td>
                                     <td>
 
                                      <a href="tables/{{$val['id']}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
