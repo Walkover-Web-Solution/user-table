@@ -346,7 +346,7 @@
                 <div class="col-sm-5 pull-right">
                     <div class="pull-right">
                         <div class="inline-b">
-                        <form class="search-form detail-form" action="" name="queryForm"
+                        <form class="search-form detail-form table-search" action="" name="queryForm"
                             onsubmit="searchKeyword(event, query.value)">
                             <label for="searchInput" class="label label-filter label-filter-bordered label-search-icon bold m-l-5"><i class="fa fa-search"></i></label>
                             <input type="text" name="query" class="form-control" placeholder="Search for..."
@@ -367,8 +367,8 @@
                 </div>
     </div>
 </div>
-<div class="nav-and-table  from-right">
-    <div id="user-board" class="user-dashboard">
+<div class="nav-and-table  from-right nav-table-custom-response">
+    <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex" style="overflow:visible;">
             <div class="scroll-y flex w-100per" id="def_response">
@@ -392,7 +392,6 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
 </script>
-
 <!-- inline scripts -->
 <script>
     // $('body').addClass('loader');
@@ -568,22 +567,17 @@
         }
     </script>
   
-    <script>
-            $(window).scroll(function(){
-                // $('.nav-and-table').scroll(function(e) {
-                //         console.log(e, this);
-                // });
-                if ($(window).scrollTop() >= 210) {
-                    $('#table_data').addClass('fixed-header');
-                }
-            });
-            $('#all_users').scroll(function(){
-                if ($('#all_users').scrollTop() < 1 ) {
-                    $('#table_data').removeClass('fixed-header');                    
-                } 
-            });                
+  <script>
+   $(window).scroll(function() {    
+    var scroll = $(window).scrollTop();
 
-    </script>
+    if(scroll >= 200) {
+        $("thead").addClass("fix-header");
+    } else {
+        $("thead").removeClass("fix-header");
+    }
+});
+</script>
  <script>
    $(function(){
     var current = window.location.href;

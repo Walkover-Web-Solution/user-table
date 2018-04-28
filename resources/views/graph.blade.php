@@ -62,8 +62,8 @@
         </ul>
     </div>
 
-    <div class="nav-and-table  from-right">
-        <div id="user-board" class="user-dashboard">
+    <div class="nav-and-table  from-right nav-table-custom-response">
+        <div id="user-board" class="user-dashboard user-custom-dashboard">
             <!-- Tab panes -->
             <div class="scroll-x">
                 <div class="scroll-y graph-page-container" id="response">

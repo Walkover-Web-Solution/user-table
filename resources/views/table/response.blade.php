@@ -1,19 +1,19 @@
 <?php use Carbon\Carbon; ?>
 <style>
-    table th, table td{
+     table th, table td{
         overflow:hidden;
-        max-width:320px;
+        /* max-width:320px; */
         text-overflow: ellipsis;
         /* width: 100%; */
     }
-    .dropdowncolumn { position: absolute; top: 10px;}
-    .dropdown-menu { position:relative; top:30px;}
+    .dropdowncolumn { position: absolute; top: 20px;}
+    .dropdown-menu { position:relative; top:16px;} /*top:30px;*/
     .dropdowncolumn span.caret { display: none;}
-   
+    .dropdowncolumn .dropdown-menu{top:16px !important;}
     .default_value_div {display: none;}
 </style>
 <div class="" id="table_data">
-<table class="table basic table-bordred user-table-layout">
+<table class="table-custom table-bordred table-custom-res">
     @if(empty($structure) && !$isGuestAccess)
         <thead id="userThead">
             <tr><th><span></span></th><th><span><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
@@ -50,7 +50,8 @@
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
-         <th><span><input type="checkbox" id="selectall" /></span></th>
+         <th>
+             <div class="dropdowncolumn"><span><input type="checkbox" id="selectall" /></span></div></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
@@ -73,11 +74,11 @@
         </th>
         @else
         <th>
-           <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span>
+        <div class="dropdowncolumn"><span class="dropdown-toggle" data-toggle="dropdown">{{$k}}</span></div>
         </th>
         @endif
         @else
-        <th hidden><span>{{$k}}</span></th>
+        <th hidden><div class="dropdowncolumn"><span>{{$k}}</span></div></th>
         @endif
         @endforeach
     </tr>
