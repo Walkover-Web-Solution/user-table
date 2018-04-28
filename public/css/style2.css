@@ -69,9 +69,6 @@ body {
     z-index: 9;
     position: relative
 }
-#table_data{
-    width:100%;
-}
 
 #tableName {
     width: 200px;
@@ -237,19 +234,8 @@ p span.old-val{
     margin-left: 30px;
     margin-bottom: 30px;
 }
-/* .panel-table input[type="text"], select{
+.panel-table input[type="text"], select{
     margin-top:10px;
-} */
-.select-filter{
-    display: inline-block;
-    font-size: 14px;
-    font-weight: normal;
-    color: #222;
-    /* min-width: 100px; */
-    padding: 20px 20px;
-    background:#eee;
-    height: 40px;
-    min-width: 200px;
 }
 .label-filter{
     display: inline-block;
@@ -274,10 +260,9 @@ p span.old-val{
     color:#222;
 }
 
-
 .label-search-icon{
     display: inline-block;
-    padding: 13px !important;
+    padding: 14px !important;
     line-height: 0;
     position: relative;
     z-index:2;
@@ -298,9 +283,6 @@ p span.old-val{
     background:#fff;
     border:1px solid #0549d1;
     
-}
-.label-filter-bordered-blue{
-    border:1px solid #0549d1;
 }
 .bold{
     font-weight:bold;
@@ -356,30 +338,3 @@ p span.old-val{
     margin-right:5px;
     font-size:11px;
 }
-.user-table-layout thead{
-    display: block;
-	overflow: visible !important;
-    color: #fff;
-    background: #fff;
-	
-}
-.user-table-layout tbody{
-    display: block;
-	/* height: 100vh; */
-    overflow: auto;
-    height:100%;
-}
-/* #all_users{
-    overflow-y: hidden;
-} */
-#all_users tr td select{
-    margin-top:0 !important;
-}
-#userThead tr{
-    width:100%;
-    display: block;
-}
-
-
-
-
