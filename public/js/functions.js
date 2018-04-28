@@ -82,46 +82,54 @@ function saveTab() {
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId, type,column_name) {
+function makeFilterJsonData(tableId, type,column_name, div_open) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
-    
-    var filter_done_column_name = $("input[name='filter_done_column_name[]']");
-    var filter_done_column_type = $("input[name='filter_done_column_type[]']");
-    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
-    var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
-    for(var i = 0; i < filter_done_column_name.length; i++)
+    for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
     {
-        if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
-            filter_done_column_type_val[i].value = "1";
+        if($("input[name='filter_done_column_name[]']")[i])
+        {
+            if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                $("input[name='filter_done_column_type[]']")[i].value = 1;
+            }
+            var subDoc = {};
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+            var subjsonObject = {};
+            subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+            jsonObject[i] = subjsonObject;
+            var subcoltypeObject = {};
+            subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+            coltypeObject[i] = subcoltypeObject;
         }
-        var subDoc = {};
-        subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
-        jsonObject[filter_done_column_name[i].value] = subDoc;
-        coltypeObject[filter_done_column_name[i].value] = filter_done_column_input_type[i].value;
     }
-    
-    var radio_type = $("#delete_filter_"+column_name+" input[type='radio']:checked");
-    var radioname = radio_type.attr('dataid');
-    var coltype = radio_type.attr('datacoltype');
-    var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname).val();
-    
-    var dataid = column_name;
-    
-    if (radioname == "has_any_value" || radioname == 'is_unknown') {
-        radioButtonValue = "1";
-    }
+    if($("#delete_filter_"+div_open+"_"+column_name).length){
+        var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
+        var radioname = radio_type.attr('dataid');
+        var coltype = radio_type.attr('datacoltype');
+        var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
 
-    var subDoc = {};
-    subDoc[radioname] = radioButtonValue;
-    jsonObject[dataid] = subDoc;
-    coltypeObject[dataid] = coltype;
+        var dataid = column_name;
+
+        if (radioname == "has_any_value" || radioname == 'is_unknown') {
+            radioButtonValue = "1";
+        }
+
+        var subDoc = {};
+        subDoc[radioname] = radioButtonValue;
+        var subjsonObject = {};
+        subjsonObject[dataid] = subDoc;
+        jsonObject[div_open] = subjsonObject;
+        var subcoltypeObject = {};
+        subcoltypeObject[dataid] = coltype;
+        coltypeObject[div_open] = subcoltypeObject;
+    }
     var condition = $('#filter_condition').val();
     
     if (type == "returnData") {
         return jsonObject;
     }
+    
     applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
@@ -129,19 +137,22 @@ function changeFilterJsonData(tableId, type) {
     var jsonObject = {};
     var coltypeObject = {};
     
-    var filter_done_column_name = $("input[name='filter_done_column_name[]']");
-    var filter_done_column_type = $("input[name='filter_done_column_type[]']");
-    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
-    var filter_done_column_input_type = $("input[name='filter_done_column__input_type[]']");
-    for(var i = 0; i < filter_done_column_name.length; i++)
+    for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
     {
-        if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
-            filter_done_column_type_val[i].value = "1";
+        if($("input[name='filter_done_column_name[]']")[i])
+        {
+            if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                $("input[name='filter_done_column_type[]']")[i].value = 1;
+            }
+            var subDoc = {};
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+            var subjsonObject = {};
+            subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+            jsonObject[i] = subjsonObject;
+            var subcoltypeObject = {};
+            subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+            coltypeObject[i] = subcoltypeObject;
         }
-        var subDoc = {};
-        subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
-        jsonObject[filter_done_column_name[i].value] = subDoc;
-        coltypeObject[filter_done_column_name[i].value] = filter_done_column_input_type[i].value;
     }
     
     var condition = $('#filter_condition').val();
