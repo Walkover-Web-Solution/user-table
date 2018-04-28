@@ -346,7 +346,7 @@
                 <div class="col-sm-5 pull-right">
                     <div class="pull-right">
                         <div class="inline-b">
-                        <form class="search-form detail-form" action="" name="queryForm"
+                        <form class="search-form detail-form table-search" action="" name="queryForm"
                             onsubmit="searchKeyword(event, query.value)">
                             <label for="searchInput" class="label label-filter label-filter-bordered label-search-icon bold m-l-5"><i class="fa fa-search"></i></label>
                             <input type="text" name="query" class="form-control" placeholder="Search for..."

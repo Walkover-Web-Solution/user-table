@@ -777,6 +777,20 @@ side bar component end
     border: none !important;
     box-shadow: none !important;
     border:1px solid rgba(34,34,34,.2) !important;
+    /* border-right:0px solid transparent !important; */
+    right: 0;
+    position: relative;
+    color:#222;
+    height:30px;
+    border-radius: 2px;
+    width:0;
+    position: relative;
+    z-index: 1;
+}
+.table-search input.form-control{
+    border: none !important;
+    box-shadow: none !important;
+    border:1px solid rgba(34,34,34,.2) !important;
     border-right:0px solid transparent !important;
     right: -30px;
     position: relative;
