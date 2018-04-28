@@ -567,25 +567,17 @@
         }
     </script>
   
-    <script>
-            $(window).scroll(function(){
-                // $('.nav-and-table').scroll(function(e) {
-                //         console.log(e, this);
-                // });
-                if ($(window).scrollTop() >= 210) {
-                    $('thead').addClass('fixed-header');
-                }
-                else{
-                    $('thead').removeClass('fixed-header');
-                }
-            });
-            // $('#all_users').scroll(function(){
-            //     if ($('#all_users').scrollTop() < 1 ) {
-            //         $('#table_data').removeClass('fixed-header');                    
-            //     } 
-            // });                
+  <script>
+   $(window).scroll(function() {    
+    var scroll = $(window).scrollTop();
 
-    </script>
+    if(scroll >= 200) {
+        $("thead").addClass("fix-header");
+    } else {
+        $("thead").removeClass("fix-header");
+    }
+});
+</script>
  <script>
    $(function(){
     var current = window.location.href;
