@@ -328,7 +328,7 @@ class TableController extends Controller
         if(empty($colArr))
             $users = DB::table($tableId)->selectRaw('*');
         else
-            $users = DB::table($tableId)->selectRaw(implode(",", $colArr));
+            $users = DB::table($tableId)->selectRaw("`".implode("`,`", $colArr)."`");
         $flag=0;
         foreach ($reqs as $k => $req)
         {

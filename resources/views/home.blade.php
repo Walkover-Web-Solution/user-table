@@ -487,6 +487,7 @@
             }
         var tabName = $('#saveAsInput').val();
         obj = jsonObject;
+        var condition = $('#filter_condition').val();
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -496,7 +497,7 @@
             type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
                 dataType: 'json', // Set datatype - affects Accept header
                 url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition}, // Some data e.g. Valid JSON as a string
                 success: function (data) {
                     window.setTimeout(function () {
                         location.reload()
