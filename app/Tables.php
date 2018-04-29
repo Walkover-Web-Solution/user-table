@@ -230,9 +230,11 @@ class Tables extends Model
         return $arrTabCount;
     }
 
-    public static function makeFilterQuery($req, $users,$coltypes,$tableName)
+    public static function makeFilterQuery($reqs, $users,$coltypes,$tableName)
     {
         $errorFlag = 0;
+        foreach($reqs as $req)
+        {
         foreach (array_keys($req) as $paramName) {
             $colomntype = isset($coltypes[$paramName])?$coltypes[$paramName]:'';
             if (!Schema::hasColumn($tableName, $paramName)) //check whether table has this column
@@ -304,6 +306,7 @@ class Tables extends Model
             }
 
         }
+        } 
         if($errorFlag){
             return false;
         }

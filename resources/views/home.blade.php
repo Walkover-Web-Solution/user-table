@@ -66,27 +66,27 @@
         <option value="and"><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or"><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
-        
+        @foreach($activeTabFilter as $i => $tabFilter)
         @foreach($filters as $k=>$filter)
-            @if(!isset($activeTabFilter[$k]))
+            @if(!isset($tabFilter[$k]))
                 @continue
             @endif
-            <div id="delete_filter_{{$k}}" class="dropdown dropdown-filter-main">
+            <div id="delete_filter_{{$i}}_{{$k}}" class="dropdown dropdown-filter-main filter-column">
                 <a class="label label-filter dropdown" data-toggle="dropdown">
                     <span>
                         <i class="glyphicon glyphicon-stats"></i> 
                         {{$k}}
                         @foreach($filter['col_filter'] as $key =>$option)
-                            @if(!isset($activeTabFilter[$k][$key]))
+                            @if(!isset($tabFilter[$k][$key]))
                                 @continue
                             @endif
-                            {{$key.' '.$activeTabFilter[$k][$key]}}
+                            {{$key.' '.$tabFilter[$k][$key]}}
                             <input type="hidden" name="filter_done_column_name[]" value="{{$k}}">
                             <input type="hidden" name="filter_done_column_type[]" value="{{$key}}">
-                            <input type="hidden" name="filter_done_column_type_val[]" value="{{$activeTabFilter[$k][$key]}}">
-                            <input type="hidden" name="filter_done_column__input_type[]" value="{{$filter['col_type']}}">
+                            <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            <input type="hidden" name="filter_done_column_input_type[]" value="{{$filter['col_type']}}">
                         @endforeach
-                <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div('{{$k}}')"></i></span>
+                <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div('{{$k}}', '{{$i}}')"></i></span>
                 </a>
             <ul class="dropdown-menu dropdown-menu-filter">
             @foreach($filter['col_filter'] as $key =>$option)
@@ -101,7 +101,7 @@
                     <li class="li-radio">
                         <div class="form-check">
                             <label class="form-check-label radio-label">
-                                @if(isset($activeTabFilter[$k][$key]))
+                                @if(isset($tabFilter[$k][$key]))
                                     <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
                                        id="{{$k}}_filter_text_{{$key}}"
                                        datacoltype="{{$filter['col_type']}}"
@@ -125,12 +125,12 @@
                                     {{str_replace("days_","",$key)}}
                                 @endif
                                 @if($key != "is_unknown" && $key != "has_any_value")
-                                    @if(isset($activeTabFilter[$k][$key]))
+                                    @if(isset($tabFilter[$k][$key]))
                                 @if($filter['col_type'] == 'my teammates')
                                 <select class="form-check-input filterinput form-control"
                                         name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}">
                                     @foreach($filter['col_options'] as $ind=>$opt)
-                                    <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
+                                    <option value="{{$opt['email']}}" {{($tabFilter[$k][$key]== $opt[
                                             'email'])?'selected':''}}>{{$opt['name']}}</option>
                                     @endforeach
                                 </select>
@@ -144,11 +144,11 @@
                                 @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
-                                       type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                       type="date" value="{{$tabFilter[$k][$key]}}">
                                 @else
                                 <input class="form-check-input filterinput{{$k}} form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
-                                       type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                       type="text" value="{{$tabFilter[$k][$key]}}">
                                 @endif
                                 @else
                                 @if($filter['col_type'] == 'my teammates')
@@ -185,11 +185,12 @@
             @endforeach
                     <li class="li-radio">
                         <div class="form-check">
-                            <label class="form-check-label radio-label"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}');hideDropdown('{{$k}}')">Done</a></label>
+                            <label class="form-check-label radio-label"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}', '{{$i}}');hideDropdown('{{$k}}', '{{$i}}')">Done</a></label>
                         </div>
                     </li>
                 </ul>
             </div>
+        @endforeach
         @endforeach
     <div class="dropdown dropdown-filter-main" id="add_column_filter">
             <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown" id="show"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
@@ -309,7 +310,7 @@
                             @endforeach
                                         <li class="li-radio">
                                             <div class="form-check">
-                                                <label class="form-check-label radio-label"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}');hideDropdown('{{$k}}')">Done</a></label>
+                                                <label class="form-check-label radio-label change-filter-function"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}', '0');hideDropdown('{{$k}}', '0')">Done</a></label>
                                             </div>
                                         </li>
                             
@@ -399,18 +400,47 @@
 <script>
     function show_column_type(column_name)
     {
-        var add_filter_html='<div class="dropdown dropdown-filter-main open" id="delete_filter_'+column_name+'"><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
+        var div_open = $('.filter-column').length;
+        $('#condition_'+column_name).find("select").each(function(){
+            if($(this).attr("name").indexOf('-') != -1)
+            {
+                $(this).attr("name", $(this).attr("name").split('-')[0]+'-'+div_open);
+                $(this).attr("id", $(this).attr("id").split('-')[0]+'-'+div_open);
+            }
+            else
+            {
+                $(this).attr("name", $(this).attr("name")+'-'+div_open);
+                $(this).attr("id", $(this).attr("id")+'-'+div_open);
+            }
+        });
+        $('#condition_'+column_name).find("input").each(function(){
+            if($(this).attr("name").indexOf('-') != -1)
+            {
+                $(this).attr("name", $(this).attr("name").split('-')[0]+'-'+div_open);
+                $(this).attr("id", $(this).attr("id").split('-')[0]+'-'+div_open);
+            }
+            else
+            {
+                $(this).attr("name", $(this).attr("name")+'-'+div_open);
+                $(this).attr("id", $(this).attr("id")+'-'+div_open);
+            }
+        });
+        $('#condition_'+column_name).find("label.change-filter-function").each(function(){
+            $(this).html('<a href="javascript:void(0);" onclick="makeFilterJsonData(\''+tableId+'\', \'search\', \''+column_name+'\', \''+div_open+'\');hideDropdown(\''+column_name+'\', \''+div_open+'\')">Done</a>');
+        });
+        var column_html = $('#condition_'+column_name).html();
+        var add_filter_html='<div class="dropdown dropdown-filter-main open filter-column" id="delete_filter_'+div_open+'_'+column_name+'"><input type="hidden" id="'+div_open+'" value="'+column_name+'"/><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\', '+div_open+')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
         $('#add_column_filter').before(add_filter_html);
         
-        var elemToOpen = $('#delete_filter_'+column_name)[0];
+        var elemToOpen = $('#delete_filter_'+div_open+'_'+column_name)[0];
         setTimeout(function() {
             $(elemToOpen).addClass('open');            
         }, 300)
     }
-    function delete_filter_div(filter_name)
+    function delete_filter_div(column_name, div_open)
     {
-        $('#delete_filter_'+filter_name).remove();
-        makeFilterJsonData(tableId, 'search', filter_name);
+        $('#delete_filter_'+div_open+'_'+column_name).remove();
+        makeFilterJsonData(tableId, 'search', column_name, div_open);
     }
     
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -441,20 +471,23 @@
         $('#saveTabButton').click(function () {
             var filterChecked = [];
             var jsonObject = {};
-            var filter_done_column_name = $("input[name='filter_done_column_name[]']");
-            var filter_done_column_type = $("input[name='filter_done_column_type[]']");
-            var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']");
-            for(var i = 0; i < filter_done_column_name.length; i++)
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
             {
-                if (filter_done_column_type[i].value == "has_any_value" || filter_done_column_type[i].value == 'is_unknown') {
-                    filter_done_column_type_val[i].value = "1";
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        $("input[name='filter_done_column_type[]']")[i].value = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
                 }
-                var subDoc = {};
-                subDoc[filter_done_column_type[i].value] = filter_done_column_type_val[i].value;
-                jsonObject[filter_done_column_name[i].value] = subDoc;
             }
         var tabName = $('#saveAsInput').val();
         obj = jsonObject;
+        var condition = $('#filter_condition').val();
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -464,7 +497,7 @@
             type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
                 dataType: 'json', // Set datatype - affects Accept header
                 url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition}, // Some data e.g. Valid JSON as a string
                 success: function (data) {
                     window.setTimeout(function () {
                         location.reload()
@@ -552,18 +585,18 @@
            }
            $(this).addClass("active");
        });
-       function hideDropdown(col_name)
+       function hideDropdown(col_name, div_open)
        {
-            $('#delete_filter_'+col_name).removeClass('open');
-            var radio_type = $("#delete_filter_"+col_name+" input[type='radio']:checked");
+            $('#delete_filter_'+div_open+'_'+col_name).removeClass('open');
+            var radio_type = $("#delete_filter_"+div_open+"_"+col_name+" input[type='radio']:checked");
             var radioname = radio_type.attr('dataid');
             var coltype = radio_type.attr('datacoltype');
-            var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname).val();
+            var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
             if (typeof radioButtonValue === "undefined") {
                 radioButtonValue ='';
             }
-            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column__input_type[]" value="'+coltype+'"/>';
-            $('#delete_filter_'+col_name+' a:first').html(a_html);
+            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>';
+            $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
         }
     </script>
   
