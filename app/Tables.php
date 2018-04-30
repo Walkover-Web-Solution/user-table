@@ -119,14 +119,14 @@ class Tables extends Model
         return $data;
     }
 
-    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize)
+    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize, $tabcondition)
     {
         if ($tabName == "All") {
             $data = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted')->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true);
-            $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize);
+            $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize, $tabcondition);
         }
         return $data;
     }
@@ -137,15 +137,16 @@ class Tables extends Model
      * @param $pageSize
      * @return mixed
      */
-    public static function getFilteredUsersDetailsData($req, $tableId, $pageSize)
+    public static function getFilteredUsersDetailsData($req, $tableId, $pageSize, $tabcondition)
     {
         $users = DB::table($tableId)->selectRaw('*');
         $coltypes = TableStructure::getTableColumnTypesArray($tableId);
+
         $columnArr = array();
         foreach($req as $k =>$r){
             $columnArr[$k]=$coltypes;
         }
-        $usersNew = Tables::makeFilterQuery($req, $users,$columnArr,$tableId,'and');
+        $usersNew = Tables::makeFilterQuery($req, $users,$columnArr,$tableId,$tabcondition);
         if($usersNew)
             return $usersNew->latest('id')->paginate($pageSize);
         else {
@@ -203,11 +204,12 @@ class Tables extends Model
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query','condition']);
             $req = (array)json_decode($tabSql->query,true);
-            $condition = empty($tabSql->condition)?'and':$tabSql->condition;
-            $count = Tables::getCountOfFilteredData($req, $tableId, $coltypes,$condition);
+            $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
+            $count = Tables::getCountOfFilteredData($req, $tableId, $coltypes, $tabcondition);
         }
         return $count;
     }
+
 
     public static function getCountOfFilteredData($req, $tableId, $coltypes,$condition)
     {
@@ -238,6 +240,7 @@ class Tables extends Model
         }
         return $arrTabCount;
     }
+
 
     public static function makeFilterQuery($reqs, $users,$coltypes,$tableName,$condition)
     {
