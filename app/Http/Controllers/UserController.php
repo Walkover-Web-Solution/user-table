@@ -24,6 +24,7 @@ class UserController extends Controller {
                 ], $messages);
         $tab = $request->tab;
         $tableId = $request->tableId;
+        $condition = $request->condition;
 
         if ((strcasecmp($tab, "All") == 0) || (strcasecmp($tab, "my-leads") == 0)) {
             return response(
@@ -47,12 +48,14 @@ class UserController extends Controller {
         $appliedFilters = json_decode($request->filter);
         $save = array(
             'tab_name' => $tab,
+            'condition' => $condition,
             'query' => json_encode($appliedFilters, JSON_UNESCAPED_SLASHES),
             'table_id' => $tableId
         );
         $data = Tabs::updateOrCreate(
                         ['tab_name' => $tab]
                         , $save);
+        
         if ($data)
         {
             return response(json_encode(array('message' => $tab . ' saved successfully')), 200)->header('Content-Type', 'application/json');

@@ -195,9 +195,9 @@ class TableController extends Controller
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize)
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition)
     {
-        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize);
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition);
         return json_decode(json_encode($tabDataJson), true);
     }
 
@@ -216,12 +216,14 @@ class TableController extends Controller
             $tabs = json_decode(json_encode($data), true);
             if ($tabName == "All") {
                 $tabArray = array();
+                $tabcondition = 'and';
             } else {
-                $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query'])->toArray();
+                $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition'])->toArray();
                 $tabArray = json_decode($tabSql['query'], true);
+                $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
             }
 
-            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100);
+            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition);
             $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
@@ -258,6 +260,7 @@ class TableController extends Controller
                 'structure' => $userTableStructure,
                 'teammates' => $teammates,
                 'activeTabFilter' => $tabArray,
+                'tabcondition' => $tabcondition,
                 'tableAuth' => $tableAuth);
         }
     }

@@ -63,8 +63,8 @@
 <div class="mt20 mtb20">
     <div class="col-sm-10">
         <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')" class="select-filter">
-        <option value="and"><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
-        <option value="or"><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
+        <option value="and" @if(isset($tabcondition) && $tabcondition == 'and') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
+        <option value="or" @if(isset($tabcondition) && $tabcondition == 'or') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
         @foreach($activeTabFilter as $i => $tabFilter)
         @foreach($filters as $k=>$filter)
@@ -499,9 +499,10 @@
                 url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
                 data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition}, // Some data e.g. Valid JSON as a string
                 success: function (data) {
-                    window.setTimeout(function () {
-                        location.reload()
-                    }, 2000);
+                    return false;
+                    //window.setTimeout(function () {
+                      //  location.reload()
+                    //}, 2000);
                 }
             });
         });
