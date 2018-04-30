@@ -63,6 +63,7 @@ class team_table_mapping extends Model {
         $data = DB::table('table_structures')
             ->select('column_name', 'ordering')
             ->where('table_id', $tableId)
+            ->where('display', 1)
             ->get();
         return json_decode(json_encode($data), true);
     }

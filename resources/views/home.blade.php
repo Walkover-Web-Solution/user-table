@@ -66,7 +66,6 @@
         <option value="and" @if(isset($tabcondition) && $tabcondition == 'and') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or" @if(isset($tabcondition) && $tabcondition == 'or') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
-        {{print_r($filters)}}
         @foreach($activeTabFilter as $i => $tabFilter)
         @foreach($filters as $k=>$filter)
             @if(!isset($tabFilter[$k]))
