@@ -66,6 +66,7 @@
         <option value="and" @if(isset($tabcondition) && $tabcondition == 'and') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or" @if(isset($tabcondition) && $tabcondition == 'or') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
+        {{print_r($filters)}}
         @foreach($activeTabFilter as $i => $tabFilter)
         @foreach($filters as $k=>$filter)
             @if(!isset($tabFilter[$k]))
@@ -80,7 +81,11 @@
                             @if(!isset($tabFilter[$k][$key]))
                                 @continue
                             @endif
-                            {{$key.' '.$tabFilter[$k][$key]}}
+                            @if(in_array($key, array('is_unknown', 'has_any_value')))
+                                {{$key.' null'}}
+                            @else
+                                {{$key.' '.$tabFilter[$k][$key]}}
+                            @endif
                             <input type="hidden" name="filter_done_column_name[]" value="{{$k}}">
                             <input type="hidden" name="filter_done_column_type[]" value="{{$key}}">
                             <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
@@ -118,9 +123,9 @@
                                 @endif
 
                                 @if($key == 'days_after')
-                                    More than (in days)
+                                    After (in days)
                                 @elseif($key == 'days_before')
-                                    less than (in days)
+                                    Before (in days)
                                 @else
                                     {{str_replace("days_","",$key)}}
                                 @endif
@@ -243,9 +248,9 @@
                                                     @endif
                                                     
                                                     @if($key == 'days_after')
-                                                        More than (in days)
+                                                        After (in days)
                                                     @elseif($key == 'days_before')
-                                                        less than (in days)
+                                                        Before (in days)
                                                     @else
                                                         {{str_replace("days_","",$key)}}
                                                     @endif
@@ -476,7 +481,7 @@
                 if($("input[name='filter_done_column_name[]']")[i])
                 {
                     if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                        $("input[name='filter_done_column_type[]']")[i].value = 1;
+                        $("input[name='filter_done_column_type_val[]']")[i].value = 1;
                     }
                     var subDoc = {};
                     subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;

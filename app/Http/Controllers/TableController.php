@@ -264,9 +264,10 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId, $coltype,$condition='and', $pageSize = 100)
+    public function processFilterData($req, $tableId, $coltype, $condition='and', $pageSize = 100)
     {
         $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
+        usort($columnsonly, function ($a, $b) { return strnatcmp($a['ordering'], $b['ordering']); });
         $colArr = array(0=>'id');
         foreach ($columnsonly as $col){
             $colArr[] =$col['column_name'];
