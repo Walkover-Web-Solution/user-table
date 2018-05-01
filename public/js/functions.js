@@ -183,6 +183,7 @@ function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
         },
         success: function (data) {
             $('#def_response').html(data);
+            $('#show_count').html('<span class="sp_view_count">'+($('#all_users tr').length+' users match<span><span class="total_count">of '+allTabCount+'</span>'));
         },
         complete: function() {
             $('body').removeClass('loader');
