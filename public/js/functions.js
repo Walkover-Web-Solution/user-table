@@ -91,7 +91,7 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
         if($("input[name='filter_done_column_name[]']")[i])
         {
             if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                $("input[name='filter_done_column_type[]']")[i].value = 1;
+                $("input[name='filter_done_column_type_val[]']")[i].value = 1;
             }
             var subDoc = {};
             subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
@@ -142,7 +142,7 @@ function changeFilterJsonData(tableId, type) {
         if($("input[name='filter_done_column_name[]']")[i])
         {
             if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                $("input[name='filter_done_column_type[]']")[i].value = 1;
+                $("input[name='filter_done_column_type_val[]']")[i].value = 1;
             }
             var subDoc = {};
             subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;

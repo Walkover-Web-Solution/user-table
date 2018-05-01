@@ -54,10 +54,15 @@ class GraphController extends Controller {
             $users->where($dateColumn, '>=', $starttime)->where($dateColumn, '<=', $endtime);
         }
         if (!empty($tabName) && $tabName != 'All') {
-            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query']);
+            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query','condition']);
             $req = (array)json_decode($tabSql->query,true); 
+            $condition = empty($tabSql->condition)?'and':$tabSql->condition;
             $coltypes = TableStructure::getTableColumnTypesArray($userTableName);
-            $usersNew = Tables::makeFilterQuery($req, $users, $coltypes,$userTableName);
+            $colArr = array();
+            foreach($req as $k=>$r){
+                $colArr[$k]=$coltypes;
+            }
+            $usersNew = Tables::makeFilterQuery($req, $users, $colArr,$userTableName,$condition);
             if($usersNew)
                 $users = $usersNew;
         }
@@ -77,7 +82,7 @@ class GraphController extends Controller {
                 $date_columns[] = $value['column_name'];
             else if ($value['is_unique'] == "false"){
                 $col = $value['column_name'];
-                $sql = "SELECT count(distinct $col) allrecords,count($col) total  FROM $actualTableName";
+                $sql = "SELECT count(distinct `$col`) allrecords,count(`$col`) total  FROM $actualTableName";
                 $tableData = Tables::getSQLData($sql);
                 $allrecords = $tableData[0]->allrecords;
                 $total = $tableData[0]->total;

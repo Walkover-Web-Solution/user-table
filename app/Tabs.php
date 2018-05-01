@@ -8,7 +8,7 @@ class Tabs extends Model {
 
     protected $table = 'tabs';
     protected $fillable = ['tab_name', 'user_id', 'query', 'webhook',
-        'created_at', 'updated_at', 'table_id'
+        'created_at', 'updated_at', 'table_id', 'condition'
     ];
 
     public static function allTabs() {

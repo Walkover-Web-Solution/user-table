@@ -119,14 +119,14 @@ class Tables extends Model
         return $data;
     }
 
-    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize)
+    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize, $tabcondition)
     {
         if ($tabName == "All") {
             $data = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted')->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true);
-            $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize);
+            $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize, $tabcondition);
         }
         return $data;
     }
@@ -137,11 +137,16 @@ class Tables extends Model
      * @param $pageSize
      * @return mixed
      */
-    public static function getFilteredUsersDetailsData($req, $tableId, $pageSize)
+    public static function getFilteredUsersDetailsData($req, $tableId, $pageSize, $tabcondition)
     {
         $users = DB::table($tableId)->selectRaw('*');
         $coltypes = TableStructure::getTableColumnTypesArray($tableId);
-        $usersNew = Tables::makeFilterQuery($req, $users,$coltypes,$tableId);
+
+        $columnArr = array();
+        foreach($req as $k =>$r){
+            $columnArr[$k]=$coltypes;
+        }
+        $usersNew = Tables::makeFilterQuery($req, $users,$columnArr,$tableId,$tabcondition);
         if($usersNew)
             return $usersNew->latest('id')->paginate($pageSize);
         else {
@@ -197,17 +202,23 @@ class Tables extends Model
         if ($tabName == "All") {
             $count = DB::table($tableId)->count();
         } else {
-            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
+            $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query','condition']);
             $req = (array)json_decode($tabSql->query,true);
-            $count = Tables::getCountOfFilteredData($req, $tableId, $coltypes);
+            $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
+            $count = Tables::getCountOfFilteredData($req, $tableId, $coltypes, $tabcondition);
         }
         return $count;
     }
 
-    public static function getCountOfFilteredData($req, $tableId, $coltypes)
+
+    public static function getCountOfFilteredData($req, $tableId, $coltypes,$condition)
     {
         $users = DB::table($tableId);
-        $usersNew = Tables::makeFilterQuery($req, $users,$coltypes,$tableId);
+        $colArr = array();
+        foreach($req as $k=>$r){
+            $colArr[$k]=$coltypes;
+        }
+        $usersNew = Tables::makeFilterQuery($req, $users,$colArr,$tableId,$condition);
         if($usersNew)
             $count = $usersNew->count();
         else {
@@ -230,87 +241,221 @@ class Tables extends Model
         return $arrTabCount;
     }
 
-    public static function makeFilterQuery($reqs, $users,$coltypes,$tableName)
-    {
-        $errorFlag = 0;
-        foreach($reqs as $req)
-        {
-        foreach (array_keys($req) as $paramName) {
-            $colomntype = isset($coltypes[$paramName])?$coltypes[$paramName]:'';
-            if (!Schema::hasColumn($tableName, $paramName)) //check whether table has this column
-            {
-                $errorFlag =1;
-                break;
-            }
-            if (isset($req[$paramName]['is'])) {
-                $val = $req[$paramName]['is'];
-                if ($val == 'me' && $loggedInUser = Auth::user()) {
-                    $users->where($paramName, '=', $loggedInUser->email);
-                } else
-                    $users->where($paramName, '=', $req[$paramName]['is']);
-            } else if (isset($req[$paramName]['is_not'])) {
-                $users->where($paramName, '<>', $req[$paramName]['is_not']);
-            } else if (isset($req[$paramName]['starts_with'])) {
-                $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
-            } else if (isset($req[$paramName]['ends_with'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
-            } else if (isset($req[$paramName]['contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
-            } else if (isset($req[$paramName]['not_contains'])) {
-                $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
-            } else if (isset($req[$paramName]['is_unknown'])) {
-                $users->whereNull($paramName)->orWhere($paramName, '');
-            } else if (isset($req[$paramName]['has_any_value'])) {
-                $users->whereNotNull($paramName)->where($paramName, '<>', '');
-            } else if (isset($req[$paramName]['greater_than'])) {
-                $users->where($paramName, '>', $req[$paramName]['greater_than']);
-            } else if (isset($req[$paramName]['less_than'])) {
-                $users->where($paramName, '<', $req[$paramName]['less_than']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['equals_to'])) {
-                $users->where($paramName, '=', $req[$paramName]['equals_to']);
-            } else if (isset($req[$paramName]['from'])) {
-                $users->where($paramName, '>=', $req[$paramName]['from']);
-            } else if (isset($req[$paramName]['to'])) {
-                $users->where($paramName, '<=', $req[$paramName]['to']);
-            } else if (isset($req[$paramName]['on'])) {
-               $d = $req[$paramName]['on'];
-               $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
-               $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
-               $sttimestamp = strtotime($st);
-               $endtimestamp = strtotime($enddt);
-               $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
-            } else if (isset($req[$paramName]['before'])) {
-                if ($colomntype == 'date') {
-                    $timestamp = strtotime($req[$paramName]['before']);
-                    $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
-                } else {
-                    $users->where($paramName, '<=', $req[$paramName]['before']);
-                }
-            } else if (isset($req[$paramName]['after'])) {
-                if ($colomntype == 'date') {
-                    $timestamp = strtotime($req[$paramName]['after']);
-                    $users->where($paramName, '>=', $timestamp);
-                } else {
-                    $users->where($paramName, '>=', $req[$paramName]['after']);
-                }
-            } else if (isset($req[$paramName]['days_before'])) {
-                $days = $req[$paramName]['days_before'];
-                $daysbefore = time() - ($days * 24 * 60 * 60);
-                $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
-            } else if (isset($req[$paramName]['days_after'])) {
-                $days = $req[$paramName]['days_after'];
-                $daysafter = time() + ($days * 24 * 60 * 60);
-                $users->where($paramName, '>=', $daysafter);
-            }
 
+    public static function makeFilterQuery($reqs, $users,$coltypes,$tableName,$condition)
+    {
+        $users =self::getConditionQuery($reqs, $coltypes, $condition, $users, $tableName);
+        
+        if($users)
+            return $users->whereNull('is_deleted');
+        else
+            return $users;
+    }
+    
+    public static function getConditionQuery($reqs,$coltype,$condition,$users,$tableName){
+        $flag=0;
+        $errorFlag = 0;
+        foreach ($reqs as $k => $req)
+        {
+            foreach (array_keys($req) as $paramName) {
+                $colomntype = $coltype[$k][$paramName];
+                if (!Schema::hasColumn($tableName, $paramName)) //check whether table has this column
+                {
+                    $errorFlag =1;
+                    break;
+                }
+                if (isset($req[$paramName]['is'])) {
+                    $val = $req[$paramName]['is'];
+                    if($flag && $condition=='or')
+                    {
+                        if ($val == 'me' && $loggedInUser = Auth::user()) {
+                            $users->orWhere($paramName, '=', $loggedInUser->email);
+                        } else
+                            $users->orWhere($paramName, '=', $req[$paramName]['is']);
+                    }else{
+                        if ($val == 'me' && $loggedInUser = Auth::user()) {
+                            $users->where($paramName, '=', $loggedInUser->email);
+                        } else
+                            $users->where($paramName, '=', $req[$paramName]['is']);
+                    }
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['is_not'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<>', $req[$paramName]['is_not']);
+                    }else
+                        $users->where($paramName, '<>', $req[$paramName]['is_not']);
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['starts_with'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+                    }else{
+                        $users->where($paramName, 'LIKE', '' . $req[$paramName]['starts_with'] . '%');
+                    }
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['ends_with'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
+                    }
+                    else
+                        $users->where($paramName, 'LIKE', '%' . $req[$paramName]['ends_with'] . '');
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['contains'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
+                    }else
+                        $users->where($paramName, 'LIKE', '%' . $req[$paramName]['contains'] . '%');
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['not_contains'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                    }else
+                        $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['is_unknown'])) {
+                    if($flag && $condition=='or'){
+                        $users->OrWhere(function ($query) use($paramName){
+                            $query->orWhereNull($paramName)
+                            ->orWhere($paramName, '');
+                        });
+                    }else{
+                        $users->where(function ($query) use($paramName){
+                            $query->whereNull($paramName)
+                            ->orWhere($paramName, '');
+                        });
+                    }
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['has_any_value'])) {
+                    if($flag && $condition=='or'){
+                        $users->OrWhere(function ($query) use($paramName){
+                            $query->orWhereNotNull($paramName)
+                            ->where($paramName, '<>', '');
+                        });
+                    }else{
+                        $users->where(function ($query) use($paramName){
+                            $query->whereNotNull($paramName)
+                            ->where($paramName, '<>','');
+                        });
+                    }
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['greater_than'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>', $req[$paramName]['greater_than']);
+                    }else
+                        $users->where($paramName, '>', $req[$paramName]['greater_than']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['less_than'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<', $req[$paramName]['less_than']);
+                    }else
+                        $users->where($paramName, '<', $req[$paramName]['less_than']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['equals_to'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '=', $req[$paramName]['equals_to']);
+                    }else
+                        $users->where($paramName, '=', $req[$paramName]['equals_to']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['equals_to'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '=', $req[$paramName]['equals_to']);
+                    }else
+                        $users->where($paramName, '=', $req[$paramName]['equals_to']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['from'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>=', $req[$paramName]['from']);
+                    }else
+                        $users->where($paramName, '>=', $req[$paramName]['from']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['to'])) {
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<=', $req[$paramName]['to']);
+                    }else
+                        $users->where($paramName, '<=', $req[$paramName]['to']);
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['on'])) {
+                    $d = $req[$paramName]['on'];
+                    $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
+                    $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
+                    $sttimestamp = strtotime($st);
+                    $endtimestamp = strtotime($enddt);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                    }else
+                        $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                    $flag=1;
+                }
+                if (isset($req[$paramName]['before'])) {
+                    if ($colomntype == 'date') {
+                        $timestamp = strtotime($req[$paramName]['before']);
+                        if($flag && $condition=='or'){
+                            $users->orWhere($paramName, '<=', $timestamp)->where($paramName, '>', 0);
+                        }else
+                            $users->where($paramName, '<=', $timestamp)->where($paramName, '>', 0);
+                    } else {
+                        if($flag && $condition=='or'){
+                            $users->orWhere($paramName, '<=', $req[$paramName]['before']);
+                        } else {
+                            $users->where($paramName, '<=', $req[$paramName]['before']);
+                        }
+                    }
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['after'])) {
+                    if ($colomntype == 'date') {
+                        $timestamp = strtotime($req[$paramName]['after']);
+                        if($flag && $condition=='or'){
+                            $users->orWhere($paramName, '>=', $timestamp);
+                        }else
+                            $users->where($paramName, '>=', $timestamp);
+                    } else {
+                        if($flag && $condition=='or'){
+                            $users->orWhere($paramName, '>=', $req[$paramName]['after']);
+                        }else
+                            $users->where($paramName, '>=', $req[$paramName]['after']);
+                    }
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['days_before'])) {
+                    $days = $req[$paramName]['days_before'];
+                    $daysbefore = time() - ($days * 24 * 60 * 60);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '<=', $daysbefore)->where($paramName, '>', 0);
+                    }else{
+                       $users->where($paramName, '<=', $daysbefore)->where($paramName, '>', 0); 
+                    }
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['days_after'])) {
+                    $days = $req[$paramName]['days_after'];
+                    $daysafter = time() + ($days * 24 * 60 * 60);
+                    if($flag && $condition=='or'){
+                        $users->orWhere($paramName, '>=', $daysafter);
+                    }else{
+                        $users->where($paramName, '>=', $daysafter);
+                    }
+                    $flag=1;
+                }
+            }
         }
-        } 
         if($errorFlag){
             return false;
         }
-        return $users->whereNull('is_deleted');
+        return $users;
     }
 
 }
