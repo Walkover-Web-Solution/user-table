@@ -350,22 +350,43 @@
                 alert("Cannot Load Graph");
             }
 
-            var date_input = $('input[name="date"]');
             var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
-            var options = {
+            $('#barDate').datepicker({
                 format: 'mm/dd/yyyy',
                 container: container,
                 todayHighlight: true,
                 autoclose: true,
-            };
-            date_input.datepicker(options);
-            var date_input1 = $('input[name="date1"]');
-            date_input1.datepicker(options);
-
-            var date_input3 = $('input[name="pieDate"]');
-            date_input3.datepicker(options);
-            var date_input4 = $('input[name="pieDate1"]');
-            date_input4.datepicker(options);
+            }).on('changeDate', function(){
+                // set the "toDate" start to not be later than "fromDate" ends:
+                $('#barDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#barDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#barDate').datepicker('setEndDate', new Date($(this).val()));
+            });
+            $('#pieDate').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#pieDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
+            });
 
              $("#btnLoadGraph1").click(function($){
                  createAllPieCharts();
