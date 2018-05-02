@@ -52,10 +52,12 @@ class team_table_mapping extends Model {
         return $data;
     }
 
-    public static function getUserTablesNameById($tableId) {
-        $data = team_table_mapping::with('tableStructure.columnType')
-                ->where('id', $tableId)
-                ->first()->toArray();
+    public static function getUserTablesNameById($tableId,$arrayAllowed=array()) {
+        $data = team_table_mapping::with(['tableStructure'=> function ($query) use($arrayAllowed){
+            if(!empty($arrayAllowed))
+                $query->whereIn('id', $arrayAllowed);
+        },'tableStructure.columnType'])->where('id', $tableId)->first()->toArray();
+       
         return $data;
     }
     
