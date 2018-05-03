@@ -396,6 +396,7 @@
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
+    var allTabCount = '{{$allTabCount}}';
 </script>
 <!-- inline scripts -->
 <script>
