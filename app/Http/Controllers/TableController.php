@@ -204,12 +204,24 @@ class TableController extends Controller
     public function processTableData($tableId, $tabName)
     {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
-        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
         if (empty($tableNames['table_id'])) {
             return array();
         } else {
             $tableIdMain = $tableNames['table_id'];
             $tableAuth = $tableNames['auth'];
+            $parentTableId = $tableNames['parent_table_id'];
+            $teamId = $tableNames['team_id'];
+            if(!empty($parentTableId)){
+                $table = $this->tableDetail->get($parentTableId);
+                $subtable = $this->tableDetail->get($tableId);
+                $arrayAllowed = json_decode($subtable->table_structure,true);
+                $teammates = Teams::getTeamMembers($table->team_id);
+                $tableNames =team_table_mapping::getUserTablesNameById($parentTableId,$arrayAllowed);
+            }else{
+                $teammates = Teams::getTeamMembers($teamId);
+            }
+            
+            $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
             $data = Tabs::getTabsByTableId($tableIdMain);
@@ -228,17 +240,8 @@ class TableController extends Controller
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
-            $teamId = $tableNames['team_id'];
-            $parentTableId = $tableNames['parent_table_id'];
-            if(!empty($parentTableId)){
-                $table = $this->tableDetail->get($parentTableId);
-                $teammates = Teams::getTeamMembers($table->team_id);
-            }else{
-                $teammates = Teams::getTeamMembers($teamId);
-            }
-
             $teammatesOptions = array();
-            foreach ($teammates as $tkey => $tvalue) {
+            foreach ($teammates as $tvalue) {
                 $teammatesOptions[] = $tvalue['name'];
             }
             $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);

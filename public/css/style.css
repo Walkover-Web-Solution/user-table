@@ -1020,8 +1020,8 @@ side bar component end
     color:#888;
 }
 .dropdown-menu{
-    position: absolute !important;
-    top:100% !important;
+    position: absolute;
+    top:100%;
 }
 .li-checkbox{
     padding:0;
@@ -1154,7 +1154,7 @@ top:10px;
     top:0;
     }
 .table-custom-res tr td{
-    padding:10px 10px !important;
+    padding:10px 10px 10px 20px !important;
 }
 .table-custom-res tr td select{
     margin-top:0;
@@ -1183,7 +1183,9 @@ top:10px;
     display: block;
     margin-left: 10px;
 }
-  
+
+
+
 
 
 

@@ -336,7 +336,6 @@
 <div>
     <div class="topborder">
         <div class="col-sm-5 mb20">
-            <div id="show_count" style="float: left;">
             @foreach($arrTabCount as $tabDetail)
                 @foreach($tabDetail as $tabName => $tabCount)
                 @if($activeTab == $tabName)
@@ -344,7 +343,6 @@
                 @endif
                 @endforeach
             @endforeach
-            </div>
             <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
             @if(!$isGuestAccess)
             <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
