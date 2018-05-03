@@ -18,22 +18,23 @@ class ContactController extends Controller
 
     public function show($tableId, $id)
     {
-        $table = $this->tableDetail->get($tableId);
-        $structure = $this->formatStructure($table->tableStructure);
-        $this->contact = new Contact($table->table_id);
-        $data = $this->contact->getContactById($id);
+        $data =DB::table($tableId)->selectRaw('*')->where('id',$id);
+//        $table = $this->tableDetail->get($tableId);
+//        $structure = $this->formatStructure($table->tableStructure);
+//        $this->contact = new Contact($table->table_id);
+//        $data = $this->contact->getContactById($id);
         $newData = json_decode(json_encode($data), true);
         //print_r($newData);
-//        foreach($table->tableStructure as $k=>$v)
-//        {
-//            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
-//        }
-//
-//        $inner_ordered['id'] = $newData['id'];
+        foreach($table->tableStructure as $k=>$v)
+        {
+            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
+        }
+
+        $inner_ordered['id'] = $newData['id'];
 
         return response(
             json_encode(
-                array('data' => $newData, 'colDetails' => $structure,
+                array('data' => $inner_ordered, 'colDetails' => $structure,
                     'authKey' => $table->auth)
             ), 200
         )->header('Content-Type', 'application/json');
