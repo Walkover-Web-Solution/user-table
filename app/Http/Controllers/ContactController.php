@@ -23,16 +23,17 @@ class ContactController extends Controller
         $this->contact = new Contact($table->table_id);
         $data = $this->contact->getContactById($id);
         $newData = json_decode(json_encode($data), true);
-        foreach($table->tableStructure as $k=>$v)
-        {
-            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
-        }
-
-        $inner_ordered['id'] = $newData['id'];
+        //print_r($newData);
+//        foreach($table->tableStructure as $k=>$v)
+//        {
+//            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
+//        }
+//
+//        $inner_ordered['id'] = $newData['id'];
 
         return response(
             json_encode(
-                array('data' => $inner_ordered, 'colDetails' => $structure,
+                array('data' => $newData, 'colDetails' => $structure,
                     'authKey' => $table->auth)
             ), 200
         )->header('Content-Type', 'application/json');
