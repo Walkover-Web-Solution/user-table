@@ -133,6 +133,11 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
+function graph_show()
+{
+    
+}
+
 function changeFilterJsonData(tableId, type) {
     var jsonObject = {};
     var coltypeObject = {};
