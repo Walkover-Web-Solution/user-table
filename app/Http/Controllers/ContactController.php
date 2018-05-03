@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Contact;
 use App\Repositories\TableDetailRepositoryInterface;
 use App\Teams;
+use DB;
 
 class ContactController extends Controller
 {
@@ -18,13 +19,12 @@ class ContactController extends Controller
 
     public function show($tableId, $id)
     {
-        $data =DB::table($tableId)->selectRaw('*')->where('id',$id);
-//        $table = $this->tableDetail->get($tableId);
-//        $structure = $this->formatStructure($table->tableStructure);
-//        $this->contact = new Contact($table->table_id);
-//        $data = $this->contact->getContactById($id);
+        $table = $this->tableDetail->get($tableId);
+        $structure = $this->formatStructure($table->tableStructure);
+        //$this->contact = new Contact($table->table_id);
+        //$data = $this->contact->getContactById($id);
+        $data = DB::table($table->table_id)->selectRaw('*')->where('id',$id)->first();
         $newData = json_decode(json_encode($data), true);
-        //print_r($newData);
         foreach($table->tableStructure as $k=>$v)
         {
             $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
