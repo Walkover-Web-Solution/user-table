@@ -1113,8 +1113,9 @@ side bar component end
 .user-custom-dashboard{
     padding-top:0;
 }
-.nav-table-custom-response{
-    display: block  !important;
+
+.datepicker{
+    position: absolute !important;
 }
 .table-custom-res{
     width:auto !important;

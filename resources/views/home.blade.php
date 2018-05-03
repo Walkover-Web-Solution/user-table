@@ -365,14 +365,14 @@
                             <i class="caret"></i></span></a>
                         </div>
                         <div class="btn-group m-l-5" role="group" aria-label="...">
-                        <button type="button" class="btn btn-default btn-lable"><span><i class="fa fa-list"></i></span></button>
-                        <button type="button" class="btn btn-default btn-lable"><span><i class="fa fa-globe"></i></span></button>
+                        <button type="button" class="btn btn-default btn-lable" onClick="click_show_table();"><span><i class="fa fa-list"></i></span></button>
+                        <button type="button" class="btn btn-default btn-lable" onClick="click_show_graph();"><span><i class="fa fa-globe"></i></span></button>
                         </div>
                     </div>
                 </div>
     </div>
 </div>
-<div class="nav-and-table  from-right nav-table-custom-response">
+<div class="nav-and-table  from-right nav-table-custom-response" id="show_table_div">
     <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
         <div class="scroll-x flex" style="overflow:visible;">
@@ -385,12 +385,99 @@
         </div>
     </div>
 </div>
+<!-- Graph Div Start-->
+<div class="nav-and-table from-right nav-table-custom-response" style="display: none;" id="show_graph_div">
+    <div id="user-board" class="user-dashboard user-custom-dashboard">
+        <!-- Tab panes -->
+        <div class="scroll-x">
+            <div class="scroll-y graph-page-container" id="response">
+                <div class="top-chart-container">
+                    <div class="ajax-loader-container">
+                        <div class="loading-icon">
+                            <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+                    <form class="form-inline graph-form">
+
+                        <div class="form-group" style="display:none;">
+                            <label for="email"  class="control-caption">Column</label>
+                            <select class="form-control" id="column2">
+                                @foreach( $other_columns as $other_column)
+                                    <option value="{{$other_column}}">{{$other_column}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="control-caption">Date Column </label>
+                            <select class="form-control" id="column1">
+                                @foreach( $date_columns as $date_column)
+                                    <option value="{{$date_column}}">{{$date_column}}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email"  class="control-caption">Date Range</label>
+                            <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text" value="{{$rangeStart}}"/>
+                            To
+                            <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text" value="{{$rangeEnd}}"/>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>
+                    </form>
+                    <div class="charts-container">
+                        <div class="chart-first">
+                            <canvas id="myChart" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <form class="form-inline graph-form">
+                    <div class="form-group">
+                        <label for="email" class="control-caption">Date Column </label>
+                        <select class="form-control" id="column3">
+                            @foreach( $date_columns as $date_column)
+                                <option value="{{$date_column}}">{{$date_column}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="email"  class="control-caption">Date Range</label>
+                        <input class="form-control" id="pieDate" name="pieDate" placeholder="MM/DD/YYY" type="text"  value="{{$rangeStart}}"/>
+                        To
+                        <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
+                </form>
+
+                <div class="charts-container">
+                    <div class="pie-chart-container row">
+                        @foreach( $other_columns as $other_column)
+                            <div class="pie-chart col-md-2 col-lg-2 col-sm-4 col-xs-6">
+                                <div class="column-caption">Column : {{$other_column}}</div>
+                                <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
+                            </div>
+                        @endforeach
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Graph Div End-->
 @stop
 @section('pagescript')
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{asset('js/templates.js')}}"></script>
 <script src="{{asset('js/functions.js')}}"></script>
+<script src="{{asset('js/Chart.bundle.js')}}"></script>
+<script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
+<link href="{{ asset('css/bootstrap-datepicker3.css') }}" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
 <script type="text/javascript">
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
@@ -403,6 +490,16 @@
     // $('body').addClass('loader');
 </script>
 <script>
+    function click_show_table()
+    {
+        $('#show_table_div').attr("style", "display:block");
+        $('#show_graph_div').attr("style", "display:none");
+    }
+    function click_show_graph()
+    {
+        $('#show_graph_div').attr("style", "display:block");
+        $('#show_table_div').attr("style", "display:none");
+    }
     function show_column_type(column_name)
     {
         var div_open = $('.filter-column').length;
@@ -583,6 +680,245 @@
             });
         }
     }
+    
+        function CreatePieChart(element, labels,values,colors,bcolors) {
+            var ctx = document.getElementById(element).getContext('2d');
+            data = {
+                "labels": labels,
+                "datasets": [{
+                    "label": "",
+                    "data": values,
+                    "backgroundColor": colors
+                }]
+            };
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    legend: {display: false}
+                }
+            });
+        }
+        function CreateBarChart(element, labels, values,colors,bColors) {
+            if(window.mybarChart == undefined)
+            {
+                var ctx = document.getElementById(element).getContext('2d');
+                window.mybarChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '',
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor:bColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            }else{
+                var newData = {
+                    labels: labels,
+                    datasets: [{
+                        label: '',
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor:bColors,
+                        borderWidth: 1
+                    }]
+                };
+                window.mybarChart.data.datasets[0].data = values;
+                window.mybarChart.data.labels = labels;
+                window.mybarChart.update();
+            }
+        }
+        //Get Graph functions.
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        function random_rgba() {
+            var o = Math.round, r = Math.random, s = 255;
+            var opacity = 0.5;// r().toFixed(1);
+
+            return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
+        }
+        function getGraphData(dateColumn, secondColumn,startDate,endDate) {
+            var tableName = "{{$tableId}}";
+            var tabName = "{{$activeTab}}";
+            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName=" + tabName + "&startDate="+ startDate + "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
+            $.get(dataUrl, function (response) {
+                var data = JSON.parse(response);
+                var Total_data = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    Total_data += item.Total;
+                }
+                var thurshold = Total_data / 25;
+                //console.log(thurshold);
+                var dates = new Array();
+                var values = new Array();
+                var colors = new Array();
+                var bcolors = new Array();
+                var others_count = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                   // if(item.Total > thurshold) {
+                        dates.push(item.LabelColumn);
+                        values.push(item.Total);
+                        colors.push(random_rgba());
+                        bcolors.push("rgba(100,100,100,1)");
+                   // }else{
+                   //     others_count += item.Total;
+                  //  }
+                }
+                //dates.push("Others");
+                //values.push(others_count);
+                //colors.push(random_rgba());
+               // bcolors.push("rgba(100,100,100,1)");
+                //console.log(colors);
+                CreateBarChart("myChart", dates,values,colors,bcolors);
+                $(".top-chart-container .ajax-loader-container").hide();
+            });
+        }
+        function getPieGraphData(dateColumn, secondColumn, element) {
+
+            var startDate = $("#pieDate").val();
+            var endDate = $("#pieDate1").val();
+
+            var tableName = "{{$tableId}}";
+            var tabName = "{{$activeTab}}";
+            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName="+ tabName + "&startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
+            $.get(dataUrl, function (response) {
+                var data = JSON.parse(response);
+                var Total_data = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    Total_data += item.Total;
+                }
+                var thurshold = Total_data / 25;
+
+                var dates = new Array();
+                var values = new Array();
+                var colors = new Array();
+                var bcolors = new Array();
+
+                var others_count = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    if(item.Total > thurshold) {
+                        dates.push(item.LabelColumn);
+                        values.push(item.Total);
+                        colors.push(random_rgba());
+                        bcolors.push("rgba(100,100,100,1)");
+                    }else{
+                        others_count += item.Total;
+                    }
+                }
+                
+                dates.push("Others");
+                values.push(others_count);
+                colors.push(random_rgba());
+                bcolors.push("rgba(100,100,100,1)");
+                
+                
+                //console.log(colors);
+                if( dates.length > 1){
+                     $("#" + element ).parent().show();
+                     CreatePieChart(element, dates,values,colors,bcolors);
+                }
+                else  
+                    $("#" + element ).parent().hide();
+            });
+        }
+        function loadGraph() {
+            $(".top-chart-container .ajax-loader-container").show();
+            var column1 = $("#column1").val();
+            var barDate = $("#barDate").val();
+            var barDate1 = $("#barDate1").val();
+            console.log("StartDate : " , barDate);
+            console.log(barDate1);
+            getGraphData(column1, column1,barDate,barDate1);
+        }
+        $(document).ready(function ($) {
+
+            $("#btnLoadGraph").click(function($){
+                loadGraph();
+            });
+            //Load the Initial Graph Data//
+            var c1length = $('#column1 > option').length;
+            var c2length = $('#column2 > option').length;
+            if (c1length > 0 && c2length > 0){
+                $('#column1 option:first-child').attr("selected", "selected");
+                $('#column2 option:first-child').attr("selected", "selected");
+                loadGraph();
+            } else{
+                alert("Cannot Load Graph");
+            }
+
+            var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+            $('#barDate').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "toDate" start to not be later than "fromDate" ends:
+                $('#barDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#barDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#barDate').datepicker('setEndDate', new Date($(this).val()));
+            });
+            $('#pieDate').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#pieDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
+            });
+
+             $("#btnLoadGraph1").click(function($){
+                 createAllPieCharts();
+            });
+        });
+       
+        function createAllPieCharts(){
+            var column3 = $("#column3").val();
+            @foreach($other_columns as $other_column)
+            getPieGraphData(column3, "{{$other_column}}", "id_{{$other_column}}");
+            @endforeach
+        }
+        createAllPieCharts();
     </script> 
     <script>
         $(".tablist li").click(function() {
@@ -827,7 +1163,6 @@ console.log(window.location.href);
 
                     </div>
             </div>
-            </form>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" onclick="editUserData('add')">
                     Add

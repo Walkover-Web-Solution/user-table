@@ -211,6 +211,8 @@ class TableController extends Controller
             $tableAuth = $tableNames['auth'];
             $parentTableId = $tableNames['parent_table_id'];
             $teamId = $tableNames['team_id'];
+            $date_columns = array();
+            $other_columns = array();
             if(!empty($parentTableId)){
                 $table = $this->tableDetail->get($parentTableId);
                 $subtable = $this->tableDetail->get($tableId);
@@ -220,8 +222,25 @@ class TableController extends Controller
             }else{
                 $teammates = Teams::getTeamMembers($teamId);
             }
+            $graphtableNames = team_table_mapping::getUserTablesNameById($tableId);
+            $userTableStructure = $graphtableNames['table_structure'];
+            foreach ($userTableStructure as $key => $value) {
+                if ($value['column_type']['column_name'] == 'date')
+                    $date_columns[] = $value['column_name'];
+                else if ($value['is_unique'] == "false"){
+                    $col = $value['column_name'];
+                    $sql = "SELECT count(distinct `$col`) allrecords,count(`$col`) total  FROM $tableIdMain";
+                    $tableData = Tables::getSQLData($sql);
+                    $allrecords = $tableData[0]->allrecords;
+                    $total = $tableData[0]->total;
+                    if(($allrecords != 1 && $allrecords != $total && ($total - $allrecords) > 5 ))
+                        $other_columns[] =  $col;
+                }
+
+            }
             
             $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+            
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
             $data = Tabs::getTabsByTableId($tableIdMain);
@@ -250,8 +269,14 @@ class TableController extends Controller
 
             $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All",$coltypes);
             $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
+            $d=strtotime("-3 days");
+            $rangeStart = date('m/d/Y',$d);
+            $d1=strtotime("+3 days");
+            $rangeEnd = date('m/d/Y',$d1);
             return array(
                 'activeTab' => $tabName,
+                'date_columns' => $date_columns,
+                'other_columns' => $other_columns,
                 'tabs' => $tabs,
                 'allTabs' => $tabData,
                 'allTabCount' => $allTabCount,
@@ -263,7 +288,9 @@ class TableController extends Controller
                 'teammates' => $teammates,
                 'activeTabFilter' => $tabArray,
                 'tabcondition' => $tabcondition,
-                'tableAuth' => $tableAuth);
+                'tableAuth' => $tableAuth,
+                'rangeStart' => $rangeStart,
+                'rangeEnd' => $rangeEnd);
         }
     }
 
