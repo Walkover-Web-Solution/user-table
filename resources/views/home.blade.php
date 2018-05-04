@@ -13,7 +13,11 @@
         @foreach($arrTabCount as $tabDetail)
         @foreach($tabDetail as $tabName => $tabCount)
 
+        @if($activeTab == $tabName)
+        <li role="presentation" class="active">
+        @else
         <li role="presentation">
+        @endif
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>
         </li>
@@ -866,7 +870,7 @@
                 $('#column2 option:first-child').attr("selected", "selected");
                 loadGraph();
             } else{
-                alert("Cannot Load Graph");
+                //alert("Cannot Load Graph");
             }
 
             var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
