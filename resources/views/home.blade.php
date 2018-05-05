@@ -86,12 +86,19 @@
                             @endif
                             @if(in_array($key, array('is_unknown', 'has_any_value')))
                                 {{$key.' null'}}
+                            @elseif($key == 'between')
+                                {{$key.' '.$tabFilter[$k][$key]['before'].' to '.$tabFilter[$k][$key]['after']}}
                             @else
                                 {{$key.' '.$tabFilter[$k][$key]}}
                             @endif
                             <input type="hidden" name="filter_done_column_name[]" value="{{$k}}">
                             <input type="hidden" name="filter_done_column_type[]" value="{{$key}}">
-                            <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            @if($key == 'between')
+                                <input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_{{$k}}_before" value="{{$tabFilter[$k][$key]['before']}}">
+                                <input type="hidden" id="filter_done_column_type_val_{{$k}}_after" value="{{$tabFilter[$k][$key]['after']}}">
+                            @else
+                                <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            @endif
                             <input type="hidden" name="filter_done_column_input_type[]" value="{{$filter['col_type']}}">
                         @endforeach
                 <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div('{{$k}}', '{{$i}}')"></i></span>
@@ -129,6 +136,8 @@
                                     After (in days)
                                 @elseif($key == 'days_before')
                                     Before (in days)
+                                @elseif($key == 'between')
+                                    Between (in days)
                                 @else
                                     {{str_replace("days_","",$key)}}
                                 @endif
@@ -149,10 +158,18 @@
                                     <option value="{{$opt}}">{{$opt}}</option>
                                     @endforeach
                                 </select>
-                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" value="{{$tabFilter[$k][$key]}}">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" value="{{$tabFilter[$k][$key]['before']}}">
+                                To
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" value="{{$tabFilter[$k][$key]['after']}}">
                                 @else
                                 <input class="form-check-input filterinput{{$k}} form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -175,10 +192,18 @@
                                     <option value="{{$opt}}">{{$opt}}</option>
                                     @endforeach
                                 </select>
-                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" style="display:none;">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" style="display:none;">
+                                To
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" style="display:none;">
                                 @else
                                 <input class="form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -274,10 +299,18 @@
                                                         <option value="{{$opt}}">{{$opt}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                    To
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}">
                                                     @else
                                                     <input class="form-check-input filterinput{{$k}} form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -300,10 +333,18 @@
                                                         <option value="{{$opt}}">{{$opt}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" style="display:none;">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" style="display:none;">
+                                                    To
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" style="display:none;">
                                                     @else
                                                     <input class="form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -581,11 +622,22 @@
             {
                 if($("input[name='filter_done_column_name[]']")[i])
                 {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
                     if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                        $("input[name='filter_done_column_type_val[]']")[i].value = 1;
+                        var filter_done_column_type_val = 1;
                     }
                     var subDoc = {};
-                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
                     var subjsonObject = {};
                     subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
                     jsonObject[i] = subjsonObject;
@@ -937,11 +989,24 @@
             var radio_type = $("#delete_filter_"+div_open+"_"+col_name+" input[type='radio']:checked");
             var radioname = radio_type.attr('dataid');
             var coltype = radio_type.attr('datacoltype');
-            var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
+            if (radioname == 'between')
+            {
+                var between = [];
+                between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                var radioButtonValue = between['before']+' to '+between['after'];
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_'+col_name+'_before" value="'+between['before']+'"/><input type="hidden" id="filter_done_column_type_val_'+col_name+'_after" value="'+between['after']+'"/>';
+            }
+            else
+            {
+                var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
+            }
             if (typeof radioButtonValue === "undefined") {
                 radioButtonValue ='';
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
             }
-            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>';
+            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
             $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
         }
     </script>
