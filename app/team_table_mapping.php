@@ -192,6 +192,7 @@ class team_table_mapping extends Model {
             $action = '';
             if(!empty($update_data)) {
                 $action = 'Update';
+                $update_data['updated_at']=now();
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             }
