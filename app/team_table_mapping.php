@@ -156,8 +156,14 @@ class team_table_mapping extends Model {
             $responseObj = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
             $old_data = json_decode(json_encode($responseObj),true);
         }
+        $timestampUpdate=false;
+        $timestampCreate=false;
         if(!empty($old_data)) {
             foreach ($structure as $key => $column) {
+                if($key == 'updated_at')
+                    $timestampUpdate = TRUE;
+                if($key == 'created_at')
+                    $timestampCreate = TRUE;
                 if (isset($input_param[$key])) {
                     if ($column['column_type_id'] != 4 && $column['column_type_id']!=10) {
                         if (!empty($input_param[$key])) {
@@ -192,7 +198,8 @@ class team_table_mapping extends Model {
             $action = '';
             if(!empty($update_data)) {
                 $action = 'Update';
-                $update_data['updated_at']=strtotime(now());
+                if($timestampUpdate)
+                    $update_data['updated_at']=strtotime(now());
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             }
@@ -202,7 +209,8 @@ class team_table_mapping extends Model {
         }else{
             $message = 'Entry Added';
             $action = 'Create';
-            $update_data['created_at']=strtotime(now());
+            if($timestampCreate)
+                $update_data['created_at']=strtotime(now());
             $table->insert($input_param);
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         }
