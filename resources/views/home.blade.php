@@ -1097,6 +1097,14 @@ console.log(window.location.href);
                     <input type='hidden' id="is_edit" value="">
                     <!-- <div style="width:20px" class="col-xs-1">&nbsp;</div> -->
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
+                    <div class="col-xs-12" style="text-align: right;">
+                        <input type="hidden" id="eId"/>
+                        <input type="hidden" id="tokenKey"/>
+                        <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+                        <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                            Update
+                        </button>
+                    </div>
                     <div class="col-xs-8">
                         <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
                         <br>
@@ -1105,15 +1113,8 @@ console.log(window.location.href);
 
                         </div>
                     </div>
-                </div>
-
-                <div class="modal-footer" style="overflow: hidden;width:750px">
-                    <input type="hidden" id="eId"/>
-                    <input type="hidden" id="tokenKey"/>
-                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
-                        Update
-                    </button>
+                    <div class="modal-footer" style="overflow: hidden;width:750px">
+                    </div>
                 </div>
             </form>
         </div>
