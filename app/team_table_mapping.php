@@ -156,6 +156,7 @@ class team_table_mapping extends Model {
             $responseObj = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
             $old_data = json_decode(json_encode($responseObj),true);
         }
+        
         if(!empty($old_data)) {
             foreach ($structure as $key => $column) {
                 if (isset($input_param[$key])) {
@@ -192,6 +193,7 @@ class team_table_mapping extends Model {
             $action = '';
             if(!empty($update_data)) {
                 $action = 'Update';
+                $update_data['updated_at']=strtotime(now());
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             }
@@ -201,6 +203,7 @@ class team_table_mapping extends Model {
         }else{
             $message = 'Entry Added';
             $action = 'Create';
+            $input_param['created_at']=strtotime(now());
             $table->insert($input_param);
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         }

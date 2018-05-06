@@ -42,6 +42,7 @@ class Tables extends Model
         $forDate = array('Relative' => 'group',
             'days_after' => null,
             'days_before' => null,
+            'between' => null,
             'Absolute' => 'group',
             'after' => null,
             'on' => null,
@@ -242,7 +243,7 @@ class Tables extends Model
     }
 
 
-    public static function makeFilterQuery($reqs, $users,$coltypes,$tableName,$condition)
+    public static function makeFilterQuery($reqs, $users, $coltypes, $tableName, $condition)
     {
         $users =self::getConditionQuery($reqs, $coltypes, $condition, $users, $tableName);
         
@@ -252,7 +253,7 @@ class Tables extends Model
             return $users;
     }
     
-    public static function getConditionQuery($reqs,$coltype,$condition,$users,$tableName){
+    public static function getConditionQuery($reqs, $coltype, $condition, $users, $tableName){
         $flag=0;
         $errorFlag = 0;
         foreach ($reqs as $k => $req)
@@ -447,6 +448,17 @@ class Tables extends Model
                         $users->orWhere($paramName, '>=', $daysafter);
                     }else{
                         $users->where($paramName, '>=', $daysafter);
+                    }
+                    $flag=1;
+                } 
+                if (isset($req[$paramName]['between'])) {
+                    $days = $req[$paramName]['between'];
+                    $daysbefore = time() - ($days['before'] * 24 * 60 * 60);
+                    $daysafter = $daysbefore + ($days['after'] * 24 * 60 * 60);
+                    if($flag && $condition=='or'){
+                        $users->orWhereBetween($paramName, [$daysbefore, $daysafter]);
+                    }else{
+                        $users->whereBetween($paramName, [$daysbefore, $daysafter]);
                     }
                     $flag=1;
                 }

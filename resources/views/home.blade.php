@@ -13,7 +13,11 @@
         @foreach($arrTabCount as $tabDetail)
         @foreach($tabDetail as $tabName => $tabCount)
 
+        @if($activeTab == $tabName)
+        <li role="presentation" class="active">
+        @else
         <li role="presentation">
+        @endif
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>
         </li>
@@ -82,12 +86,19 @@
                             @endif
                             @if(in_array($key, array('is_unknown', 'has_any_value')))
                                 {{$key.' null'}}
+                            @elseif($key == 'between')
+                                {{$key.' Last '.$tabFilter[$k][$key]['before'].' days to next '.$tabFilter[$k][$key]['after'].' days'}}
                             @else
                                 {{$key.' '.$tabFilter[$k][$key]}}
                             @endif
                             <input type="hidden" name="filter_done_column_name[]" value="{{$k}}">
                             <input type="hidden" name="filter_done_column_type[]" value="{{$key}}">
-                            <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            @if($key == 'between')
+                                <input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_{{$k}}_before" value="{{$tabFilter[$k][$key]['before']}}">
+                                <input type="hidden" id="filter_done_column_type_val_{{$k}}_after" value="{{$tabFilter[$k][$key]['after']}}">
+                            @else
+                                <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            @endif
                             <input type="hidden" name="filter_done_column_input_type[]" value="{{$filter['col_type']}}">
                         @endforeach
                 <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div('{{$k}}', '{{$i}}')"></i></span>
@@ -125,6 +136,8 @@
                                     After (in days)
                                 @elseif($key == 'days_before')
                                     Before (in days)
+                                @elseif($key == 'between')
+                                    Between (in days)
                                 @else
                                     {{str_replace("days_","",$key)}}
                                 @endif
@@ -145,10 +158,24 @@
                                     <option value="{{$opt}}">{{$opt}}</option>
                                     @endforeach
                                 </select>
-                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" value="{{$tabFilter[$k][$key]}}">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" value="{{$tabFilter[$k][$key]['before']}}" placeholder="Last Days">
+                                </td><td>To</td><td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" value="{{$tabFilter[$k][$key]['after']}}" placeholder="Next Days">
+                                </td>
+                                </tr>
+                                </table>
                                 @else
                                 <input class="form-check-input filterinput{{$k}} form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -171,10 +198,24 @@
                                     <option value="{{$opt}}">{{$opt}}</option>
                                     @endforeach
                                 </select>
-                                @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" style="display:none;">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>                
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" style="display:none;">
+                                </td><td>To</td><td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" style="display:none;">
+                                </td>
+                                </tr>
+                                </table>
                                 @else
                                 <input class="form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -270,10 +311,24 @@
                                                         <option value="{{$opt}}">{{$opt}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Last Days">
+                                                    </td><td>To</td><td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
                                                     @else
                                                     <input class="form-check-input filterinput{{$k}} form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -296,10 +351,24 @@
                                                         <option value="{{$opt}}">{{$opt}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" style="display:none;">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" style="display:none;" placeholder="Last Days">
+                                                    </td><td>To</td><td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" style="display:none;" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
                                                     @else
                                                     <input class="form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -577,11 +646,22 @@
             {
                 if($("input[name='filter_done_column_name[]']")[i])
                 {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
                     if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                        $("input[name='filter_done_column_type_val[]']")[i].value = 1;
+                        var filter_done_column_type_val = 1;
                     }
                     var subDoc = {};
-                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
                     var subjsonObject = {};
                     subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
                     jsonObject[i] = subjsonObject;
@@ -866,7 +946,7 @@
                 $('#column2 option:first-child').attr("selected", "selected");
                 loadGraph();
             } else{
-                alert("Cannot Load Graph");
+                //alert("Cannot Load Graph");
             }
 
             var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
@@ -933,11 +1013,24 @@
             var radio_type = $("#delete_filter_"+div_open+"_"+col_name+" input[type='radio']:checked");
             var radioname = radio_type.attr('dataid');
             var coltype = radio_type.attr('datacoltype');
-            var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
+            if (radioname == 'between')
+            {
+                var between = [];
+                between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                var radioButtonValue = 'last '+between['before']+' days to next '+between['after']+' days';
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_'+col_name+'_before" value="'+between['before']+'"/><input type="hidden" id="filter_done_column_type_val_'+col_name+'_after" value="'+between['after']+'"/>';
+            }
+            else
+            {
+                var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
+            }
             if (typeof radioButtonValue === "undefined") {
                 radioButtonValue ='';
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
             }
-            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>';
+            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
             $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
         }
     </script>
@@ -1004,6 +1097,14 @@ console.log(window.location.href);
                     <input type='hidden' id="is_edit" value="">
                     <!-- <div style="width:20px" class="col-xs-1">&nbsp;</div> -->
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
+                    <div class="col-xs-12" style="text-align: right;">
+                        <input type="hidden" id="eId"/>
+                        <input type="hidden" id="tokenKey"/>
+                        <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+                        <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                            Update
+                        </button>
+                    </div>
                     <div class="col-xs-8">
                         <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
                         <br>
@@ -1012,15 +1113,8 @@ console.log(window.location.href);
 
                         </div>
                     </div>
-                </div>
-
-                <div class="modal-footer" style="overflow: hidden;width:750px">
-                    <input type="hidden" id="eId"/>
-                    <input type="hidden" id="tokenKey"/>
-                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
-                        Update
-                    </button>
+                    <div class="modal-footer" style="overflow: hidden;width:750px">
+                    </div>
                 </div>
             </form>
         </div>

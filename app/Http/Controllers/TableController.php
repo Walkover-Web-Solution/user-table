@@ -300,7 +300,7 @@ class TableController extends Controller
         usort($columnsonly, function ($a, $b) { return strnatcmp($a['ordering'], $b['ordering']); });
         $colArr = array(0=>'id');
         foreach ($columnsonly as $col){
-            $colArr[] =$col['column_name'];
+            $colArr[] = $col['column_name'];
         }
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
@@ -310,7 +310,7 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype,$condition,$colArr, $pageSize);
+        $jsonData = $this->getAppliedFiltersData($req, $tableNames['table_id'], $coltype, $condition, $colArr, $pageSize);
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         unset($data['data']);
@@ -341,7 +341,7 @@ class TableController extends Controller
         $coltype = ($request->coltype);
         $tableId = $request->tableId;
         $condition = $request->condition;
-        $responseArray = $this->processFilterData($req, $tableId, $coltype,$condition, 100);
+        $responseArray = $this->processFilterData($req, $tableId, $coltype, $condition, 100);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
                 ->header('Content-Type', 'application/json');
@@ -356,14 +356,14 @@ class TableController extends Controller
         $tableIdMain = $tableNames['table_id'];
         Tables::markRecordsAsDeleted($tableIdMain, $ids);
     }
-    public static function getAppliedFiltersData($reqs, $tableId, $coltype,$condition,$colArr=array(),$pageSize = 100)
+    public static function getAppliedFiltersData($reqs, $tableId, $coltype, $condition, $colArr=array(), $pageSize = 100)
     {
         if(empty($colArr))
             $users = DB::table($tableId)->selectRaw('*');
         else
             $users = DB::table($tableId)->selectRaw("`".implode("`,`", $colArr)."`");
         
-        $users = Tables::getConditionQuery($reqs,$coltype,$condition,$users,$tableId);
+        $users = Tables::getConditionQuery($reqs, $coltype, $condition, $users, $tableId);
         //echo $users->toSql();die;
         $data = $users->latest('id')->paginate($pageSize);
         return $data;

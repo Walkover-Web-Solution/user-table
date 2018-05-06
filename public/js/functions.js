@@ -64,6 +64,8 @@ function showFilterInputText(ths, val, tableId) {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
+        if (dataid == 'between')
+            $('.table-between').attr('style', 'display:block');
     }
 }
 
@@ -90,11 +92,22 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     {
         if($("input[name='filter_done_column_name[]']")[i])
         {
+            if($("input[name='filter_done_column_type[]']")[i].value == "between")
+            {
+                var between = {};
+                between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                var filter_done_column_type_val = between;
+            }
+            else
+            {
+                var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+            }
             if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                $("input[name='filter_done_column_type_val[]']")[i].value = 1;
+                var filter_done_column_type_val = 1;
             }
             var subDoc = {};
-            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
             var subjsonObject = {};
             subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
             jsonObject[i] = subjsonObject;
@@ -107,8 +120,18 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
         var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
         var radioname = radio_type.attr('dataid');
         var coltype = radio_type.attr('datacoltype');
-        var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
-
+        if (radioname == 'between')
+        {
+            var between = {};
+            between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+            between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+            var radioButtonValue = between;
+        }
+        else
+        {
+            var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
+        }
+        
         var dataid = column_name;
 
         if (radioname == "has_any_value" || radioname == 'is_unknown') {
@@ -133,11 +156,6 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
-function graph_show()
-{
-    
-}
-
 function changeFilterJsonData(tableId, type) {
     var jsonObject = {};
     var coltypeObject = {};
@@ -146,11 +164,22 @@ function changeFilterJsonData(tableId, type) {
     {
         if($("input[name='filter_done_column_name[]']")[i])
         {
+            if($("input[name='filter_done_column_type[]']")[i].value == "between")
+            {
+                var between = {};
+                between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                var filter_done_column_type_val = between;
+            }
+            else
+            {
+                var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+            }
             if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                $("input[name='filter_done_column_type_val[]']")[i].value = 1;
+                var filter_done_column_type_val = 1;
             }
             var subDoc = {};
-            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = $("input[name='filter_done_column_type_val[]']")[i].value;
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
             var subjsonObject = {};
             subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
             jsonObject[i] = subjsonObject;

@@ -14,7 +14,7 @@
 </style>
 <div class="" id="table_data">
 <table class="table-custom table-bordred table-custom-res">
-    @if(empty($structure) && !$isGuestAccess)
+    @if(count($structure) < 3 && !$isGuestAccess)
         <thead id="userThead">
             <tr><th><span></span></th><th><span><button class="btn btn-primary addcolumn">Add Column</button></span></th></tr>
         </thead>

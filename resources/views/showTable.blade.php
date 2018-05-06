@@ -115,6 +115,9 @@
                 alert('Table Name can not be left blank.');
                 return false;
             } else {
+                var tableData= [];
+                tableData[0] = {'name':'Created At','type':'9','display':'0','ordering':'1','unique':'0','value':''};
+                tableData[1] = {'name':'Updated At','type':'9','display':'0','ordering':'2','unique':'0','value':''};
                 var tableName = $('#table_name').val();
                 var teamId = $('#table_category').val();
                 $.ajaxSetup({
@@ -123,7 +126,7 @@
                 $.ajax({
                     url: 'createTable',
                     type: 'POST',
-                    data: {tableName: tableName, teamId: teamId},
+                    data: {tableName: tableName, teamId: teamId, tableData: tableData},
                     dataType: 'json',
                     success: function (info) {
                         $('#createTable').attr("disabled", false);
