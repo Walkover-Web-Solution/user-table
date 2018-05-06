@@ -87,7 +87,7 @@
                             @if(in_array($key, array('is_unknown', 'has_any_value')))
                                 {{$key.' null'}}
                             @elseif($key == 'between')
-                                {{$key.' '.$tabFilter[$k][$key]['before'].' to '.$tabFilter[$k][$key]['after']}}
+                                {{$key.' Last '.$tabFilter[$k][$key]['before'].' days to next '.$tabFilter[$k][$key]['after'].' days'}}
                             @else
                                 {{$key.' '.$tabFilter[$k][$key]}}
                             @endif
@@ -163,13 +163,19 @@
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" value="{{$tabFilter[$k][$key]}}">
                                 @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
-                                       type="text" value="{{$tabFilter[$k][$key]['before']}}">
-                                To
+                                       type="text" value="{{$tabFilter[$k][$key]['before']}}" placeholder="Last Days">
+                                </td><td>To</td><td>
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
-                                       type="text" value="{{$tabFilter[$k][$key]['after']}}">
+                                       type="text" value="{{$tabFilter[$k][$key]['after']}}" placeholder="Next Days">
+                                </td>
+                                </tr>
+                                </table>
                                 @else
                                 <input class="form-check-input filterinput{{$k}} form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -197,13 +203,19 @@
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                        type="date" style="display:none;">
                                 @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>                
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
                                        type="text" style="display:none;">
-                                To
+                                </td><td>To</td><td>
                                 <input class="date-filter-input form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
                                        type="text" style="display:none;">
+                                </td>
+                                </tr>
+                                </table>
                                 @else
                                 <input class="form-check-input filterinput form-control"
                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -304,13 +316,19 @@
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" value="{{$activeTabFilter[$k][$key]}}">
                                                     @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
-                                                           type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                                    To
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Last Days">
+                                                    </td><td>To</td><td>
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
-                                                           type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
                                                     @else
                                                     <input class="form-check-input filterinput{{$k}} form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -338,13 +356,19 @@
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
                                                            type="date" style="display:none;">
                                                     @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
-                                                           type="text" style="display:none;">
-                                                    To
+                                                           type="text" style="display:none;" placeholder="Last Days">
+                                                    </td><td>To</td><td>
                                                     <input class="date-filter-input form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
-                                                           type="text" style="display:none;">
+                                                           type="text" style="display:none;" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
                                                     @else
                                                     <input class="form-check-input filterinput form-control"
                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
@@ -994,7 +1018,7 @@
                 var between = [];
                 between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
                 between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
-                var radioButtonValue = between['before']+' to '+between['after'];
+                var radioButtonValue = 'last '+between['before']+' days to next '+between['after']+' days';
                 var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_'+col_name+'_before" value="'+between['before']+'"/><input type="hidden" id="filter_done_column_type_val_'+col_name+'_after" value="'+between['after']+'"/>';
             }
             else

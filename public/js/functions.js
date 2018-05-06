@@ -64,6 +64,8 @@ function showFilterInputText(ths, val, tableId) {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
+        if (dataid == 'between')
+            $('.table-between').attr('style', 'display:block');
     }
 }
 
