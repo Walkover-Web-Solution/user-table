@@ -454,7 +454,7 @@ class Tables extends Model
                 if (isset($req[$paramName]['between'])) {
                     $days = $req[$paramName]['between'];
                     $daysbefore = time() - ($days['before'] * 24 * 60 * 60);
-                    $daysafter = $daysbefore - ($days['after'] * 24 * 60 * 60);
+                    $daysafter = $daysbefore + ($days['after'] * 24 * 60 * 60);
                     if($flag && $condition=='or'){
                         $users->orWhereBetween($paramName, [$daysbefore, $daysafter]);
                     }else{
