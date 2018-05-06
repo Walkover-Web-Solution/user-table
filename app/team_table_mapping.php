@@ -192,7 +192,7 @@ class team_table_mapping extends Model {
             $action = '';
             if(!empty($update_data)) {
                 $action = 'Update';
-                $update_data['updated_at']=now();
+                $update_data['updated_at']=strtotime(now());
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             }
@@ -202,6 +202,7 @@ class team_table_mapping extends Model {
         }else{
             $message = 'Entry Added';
             $action = 'Create';
+            $update_data['created_at']=strtotime(now());
             $table->insert($input_param);
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         }

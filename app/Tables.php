@@ -160,8 +160,6 @@ class Tables extends Model
         Schema::create($tableName, function (Blueprint $table) use ($data) {
             $table->increments('id');
             $table->string('is_deleted')->nullable();
-            //$table->timestamp('created_at')->useCurrent();
-            //$table->timestamp('updated_at')->useCurrent();
             $table->charset = 'utf8';
             $table->collation = 'utf8_unicode_ci';
             foreach ($data as $value) {
