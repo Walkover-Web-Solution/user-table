@@ -62,6 +62,7 @@ class Tables extends Model
         );
         $forLongText = array(
             'contains' => null,
+            'not_contains' => null,
             'is_unknown' => null,
             'has_any_value' => null
         );

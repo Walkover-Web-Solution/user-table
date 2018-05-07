@@ -451,10 +451,11 @@ function editUserData(type) {
         }
 
         if (type === "date") {
-            val = val + " " + time;
+            val = val;
         }
         jsonDoc[dataid] = val;
     });
+    
     if (is_valid) {
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
