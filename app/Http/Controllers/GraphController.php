@@ -68,7 +68,64 @@ class GraphController extends Controller {
         }
         $tableData = $users->get();// Tables::getSQLData($sql);
         return json_encode($tableData);
-    } 
+    }
+    
+    public function getGraphDataForTableFilter(Request $request) {
+        $tableName = $request->input('tableName');
+        $dateColumn = $request->input('dateColumn');
+        $secondColumn = $request->input('secondColumn');
+        $tabName = $request->input('filter');
+        $condition = $request->input('condition');
+
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
+        $tableNames = team_table_mapping::getUserTablesNameById($tableName);
+        $userTableName = $tableNames['table_id'];
+
+        $userTableStructure = $tableNames['table_structure'];
+        $column_type = "text";
+
+        foreach ($userTableStructure as $key => $value) {
+            if($value['column_name'] == $secondColumn){
+                $column_type = $value['column_type']['column_name'];
+            }
+        }
+
+        if($column_type == 'date'){
+            //$sql = "SELECT from_unixtime($secondColumn, '%Y-%d-%m') LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by from_unixtime($secondColumn, '%Y-%d-%m')";
+            $sql = "from_unixtime($secondColumn, '%Y-%d-%m') LabelColumn,Count($secondColumn) as Total";
+            $groupby = "from_unixtime($secondColumn, '%Y-%d-%m')";
+        }
+        else{
+            //$sql = "SELECT $secondColumn LabelColumn,Count($secondColumn) as Total FROM $userTableName $where group by $secondColumn";
+            $sql = "$secondColumn LabelColumn,Count($secondColumn) as Total";
+            $groupby = $secondColumn;
+        }
+
+        $users = DB::table($userTableName)->selectRaw($sql)->groupBy(DB::raw($groupby));
+
+        if(!empty($startDate) && !empty($endDate)){
+            $starttime = strtotime($startDate);
+            $endtime = strtotime($endDate);
+            $users->where($dateColumn, '>=', $starttime)->where($dateColumn, '<=', $endtime);
+        }
+        if (!empty($tabName) && $tabName != 'All') {
+            //$tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query','condition']);
+            $req = $tabName;
+            $condition = empty($condition)?'and':$condition;
+            $coltypes = TableStructure::getTableColumnTypesArray($userTableName);
+            $colArr = array();
+            foreach($req as $k=>$r){
+                $colArr[$k]=$coltypes;
+            }
+            $usersNew = Tables::makeFilterQuery($req, $users, $colArr,$userTableName,$condition);
+            if($usersNew)
+                $users = $usersNew;
+        }
+        $tableData = $users->get();// Tables::getSQLData($sql);
+        return json_encode($tableData);
+    }
 
     public function showGraphForTable($tableName,$tabName = 'All') {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);

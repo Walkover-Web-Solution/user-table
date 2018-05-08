@@ -815,7 +815,7 @@
                         data: values,
                         backgroundColor: colors,
                         borderColor:bColors,
-                        borderWidth: 1
+                        borderWidth: 1  
                     }]
                 };
                 window.mybarChart.data.datasets[0].data = values;
@@ -840,9 +840,40 @@
         }
         function getGraphData(dateColumn, secondColumn,startDate,endDate) {
             var tableName = "{{$tableId}}";
-            var tabName = "{{$activeTab}}";
-            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName=" + tabName + "&startDate="+ startDate + "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + dateColumn;
-            $.get(dataUrl, function (response) {
+            var jsonObject = {};
+            var coltypeObject = {};
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+            {
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        var filter_done_column_type_val = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
+                    var subcoltypeObject = {};
+                    subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+                    coltypeObject[i] = subcoltypeObject;
+                }
+            }
+            var condition = $('#filter_condition').val();
+            
+            var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'startDate' : startDate, 'endDate' : endDate, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -850,7 +881,6 @@
                     Total_data += item.Total;
                 }
                 var thurshold = Total_data / 25;
-                //console.log(thurshold);
                 var dates = new Array();
                 var values = new Array();
                 var colors = new Array();
@@ -858,20 +888,11 @@
                 var others_count = 0;
                 for (index = 0; index < data.length; index++) {
                     var item = data[index];
-                   // if(item.Total > thurshold) {
-                        dates.push(item.LabelColumn);
-                        values.push(item.Total);
-                        colors.push(random_rgba());
-                        bcolors.push("rgba(100,100,100,1)");
-                   // }else{
-                   //     others_count += item.Total;
-                  //  }
+                    dates.push(item.LabelColumn);
+                    values.push(item.Total);
+                    colors.push(random_rgba());
+                    bcolors.push("rgba(100,100,100,1)");
                 }
-                //dates.push("Others");
-                //values.push(others_count);
-                //colors.push(random_rgba());
-               // bcolors.push("rgba(100,100,100,1)");
-                //console.log(colors);
                 CreateBarChart("myChart", dates,values,colors,bcolors);
                 $(".top-chart-container .ajax-loader-container").hide();
             });
