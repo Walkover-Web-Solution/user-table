@@ -3,9 +3,9 @@
 <div class="tablist">
     <ul id="tablist">
         <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
-        <li role="presentation">
+        <!-- <li role="presentation">
             <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Graph</a>
-        </li>
+        </li> -->
         <li role="presentation">
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All ({{$allTabCount}})
             </a>
