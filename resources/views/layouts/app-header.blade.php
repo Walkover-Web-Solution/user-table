@@ -53,7 +53,7 @@
                                     <span class="light">TABLE</span></p> -->
                                 </a>
                     </div>
-                        <div style="-webkit-flex:1;">
+                        <!-- <div style="-webkit-flex:1;">
                          <ul class="nav navbar-nav navbar-search">
                                 <li>
                                         <div class="input-group input-group-search">
@@ -62,11 +62,11 @@
                                         </div>
                                 </li>
                         </ul>
-                      </div>
+                      </div> -->
                     <div style="-webkit-flex:1;">
                     <ul class="nav navbar-nav navbar-right">
                 <li>
-                        <button class="btn btn-primary btn-sm mt10" id="createTable"><span class="glyphicon glyphicon-plus"></span> Create table</button>
+                        <button class="btn btn-primary btn-sm mt10" id="createTable"><span class="glyphicon glyphicon-plus"></span> New Table</button>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{{ isset(Auth::user()->first_name) ? Auth::user()->first_name : Auth::user()->email }}} <span class="caret"></span></a>

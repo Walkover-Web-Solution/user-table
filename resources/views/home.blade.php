@@ -428,10 +428,36 @@
                             <input type="text" name="query" class="form-control" placeholder="Search for..."
                                 aria-label="Search for..." id="searchInput">
                         </form>
-                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-                        data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')" class="label label-filter label-filter-bordered bold m-l-5">
+                        <div class="pull-left pos-relative">
+                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true"
+                         class="label label-filter label-filter-bordered bold m-l-5">
                             <i class="glyphicon glyphicon-plus"></i>
                         </a>
+                        <div class="addEntries">
+                            <div class="col-sm-12 add-entry-inner">
+                                            <a href="" class="btn btn-primary">Add an entry now</a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner">
+                            <a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
+                                        <span class="sp-inline-import">
+                                            Import<br>
+                                        We can do it manually for you or you can also do it via trigger and send addon available in Google sheets
+                                        </span>
+                            </a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner">
+                                <div class="clearfix">
+                                            <h3>API doc</h3>
+                                </div>
+                               <div>
+                                    <button class="btn btn-default">sds</button>
+                                    <button class="btn btn-default">sds</button>
+                                    <button class="btn btn-default">sds</button>
+                               </div>            
+                            </div>
+                        </div>
+                        </div>
+                        <!-- onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" -->
                              <a class="label label-filter label-filter-bordered bold m-l-5" href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()"><span><i class="fa fa-columns"></i>
                             <i class="caret"></i></span></a>
                         </div>
@@ -539,6 +565,14 @@
         </div>
     </div>
 </div>
+<ul class="nav navbar-nav flex-ul settingUl">
+@if((count($structure) > 1) && !$isGuestAccess) 
+<li><a class="btn btn-primary" href="https://doc.usertable.in" target="_blank">Configure API</a></li>
+<li><a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
+<li class="strong">or</li>
+<li><a href="https://doc.usertable.in" target="_blank" class="btn btn-primary">Add some entries</a></li>
+ @endif
+</ul>
 <!-- Graph Div End-->
 @stop
 @section('pagescript')
@@ -1069,6 +1103,13 @@
     }
 });
 </script>
+<script>
+    $(document).ready(function(){
+        $("#addBtn").click(function(){
+            $(".addEntries").toggle();
+        })
+    })
+</script>
  <script>
    $(function(){
     var current = window.location.href;
@@ -1077,6 +1118,7 @@
 
 console.log(window.location.href);
  </script>
+
 
 @stop
 @section('models')
