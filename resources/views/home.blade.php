@@ -3,9 +3,9 @@
 <div class="tablist">
     <ul id="tablist">
         <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
-        <li role="presentation">
+        <!-- <li role="presentation">
             <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Graph</a>
-        </li>
+        </li> -->
         <li role="presentation">
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All ({{$allTabCount}})
             </a>
@@ -428,10 +428,36 @@
                             <input type="text" name="query" class="form-control" placeholder="Search for..."
                                 aria-label="Search for..." id="searchInput">
                         </form>
-                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-                        data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')" class="label label-filter label-filter-bordered bold m-l-5">
+                        <div class="pull-left pos-relative">
+                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true"
+                         class="label label-filter label-filter-bordered bold m-l-5">
                             <i class="glyphicon glyphicon-plus"></i>
                         </a>
+                        <div class="addEntries">
+                            <div class="col-sm-12 add-entry-inner">
+                                            <a href="" class="btn btn-primary">Add an entry now</a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner">
+                            <a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
+                                        <span class="sp-inline-import">
+                                            Import<br>
+                                        We can do it manually for you or you can also do it via trigger and send addon available in Google sheets
+                                        </span>
+                            </a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner">
+                                <div class="clearfix">
+                                            <h3>API doc</h3>
+                                </div>
+                               <div>
+                                    <button class="btn btn-default">sds</button>
+                                    <button class="btn btn-default">sds</button>
+                                    <button class="btn btn-default">sds</button>
+                               </div>            
+                            </div>
+                        </div>
+                        </div>
+                        <!-- onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" -->
                              <a class="label label-filter label-filter-bordered bold m-l-5" href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()"><span><i class="fa fa-columns"></i>
                             <i class="caret"></i></span></a>
                         </div>
@@ -490,13 +516,13 @@
 
                         </div>
 
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <label for="email"  class="control-caption">Date Range</label>
                             <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text" value="{{$rangeStart}}"/>
                             To
                             <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text" value="{{$rangeEnd}}"/>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>
+                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>-->
                     </form>
                     <div class="charts-container">
                         <div class="chart-first">
@@ -513,13 +539,13 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
+                    <!--<div class="form-group">
                         <label for="email"  class="control-caption">Date Range</label>
                         <input class="form-control" id="pieDate" name="pieDate" placeholder="MM/DD/YYY" type="text"  value="{{$rangeStart}}"/>
                         To
                         <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
                     </div>
-                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
+                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>-->
                 </form>
 
                 <div class="charts-container">
@@ -539,6 +565,14 @@
         </div>
     </div>
 </div>
+<ul class="nav navbar-nav flex-ul settingUl">
+@if((count($structure) > 1) && !$isGuestAccess) 
+<li><a class="btn btn-primary" href="https://doc.usertable.in" target="_blank">Configure API</a></li>
+<li><a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
+<li class="strong">or</li>
+<li><a href="https://doc.usertable.in" target="_blank" class="btn btn-primary">Add some entries</a></li>
+ @endif
+</ul>
 <!-- Graph Div End-->
 @stop
 @section('pagescript')
@@ -570,6 +604,8 @@
     {
         $('#show_graph_div').attr("style", "display:block");
         $('#show_table_div').attr("style", "display:none");
+        loadGraph();
+        createAllPieCharts();
     }
     function show_column_type(column_name)
     {
@@ -838,7 +874,7 @@
 
             return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
         }
-        function getGraphData(dateColumn, secondColumn,startDate,endDate) {
+        function getGraphData(dateColumn, secondColumn) {
             var tableName = "{{$tableId}}";
             var jsonObject = {};
             var coltypeObject = {};
@@ -873,7 +909,7 @@
             var condition = $('#filter_condition').val();
             
             var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
-            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'startDate' : startDate, 'endDate' : endDate, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -898,14 +934,41 @@
             });
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
-
-            var startDate = $("#pieDate").val();
-            var endDate = $("#pieDate1").val();
-
             var tableName = "{{$tableId}}";
-            var tabName = "{{$activeTab}}";
-            var dataUrl = "{{env('APP_URL')}}/graphdata?tabName="+ tabName + "&startDate="+ startDate+ "&endDate=" + endDate + "&tableName=" + tableName + "&dateColumn=" + dateColumn + "&secondColumn=" + secondColumn;
-            $.get(dataUrl, function (response) {
+            var jsonObject = {};
+            var coltypeObject = {};
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+            {
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        var filter_done_column_type_val = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
+                    var subcoltypeObject = {};
+                    subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+                    coltypeObject[i] = subcoltypeObject;
+                }
+            }
+            var condition = $('#filter_condition').val();
+            
+            var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -950,78 +1013,14 @@
         function loadGraph() {
             $(".top-chart-container .ajax-loader-container").show();
             var column1 = $("#column1").val();
-            var barDate = $("#barDate").val();
-            var barDate1 = $("#barDate1").val();
-            console.log("StartDate : " , barDate);
-            console.log(barDate1);
-            getGraphData(column1, column1,barDate,barDate1);
-        }
-        $(document).ready(function ($) {
-
-            $("#btnLoadGraph").click(function($){
-                loadGraph();
-            });
-            //Load the Initial Graph Data//
-            var c1length = $('#column1 > option').length;
-            var c2length = $('#column2 > option').length;
-            if (c1length > 0 && c2length > 0){
-                $('#column1 option:first-child').attr("selected", "selected");
-                $('#column2 option:first-child').attr("selected", "selected");
-                loadGraph();
-            } else{
-                //alert("Cannot Load Graph");
-            }
-
-            var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
-            $('#barDate').datepicker({
-                format: 'mm/dd/yyyy',
-                container: container,
-                todayHighlight: true,
-                autoclose: true,
-            }).on('changeDate', function(){
-                // set the "toDate" start to not be later than "fromDate" ends:
-                $('#barDate1').datepicker('setStartDate', new Date($(this).val()));
-            });
-            $('#barDate1').datepicker({
-                format: 'mm/dd/yyyy',
-                container: container,
-                todayHighlight: true,
-                autoclose: true,
-            }).on('changeDate', function(){
-                // set the "fromDate" end to not be later than "toDate" starts:
-                $('#barDate').datepicker('setEndDate', new Date($(this).val()));
-            });
-            $('#pieDate').datepicker({
-                format: 'mm/dd/yyyy',
-                container: container,
-                todayHighlight: true,
-                autoclose: true,
-            }).on('changeDate', function(){
-                // set the "fromDate" end to not be later than "toDate" starts:
-                $('#pieDate1').datepicker('setStartDate', new Date($(this).val()));
-            });
-            $('#pieDate1').datepicker({
-                format: 'mm/dd/yyyy',
-                container: container,
-                todayHighlight: true,
-                autoclose: true,
-            }).on('changeDate', function(){
-                // set the "fromDate" end to not be later than "toDate" starts:
-                $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
-            });
-
-             $("#btnLoadGraph1").click(function($){
-                 createAllPieCharts();
-            });
-        });
-       
+            getGraphData(column1, column1);
+        }       
         function createAllPieCharts(){
             var column3 = $("#column3").val();
             @foreach($other_columns as $other_column)
             getPieGraphData(column3, "{{$other_column}}", "id_{{$other_column}}");
             @endforeach
         }
-        createAllPieCharts();
     </script> 
     <script>
         $(".tablist li").click(function() {
@@ -1055,6 +1054,8 @@
             }
             var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
             $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
+            loadGraph();
+            createAllPieCharts();
         }
     </script>
   
@@ -1069,6 +1070,13 @@
     }
 });
 </script>
+<script>
+    $(document).ready(function(){
+        $("#addBtn").click(function(){
+            $(".addEntries").toggle();
+        })
+    })
+</script>
  <script>
    $(function(){
     var current = window.location.href;
@@ -1077,6 +1085,7 @@
 
 console.log(window.location.href);
  </script>
+
 
 @stop
 @section('models')

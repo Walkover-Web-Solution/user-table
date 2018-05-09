@@ -54,10 +54,12 @@ body {
 
 #heads-up{
     font-size: 22px;
-    cursor: pointer;
-    padding-left: 16px;
-    padding-bottom: 8px;
-    padding-top: 8px;
+    /* cursor: pointer; */
+    padding:15px 0;
+}
+.user-table-name{
+    font-size:22px !important;
+    padding:0 !important;
 }
 
 .more-option {
@@ -337,4 +339,119 @@ p span.old-val{
 .dropdown-menu-filter > li >a .glyphicon{
     margin-right:5px;
     font-size:11px;
+}
+.table-block{
+    border: 2px solid #636b6f;
+    margin-bottom:30px;
+}
+.table-block .block-first{
+    border-bottom:2px solid #636b6f;
+    text-align: center;
+    color:#636b6f;
+}
+.table-block .block-first:hover{
+    color:#216a94;
+}
+.option-nav{
+    width:100%;
+}
+.option-nav > li{
+    width:33%;
+    text-align: center;
+    border-right:2px solid #636b6f;
+}
+.option-nav > li a{
+    padding:1px !important;
+    color:#636b6f !important;
+    padding:15px 0 !important;
+    cursor: pointer;
+}
+.option-nav > li a:hover{
+    color:#216a94 !important;
+    background: none !important;
+}
+.option-nav > li span{
+    font-size: 15px;
+}
+.strong{
+    font-weight: bold;
+}
+.option-nav > li span i{
+    font-size:20px;
+    margin-right:10px;
+}
+.option-nav > li:last-child{
+    border-right:0px solid #636b6f; 
+}
+.table-name-link:hover{
+text-decoration:none;
+}
+.table-name-link:focus{
+    text-decoration:none;
+    }
+.fixedBtn{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+}
+.flex-ul{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 200px;
+    width: 600px;
+    margin: auto;
+}
+.settingUl .fa-upload{
+    font-size:30px;
+    vertical-align: middle;
+    margin-right:15px;
+}
+.text-black{
+    color:#222 !important;
+}
+.import:hover{
+    text-decoration:underline !important;
+    background: transparent !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+    color: #fff !important;
+    background-color: #286090 !important;
+    border-color: #204d74 !important;
+}
+.addEntries{
+    display: none;
+    position: absolute;
+    width: 300px;
+    border: 1px solid #636b6f;
+    right: 0;
+    top: 31px;
+    border-radius: 2px;
+    z-index: 9999;
+    background: #fff;
+}
+.pos-relative{
+    position: relative;
+}
+.add-entry-inner{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:150px;
+    border-bottom:1px solid #636b6f;
+}
+.add-entry-inner .fa-upload{
+    font-size:50px;
+    vertical-align: middle;
+    float: left;
+}
+.brd-btm{
+    border-bottom:1px solid #636b6f;
+}
+.sp-inline-import{
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 20px;
+    margin-top:15px;
+    line-height: 20px;
 }
