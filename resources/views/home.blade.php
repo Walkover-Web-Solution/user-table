@@ -604,6 +604,8 @@
     {
         $('#show_graph_div').attr("style", "display:block");
         $('#show_table_div').attr("style", "display:none");
+        loadGraph();
+        createAllPieCharts();
     }
     function show_column_type(column_name)
     {
@@ -1052,8 +1054,6 @@
             }
             var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
             $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
-            loadGraph();
-            createAllPieCharts();
         }
     </script>
   
