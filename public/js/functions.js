@@ -345,7 +345,15 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
 //                            var logTime = logs[i].created_at;
 //                        }
                         var logTime = logs[i].activityDate;
-                        getImg(logs[i].user_id,logs[i].log, logTime);
+                        if(logs[i].user_id != '')
+                        {
+                            getImg(logs[i].user_id,logs[i].log, logTime);
+                        }
+                        else
+                        {
+                            desc = '<h3 style="font-weight:700;margin-left:25px"> '+logs[i].user_agent+' </h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+API_BASE_URL+'/img/api.svg"><p style="margin-left:25px;width:450px">' + logs[i].log + '</p><span>' + logTime + '</span><br><br>';
+                            $("#activity_log").append(desc);
+                        }
                     }
                 }
             }
