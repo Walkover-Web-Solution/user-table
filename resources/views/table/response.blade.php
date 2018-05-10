@@ -7,10 +7,13 @@
         /* width: 100%; */
     }
     .dropdowncolumn { position: absolute; top: 20px;}
-    .dropdown-menu { position:relative; top:16px;} /*top:30px;*/
+   #userThead .dropdown-menu { position:realtive; top:16px;} /*top:30px;*/
     .dropdowncolumn span.caret { display: none;}
     .dropdowncolumn .dropdown-menu{top:16px !important;}
     .default_value_div {display: none;}
+    .fix-header .open>.dropdown-menu{
+        margin-top:25px;
+    }
 </style>
 <div class="" id="table_data">
 <table class="table-custom table-bordred table-custom-res">
