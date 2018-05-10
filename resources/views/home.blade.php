@@ -66,10 +66,12 @@
 
 <div class="mt20 mtb20">
     <div class="col-sm-10">
+       <label class="label-filter-select">
         <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')" class="select-filter">
         <option value="and" @if(isset($tabcondition) && $tabcondition == 'and') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
         <option value="or" @if(isset($tabcondition) && $tabcondition == 'or') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
         </select>
+        </label>
         @foreach($activeTabFilter as $i => $tabFilter)
         @foreach($filters as $k=>$filter)
             @if(!isset($tabFilter[$k]))
@@ -435,31 +437,36 @@
                         </a>
                         <div class="addEntries">
                             <div class="col-sm-12 add-entry-inner">
-                                            <a href="" class="btn btn-primary">Add an entry now</a>
+                                            <a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add an entry now</a>
                             </div>
                             <div class="col-sm-12 add-entry-inner">
-                            <a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
+                            <a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
                                         <span class="sp-inline-import">
                                             Import<br>
                                         We can do it manually for you or you can also do it via trigger and send addon available in Google sheets
                                         </span>
                             </a>
                             </div>
-                            <div class="col-sm-12 add-entry-inner">
-                                <div class="clearfix">
+                            <div class="col-sm-12 add-entry-inner column">
+                                <div>
                                             <h3>API doc</h3>
                                 </div>
                                <div>
-                                    <button class="btn btn-default">sds</button>
-                                    <button class="btn btn-default">sds</button>
-                                    <button class="btn btn-default">sds</button>
-                               </div>            
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Add</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Edit</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Delete</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default">Fetch</a>
+                               </div>
+                               <div class="text-right col-sm-offset-10 m-t-20">
+                                   <a href="">more</a>
+                               </div>
                             </div>
+                           
                         </div>
                         </div>
                         <!-- onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" -->
                              <a class="label label-filter label-filter-bordered bold m-l-5" href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()"><span><i class="fa fa-columns"></i>
-                            <i class="caret"></i></span></a>
+                            </span></a>
                         </div>
                         <div class="btn-group m-l-5" role="group" aria-label="...">
                         <button type="button" class="btn btn-default btn-lable" onClick="click_show_table();"><span><i class="fa fa-list"></i></span></button>
@@ -567,10 +574,10 @@
 </div>
 <ul class="nav navbar-nav flex-ul settingUl">
 @if((count($structure) > 1) && !$isGuestAccess) 
-<li><a class="btn btn-primary" href="https://doc.usertable.in" target="_blank">Configure API</a></li>
-<li><a href="https://doc.usertable.in" target="_blank" class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
+<li><a class="btn btn-primary" href="https://docs.usertable.in" target="_blank">Configure API</a></li>
+<li><a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
 <li class="strong">or</li>
-<li><a href="https://doc.usertable.in" target="_blank" class="btn btn-primary">Add some entries</a></li>
+<li><a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add some entries</a></li>
  @endif
 </ul>
 <!-- Graph Div End-->
@@ -599,11 +606,13 @@
     {
         $('#show_table_div').attr("style", "display:block");
         $('#show_graph_div').attr("style", "display:none");
+        $('.settingUl').attr("style", "display:flex");
     }
     function click_show_graph()
     {
         $('#show_graph_div').attr("style", "display:block");
         $('#show_table_div').attr("style", "display:none");
+        $('.settingUl').attr("style", "display:none");
         loadGraph();
         createAllPieCharts();
     }
@@ -1062,8 +1071,9 @@
   <script>
    $(window).scroll(function() {    
     var scroll = $(window).scrollTop();
+    console.log(scroll);
 
-    if(scroll >= 200) {
+    if(scroll >= 186) {
         $("thead").addClass("fix-header");
     } else {
         $("thead").removeClass("fix-header");

@@ -17,7 +17,7 @@
 
 <div class="row">
  @foreach($tables as $key=>$val)
-    <div class="col-sm-4">
+    <div class="col-sm-3">
     
         <div class="table-block">
             

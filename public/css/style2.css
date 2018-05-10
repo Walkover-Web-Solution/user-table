@@ -58,12 +58,22 @@ body {
     padding:15px 0;
 }
 .user-table-name{
-    font-size:22px !important;
-    padding:0 !important;
+    font-size: 16px !important;
+    padding: 0 !important;
+    font-weight: 400;
+    margin-bottom: 3px;
 }
-
+.user-table-name:hover{
+    text-decoration: underline;
+}
 .more-option {
     margin-left: 20px;
+}
+.m-t-20{
+    margin-top:20px;
+}
+.m-r-28{
+    margin-right:28px !important;
 }
 
 .card .btn-grp,
@@ -341,13 +351,17 @@ p span.old-val{
     font-size:11px;
 }
 .table-block{
-    border: 2px solid #636b6f;
+    border: 1px solid #636b6f;
     margin-bottom:30px;
 }
 .table-block .block-first{
-    border-bottom:2px solid #636b6f;
+    border-bottom:1px solid #636b6f;
     text-align: center;
     color:#636b6f;
+}
+.table-block .block-first p{
+    font-size: 12px;
+    font-weight: bold;
 }
 .table-block .block-first:hover{
     color:#216a94;
@@ -358,7 +372,7 @@ p span.old-val{
 .option-nav > li{
     width:33%;
     text-align: center;
-    border-right:2px solid #636b6f;
+    border-right:1px solid #636b6f;
 }
 .option-nav > li a{
     padding:1px !important;
@@ -401,11 +415,15 @@ text-decoration:none;
     height: 200px;
     width: 600px;
     margin: auto;
+    z-index: -1;
 }
 .settingUl .fa-upload{
     font-size:30px;
     vertical-align: middle;
     margin-right:15px;
+}
+.settingUl .btn-primary{
+    padding:6px 12px !important;
 }
 .text-black{
     color:#222 !important;
@@ -422,11 +440,11 @@ text-decoration:none;
 .addEntries{
     display: none;
     position: absolute;
-    width: 300px;
-    border: 1px solid #636b6f;
+    min-width:370px;
+    border: 1px solid rgba(34,34,34,.2);
     right: 0;
     top: 31px;
-    border-radius: 2px;
+    border-radius: 4px;
     z-index: 9999;
     background: #fff;
 }
@@ -439,6 +457,22 @@ text-decoration:none;
     justify-content: center;
     height:150px;
     border-bottom:1px solid #636b6f;
+}
+.add-entry-inner:last-child{
+    border-bottom:none;
+}
+.add-entry-inner.column{
+flex-direction: column;
+justify-content:flex-start;
+padding:20px;
+align-items: flex-start !important;
+}
+.add-entry-inner h3{
+    font-size:16px;
+    margin-bottom: 20px;
+}
+.add-entry-inner .btn{
+    margin-left:0;
 }
 .add-entry-inner .fa-upload{
     font-size:50px;
@@ -454,4 +488,52 @@ text-decoration:none;
     margin-left: 20px;
     margin-top:15px;
     line-height: 20px;
+}
+.select-filter{
+    margin: 0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: #f8f8f8;
+    color: #222;
+    outline: none;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid rgba(34,34,34,.2);
+    padding: 7px 19px 9px;
+    position: relative;
+    font-weight: bold;
+}
+
+.label-filter-select {position:relative}
+.label-filter-select:after {
+    content: '<>';
+    font: 13px "Consolas", monospace;
+    color: #222;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: 8px;
+    top: 8px;
+    padding: 0 0 2px;
+    /* border-bottom: 1px solid #ddd; */
+    position: absolute;
+    pointer-events: none;
+}
+.label-filter-select:before {
+    content:'';
+    right:6px; top:0px;
+    width:20px; height:20px;
+    background:#f8f8f8;
+    position:absolute;
+    pointer-events:none;
+    display:block;
+}
+.nav>li>a:focus{
+    background: transparent !important;
 }
