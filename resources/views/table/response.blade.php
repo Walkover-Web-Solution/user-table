@@ -388,6 +388,7 @@
             function() {
                 //console.log('hover over');
                 $(this).find('span.caret').css({'display' : 'inline-block'});
+                
                 //$(this).children('.dropdown-menu').show();
             },
             function() {

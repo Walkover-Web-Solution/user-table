@@ -1204,6 +1204,10 @@ top:10px;
     width:100%;
     background: #FFF;
 }
+#fixed_header tr th{
+    background: #fff !important;
+}
+
 
 
 

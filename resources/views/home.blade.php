@@ -458,7 +458,7 @@
                                     <a href="https://docs.usertable.in" target="_blank" class="btn btn-default">Fetch</a>
                                </div>
                                <div class="text-right col-sm-offset-10 m-t-20">
-                                   <a href="">more</a>
+                                   <a href="https://docs.usertable.in/collection" target="_blank">more</a>
                                </div>
                             </div>
                            
@@ -1072,17 +1072,14 @@
     var headerIsFixed = false;             
    $(window).scroll(function() {    
     var scroll = $(window).scrollTop();
-    //console.log($(this).scroll);
     if(scroll >= 230) {
         if (!headerIsFixed) {
             var cloneThead = $("#userThead").clone();
             var appendThead = cloneThead[0];
             appendThead.id = 'fixed_header';
             $('.table-custom-res').append(appendThead);
-            // $("#userThead").addClass("fix-header"); 
         }
         headerIsFixed = true;
-        
         $('.user-custom-dashboard').scroll(function() {   
             var scrollPos = $('.user-custom-dashboard').scrollLeft();
             $('#fixed_header').css({
@@ -1091,15 +1088,9 @@
         });
     } 
     else {
-        // if ($("#userThead").hasClass('fix-header')) {
-        //     console.log('hasClass');
-        // } else {
-        //     $("#userThead").removeClass("fix-header");
-
-        // }
+       
         headerIsFixed = false;
         $('#fixed_header').remove();
-
     }
 });
 </script>
