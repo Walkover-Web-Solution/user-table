@@ -1069,25 +1069,37 @@
     </script>
   
   <script>
+    var headerIsFixed = false;             
    $(window).scroll(function() {    
     var scroll = $(window).scrollTop();
-    var headerIsFixed = false;
     //console.log($(this).scroll);
-    if(scroll >= 184) {
+    if(scroll >= 230) {
         if (!headerIsFixed) {
-            $("#userThead").addClass("fix-header"); 
+            var cloneThead = $("#userThead").clone();
+            var appendThead = cloneThead[0];
+            appendThead.id = 'fixed_header';
+            $('.table-custom-res').append(appendThead);
+            // $("#userThead").addClass("fix-header"); 
         }
+        headerIsFixed = true;
+        
         $('.user-custom-dashboard').scroll(function() {   
             var scrollPos = $('.user-custom-dashboard').scrollLeft();
-            $('#userThead').css({
+            $('#fixed_header').css({
                 'left':-scrollPos,
             });
-            headerIsFixed = true;
         });
     } 
     else {
-        $("#userThead").removeClass("fix-header");
+        // if ($("#userThead").hasClass('fix-header')) {
+        //     console.log('hasClass');
+        // } else {
+        //     $("#userThead").removeClass("fix-header");
+
+        // }
         headerIsFixed = false;
+        $('#fixed_header').remove();
+
     }
 });
 </script>

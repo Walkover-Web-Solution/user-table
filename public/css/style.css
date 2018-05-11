@@ -1198,10 +1198,11 @@ top:10px;
 }
 .table-between{ display: none;}
 
-.fix-header {
+#fixed_header {
     position: fixed;
     top:0;
     width:100%;
+    background: #FFF;
 }
 
 
