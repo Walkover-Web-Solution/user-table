@@ -8,7 +8,7 @@
     }
     .dropdowncolumn { position: absolute; top: 20px;}
    #userThead .dropdown-menu { position:realtive; top:16px;} /*top:30px;*/
-    .dropdowncolumn span.caret { display: none;}
+    .dropdowncolumn span.caret { display: inline-block;}
     .dropdowncolumn .dropdown-menu{top:16px !important;}
     .default_value_div {display: none;}
     .fix-header .open>.dropdown-menu{
@@ -384,18 +384,18 @@
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
             $('#edit_column').modal('show');
         });
-        $('.dropdowncolumn').hover(
-            function() {
-                //console.log('hover over');
-                $(this).find('span.caret').css({'display' : 'inline-block'});
+        // $('.dropdowncolumn').hover(
+        //     function() {
+        //         //console.log('hover over');
+        //         $(this).find('span.caret').css({'display' : 'inline-block'});
                 
-                //$(this).children('.dropdown-menu').show();
-            },
-            function() {
-                //console.log('hover out');
-                $(this).find('span.caret').css({'display' : 'none'});
-                //$(this).children('.dropdown-menu').hide();
-        });
+        //         //$(this).children('.dropdown-menu').show();
+        //     },
+        //     function() {
+        //         //console.log('hover out');
+        //         $(this).find('span.caret').css({'display' : 'none'});
+        //         //$(this).children('.dropdown-menu').hide();
+        // });
         $('.hidecolumn').click(function () {
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index();
