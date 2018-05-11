@@ -415,7 +415,7 @@ text-decoration:none;
     height: 200px;
     width: 600px;
     margin: auto;
-    z-index: -1;
+    z-index: 1;
 }
 .settingUl .fa-upload{
     font-size:30px;
