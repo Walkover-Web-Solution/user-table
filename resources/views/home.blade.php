@@ -943,8 +943,6 @@
             });
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
-            console.log(dateColumn);
-            console.log(secondColumn);
             var tableName = "{{$tableId}}";
             var jsonObject = {};
             var coltypeObject = {};
