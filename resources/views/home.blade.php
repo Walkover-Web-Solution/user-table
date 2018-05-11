@@ -515,7 +515,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email" class="control-caption">Date Column </label>
-                            <select class="form-control" id="column1">
+                            <select class="form-control" id="column1" onchange="loadGraph()">
                                 @foreach( $date_columns as $date_column)
                                     <option value="{{$date_column}}">{{$date_column}}</option>
                                 @endforeach
@@ -540,7 +540,7 @@
                 <form class="form-inline graph-form">
                     <div class="form-group">
                         <label for="email" class="control-caption">Date Column </label>
-                        <select class="form-control" id="column3">
+                        <select class="form-control" id="column3" onchange="createAllPieCharts();">
                             @foreach( $date_columns as $date_column)
                                 <option value="{{$date_column}}">{{$date_column}}</option>
                             @endforeach
@@ -943,6 +943,8 @@
             });
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
+            console.log(dateColumn);
+            console.log(secondColumn);
             var tableName = "{{$tableId}}";
             var jsonObject = {};
             var coltypeObject = {};
@@ -977,7 +979,7 @@
             var condition = $('#filter_condition').val();
             
             var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
-            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : secondColumn}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
