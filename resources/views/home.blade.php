@@ -1071,12 +1071,23 @@
   <script>
    $(window).scroll(function() {    
     var scroll = $(window).scrollTop();
-    console.log(scroll);
-
-    if(scroll >= 186) {
-        $("thead").addClass("fix-header");
-    } else {
-        $("thead").removeClass("fix-header");
+    var headerIsFixed = false;
+    //console.log($(this).scroll);
+    if(scroll >= 184) {
+        if (!headerIsFixed) {
+            $("#userThead").addClass("fix-header"); 
+        }
+        $('.user-custom-dashboard').scroll(function() {   
+            var scrollPos = $('.user-custom-dashboard').scrollLeft();
+            $('#userThead').css({
+                'left':-scrollPos,
+            });
+            headerIsFixed = true;
+        });
+    } 
+    else {
+        $("#userThead").removeClass("fix-header");
+        headerIsFixed = false;
     }
 });
 </script>
@@ -1085,6 +1096,7 @@
         $("#addBtn").click(function(){
             $(".addEntries").toggle();
         })
+        
     })
 </script>
  <script>

@@ -24,8 +24,8 @@
     @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
         <thead id="userThead">
             <tr>
-                <th><span></span></th>
-                <th hidden><span></span></th>
+                <th><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
+                <th hidden><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
                 @foreach($structure as $key => $val)
                 @if($val['display'] != 0)
                 <th>
@@ -54,7 +54,7 @@
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
          <th>
-             <div class="dropdowncolumn"><span><input type="checkbox" id="selectall" /></span></div></th>
+             <div class="dropdowncolumn"><span class="dropdown-toggle"><input type="checkbox" id="selectall" /></span></div></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
