@@ -458,7 +458,7 @@
                                     <a href="https://docs.usertable.in" target="_blank" class="btn btn-default">Fetch</a>
                                </div>
                                <div class="text-right col-sm-offset-10 m-t-20">
-                                   <a href="">more</a>
+                                   <a href="https://docs.usertable.in/collection" target="_blank">more</a>
                                </div>
                             </div>
                            
@@ -515,7 +515,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email" class="control-caption">Date Column </label>
-                            <select class="form-control" id="column1">
+                            <select class="form-control" id="column1" onchange="loadGraph()">
                                 @foreach( $date_columns as $date_column)
                                     <option value="{{$date_column}}">{{$date_column}}</option>
                                 @endforeach
@@ -540,7 +540,7 @@
                 <form class="form-inline graph-form">
                     <div class="form-group">
                         <label for="email" class="control-caption">Date Column </label>
-                        <select class="form-control" id="column3">
+                        <select class="form-control" id="column3" onchange="createAllPieCharts();">
                             @foreach( $date_columns as $date_column)
                                 <option value="{{$date_column}}">{{$date_column}}</option>
                             @endforeach
@@ -943,6 +943,8 @@
             });
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
+            console.log(dateColumn);
+            console.log(secondColumn);
             var tableName = "{{$tableId}}";
             var jsonObject = {};
             var coltypeObject = {};
@@ -977,7 +979,7 @@
             var condition = $('#filter_condition').val();
             
             var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
-            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : secondColumn}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -1069,14 +1071,28 @@
     </script>
   
   <script>
+    var headerIsFixed = false;             
    $(window).scroll(function() {    
     var scroll = $(window).scrollTop();
-    console.log(scroll);
-
-    if(scroll >= 186) {
-        $("thead").addClass("fix-header");
-    } else {
-        $("thead").removeClass("fix-header");
+    if(scroll >= 230) {
+        if (!headerIsFixed) {
+            var cloneThead = $("#userThead").clone();
+            var appendThead = cloneThead[0];
+            appendThead.id = 'fixed_header';
+            $('.table-custom-res').append(appendThead);
+        }
+        headerIsFixed = true;
+        $('.user-custom-dashboard').scroll(function() {   
+            var scrollPos = $('.user-custom-dashboard').scrollLeft();
+            $('#fixed_header').css({
+                'left':-scrollPos,
+            });
+        });
+    } 
+    else {
+       
+        headerIsFixed = false;
+        $('#fixed_header').remove();
     }
 });
 </script>
@@ -1085,6 +1101,7 @@
         $("#addBtn").click(function(){
             $(".addEntries").toggle();
         })
+        
     })
 </script>
  <script>

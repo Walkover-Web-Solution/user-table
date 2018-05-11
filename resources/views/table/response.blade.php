@@ -8,7 +8,7 @@
     }
     .dropdowncolumn { position: absolute; top: 20px;}
    #userThead .dropdown-menu { position:realtive; top:16px;} /*top:30px;*/
-    .dropdowncolumn span.caret { display: none;}
+    .dropdowncolumn span.caret { display: inline-block;}
     .dropdowncolumn .dropdown-menu{top:16px !important;}
     .default_value_div {display: none;}
     .fix-header .open>.dropdown-menu{
@@ -24,8 +24,8 @@
     @elseif(!empty($structure) && !$isGuestAccess && empty($allTabs))
         <thead id="userThead">
             <tr>
-                <th><span></span></th>
-                <th hidden><span></span></th>
+                <th><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
+                <th hidden><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
                 @foreach($structure as $key => $val)
                 @if($val['display'] != 0)
                 <th>
@@ -54,7 +54,7 @@
         <!-- <th><span class="fixed-header"></span></th> -->
          @if(!$isGuestAccess)
          <th>
-             <div class="dropdowncolumn"><span><input type="checkbox" id="selectall" /></span></div></th>
+             <div class="dropdowncolumn"><span class="dropdown-toggle"><input type="checkbox" id="selectall" /></span></div></th>
         @endif
         @foreach($val as $k => $colName)
             @if($k == 'is_deleted')
@@ -384,17 +384,18 @@
             $('#columnbutton').html('<button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="addColumn()">Add</button>');
             $('#edit_column').modal('show');
         });
-        $('.dropdowncolumn').hover(
-            function() {
-                //console.log('hover over');
-                $(this).find('span.caret').css({'display' : 'inline-block'});
-                //$(this).children('.dropdown-menu').show();
-            },
-            function() {
-                //console.log('hover out');
-                $(this).find('span.caret').css({'display' : 'none'});
-                //$(this).children('.dropdown-menu').hide();
-        });
+        // $('.dropdowncolumn').hover(
+        //     function() {
+        //         //console.log('hover over');
+        //         $(this).find('span.caret').css({'display' : 'inline-block'});
+                
+        //         //$(this).children('.dropdown-menu').show();
+        //     },
+        //     function() {
+        //         //console.log('hover out');
+        //         $(this).find('span.caret').css({'display' : 'none'});
+        //         //$(this).children('.dropdown-menu').hide();
+        // });
         $('.hidecolumn').click(function () {
             var parent = $(this).parent().parent().parent().parent();
             var index = parent.index();

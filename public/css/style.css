@@ -1166,6 +1166,7 @@ top:10px;
 }
 .table-custom-res tr td select{
     margin-top:0;
+    max-width:150px;
 }
 .table-custom-res span.dropdown-toggle{
     overflow: hidden;
@@ -1176,23 +1177,36 @@ top:10px;
 .table-custom-res tbody{
     border:1px solid #ececec;
 }
+
 .fix-header div{
-    position:fixed;
+    position:absolute;
     top:0;
     background:#fff;
-    width:100%;
+    /* width:100%; */
     border-bottom:1px solid #ececec;
     padding:10px 0;
+}
+.fix-header th{
+    background: #FFF;
 }
 .fix-header th:first-child .dropdowncolumn {
     left: 0;
 }
 .fix-header th:first-child .dropdowncolumn span{
     display: block;
-    margin-left: 10px;
+    margin-left: 21px;
 }
 .table-between{ display: none;}
 
+#fixed_header {
+    position: fixed;
+    top:0;
+    width:100%;
+    background: #FFF;
+}
+#fixed_header tr th{
+    background: #fff !important;
+}
 
 
 
