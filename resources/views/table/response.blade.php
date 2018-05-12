@@ -168,6 +168,7 @@
         </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
+            $colValue = (int)$colValue;
             $carbonDate = Carbon::createFromTimestamp($colValue);
             $carbonDate->setTimezone('UTC');
             $date = $carbonDate->diffForHumans();
@@ -261,6 +262,7 @@
                 </td>
         @elseif(isset($structure[$k]) and $structure[$k]['column_type_id'] == '9')
         <?php if ($colValue) {
+            $colValue = (int)$colValue;
             $carbonDate = Carbon::createFromTimestamp($colValue);
             $carbonDate->setTimezone('UTC');
             $date = $carbonDate->diffForHumans();
