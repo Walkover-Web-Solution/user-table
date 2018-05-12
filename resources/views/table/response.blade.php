@@ -27,6 +27,9 @@
                 <th><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
                 <th hidden><div class="dropdowncolumn"><span class="dropdown-toggle"></span></div></th>
                 @foreach($structure as $key => $val)
+                @if (!empty($filtercolumns) && !in_array($key, $filtercolumns))
+                    @continue
+                @endif
                 @if($val['display'] != 0)
                 <th>
                     <div class="dropdowncolumn">
@@ -48,7 +51,6 @@
     @endif
     @foreach($allTabs as $key=>$val)
     @if($key==0)
-
     <thead id="userThead">
     <tr>
         <!-- <th><span class="fixed-header"></span></th> -->
@@ -60,8 +62,12 @@
             @if($k == 'is_deleted')
                 @continue;
             @endif
+            @if (!empty($filtercolumns) && !in_array($k, $filtercolumns))
+                @continue
+            @endif
         @if($k!='id')
         @if(!$isGuestAccess)
+        
             <th style="position:relative;">
             <div class="dropdowncolumn">
                 <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}
@@ -97,6 +103,9 @@
         @endif
         @foreach($val as $k => $colValue)
             @if($k == 'is_deleted')
+                @continue
+            @endif
+            @if (!empty($filtercolumns) && !in_array($k, $filtercolumns))
                 @continue
             @endif
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')
@@ -188,6 +197,9 @@
       @endif  
         @foreach($val as $k => $colValue)
             @if($k == 'is_deleted')
+                @continue
+            @endif
+            @if (!empty($filtercolumns) && !in_array($k, $filtercolumns))
                 @continue
             @endif
         @if(isset($structure[$k]) and $structure[$k]['column_type_id'] == '7')

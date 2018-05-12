@@ -687,6 +687,7 @@
         $('#saveTabModel').hide();
         // $('#saveAsInput').hide();
         $('#saveTabButton').click(function () {
+            var filtercolumns = [];
             var filterChecked = [];
             var jsonObject = {};
             for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
@@ -714,6 +715,9 @@
                     jsonObject[i] = subjsonObject;
                 }
             }
+            $("input[name='filter_columns[]']:checked").each(function () {
+                filtercolumns.push($(this).val());
+            });
         var tabName = $('#saveAsInput').val();
         obj = jsonObject;
         var condition = $('#filter_condition').val();
@@ -726,12 +730,11 @@
             type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
                 dataType: 'json', // Set datatype - affects Accept header
                 url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition}, // Some data e.g. Valid JSON as a string
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition, 'filtercolumns' : filtercolumns}, // Some data e.g. Valid JSON as a string
                 success: function (data) {
-                    return false;
-                    //window.setTimeout(function () {
-                      //  location.reload()
-                    //}, 2000);
+                    window.setTimeout(function () {
+                        location.reload()
+                    }, 2000);
                 }
             });
         });
@@ -1264,6 +1267,15 @@ console.log(window.location.href);
                 <form class="clearfix">
                     <div class="row">
                     <div class="checkbox col-sm-12">
+                        @foreach($structure as $key => $value)
+                        <label style="min-width: 150px;">
+                            <input type="checkbox" name="filter_columns[]" value="{{$value['id']}}" @if(in_array($key, $filtercolumns)) checked="checked" @elseif(empty($filtercolumns)) checked="checked" @endif/>{{$key}}
+                        </label>
+                        @endforeach
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="checkbox col-sm-12">
                         <label class="radio inline no_indent">
                             <input type="radio" value="" name="tabName" onChange='SaveAsNew(false)'>
                             Save changes to the segment <span id="replacetabName"> 'vijay'</span>
@@ -1271,7 +1283,6 @@ console.log(window.location.href);
                     </div>
                     </div>
                     <div class="row">
-
                     <div class="checkbox col-sm-4 p-r-zero">
                         <label class="radio inline no_indent">
                             <input type="radio" value="" name="tabName" id="showSaveAs" onChange='SaveAsNew(true)' checked>Create new segment
@@ -1281,8 +1292,6 @@ console.log(window.location.href);
                         <input type="text" class="form-control newSegment" value="" id="saveAsInput">
                     </div>
                     </div>
-
-                   
                 </form>
             </div>
 
