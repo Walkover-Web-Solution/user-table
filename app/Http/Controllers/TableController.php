@@ -9,6 +9,7 @@ use App\Repositories\TableDetailRepositoryInterface;
 use App\Tables;
 use App\TableStructure;
 use App\Tabs;
+use App\TabColumnMappings;
 use App\team_table_mapping;
 use App\Teams;
 use App\Viasocket;
@@ -245,15 +246,27 @@ class TableController extends Controller
             array_unshift($orderNeed, 'id');
             $data = Tabs::getTabsByTableId($tableIdMain);
             $tabs = json_decode(json_encode($data), true);
+            $filtercolumns = array();
             if ($tabName == "All") {
                 $tabArray = array();
                 $tabcondition = 'and';
+                $filtercolumns = array();
             } else {
-                $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition'])->toArray();
+                $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition', 'id'])->toArray();
                 $tabArray = json_decode($tabSql['query'], true);
                 $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
+                if (isset($tabSql['id']) && !empty($tabSql['id']))
+                {
+                    $tab_id = $tabSql['id'];
+                    $filter_columns = TableStructure::whereIn('id', function($query) use ($tab_id) {
+                        $query->select('column_id')->from('tab_column_mappings')
+                        ->Where('tab_id','=',$tab_id);
+                    })->get();
+                    foreach ($filter_columns as $value)
+                        $filtercolumns[] = $value->column_name;
+                }
             }
-
+            
             $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition);
             $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
@@ -290,7 +303,8 @@ class TableController extends Controller
                 'tabcondition' => $tabcondition,
                 'tableAuth' => $tableAuth,
                 'rangeStart' => $rangeStart,
-                'rangeEnd' => $rangeEnd);
+                'rangeEnd' => $rangeEnd,
+                'filtercolumns' => $filtercolumns);
         }
     }
 
