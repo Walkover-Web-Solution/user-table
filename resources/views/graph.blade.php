@@ -62,8 +62,8 @@
         </ul>
     </div>
 
-    <div class="nav-and-table  from-right">
-        <div id="user-board" class="user-dashboard">
+    <div class="nav-and-table  from-right nav-table-custom-response">
+        <div id="user-board" class="user-dashboard user-custom-dashboard">
             <!-- Tab panes -->
             <div class="scroll-x">
                 <div class="scroll-y graph-page-container" id="response">
@@ -130,7 +130,7 @@
                     <div class="charts-container">
                         <div class="pie-chart-container row">
                             @foreach( $other_columns as $other_column)
-                                <div class="pie-chart col-md-3 col-lg-3">
+                                <div class="pie-chart col-md-2 col-lg-2 col-sm-4 col-xs-6">
                                     <div class="column-caption">Column : {{$other_column}}</div>
                                     <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
                                 </div>
@@ -350,22 +350,43 @@
                 alert("Cannot Load Graph");
             }
 
-            var date_input = $('input[name="date"]');
             var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
-            var options = {
+            $('#barDate').datepicker({
                 format: 'mm/dd/yyyy',
                 container: container,
                 todayHighlight: true,
                 autoclose: true,
-            };
-            date_input.datepicker(options);
-            var date_input1 = $('input[name="date1"]');
-            date_input1.datepicker(options);
-
-            var date_input3 = $('input[name="pieDate"]');
-            date_input3.datepicker(options);
-            var date_input4 = $('input[name="pieDate1"]');
-            date_input4.datepicker(options);
+            }).on('changeDate', function(){
+                // set the "toDate" start to not be later than "fromDate" ends:
+                $('#barDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#barDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#barDate').datepicker('setEndDate', new Date($(this).val()));
+            });
+            $('#pieDate').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate1').datepicker('setStartDate', new Date($(this).val()));
+            });
+            $('#pieDate1').datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            }).on('changeDate', function(){
+                // set the "fromDate" end to not be later than "toDate" starts:
+                $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
+            });
 
              $("#btnLoadGraph1").click(function($){
                  createAllPieCharts();
@@ -410,5 +431,15 @@
         </div>
     </div>
     <!-- End Modal -->
+<script>
 
+$(document).ready(function(){
+    $('.dropdowncolumn').hover(function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+}, function() {
+  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+});
+});     
+
+</script>
 @stop

@@ -64,10 +64,9 @@ function showFilterInputText(ths, val, tableId) {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
-    } else {
-        makeFilterJsonData(tableId, 'Search');
+        if (dataid == 'between')
+            $('.table-between').attr('style', 'display:block');
     }
-
 }
 
 function showDiv(id) {
@@ -80,43 +79,125 @@ function showDiv(id) {
 var globaltimeout = null;
 
 function saveTab() {
-
     $('#saveTabModel').modal('show');
+    $('#replacetabName').html("'"+activeTab+"'")
     var tabName = $("#saveAsInput").val();
 }
 
-function makeFilterJsonData(tableId, type) {
-    debugger;
+function makeFilterJsonData(tableId, type,column_name, div_open) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked");
+    for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+    {
+        if($("input[name='filter_done_column_name[]']")[i])
+        {
+            if($("input[name='filter_done_column_type[]']")[i].value == "between")
+            {
+                var between = {};
+                between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                var filter_done_column_type_val = between;
+            }
+            else
+            {
+                var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+            }
+            if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                var filter_done_column_type_val = 1;
+            }
+            var subDoc = {};
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+            var subjsonObject = {};
+            subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+            jsonObject[i] = subjsonObject;
+            var subcoltypeObject = {};
+            subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+            coltypeObject[i] = subcoltypeObject;
+        }
+    }
+    if($("#delete_filter_"+div_open+"_"+column_name).length){
+        var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
+        var radioname = radio_type.attr('dataid');
+        var coltype = radio_type.attr('datacoltype');
+        if (radioname == 'between')
+        {
+            var between = {};
+            between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+            between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+            var radioButtonValue = between;
+        }
+        else
+        {
+            var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
+        }
+        
+        var dataid = column_name;
 
-    filterCheckedElement.each(function () {
-        dataid = $(this).attr('dataid');
-        filterChecked.push($(this).attr('dataid'));
-        var radioButton = $("#condition_" + dataid + " input:checked");
-        var radioname = radioButton.attr('dataid');
-        var coltype = radioButton.attr('datacoltype');
-
-        var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
         if (radioname == "has_any_value" || radioname == 'is_unknown') {
             radioButtonValue = "1";
         }
 
         var subDoc = {};
-        subDoc[radioname] = radioButtonValue
-        jsonObject[dataid] = subDoc;
-        coltypeObject[dataid] = coltype;
-    });
-    console.log("we are here to check data");
+        subDoc[radioname] = radioButtonValue;
+        var subjsonObject = {};
+        subjsonObject[dataid] = subDoc;
+        jsonObject[div_open] = subjsonObject;
+        var subcoltypeObject = {};
+        subcoltypeObject[dataid] = coltype;
+        coltypeObject[div_open] = subcoltypeObject;
+    }
+    var condition = $('#filter_condition').val();
+    
     if (type == "returnData") {
         return jsonObject;
     }
-    applyFilterData(jsonObject, tableId, coltypeObject);
+    
+    applyFilterData(jsonObject, tableId, coltypeObject, condition);
 }
 
-function applyFilterData(jsonObject, tableId, coltypeObject) {
+function changeFilterJsonData(tableId, type) {
+    var jsonObject = {};
+    var coltypeObject = {};
+    
+    for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+    {
+        if($("input[name='filter_done_column_name[]']")[i])
+        {
+            if($("input[name='filter_done_column_type[]']")[i].value == "between")
+            {
+                var between = {};
+                between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                var filter_done_column_type_val = between;
+            }
+            else
+            {
+                var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+            }
+            if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                var filter_done_column_type_val = 1;
+            }
+            var subDoc = {};
+            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+            var subjsonObject = {};
+            subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+            jsonObject[i] = subjsonObject;
+            var subcoltypeObject = {};
+            subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+            coltypeObject[i] = subcoltypeObject;
+        }
+    }
+    
+    var condition = $('#filter_condition').val();
+    
+    if (type == "returnData") {
+        return jsonObject;
+    }
+    applyFilterData(jsonObject, tableId, coltypeObject, condition);
+}
+
+function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
@@ -130,12 +211,20 @@ function applyFilterData(jsonObject, tableId, coltypeObject) {
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/filter", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
 
-        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject}, // Some data e.g. Valid JSON as a string
-
+        data: {'filter': obj, 'tab': 'All', 'tableId': tableId, 'coltype': coltypeObject, 'condition' : condition}, // Some data e.g. Valid JSON as a string
+        beforeSend: function() {
+            $('body').addClass('loader');
+        },
         success: function (data) {
             $('#def_response').html(data);
+            $('#show_count').html('<span class="sp_view_count">'+($('#all_users tr').length+' users match<span><span class="total_count">of '+allTabCount+'</span>'));
+        },
+        complete: function() {
+            $('body').removeClass('loader');
         }
     });
+    loadGraph();
+    createAllPieCharts();
 }
 
 var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select', 'textarea'];
@@ -153,6 +242,7 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 var authKey = res.authKey;
                 var teammates = teamMateList;
                 var editForm = '';
+                var edituniqueForm = '';
                 var form_text = '';
                 var sec_editForm = '';
                 if (val) {
@@ -204,16 +294,19 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                                     currentField['value_arr']['options'] = teammates;
                                     sec_editForm += createSelectElement(currentField, val[k], k, inputTypeArr[currentField.column_type_id]);
                                 } else if (currentField.unique === 1) {
-                                    $("#mod-head").text(val[k]);
+                                    edituniqueForm += `<div class="form-group col-xs-6" id="label_` + k + `"  name="label_` + k + `"  ><label style="font-weight:600;margin-bottom:5px;color:#292929">` + k + `</label>`;
+                                    edituniqueForm += createInputElement(val[k], k, currentField, inputTypeArr[currentField.column_type_id]);
                                 }
                             }
                             form_text += '</div>';
                             editForm += '</div>';
+                            edituniqueForm += '</div>';
                             sec_editForm += '</div>';
                         }
                     }
                     // editForm += '<textarea class="form-group col-xs-12 custom-input" col="100" row="5"></textarea>';
                     editForm += form_text;
+                    $("#modal_header_column").html(edituniqueForm+'<button type="button" class="close" data-dismiss="modal">×</button>');
                     $("#edit_users_body").html(editForm);
                     $("#sec_edit_users_body").html(sec_editForm);
                     $('#is_edit').val(1);
@@ -246,12 +339,21 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 }
                 if (logsLength > 0) {
                     for(var i in logs){
-                        if (logs[i].action == 'Update') {
-                            var logTime = logs[i].updated_at;
-                        } else {
-                            var logTime = logs[i].created_at;
+//                        if (logs[i].action == 'Update') {
+//                            var logTime = logs[i].updated_at;
+//                        } else {
+//                            var logTime = logs[i].created_at;
+//                        }
+                        var logTime = logs[i].activityDate;
+                        if(logs[i].user_id != '')
+                        {
+                            getImg(logs[i].user_id,logs[i].log, logTime);
                         }
-                        getImg(logs[i].user_id,logs[i].log, logTime);
+                        else
+                        {
+                            desc = '<h3 style="font-weight:700;margin-left:25px"> '+logs[i].user_agent+' </h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+API_BASE_URL+'/img/api.svg"><p style="margin-left:25px;width:450px">' + logs[i].log + '</p><span>' + logTime + '</span><br><br>';
+                            $("#activity_log").append(desc);
+                        }
                     }
                 }
             }
@@ -359,10 +461,11 @@ function editUserData(type) {
         }
 
         if (type === "date") {
-            val = val + " " + time;
+            val = val;
         }
         jsonDoc[dataid] = val;
     });
+    
     if (is_valid) {
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
@@ -399,21 +502,6 @@ function editUserData(type) {
             },
         });
     }
-}
-
-function initFilterSlider() {
-    //open the lateral panel
-    $('.cd-btn').on('click', function (event) {
-        event.preventDefault();
-        $('.cd-panel').addClass('is-visible');
-    });
-    //clode the lateral panel
-    $('.cd-panel').on('click', function (event) {
-        if ($(event.target).is('.cd-panel') || $(event.target).is('.cd-panel-close')) {
-            $('.cd-panel').removeClass('is-visible');
-            event.preventDefault();
-        }
-    });
 }
 
 function watchOnchange(ele) {

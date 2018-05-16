@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 /**
  * @ORM\Entity
@@ -59,7 +60,7 @@ class Activity extends Model
         if(strtolower($act->action) == 'create')
             $desc .= $act->action.' '.$act->content_type;
         else {
-            $desc .= $act->action;//' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
+            $desc .= 'Updated';//' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
             $oldData = json_decode($act->old_data, true);
             unset($oldData['is_deleted']);
             $newData = json_decode($act->details, true);

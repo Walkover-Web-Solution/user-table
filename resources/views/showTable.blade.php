@@ -1,77 +1,57 @@
+<head>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+</head>
+
+
 @extends('layouts.app-header')
 
 @section('content')
 
 <div class="container">
     @foreach($teamTables as $teamId=>$tables)
-    <div class="row">
-        <div class="col-sm-12">
-                <div class="col-sm-8">
-                <div id="heads-up">{{$teamsArr[$teamId]}}</div>
-                <div>
-                <div class="table-responsive">
-              
-                        <table class="table table-user-h">
-                        @foreach($tables as $key=>$val)
-                                <tr>
-                                    <td><a href="tables/{{$val['id']}}" target="_blank" class="text-blue font-16"> {{$val['table_name']}}</a></td>
-                                    <td>
-                                    
-                                        <a href="{{env('APP_URL')}}/graph/{{$val['id']}}"><span class="glyphicon glyphicon-stats"></span></a>
-                                        <a onclick="location.href='configure/{{$val['id']}}'"><span class="glyphicon glyphicon-cog" ></span></a>
-                                        <a onclick="location.href='listFilters/{{$val['id']}}'"><span class="glyphicon glyphicon-filter" ></span></a>
-                                      
-                                        <a id="srcbtn" dataid="{{$val['id']}}" data-keyboard="true" data-target="#src_modal" data-toggle="modal" title="{{ isset($create_arr[$val['id']]) ? implode(',',$create_arr[$val['id']]) : "Your content goes here" }}">{{isset($create_arr[$val['id']] )? count($create_arr[$val['id']]) : 0}} sources</a>
-                                       
-                                    </td>
-                                </tr>
-                                @endforeach     
-                        </table>
-                      
-                </div>
-            </div>
-            </div>
-            </div>
-            @foreach($tables as $key=>$val)
-            <div class="col-xs-4">
-                <div class="card">
-                    <a href="tables/{{$val['id']}}" target="_blank"></a>
-                    <div>
-                        <div class="col-sm-5">
-                                <div class="tab_name mt30">
-                                    <a href="tables/{{$val['id']}}" target="_blank"> {{$val['table_name']}}</a>
-                                </div>
-                        </div>
-                        <div class="col-sm-7">
-                                <div class="row text-left mt8">
-                                        <button class="btn btn-primary">Graph</button>
-                                        <button class="btn btn-primary" onclick="location.href='configure/{{$val['id']}}'">Configure</button>
-                                </div>
-                                <div class="row text-left mt20">
-                                        <button class="btn btn-primary" onclick="location.href='listFilters/{{$val['id']}}'">list filters</button>
-                                        <button id="srcbtn" dataid="{{$val['id']}}" data-keyboard="true" data-target="#src_modal" data-toggle="modal" class="btn btn-primary" title="{{ isset($create_arr[$val['id']]) ? implode(',',$create_arr[$val['id']]) : "Your content goes here" }}">{{isset($create_arr[$val['id']] )? count($create_arr[$val['id']]) : 0}} sources</button>
-                                </div>
-                        </div>
-
-                        <div class="sources-container sources-{{$val['id']}}">
-                            <ul>
-                                @if(isset($source_arr[$val['id']]))
-                                @foreach($source_arr[$val['id']] as $key => $sources)
-                                <li>{{$sources}}</li>
-                                @endforeach
-                                @endif    
-                            </ul>    
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
+<div class="row">
+    <div class="col-sm-12">
+    <div id="heads-up">{{$teamsArr[$teamId]}}</div>
     </div>
+</div>
+
+<div class="row">
+ @foreach($tables as $key=>$val)
+    <div class="col-sm-3">
+    
+        <div class="table-block">
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <a href="/tables/{{$val['id']}}" target="_blank" class="table-name-link">
+                        <div class="block-first">
+                            <h1 id="heads-up" class="user-table-name">{{$val['table_name']}}</h1>
+                            <p>2450</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="nav navbar-nav option-nav">
+                        <li><a onclick="location.href='listFilters/{{$val['id']}}'"><span><i class="fa fa-magic" aria-hidden="true"></i>&nbsp;</span></a></li>
+                        <li><a href=""><span><i class="fa fa-users" aria-hidden="true"></i>5</span></a></li>
+                        <li><a onclick="location.href='configure/{{$val['id']}}'"><span><i class="fa fa-database" aria-hidden="true"></i>Source</span></a></li>
+                    </ul>
+                </div>
+            </div>
+           
+        </div>
+             
+    </div>
+    @endforeach 
+</div>
+
+
     @endforeach
 
     @if(!empty($readOnlyTables))
-    <div class="row">
+    <div>
         <div id="heads-up">Guest Access</div>
         <div>
             @foreach($readOnlyTables as $table)
@@ -114,6 +94,9 @@
                 alert('Table Name can not be left blank.');
                 return false;
             } else {
+                var tableData= [];
+                tableData[0] = {'name':'Created At','type':'9','display':'0','ordering':'1','unique':'0','value':''};
+                tableData[1] = {'name':'Updated At','type':'9','display':'0','ordering':'2','unique':'0','value':''};
                 var tableName = $('#table_name').val();
                 var teamId = $('#table_category').val();
                 $.ajaxSetup({
@@ -122,7 +105,7 @@
                 $.ajax({
                     url: 'createTable',
                     type: 'POST',
-                    data: {tableName: tableName, teamId: teamId},
+                    data: {tableName: tableName, teamId: teamId, tableData: tableData},
                     dataType: 'json',
                     success: function (info) {
                         $('#createTable').attr("disabled", false);

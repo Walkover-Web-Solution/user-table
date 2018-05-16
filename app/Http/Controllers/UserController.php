@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\StoreTokens;
 use App\Tabs;
+use App\TabColumnMappings;
 use App\Teams;
 use App\team_table_mapping;
 use Illuminate\Http\Request;
@@ -24,6 +25,8 @@ class UserController extends Controller {
                 ], $messages);
         $tab = $request->tab;
         $tableId = $request->tableId;
+        $condition = $request->condition;
+        $filtercolumns = $request->filtercolumns;
 
         if ((strcasecmp($tab, "All") == 0) || (strcasecmp($tab, "my-leads") == 0)) {
             return response(
@@ -47,12 +50,24 @@ class UserController extends Controller {
         $appliedFilters = json_decode($request->filter);
         $save = array(
             'tab_name' => $tab,
+            'condition' => $condition,
             'query' => json_encode($appliedFilters, JSON_UNESCAPED_SLASHES),
             'table_id' => $tableId
         );
         $data = Tabs::updateOrCreate(
                         ['tab_name' => $tab]
                         , $save);
+        if (isset($data->id) && !empty($data->id) && !empty($filtercolumns))
+        {
+            foreach ($filtercolumns as $value)
+            {
+                TabColumnMappings::updateOrCreate(
+                        ['tab_id' => $data->id, 'column_id' => $value]
+                        , ['column_id' => $value]);
+            }
+            TabColumnMappings::where('tab_id', $data->id)->whereNotIn('column_id', $filtercolumns)->delete();
+        }
+        
         if ($data)
         {
             return response(json_encode(array('message' => $tab . ' saved successfully')), 200)->header('Content-Type', 'application/json');

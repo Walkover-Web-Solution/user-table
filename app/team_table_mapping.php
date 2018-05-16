@@ -44,9 +44,6 @@ class team_table_mapping extends Model {
         return $data;
     }
 
-    public static function updateTableAccess($tableId){
-
-    }
     public static function getTableSourcesByTableIncrId($team_incr_id_arr) {
         $data = DB::table('user_data_source')
                 ->select('*')
@@ -55,11 +52,22 @@ class team_table_mapping extends Model {
         return $data;
     }
 
-    public static function getUserTablesNameById($tableId) {
-        $data = team_table_mapping::with('tableStructure.columnType')
-                ->where('id', $tableId)
-                ->first()->toArray();
+    public static function getUserTablesNameById($tableId,$arrayAllowed=array()) {
+        $data = team_table_mapping::with(['tableStructure'=> function ($query) use($arrayAllowed){
+            if(!empty($arrayAllowed))
+                $query->whereIn('id', $arrayAllowed);
+        },'tableStructure.columnType'])->where('id', $tableId)->first()->toArray();
+       
         return $data;
+    }
+    
+    public static function getUserTablesColumnNameById($tableId) {
+        $data = DB::table('table_structures')
+            ->select('column_name', 'ordering')
+            ->where('table_id', $tableId)
+            ->where('display', 1)
+            ->get();
+        return json_decode(json_encode($data), true);
     }
 
     public static function getUserTablesNameByParentId($tableId) {
@@ -148,6 +156,7 @@ class team_table_mapping extends Model {
             $responseObj = $table->select('*')->where($unique_key, $input_param[$unique_key])->first();
             $old_data = json_decode(json_encode($responseObj),true);
         }
+        
         if(!empty($old_data)) {
             foreach ($structure as $key => $column) {
                 if (isset($input_param[$key])) {
@@ -184,6 +193,7 @@ class team_table_mapping extends Model {
             $action = '';
             if(!empty($update_data)) {
                 $action = 'Update';
+                $update_data['updated_at']=strtotime(now());
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
             }
@@ -193,6 +203,7 @@ class team_table_mapping extends Model {
         }else{
             $message = 'Entry Added';
             $action = 'Create';
+            $input_param['created_at']=strtotime(now());
             $table->insert($input_param);
             $update_data = $table->select('*')->orderBy('id', 'DESC')->first();
         }

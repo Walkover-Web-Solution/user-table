@@ -35,6 +35,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
     Route::get('/graph/{tableName}', 'GraphController@showGraphForTable');
     Route::get('/graphdata', 'GraphController@getGraphDataForTable');
+    Route::post('/graphdatafilter', 'GraphController@getGraphDataForTableFilter');
     Route::get('/graph/{tableName}/filter/{filterName}', 'GraphController@showGraphForTable');
 # Route for saved filters
     Route::get('/tables/{tableName}/filter/{filterName}', 'TableController@loadSelectedTable');
@@ -51,6 +52,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 # for alter user table in database
     Route::post('/showcolumntable', 'ConfigureTable@showcolumntable');
     Route::post('/configureTable', 'ConfigureTable@configureSelectedTable');
+    Route::post('/updateTableStructure','ConfigureTable@updateTableStructure');
     Route::post('/rearrangeSequenceColumn', 'ConfigureTable@rearrangeSequenceColumn');
     Route::post('/hidetablecolumn', 'ConfigureTable@hideTableColumn');
     Route::get('/gettablecolumndetails', 'ConfigureTable@getTableColumnDetails');

@@ -47,7 +47,18 @@ class ConfigureTable extends Controller
             'tabData' => $tabs,
             'tabCount' => $tabCount));
     }
+    public function updateTableStructure(Request $request) {
+        $tableId = $request->input('tableId');
+        $paramArr['socket_api'] = $request->input('socketApi');
+        $paramArr['new_entry_api'] = $request->input('newEntryApi');
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
 
+        $tableAutoIncId = $tableNames['id'];
+        team_table_mapping::updateTableStructure($paramArr, $tableAutoIncId);
+        
+        $arr['msg'] = "Table API Updated Successfuly";
+        return response()->json($arr);
+    }
     public function configureSelectedTable(Request $request)
     {
         $tableData = $request->input('tableData');
@@ -70,10 +81,6 @@ class ConfigureTable extends Controller
         if (isset($resp['error'])) {
             return response()->json($resp);
         }
-
-        $paramArr['socket_api'] = $request->input('socketApi');
-        $paramArr['new_entry_api'] = $request->input('newEntryApi');
-        team_table_mapping::updateTableStructure($paramArr, $tableAutoIncId);
 
         $tableName = $tableNames['table_id'];
 
@@ -244,8 +251,15 @@ class ConfigureTable extends Controller
     public function rearrangeSequenceColumn(Request $request)
     {
         $columnId = $request->input('tableArray');
+        $displayArray = $request->input('displayArray');
+        
         foreach ($columnId as $key => $val)
+        {
             TableStructure::updateTableStructureColumn($val, 'ordering', $key+1);
+        }
+        foreach($displayArray as $obj){
+            TableStructure::updateTableStructureColumn($obj['key'], 'display', $obj['val']);
+        }
         
         return response()->json(array('success'=>'column rearrange successfully'));
     }

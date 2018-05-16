@@ -2,10 +2,10 @@
 @section('content')
 <div class="tablist">
     <ul id="tablist">
-        <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li>
-        <li role="presentation">
+        <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
+        <!-- <li role="presentation">
             <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Graph</a>
-        </li>
+        </li> -->
         <li role="presentation">
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All ({{$allTabCount}})
             </a>
@@ -13,15 +13,18 @@
         @foreach($arrTabCount as $tabDetail)
         @foreach($tabDetail as $tabName => $tabCount)
 
+        @if($activeTab == $tabName)
+        <li role="presentation" class="active">
+        @else
         <li role="presentation">
-            <!--<a href="{{ collect(request()->segments())->last() }}/{{$tabName}}">{{$tabName}}-->
+        @endif
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
             </a>
         </li>
         @endforeach
         @endforeach
         @if(!$isGuestAccess)
-        <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li>
+        <!-- <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li> -->
         @endif
         <!-- Right Side Of Navbar -->
         <ul class="nav navbar-right user_dropdown">
@@ -33,7 +36,6 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
                    aria-haspopup="true">
-                    <!-- {{ Auth::user()->name }}  -->
                     {{$userTableName}} <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </a>
 
@@ -59,203 +61,426 @@
             </li>
             @endguest
         </ul>
-
-        @if(!$isGuestAccess)
-        <li class="pull-right">
-            <a href="javascript:void(0);" id="addBtn" data-keyboard="true" data-target="#edit_user"
-               data-toggle="modal" onclick="getUserDetails(event,false,{{$tableId}}, 'Add')">
-                <i class="glyphicon glyphicon-plus"></i>
-            </a>
-        </li>
-        <li class="pull-right">
-            <a href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()">
-                <i class="glyphicon glyphicon-sort"></i>
-            </a>
-        </li>
-        @endif
-
-        <form class="search-form pull-right" action="" name="queryForm"
-              onsubmit="searchKeyword(event, query.value)">
-            <label for="searchInput"><i class="glyphicon glyphicon-search" data-toggle="tooltip" data-placement="bottom"
-                                        title="search data"></i></label>
-            <input type="text" name="query" class="form-control" placeholder="Search for..."
-                   aria-label="Search for..." id="searchInput">
-        </form>
-        @if(!$isGuestAccess)
-        <ul class="nav navbar-right user_dropdown">
-            <li class="dropdown pull-right">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
-                   aria-haspopup="true" onclick="showHiddenColumnInfo();">
-                    <i class="glyphicon glyphicon-eye-close" data-toggle="tooltip" data-placement="bottom"
-                       title="Column Info"></i>
-                </a>
-                <ul class="dropdown-menu" id="showHiddenColumnInfo">
-                </ul>
-            </li>
-        </ul>
-        @endif
     </ul>
 </div>
 
-<div class="cd-panel">
-    <div class="cd-wrp">
-        <header class="cd-panel-header">
-            <a href="javascript:void(0);" class="pull-right cd-panel-close">Close</a>
-            <button type="button" class="btn btn-primary btn-sm" onclick="saveTab()" data-dismiss="modal">Save
-                filter
-            </button>
-            <span class="sp_view_count">7 users match of 4,412</span>
-        </header>
-        <div class="nav-side-menu cd-panel-container">
-            <div class="filter-list ">
+<div class="mt20 mtb20">
+    <div class="col-sm-10">
+       <label class="label-filter-select">
+        <select id="filter_condition" onchange="changeFilterJsonData('{{$tableId}}', 'search')" class="select-filter">
+        <option value="and" @if(isset($tabcondition) && $tabcondition == 'and') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match all filter</span></option>
+        <option value="or" @if(isset($tabcondition) && $tabcondition == 'or') selected="selected" @endif><span><i class="glyphicon glyphicon-indent-left"></i> That match any filter</span></option>
+        </select>
+        </label>
+        @foreach($activeTabFilter as $i => $tabFilter)
+        @foreach($filters as $k=>$filter)
+            @if(!isset($tabFilter[$k]))
+                @continue
+            @endif
+            <div id="delete_filter_{{$i}}_{{$k}}" class="dropdown dropdown-filter-main filter-column">
+                <a class="label label-filter dropdown" data-toggle="dropdown">
+                    <span>
+                        <i class="glyphicon glyphicon-stats"></i> 
+                        {{$k}}
+                        @foreach($filter['col_filter'] as $key =>$option)
+                            @if(!isset($tabFilter[$k][$key]))
+                                @continue
+                            @endif
+                            @if(in_array($key, array('is_unknown', 'has_any_value')))
+                                {{$key.' null'}}
+                            @elseif($key == 'between')
+                                {{$key.' Last '.$tabFilter[$k][$key]['before'].' days to next '.$tabFilter[$k][$key]['after'].' days'}}
+                            @else
+                                {{$key.' '.$tabFilter[$k][$key]}}
+                            @endif
+                            <input type="hidden" name="filter_done_column_name[]" value="{{$k}}">
+                            <input type="hidden" name="filter_done_column_type[]" value="{{$key}}">
+                            @if($key == 'between')
+                                <input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_{{$k}}_before" value="{{$tabFilter[$k][$key]['before']}}">
+                                <input type="hidden" id="filter_done_column_type_val_{{$k}}_after" value="{{$tabFilter[$k][$key]['after']}}">
+                            @else
+                                <input type="hidden" name="filter_done_column_type_val[]" value="{{$tabFilter[$k][$key]}}">
+                            @endif
+                            <input type="hidden" name="filter_done_column_input_type[]" value="{{$filter['col_type']}}">
+                        @endforeach
+                <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div('{{$k}}', '{{$i}}')"></i></span>
+                </a>
+            <ul class="dropdown-menu dropdown-menu-filter">
+            @foreach($filter['col_filter'] as $key =>$option)
+                @if(!empty($option) && $option == 'group')
+                    <li class="li-radio">
+                        <div class="form-check">
+                            <label class="form-check-label radio-label">{{$key}}</label>
+                        </div>
+                    </li>
+                @endif
+                @if($option != 'group')
+                    <li class="li-radio">
+                        <div class="form-check">
+                            <label class="form-check-label radio-label">
+                                @if(isset($tabFilter[$k][$key]))
+                                    <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                       id="{{$k}}_filter_text_{{$key}}"
+                                       datacoltype="{{$filter['col_type']}}"
+                                       onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                       type="radio"
+                                       aria-label="..." checked="checked">
+                                @else
+                                    <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                           id="{{$k}}_filter_text_{{$key}}"
+                                           datacoltype="{{$filter['col_type']}}"
+                                           onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                           type="radio"
+                                           aria-label="...">
+                                @endif
+
+                                @if($key == 'days_after')
+                                    After (in days)
+                                @elseif($key == 'days_before')
+                                    Before (in days)
+                                @elseif($key == 'between')
+                                    Between (in days)
+                                @else
+                                    {{str_replace("days_","",$key)}}
+                                @endif
+                                @if($key != "is_unknown" && $key != "has_any_value")
+                                    @if(isset($tabFilter[$k][$key]))
+                                @if($filter['col_type'] == 'my teammates')
+                                <select class="form-check-input filterinput form-control"
+                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}">
+                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                    <option value="{{$opt['email']}}" {{($tabFilter[$k][$key]== $opt[
+                                            'email'])?'selected':''}}>{{$opt['name']}}</option>
+                                    @endforeach
+                                </select>
+                                @elseif($filter['col_type'] == 'dropdown')
+                                <select class="form-check-input filterinput form-control"
+                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}">
+                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                    <option value="{{$opt}}">{{$opt}}</option>
+                                    @endforeach
+                                </select>
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                       type="date" value="{{$tabFilter[$k][$key]}}">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" value="{{$tabFilter[$k][$key]['before']}}" placeholder="Last Days">
+                                </td><td>To</td><td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" value="{{$tabFilter[$k][$key]['after']}}" placeholder="Next Days">
+                                </td>
+                                </tr>
+                                </table>
+                                @else
+                                <input class="form-check-input filterinput{{$k}} form-control"
+                                       name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                       type="text" value="{{$tabFilter[$k][$key]}}">
+                                @endif
+                                @else
+                                @if($filter['col_type'] == 'my teammates')
+                                <select class="form-check-input filterinput form-control"
+                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                        style="display:none;">
+                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                    <option value="{{$opt['email']}}">{{$opt['name']}}</option>
+                                    @endforeach
+                                </select>
+                                @elseif($filter['col_type'] == 'dropdown')
+                                <select class="form-check-input filterinput form-control"
+                                        name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                        style="display:none;">
+                                    @foreach($filter['col_options'] as $ind=>$opt)
+                                    <option value="{{$opt}}">{{$opt}}</option>
+                                    @endforeach
+                                </select>
+                                @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                       type="date" style="display:none;">
+                                @elseif($filter['col_type'] == 'date' && $key == "between")
+                                <table class="table-between">
+                                <tr>
+                                <td>                
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                       type="text" style="display:none;">
+                                </td><td>To</td><td>
+                                <input class="date-filter-input form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                       type="text" style="display:none;">
+                                </td>
+                                </tr>
+                                </table>
+                                @else
+                                <input class="form-check-input filterinput form-control"
+                                       name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                       type="text" style="display:none;" size="4">
+                                @endif
+                                @endif
+                                @endif
+                            </label>
+                        </div>
+                    </li>
+                @endif
+            @endforeach
+                    <li class="li-radio">
+                        <div class="form-check">
+                            <label class="form-check-label radio-label"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}', '{{$i}}');hideDropdown('{{$k}}', '{{$i}}')">Done</a></label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        @endforeach
+        @endforeach
+    <div class="dropdown dropdown-filter-main" id="add_column_filter">
+            <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown" id="show"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
+            <ul class="dropdown-menu dropdown-menu-filter">
+                    <li class="li-checkbox">
+                        <div class="checkbox">
+                        <div class="filter-list ">
                 <ul id="filter-content" class="menu-content cd-panel-content">
-                    <form id="filterForm">
                         @foreach($filters as $k=>$filter)
-                        <li class="active">
+                        <li class="active" onclick="show_column_type('{{$k}}');">
                             <div class="form-check">
                                 <label class="form-check-label">
-                                    @if(isset($activeTabFilter[$k]))
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           datacoltype="{{$filter['col_type']}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="..." checked="checked">
-                                    @else
-                                    <input type="checkbox" class="filterConditionName" dataid="{{$k}}"
-                                           datacoltype="{{$filter['col_type']}}"
-                                           onclick="showDiv('condition_{{$k}}')" aria-label="...">
-                                    @endif
-                                    {{$k}}</label>
+                                    {{$k}}
+                                    </label>
                             </div>
                             @if(isset($activeTabFilter[$k]))
-                            <div id="condition_{{$k}}" class="filter-option">
-                                @else
+                                <div id="condition_{{$k}}" class="filter-option">
+                                    <ul class="dropdown-menu dropdown-menu-filter">
+                            @else
                                 <div id="condition_{{$k}}" class="hide filter-option">
-                                    @endif
-                                    @foreach($filter['col_filter'] as $key =>$option)
-                                    @if(!empty($option) && $option == 'group')
-                                    <div class="filter_group">{{$key}}</div>
-                                    @endif
+                                    <ul class="dropdown-menu dropdown-menu-filter">
+                            @endif
+                            <form id="filterForm">
+                            @foreach($filter['col_filter'] as $key =>$option)
+                                        @if(!empty($option) && $option == 'group')
+                                            <li class="li-radio">
+                                                <div class="form-check">
+                                                    <label class="form-check-label radio-label">{{$key}}</label>
+                                                </div>
+                                            </li>
+                                        @endif
                                     @if($option != 'group')
-                                    <div class="form-check">
-                                        <label class="form-check-label radio-label">
-                                            @if(isset($activeTabFilter[$k][$key]))
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                   id="{{$k}}_filter_text_{{$key}}"
-                                                   datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                   type="radio"
-                                                   aria-label="..." checked="checked">
-                                            @else
-                                            <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
-                                                   id="{{$k}}_filter_text_{{$key}}"
-                                                   datacoltype="{{$filter['col_type']}}"
-                                                   onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
-                                                   type="radio"
-                                                   aria-label="...">
-                                            @endif
-                                            @if($key == 'days_after')
-                                            More than (in days)
-                                            @elseif($key == 'days_before')
-                                            less than (in days)
-                                            @else
-                                            {{str_replace("days_","",$key)}}
-                                            @endif
-                                            @if($key != "is_unknown" && $key != "has_any_value")
-                                            @if(isset($activeTabFilter[$k][$key]))
-                                            @if($filter['col_type'] == 'my teammates')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
-                                                        'email'])?'selected':''}}>{{$opt['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'dropdown')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}">
-                                                <option value=""></option>
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt}}">{{$opt}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before" )
-                                            <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="date" value="{{$activeTabFilter[$k][$key]}}">
-                                            @else
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="text" value="{{$activeTabFilter[$k][$key]}}">
-                                            @endif
-                                            @else
-                                            @if($filter['col_type'] == 'my teammates')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                    style="display:none;">
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt['email']}}">{{$opt['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'dropdown')
-                                            <select class="form-check-input filterinput{{$k}} form-control"
-                                                    name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                    style="display:none;">
-                                                <option value=""></option>
-                                                @foreach($filter['col_options'] as $ind=>$opt)
-                                                <option value="{{$opt}}">{{$opt}}</option>
-                                                @endforeach
-                                            </select>
-                                            @elseif($filter['col_type'] == 'date' && $key != "days_after" && $key != "days_before")
-                                            <input class="date-filter-input form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="date" style="display:none;">
-                                            @else
-                                            <input class="form-check-input filterinput{{$k}} form-control"
-                                                   name="{{$k}}_filter_val_" id="{{$k}}_filter_val_{{$key}}"
-                                                   type="text" style="display:none;" size="4">
-                                            @endif
-                                            @endif
-                                            @endif
-                                        </label>
-                                    </div>
+                                        <li class="li-radio">
+                                            <div class="form-check">
+                                                <label class="form-check-label radio-label">
+                                                    @if(isset($activeTabFilter[$k][$key]))
+                                                        <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                           id="{{$k}}_filter_text_{{$key}}"
+                                                           datacoltype="{{$filter['col_type']}}"
+                                                           onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                           type="radio"
+                                                           aria-label="..." checked="checked">
+                                                    @else
+                                                        <input class="form-check-radio" name="{{$k}}_filter" dataid="{{$key}}"
+                                                               id="{{$k}}_filter_text_{{$key}}"
+                                                               datacoltype="{{$filter['col_type']}}"
+                                                               onclick="showFilterInputText(this,'{{$k}}',{{$tableId}})"
+                                                               type="radio"
+                                                               aria-label="...">
+                                                    @endif
+                                                    
+                                                    @if($key == 'days_after')
+                                                        After (in days)
+                                                    @elseif($key == 'days_before')
+                                                        Before (in days)
+                                                    @else
+                                                        {{str_replace("days_","",$key)}}
+                                                    @endif
+                                                    @if($key != "is_unknown" && $key != "has_any_value")
+                                                        @if(isset($activeTabFilter[$k][$key]))
+                                                    @if($filter['col_type'] == 'my teammates')
+                                                    <select class="form-check-input filterinput form-control"
+                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}">
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                        <option value="{{$opt['email']}}" {{($activeTabFilter[$k][$key]== $opt[
+                                                                'email'])?'selected':''}}>{{$opt['name']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @elseif($filter['col_type'] == 'dropdown')
+                                                    <select class="form-check-input filterinput form-control"
+                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}">
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                        <option value="{{$opt}}">{{$opt}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before" )
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                           type="date" value="{{$activeTabFilter[$k][$key]}}">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Last Days">
+                                                    </td><td>To</td><td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
+                                                    @else
+                                                    <input class="form-check-input filterinput{{$k}} form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                           type="text" value="{{$activeTabFilter[$k][$key]}}">
+                                                    @endif
+                                                    @else
+                                                    @if($filter['col_type'] == 'my teammates')
+                                                    <select class="form-check-input filterinput form-control"
+                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                            style="display:none;">
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                        <option value="{{$opt['email']}}">{{$opt['name']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @elseif($filter['col_type'] == 'dropdown')
+                                                    <select class="form-check-input filterinput form-control"
+                                                            name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                            style="display:none;">
+                                                        @foreach($filter['col_options'] as $ind=>$opt)
+                                                        <option value="{{$opt}}">{{$opt}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @elseif($filter['col_type'] == 'date' && $key != "between" && $key != "days_after" && $key != "days_before")
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                           type="date" style="display:none;">
+                                                    @elseif($filter['col_type'] == 'date' && $key == "between")
+                                                    <table class="table-between">
+                                                    <tr>
+                                                    <td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_before" id="{{$k}}_filter_val_{{$key}}_before"
+                                                           type="text" style="display:none;" placeholder="Last Days">
+                                                    </td><td>To</td><td>
+                                                    <input class="date-filter-input form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}_after" id="{{$k}}_filter_val_{{$key}}_after"
+                                                           type="text" style="display:none;" placeholder="Next Days">
+                                                    </td>
+                                                    </tr>
+                                                    </table>
+                                                    @else
+                                                    <input class="form-check-input filterinput form-control"
+                                                           name="{{$k}}_filter_val_{{$key}}" id="{{$k}}_filter_val_{{$key}}"
+                                                           type="text" style="display:none;" size="4">
+                                                    @endif
+                                                    @endif
+                                                    @endif
+                                                </label>
+                                            </div>
+                                        </li>
                                     @endif
-                                    @endforeach
+                            @endforeach
+                                        <li class="li-radio">
+                                            <div class="form-check">
+                                                <label class="form-check-label radio-label change-filter-function"><a href="javascript:void(0);" onclick="makeFilterJsonData('{{$tableId}}','search','{{$k}}', '0');hideDropdown('{{$k}}', '0')">Done</a></label>
+                                            </div>
+                                        </li>
+                            
+                    </form>
+                                    </ul>
                                 </div>
                         </li>
                         @endforeach
-                    </form>
                 </ul>
             </div>
+                        </div>
+                    </li>
+                   
+              </ul>
+    </div>
+    <a class="filter-link m-l-15" href="#" onclick="saveTab()" data-dismiss="modal">Save segment </a>
+    </div>
+</div>
+<div>
+    <div class="topborder">
+        <div class="col-sm-5 mb20">
+            <div id="show_count" style="float: left;">
+            @foreach($arrTabCount as $tabDetail)
+                @foreach($tabDetail as $tabName => $tabCount)
+                @if($activeTab == $tabName)
+                    <span class="sp_view_count">{{$tabDetail[$activeTab]}} users match</span><span class="total_count">of {{$allTabCount}}</span>
+                @endif
+                @endforeach
+            @endforeach
+            </div>
+            <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
+            @if(!$isGuestAccess)
+            <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
+            @endif
         </div>
+                <div class="col-sm-5 pull-right">
+                    <div class="pull-right">
+                        <div class="inline-b">
+                        <form class="search-form detail-form table-search" action="" name="queryForm"
+                            onsubmit="searchKeyword(event, query.value)">
+                            <label for="searchInput" class="label label-filter label-filter-bordered label-search-icon bold m-l-5"><i class="fa fa-search"></i></label>
+                            <input type="text" name="query" class="form-control" placeholder="Search for..."
+                                aria-label="Search for..." id="searchInput">
+                        </form>
+                        <div class="pull-left pos-relative">
+                        <a href="javascript:void(0);" id="addBtn" data-keyboard="true"
+                         class="label label-filter label-filter-bordered bold m-l-5">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </a>
+                        <div class="addEntries">
+                            <div class="col-sm-12 add-entry-inner">
+                                            <a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add an entry now</a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner">
+                            <a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
+                                        <span class="sp-inline-import">
+                                            Import<br>
+                                        We can do it manually for you or you can also do it via trigger and send addon available in Google sheets
+                                        </span>
+                            </a>
+                            </div>
+                            <div class="col-sm-12 add-entry-inner column">
+                                <div>
+                                            <h3>API doc</h3>
+                                </div>
+                               <div>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Add</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Edit</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default m-r-28">Delete</a>
+                                    <a href="https://docs.usertable.in" target="_blank" class="btn btn-default">Fetch</a>
+                               </div>
+                               <div class="text-right col-sm-offset-10 m-t-20">
+                                   <a href="https://docs.usertable.in/collection" target="_blank">more</a>
+                               </div>
+                            </div>
+                           
+                        </div>
+                        </div>
+                        <!-- onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" -->
+                             <a class="label label-filter label-filter-bordered bold m-l-5" href="javascript:void(0);" id="columnSequencing" data-keyboard="true" onclick="openColumnModal()"><span><i class="fa fa-columns"></i>
+                            </span></a>
+                        </div>
+                        <div class="btn-group m-l-5" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default btn-lable" onClick="click_show_table();"><span><i class="fa fa-list"></i></span></button>
+                        <button type="button" class="btn btn-default btn-lable" onClick="click_show_graph();"><span><i class="fa fa-globe"></i></span></button>
+                        </div>
+                    </div>
+                </div>
     </div>
 </div>
-<div class="mt20 mtb20">
-    <div class="col-sm-10 col-sm-offset-1">
-    <div class="dropdown dropdown-filter-main">
-    <a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-indent-left"></i> that match all filters </i></span></a>
-    <ul class="dropdown-menu dropdown-menu-filter">
-        <li class="dropdown-header">User Data</li>
-        <li><a href=""> That match all filter <i class="glyphicon glyphicon glyphicon-ok pull-right"></i></a></li>
-        <li><a href=""> That match any filter</a></li>
-    </ul>
-    </div>
-    <a class="label label-filter"><span><i class="glyphicon glyphicon-stats"></i> stats <i class="glyphicon glyphicon glyphicon-trash"></i></span></a>
-   
-    <div class="dropdown dropdown-filter-main">
-    <a href="" class="dropdown dropdown-filters filter-link" data-toggle="dropdown"><i class="glyphicon glyphicon-plus"></i>  Add Filter</a>
-    <ul class="dropdown-menu dropdown-menu-filter">
-        <li class="dropdown-header">User Data</li>
-        <li><a href=""> Stats</a></li>
-        <li><a href=""> Folder</a></li>
-    </ul>
-    </div>
-    <!-- <a href="" class="filter-link"><i class="glyphicon glyphicon-plus"></i> Filter</a> -->
-    </div>
-</div>
-<div class="nav-and-table  from-right">
-    <div id="user-board" class="user-dashboard">
+<div class="nav-and-table  from-right nav-table-custom-response" id="show_table_div">
+    <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
-        <div class="scroll-x flex">
-            <div class="scroll-y flex" id="def_response">
+        <div class="scroll-x flex" style="overflow:visible;">
+            <div class="scroll-y flex w-100per" id="def_response">
                 @include('table.response')
             </div>
             <div class="scroll-y flex" id="response">
@@ -264,173 +489,632 @@
         </div>
     </div>
 </div>
+<!-- Graph Div Start-->
+<div class="nav-and-table from-right nav-table-custom-response" style="display: none;" id="show_graph_div">
+    <div id="user-board" class="user-dashboard user-custom-dashboard">
+        <!-- Tab panes -->
+        <div class="scroll-x">
+            <div class="scroll-y graph-page-container" id="response">
+                <div class="top-chart-container">
+                    <div class="ajax-loader-container">
+                        <div class="loading-icon">
+                            <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
 
-<a href="javascript:void(0);" id="myBtn" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><img
-            id="wiz" src="{{ asset('img/sending.svg') }}" alt="sending"/></span></a>
+                    <form class="form-inline graph-form">
+
+                        <div class="form-group" style="display:none;">
+                            <label for="email"  class="control-caption">Column</label>
+                            <select class="form-control" id="column2">
+                                @foreach( $other_columns as $other_column)
+                                    <option value="{{$other_column}}">{{$other_column}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="control-caption">Date Column </label>
+                            <select class="form-control" id="column1" onchange="loadGraph()">
+                                @foreach( $date_columns as $date_column)
+                                    <option value="{{$date_column}}">{{$date_column}}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+
+                        <!--<div class="form-group">
+                            <label for="email"  class="control-caption">Date Range</label>
+                            <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text" value="{{$rangeStart}}"/>
+                            To
+                            <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text" value="{{$rangeEnd}}"/>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>-->
+                    </form>
+                    <div class="charts-container">
+                        <div class="chart-first">
+                            <canvas id="myChart" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <form class="form-inline graph-form">
+                    <div class="form-group">
+                        <label for="email" class="control-caption">Date Column </label>
+                        <select class="form-control" id="column3" onchange="createAllPieCharts();">
+                            @foreach( $date_columns as $date_column)
+                                <option value="{{$date_column}}">{{$date_column}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <!--<div class="form-group">
+                        <label for="email"  class="control-caption">Date Range</label>
+                        <input class="form-control" id="pieDate" name="pieDate" placeholder="MM/DD/YYY" type="text"  value="{{$rangeStart}}"/>
+                        To
+                        <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>-->
+                </form>
+
+                <div class="charts-container">
+                    <div class="pie-chart-container row">
+                        @foreach( $other_columns as $other_column)
+                            <div class="pie-chart col-md-2 col-lg-2 col-sm-4 col-xs-6">
+                                <div class="column-caption">Column : {{$other_column}}</div>
+                                <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
+                            </div>
+                        @endforeach
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<ul class="nav navbar-nav flex-ul settingUl">
+@if((count($structure) > 1) && !$isGuestAccess) 
+<li><a class="btn btn-primary" href="https://docs.usertable.in" target="_blank">Configure API</a></li>
+<li><a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
+<li class="strong">or</li>
+<li><a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add some entries</a></li>
+ @endif
+</ul>
+<!-- Graph Div End-->
 @stop
 @section('pagescript')
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{asset('js/templates.js')}}"></script>
 <script src="{{asset('js/functions.js')}}"></script>
+<script src="{{asset('js/Chart.bundle.js')}}"></script>
+<script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
+<link href="{{ asset('css/bootstrap-datepicker3.css') }}" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
 <script type="text/javascript">
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
+    var allTabCount = '{{$allTabCount}}';
 </script>
 <!-- inline scripts -->
 <script>
+    // $('body').addClass('loader');
+</script>
+<script>
+    function click_show_table()
+    {
+        $('#show_table_div').attr("style", "display:block");
+        $('#show_graph_div').attr("style", "display:none");
+        $('.settingUl').attr("style", "display:flex");
+    }
+    function click_show_graph()
+    {
+        $('#show_graph_div').attr("style", "display:block");
+        $('#show_table_div').attr("style", "display:none");
+        $('.settingUl').attr("style", "display:none");
+        loadGraph();
+        createAllPieCharts();
+    }
+    function show_column_type(column_name)
+    {
+        var div_open = $('.filter-column').length;
+        $('#condition_'+column_name).find("select").each(function(){
+            if($(this).attr("name").indexOf('-') != -1)
+            {
+                $(this).attr("name", $(this).attr("name").split('-')[0]+'-'+div_open);
+                $(this).attr("id", $(this).attr("id").split('-')[0]+'-'+div_open);
+            }
+            else
+            {
+                $(this).attr("name", $(this).attr("name")+'-'+div_open);
+                $(this).attr("id", $(this).attr("id")+'-'+div_open);
+            }
+        });
+        $('#condition_'+column_name).find("input").each(function(){
+            if($(this).attr("name").indexOf('-') != -1)
+            {
+                $(this).attr("name", $(this).attr("name").split('-')[0]+'-'+div_open);
+                $(this).attr("id", $(this).attr("id").split('-')[0]+'-'+div_open);
+            }
+            else
+            {
+                $(this).attr("name", $(this).attr("name")+'-'+div_open);
+                $(this).attr("id", $(this).attr("id")+'-'+div_open);
+            }
+        });
+        $('#condition_'+column_name).find("label.change-filter-function").each(function(){
+            $(this).html('<a href="javascript:void(0);" onclick="makeFilterJsonData(\''+tableId+'\', \'search\', \''+column_name+'\', \''+div_open+'\');hideDropdown(\''+column_name+'\', \''+div_open+'\')">Done</a>');
+        });
+        var column_html = $('#condition_'+column_name).html();
+        var add_filter_html='<div class="dropdown dropdown-filter-main open filter-column" id="delete_filter_'+div_open+'_'+column_name+'"><input type="hidden" id="'+div_open+'" value="'+column_name+'"/><a class="label label-filter dropdown" data-toggle="dropdown"><span><i class="glyphicon glyphicon-stats"></i> '+column_name+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+column_name+'\', '+div_open+')"></i></span></a>'+$('#condition_'+column_name).html()+'</div>';
+        $('#add_column_filter').before(add_filter_html);
+        
+        var elemToOpen = $('#delete_filter_'+div_open+'_'+column_name)[0];
+        setTimeout(function() {
+            $(elemToOpen).addClass('open');            
+        }, 300)
+    }
+    function delete_filter_div(column_name, div_open)
+    {
+        $('#delete_filter_'+div_open+'_'+column_name).remove();
+        makeFilterJsonData(tableId, 'search', column_name, div_open);
+    }
+    
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
-    initFilterSlider();
-    if (activeTab != 'All') {
-    $('.cd-panel').addClass('is-visible');
-    }
-    // toggle navigation
-    $('[data-toggle="offcanvas"]').click(function () {
-    $("#navigation").toggleClass("hidden-xs");
-    });
-    // init tooltip
-    $("[data-toggle=tooltip]").tooltip();
-    // toggle checkboxes
-    $("#mytable #checkall").click(function () {
-    if ($("#mytable #checkall").is(':checked')) {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", true);
-    });
-    } else {
-    $("#mytable input[type=checkbox]").each(function () {
-    $(this).prop("checked", false);
-    });
-    }
-    });
-    $('#saveTabModel').hide();
-    $('#saveAsInput').hide();
-    $('#saveTabButton').click(function () {
-    var filterChecked = [];
-    var jsonObject = {};
-    var filterCheckedElement = $(".filterConditionName:checked");
-    filterCheckedElement.each(function () {
-    dataid = $(this).attr('dataid');
-    filterChecked.push($(this).attr('dataid'));
-    var radioButton = $("#condition_" + dataid + " input:checked");
-    var radioname = radioButton.attr('dataid');
-    var radioButtonValue = $("#" + dataid + "_filter_val_" + radioname).val();
-    if (radioname == "has_any_value" || radioname == 'is_unknown') {
-    radioButtonValue = "1";
-    }
-    var subDoc = {};
-    subDoc[radioname] = radioButtonValue;
-    jsonObject[dataid] = subDoc;
-    });
-    var tabName = $('#saveAsInput').val();
-    obj = jsonObject;
-    $.ajaxSetup({
-    headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-    });
-    $.ajax({
-    type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-            dataType: 'json', // Set datatype - affects Accept header
-            url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-            data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
-            success: function (data) {
-            window.setTimeout(function () {
-            location.reload()
-            }, 2000);
+        if (activeTab != 'All') {
+            $('.cd-panel').addClass('is-visible');
+        }
+        // toggle navigation
+        $('[data-toggle="offcanvas"]').click(function () {
+            $("#navigation").toggleClass("hidden-xs");
+        });
+        // init tooltip
+        $("[data-toggle=tooltip]").tooltip();
+        // toggle checkboxes
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", true);
+                    });
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
             }
-    });
-    });
-    $(".form-check-input").on('change', function () {
-    clearInterval(myInterval);
-    //var tableId = '{{ collect(request()->segments())->last() }}';
-    if (globaltimeout != null) clearTimeout(globaltimeout);
-    globaltimeout = setTimeout(function () {
-    makeFilterJsonData(tableId, 'Search');
-    }, 600);
-    });
-    $(".form-check-input").on('keyup', function () {
-    clearInterval(myInterval);
-    //var tableId = '{{ collect(request()->segments())->last() }}';
-    if (globaltimeout != null) clearTimeout(globaltimeout);
-    globaltimeout = setTimeout(function () {
-    makeFilterJsonData(tableId, 'Search');
-    }, 600);
-    });
-    $(".form-check-input").blur(function () {
-    window.setTimeout(function () {
-    //startInterval();
-    }, 20000);
-    });
+        });
+        $('#saveTabModel').hide();
+        // $('#saveAsInput').hide();
+        $('#saveTabButton').click(function () {
+            var filtercolumns = [];
+            var filterChecked = [];
+            var jsonObject = {};
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+            {
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        var filter_done_column_type_val = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
+                }
+            }
+            $("input[name='filter_columns[]']:checked").each(function () {
+                filtercolumns.push($(this).val());
+            });
+        var tabName = $('#saveAsInput').val();
+        obj = jsonObject;
+        var condition = $('#filter_condition').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+                dataType: 'json', // Set datatype - affects Accept header
+                url: API_BASE_URL + "/filter/save", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
+                data: {'filter': JSON.stringify(obj), 'tab': tabName, 'tableId': tableId,'condition':condition, 'filtercolumns' : filtercolumns}, // Some data e.g. Valid JSON as a string
+                success: function (data) {
+                    window.setTimeout(function () {
+                        location.reload()
+                    }, 2000);
+                }
+            });
+        });
     });
     function SaveAsNew(state) {
-    if (state) {
-    $('#saveAsInput').val('');
-    $('#saveAsInput').show();
-    } else {
-    $('#saveAsInput').hide();
-    $('#saveAsInput').val(activeTab);
+        if (state) {
+            $('#saveAsInput').val('');
+            $('#saveAsInput').show();
+        } else {
+            $('#saveAsInput').hide();
+            $('#saveAsInput').val(activeTab);
+        }
     }
-    }
-        var API_BASE_URL = "{{env('API_BASE_URL')}}";
-        var activeTab = '{{$activeTab}}';
-        var tableId = '{{$tableId}}';
-        function sendMailSMS(type) {
+    var API_BASE_URL = "{{env('API_BASE_URL')}}";
+    var activeTab = '{{$activeTab}}';
+    var tableId = '{{$tableId}}';
+    function sendMailSMS(type) {
         if (type == 'email') {
-        var formData = $("#emailForm").serializeArray();
+            var formData = $("#emailForm").serializeArray();
         }
         if (type == 'sms') {
-        var formData = $("#smsForm").serializeArray();
+            var formData = $("#smsForm").serializeArray();
         }
         var result = {};
         $.each(formData, function () {
-        result[this.name] = this.value;
+            result[this.name] = this.value;
         });
         var JsonData = makeFilterJsonData(tableId, 'returnData');
         sendData(type, JsonData, result, tableId);
-        }
+    }
 
-        function timeToSend(type) {
+    function timeToSend(type) {
         if (type == 'auto') {
-        $('#auto').removeClass('hide');
-        $('#now').addClass('hide');
+            $('#auto').removeClass('hide');
+            $('#now').addClass('hide');
         } else {
-        $('#auto').addClass('hide');
-        $('#now').removeClass('hide');
+            $('#auto').addClass('hide');
+            $('#now').removeClass('hide');
         }
-        }
-        function openColumnModal(){
-            $('#column_sequence').modal('show');
-            $("#table-1q").tableDnD();
-        }
-        function updateColumnSequence(){
-            var tablearray = [];
-            $("#table-1q tr").each(function() {
-                if(this.id != 0)
-                    tablearray.push(this.id);
-            });
-            if(tablearray.length > 1)
+    }
+    function openColumnModal(){
+        $('#column_sequence').modal('show');
+        $("#table-1q").tableDnD();
+    }
+    function updateColumnSequence(){
+        var tablearray = [];
+        var displayarray = [];
+        $("#table-1q tr").each(function() {
+            if(this.id != 0)
             {
-                $.ajax({
-                    url: API_BASE_URL + '/rearrangeSequenceColumn',
-                    type: 'POST',
-                    data: {tableArray : tablearray},
-                    dataType: 'json',
-                    success: function (info) {
-                        if(info.error)
-                        {
-                            alert(info.error);
-                            return false;
+                var val = $('#reorder_column_'+this.id+':checked').val() ? 0 : 1
+                var obj = {'key':this.id,'val':val};
+                displayarray.push(obj);
+                tablearray.push(this.id);
+            }
+        });
+        if(tablearray.length > 1)
+        {
+            $.ajax({
+                url: API_BASE_URL + '/rearrangeSequenceColumn',
+                type: 'POST',
+                data: {tableArray : tablearray, displayArray : displayarray},
+                dataType: 'json',
+                success: function (info) {
+                    if(info.error)
+                    {
+                        alert(info.error);
+                        return false;
+                    }
+                    alert(info.success);
+                    location.reload();
+                }
+            });
+        }
+    }
+    
+        function CreatePieChart(element, labels,values,colors,bcolors) {
+            var ctx = document.getElementById(element).getContext('2d');
+            data = {
+                "labels": labels,
+                "datasets": [{
+                    "label": "",
+                    "data": values,
+                    "backgroundColor": colors
+                }]
+            };
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    legend: {display: false}
+                }
+            });
+        }
+        function CreateBarChart(element, labels, values,colors,bColors) {
+            if(window.mybarChart == undefined)
+            {
+                var ctx = document.getElementById(element).getContext('2d');
+                window.mybarChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '',
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor:bColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
                         }
-                        alert(info.success);
-                        location.reload();
                     }
                 });
+            }else{
+                var newData = {
+                    labels: labels,
+                    datasets: [{
+                        label: '',
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor:bColors,
+                        borderWidth: 1  
+                    }]
+                };
+                window.mybarChart.data.datasets[0].data = values;
+                window.mybarChart.data.labels = labels;
+                window.mybarChart.update();
             }
         }
+        //Get Graph functions.
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        function random_rgba() {
+            var o = Math.round, r = Math.random, s = 255;
+            var opacity = 0.5;// r().toFixed(1);
+
+            return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + opacity + ')';
+        }
+        function getGraphData(dateColumn, secondColumn) {
+            var tableName = "{{$tableId}}";
+            var jsonObject = {};
+            var coltypeObject = {};
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+            {
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        var filter_done_column_type_val = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
+                    var subcoltypeObject = {};
+                    subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+                    coltypeObject[i] = subcoltypeObject;
+                }
+            }
+            var condition = $('#filter_condition').val();
+            
+            var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
+                var data = JSON.parse(response);
+                var Total_data = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    Total_data += item.Total;
+                }
+                var thurshold = Total_data / 25;
+                var dates = new Array();
+                var values = new Array();
+                var colors = new Array();
+                var bcolors = new Array();
+                var others_count = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    dates.push(item.LabelColumn);
+                    values.push(item.Total);
+                    colors.push(random_rgba());
+                    bcolors.push("rgba(100,100,100,1)");
+                }
+                CreateBarChart("myChart", dates,values,colors,bcolors);
+                $(".top-chart-container .ajax-loader-container").hide();
+            });
+        }
+        function getPieGraphData(dateColumn, secondColumn, element) {
+            var tableName = "{{$tableId}}";
+            var jsonObject = {};
+            var coltypeObject = {};
+            for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+            {
+                if($("input[name='filter_done_column_name[]']")[i])
+                {
+                    if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                    {
+                        var between = {};
+                        between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
+                        between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                        var filter_done_column_type_val = between;
+                    }
+                    else
+                    {
+                        var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                    }
+                    if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                        var filter_done_column_type_val = 1;
+                    }
+                    var subDoc = {};
+                    subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+                    var subjsonObject = {};
+                    subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                    jsonObject[i] = subjsonObject;
+                    var subcoltypeObject = {};
+                    subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+                    coltypeObject[i] = subcoltypeObject;
+                }
+            }
+            var condition = $('#filter_condition').val();
+            
+            var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : secondColumn}, function (response) {
+                var data = JSON.parse(response);
+                var Total_data = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    Total_data += item.Total;
+                }
+                var thurshold = Total_data / 25;
+
+                var dates = new Array();
+                var values = new Array();
+                var colors = new Array();
+                var bcolors = new Array();
+
+                var others_count = 0;
+                for (index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    if(item.Total > thurshold) {
+                        dates.push(item.LabelColumn);
+                        values.push(item.Total);
+                        colors.push(random_rgba());
+                        bcolors.push("rgba(100,100,100,1)");
+                    }else{
+                        others_count += item.Total;
+                    }
+                }
+                
+                dates.push("Others");
+                values.push(others_count);
+                colors.push(random_rgba());
+                bcolors.push("rgba(100,100,100,1)");
+                
+                
+                //console.log(colors);
+                if( dates.length > 1){
+                     $("#" + element ).parent().show();
+                     CreatePieChart(element, dates,values,colors,bcolors);
+                }
+                else  
+                    $("#" + element ).parent().hide();
+            });
+        }
+        function loadGraph() {
+            $(".top-chart-container .ajax-loader-container").show();
+            var column1 = $("#column1").val();
+            getGraphData(column1, column1);
+        }       
+        function createAllPieCharts(){
+            var column3 = $("#column3").val();
+            @foreach($other_columns as $other_column)
+            getPieGraphData(column3, "{{$other_column}}", "id_{{$other_column}}");
+            @endforeach
+        }
     </script> 
+    <script>
+        $(".tablist li").click(function() {
+           if ($(".tablist li").removeClass("active")) {
+               $(this).removeClass("active");
+           }
+           $(this).addClass("active");
+       });
+       function hideDropdown(col_name, div_open)
+       {
+            $('#delete_filter_'+div_open+'_'+col_name).removeClass('open');
+            var radio_type = $("#delete_filter_"+div_open+"_"+col_name+" input[type='radio']:checked");
+            var radioname = radio_type.attr('dataid');
+            var coltype = radio_type.attr('datacoltype');
+            if (radioname == 'between')
+            {
+                var between = [];
+                between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                var radioButtonValue = 'last '+between['before']+' days to next '+between['after']+' days';
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_'+col_name+'_before" value="'+between['before']+'"/><input type="hidden" id="filter_done_column_type_val_'+col_name+'_after" value="'+between['after']+'"/>';
+            }
+            else
+            {
+                var radioButtonValue = $('#'+col_name+'_filter_val_'+radioname+'-'+div_open).val();
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
+            }
+            if (typeof radioButtonValue === "undefined") {
+                radioButtonValue ='';
+                var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" value="'+radioButtonValue+'"/>';
+            }
+            var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
+            $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
+            loadGraph();
+            createAllPieCharts();
+        }
+    </script>
+  
+  <script>
+    var headerIsFixed = false;             
+   $(window).scroll(function() {    
+    var scroll = $(window).scrollTop();
+    if(scroll >= 230) {
+        if (!headerIsFixed) {
+            var cloneThead = $("#userThead").clone();
+            var appendThead = cloneThead[0];
+            appendThead.id = 'fixed_header';
+            $('.table-custom-res').append(appendThead);
+        }
+        headerIsFixed = true;
+        $('.user-custom-dashboard').scroll(function() {   
+            var scrollPos = $('.user-custom-dashboard').scrollLeft();
+            $('#fixed_header').css({
+                'left':-scrollPos,
+            });
+        });
+    } 
+    else {
+       
+        headerIsFixed = false;
+        $('#fixed_header').remove();
+    }
+});
+</script>
+<script>
+    $(document).ready(function(){
+        $("#addBtn").click(function(){
+            $(".addEntries").toggle();
+        })
+        
+    })
+</script>
+ <script>
+   $(function(){
+    var current = window.location.href;
+    //if(window.location.href == $(#tablist li a[]))
+});
+
+console.log(window.location.href);
+ </script>
+
+
 @stop
 @section('models')
 <!-- Modal -->
@@ -462,7 +1146,7 @@
     <div class="modal-dialog" style="width:800px">
         <!-- Modal content-->
         <div style="background:rgb(237,239,240)" class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" id="modal_header_column">
                 <img style="width:21px;height:21px;vertical-align:middle" src="{{ asset('img/docs.svg') }}" alt="docs">
                 <span style="font-size:18px;vertical-align:middle;margin-left:5px;font-weight:700" id="mod-head_edit" class="modal-title">Edit User</span>
                 <button type="button" class="close" data-dismiss="modal">×</button>
@@ -471,8 +1155,16 @@
                 <div class="modal-body" style="width:800px">
                     <div class="col-xs-8" id="edit_users_body"></div>
                     <input type='hidden' id="is_edit" value="">
-                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <!-- <div style="width:20px" class="col-xs-1">&nbsp;</div> -->
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
+                    <div class="col-xs-12" style="text-align: right;">
+                        <input type="hidden" id="eId"/>
+                        <input type="hidden" id="tokenKey"/>
+                        <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
+                        <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                            Update
+                        </button>
+                    </div>
                     <div class="col-xs-8">
                         <h3 style="margin-left:25px;font-size:18px;font-weight:600;margin-top:20px">Activity</h3>
                         <br>
@@ -481,15 +1173,8 @@
 
                         </div>
                     </div>
-                </div>
-
-                <div class="modal-footer" style="overflow: hidden;width:750px">
-                    <input type="hidden" id="eId"/>
-                    <input type="hidden" id="tokenKey"/>
-                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
-                        Update
-                    </button>
+                    <div class="modal-footer" style="overflow: hidden;width:750px">
+                    </div>
                 </div>
             </form>
         </div>
@@ -509,14 +1194,14 @@
             <form id="editColumnSequence">
                 <div class="modal-body">
                     <div class="col-xs-8" id="edit_column_body"></div>
-                    <div style="width:20px" class="col-xs-1">&nbsp;</div>
+                    <div style="width:20px" class="col-xs-2">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)
                     <table id="table-1q" class="table basic table-bordred" >
-                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th></tr></thead>
+                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th><th>Hidden</th></tr></thead>
                     @foreach($structure as $key => $val)
-                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td></tr>
+                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td><td><input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /></td></tr>
                     @endforeach
                     </table>
                     @endif
@@ -575,27 +1260,37 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Save Tab</h4>
+                <h4 class="modal-title text-center"><strong>Save segment</strong></h4>
             </div>
 
             <div class="modal-body">
                 <form class="clearfix">
-                    <div class="checkbox">
+                    <div class="row">
+                    <div class="checkbox col-sm-12">
+                        @foreach($structure as $key => $value)
+                        <label style="min-width: 150px;">
+                            <input type="checkbox" name="filter_columns[]" value="{{$value['id']}}" @if(in_array($key, $filtercolumns)) checked="checked" @elseif(empty($filtercolumns)) checked="checked" @endif/>{{$key}}
+                        </label>
+                        @endforeach
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="checkbox col-sm-12">
                         <label class="radio inline no_indent">
-                            <input type="radio" value="" name="tabName" onChange='SaveAsNew(false)'>Update in
-                            current tab
+                            <input type="radio" value="" name="tabName" onChange='SaveAsNew(false)'>
+                            Save changes to the segment <span id="replacetabName"> 'vijay'</span>
                         </label>
                     </div>
-
-                    <div class="checkbox">
+                    </div>
+                    <div class="row">
+                    <div class="checkbox col-sm-4 p-r-zero">
                         <label class="radio inline no_indent">
-                            <input type="radio" value="" name="tabName" id="showSaveAs" onChange='SaveAsNew(true)'>Save
-                            as
+                            <input type="radio" value="" name="tabName" id="showSaveAs" onChange='SaveAsNew(true)' checked>Create new segment
                         </label>
                     </div>
-
-                    <div class="col-xs-8">
-                        <input type="text" class="form-control" value="" id="saveAsInput">
+                    <div class="col-sm-4 col-xs-5 p-l-zero">
+                        <input type="text" class="form-control newSegment" value="" id="saveAsInput">
+                    </div>
                     </div>
                 </form>
             </div>
@@ -628,7 +1323,6 @@
 
                     </div>
             </div>
-            </form>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" onclick="editUserData('add')">
                     Add
@@ -636,7 +1330,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- send modal -->
@@ -742,6 +1435,9 @@
             </div>
         </div>
     </div>
+</div>
+
+@stop
 
 
-    @stop
+ 
