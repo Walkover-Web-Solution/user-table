@@ -15,7 +15,7 @@
         margin-top:25px;
     }
 </style>
-<div class="" id="table_data">
+<div class="" id="table_data" style="padding-bottom:200px;">
 <table class="table-custom table-bordred table-custom-res">
     @if(count($structure) < 3 && !$isGuestAccess)
         <thead id="userThead">
@@ -347,8 +347,133 @@
     </div>
 </div>
 <!-- End Modal -->
+
+<!-- Uploaded Contacts Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Import Table</h4>
+        </div>
+        <div class="modal-body">
+            <form id="importTableForm" name="importTableForm">
+                <div class="form-group">
+                    <label for="importTable">Example file input</label>
+                    <input type="file" class="form-control-file" id="importTable" name="importTable" />
+                    <br />
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Uploaded Contacts Modal -->
+
+<!-- Show Uploaded Contacts Modal -->
+<div class="modal fade" id="manageContactsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+            <tbody id="mapDataToTable" style="padding-bottom:40px;">
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Show Uploaded Contacts Modal -->
+
+<div id="columnsData">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Column
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            @foreach($structure as $key => $val)
+                <a class="dropdown-item" href="#">{{ $key }}</a>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+
 <script>
     $(document).ready(function(){
+        $(".initiateUpload").click(function(){
+            $("#uploadModal").modal('show');
+        });
+        $("#importTableForm").on('submit', (function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/importTable",
+                type: "POST",
+                data: new FormData(this),
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function (data){
+                    if(data.Message=="Success")
+                    {
+                        var columnsData = $("#columnsData").html();
+                        $("#uploadModal").modal('hide');
+                        $("#manageContactsModal").modal('show');
+                        $.toast({
+                            heading: 'Success',
+                            text: 'File Uploaded Successfully, Please map the columns.',
+                            showHideTransition: 'slide',
+                            icon: 'success',
+                        });
+                        var dataToAppend = "";
+                        for(var i=0;i<data.Data.length;i++)
+                        {
+                            dataToAppend+="<tr data-attr='"+i+"'>";
+                            var dataArray = data.Data[i];
+                            for(var j=0;j<dataArray.length;j++)
+                            {
+                                dataToAppend+="<td class='text-center'>"+dataArray[j]+"</td>";
+                            }
+                            dataToAppend+="</tr>";
+                        }
+                        dataToAppend+="<tr data-attr='"+i+"'>";
+                        var dataArray = data.Data[0];
+                        for(var j=0;j<dataArray.length;j++)
+                        {
+                            dataToAppend+="<td>";
+                                dataToAppend+=columnsData;
+                            dataToAppend+="</td>";   
+                        }
+                        dataToAppend+="</tr>";
+                        $("#mapDataToTable").html(dataToAppend);
+                    }
+                    else
+                    {
+                        $.toast({
+                            heading: 'Oops!',
+                            text: 'Something went wrong please try after sometime.',
+                            showHideTransition: 'slide',
+                            icon: 'error',
+                        });
+                    }
+                },
+                error:function(data){
+
+                }
+            });
+        }));
         $("#selectall").change(function(){  //"select all" change 
             $(".row-delete").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
             enableDelete();
@@ -486,10 +611,22 @@
             tableolddata_1.push(tableolddata1);
         }
         if(!$.trim($('#add_column_name').val()).length) {
-            alert('Column name must be required');
+            //alert('Column name must be required');
+            $.toast({
+                text: 'Column name must be required.',
+                showHideTransition: 'slide',
+                icon: 'error'
+            });
+            $('#add_column_name').addClass('has-error');
             return false;
         }else if(!$.trim($('#add_column_type').val()).length) {
-            alert('Column type must be required');
+            //alert('Column type must be required');
+            $.toast({
+                text: 'Column type must be required.',
+                showHideTransition: 'slide',
+                icon: 'error'
+            });
+            $('#add_column_type').addClass('has-error');
             return false;
         }else{
             var updateData={};
@@ -509,14 +646,28 @@
                 success: function (info) {
                     if(info.error)
                     {
-                        alert(info.error);
+                        //alert(info.error);
+                        $.toast({
+                            text: info.error,
+                            showHideTransition: 'slide',
+                            icon: 'error'
+                        });
                         return false;
                     }
-                    alert(info.msg);
+                    //alert(info.msg);
+                    //location.reload();
+                    $.toast({
+                        heading: 'Success',
+                        text: info.msg,
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        afterHidden: function() {
                     location.reload();
                 }
             });
         }
+            });
+    }
     }
     function updatehiddencolumn(id)
     {

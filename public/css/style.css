@@ -1207,8 +1207,7 @@ top:10px;
 #fixed_header tr th{
     background: #fff !important;
 }
-
-
-
-
-
+.initiateUpload
+{
+    cursor: pointer;
+}

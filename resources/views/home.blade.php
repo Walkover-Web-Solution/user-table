@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/toast.css')}}"><!--ToastCSS-->
 <div class="tablist">
-    <ul id="tablist">
+    <ul id="tablist" class="table-filter-ul">
         <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
         <!-- <li role="presentation">
             <a href="{{env('APP_URL')}}/graph/{{$tableId}}">Graph</a>
@@ -10,19 +11,11 @@
             <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/All">All ({{$allTabCount}})
             </a>
         </li>
-        @foreach($arrTabCount as $tabDetail)
-        @foreach($tabDetail as $tabName => $tabCount)
-
-        @if($activeTab == $tabName)
-        <li role="presentation" class="active">
-        @else
-        <li role="presentation">
-        @endif
-            <a href="{{env('APP_URL')}}/tables/{{$tableId}}/filter/{{$tabName}}">{{$tabName}} ({{$tabCount}})
+        <li role="presentation" id="filterLoadingText">
+            <a href="javascript:void(0);">
+                Loding Filters...
             </a>
         </li>
-        @endforeach
-        @endforeach
         @if(!$isGuestAccess)
         <!-- <li class="delete-rows-btn"><a href="#" onclick="DeleteRecords(); return false;">Delete</a></li> -->
         @endif
@@ -408,13 +401,7 @@
     <div class="topborder">
         <div class="col-sm-5 mb20">
             <div id="show_count" style="float: left;">
-            @foreach($arrTabCount as $tabDetail)
-                @foreach($tabDetail as $tabName => $tabCount)
-                @if($activeTab == $tabName)
-                    <span class="sp_view_count">{{$tabDetail[$activeTab]}} users match</span><span class="total_count">of {{$allTabCount}}</span>
-                @endif
-                @endforeach
-            @endforeach
+            
             </div>
             <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
             @if(!$isGuestAccess)
@@ -440,7 +427,7 @@
                                             <a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add an entry now</a>
                             </div>
                             <div class="col-sm-12 add-entry-inner">
-                            <a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
+                            <a class="text-black import initiateUpload"><span><i class="fa fa-upload" aria-hidden="true"></i></span>
                                         <span class="sp-inline-import">
                                             Import<br>
                                         We can do it manually for you or you can also do it via trigger and send addon available in Google sheets
@@ -508,17 +495,21 @@
                         <div class="form-group" style="display:none;">
                             <label for="email"  class="control-caption">Column</label>
                             <select class="form-control" id="column2">
+                                @if(isset($other_columns))
                                 @foreach( $other_columns as $other_column)
                                     <option value="{{$other_column}}">{{$other_column}}</option>
                                 @endforeach
+                                @endif
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="email" class="control-caption">Date Column </label>
                             <select class="form-control" id="column1" onchange="loadGraph()">
+                                @if(isset($date_columns))
                                 @foreach( $date_columns as $date_column)
                                     <option value="{{$date_column}}">{{$date_column}}</option>
                                 @endforeach
+                                @endif
                             </select>
 
                         </div>
@@ -541,9 +532,11 @@
                     <div class="form-group">
                         <label for="email" class="control-caption">Date Column </label>
                         <select class="form-control" id="column3" onchange="createAllPieCharts();">
+                            @if(isset($date_columns))
                             @foreach( $date_columns as $date_column)
                                 <option value="{{$date_column}}">{{$date_column}}</option>
                             @endforeach
+                            @endif
                         </select>
                     </div>
                     <!--<div class="form-group">
@@ -557,12 +550,14 @@
 
                 <div class="charts-container">
                     <div class="pie-chart-container row">
+                        @if(isset($other_columns))
                         @foreach( $other_columns as $other_column)
                             <div class="pie-chart col-md-2 col-lg-2 col-sm-4 col-xs-6">
                                 <div class="column-caption">Column : {{$other_column}}</div>
                                 <canvas id="id_{{$other_column}}" width="200" height="200"></canvas>
                             </div>
                         @endforeach
+                        @endif
                         <div class="clearfix"></div>
                     </div>
                 </div>
@@ -575,7 +570,7 @@
 <ul class="nav navbar-nav flex-ul settingUl">
 @if((count($structure) > 1) && !$isGuestAccess) 
 <li><a class="btn btn-primary" href="https://docs.usertable.in" target="_blank">Configure API</a></li>
-<li><a class="text-black import"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
+<li><a class="text-black import initiateUpload"><span><i class="fa fa-upload" aria-hidden="true"></i></span>import</a></li>
 <li class="strong">or</li>
 <li><a onclick="getUserDetails(event,false,{{$tableId}}, 'Add')"  data-target="#edit_user" data-toggle="modal" class="btn btn-primary">Add some entries</a></li>
  @endif
@@ -584,12 +579,15 @@
 @stop
 @section('pagescript')
 <!-- Scripts -->
+
+
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{asset('js/templates.js')}}"></script>
 <script src="{{asset('js/functions.js')}}"></script>
 <script src="{{asset('js/Chart.bundle.js')}}"></script>
 <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
 <link href="{{ asset('css/bootstrap-datepicker3.css') }}" rel="stylesheet">
+<script type="text/javascript" src="{{  asset('js/toast.js')}}"></script> <!--Toast JS-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
 <script type="text/javascript">
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
@@ -602,6 +600,16 @@
     // $('body').addClass('loader');
 </script>
 <script>
+    $(document).ready(function(){
+        $.ajax({
+            url:"/getTableFilters/{{ $tableId }}/{{ $activeTab }}",
+            method:"GET",
+            success:function(respData){
+                $("#filterLoadingText").remove();
+                $(".table-filter-ul").append(respData);
+            }
+        });
+    });
     function click_show_table()
     {
         $('#show_table_div').attr("style", "display:block");
@@ -1075,9 +1083,11 @@
         }       
         function createAllPieCharts(){
             var column3 = $("#column3").val();
+            @if(isset($other_columns))
             @foreach($other_columns as $other_column)
             getPieGraphData(column3, "{{$other_column}}", "id_{{$other_column}}");
             @endforeach
+            @endif
         }
     </script> 
     <script>
@@ -1147,7 +1157,7 @@
     $(document).ready(function(){
         $("#addBtn").click(function(){
             $(".addEntries").toggle();
-        });
+        })
         
     })
 </script>
@@ -1315,7 +1325,7 @@ console.log(window.location.href);
                     <div class="checkbox col-sm-12">
                         @foreach($structure as $key => $value)
                         <label style="min-width: 150px;">
-                            <input type="checkbox" name="filter_columns[]" value="{{$value['id']}}" @if(in_array($key, $filtercolumns)) checked="checked" @elseif(empty($filtercolumns)) checked="checked" @endif/>{{$key}}
+                            <input type="checkbox" name="filter_columns[]" value="{{$value['id']}}" @if(isset($filtercolumns) && in_array($key, $filtercolumns)) checked="checked" @elseif(empty($filtercolumns)) checked="checked" @endif/>{{$key}}
                         </label>
                         @endforeach
                     </div>

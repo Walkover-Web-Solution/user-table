@@ -25,8 +25,8 @@
                 <div class="col-sm-12">
                     <a href="/tables/{{$val['id']}}" target="_blank" class="table-name-link">
                         <div class="block-first">
-                            <h1 id="heads-up" class="user-table-name">{{$val['table_name']}}</h1>
-                            <p>2450</p>
+                                <h1 id="heads-up" class="user-table-name">{{ $val['table_name'] }}</h1>
+                                <p>{{ $tableCounts[$val['table_id']] }}</p>
                         </div>
                     </a>
                 </div>
@@ -34,9 +34,24 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav navbar-nav option-nav">
-                        <li><a onclick="location.href='listFilters/{{$val['id']}}'"><span><i class="fa fa-magic" aria-hidden="true"></i>&nbsp;</span></a></li>
-                        <li><a href=""><span><i class="fa fa-users" aria-hidden="true"></i>5</span></a></li>
-                        <li><a onclick="location.href='configure/{{$val['id']}}'"><span><i class="fa fa-database" aria-hidden="true"></i>Source</span></a></li>
+                            <li>
+                                <a onclick="location.href='listFilters/{{$val['id']}}'">
+                                    <span>
+                                        <i class="fa fa-magic" aria-hidden="true"></i>&nbsp;</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <span>
+                                        <i class="fa fa-users" aria-hidden="true"></i>5</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="location.href='configure/{{$val['id']}}'">
+                                    <span>
+                                        <i class="fa fa-database" aria-hidden="true"></i>Source</span>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>
@@ -48,8 +63,7 @@
 </div>
 
 
-    @endforeach
-
+    @endforeach 
     @if(!empty($readOnlyTables))
     <div>
         <div id="heads-up">Guest Access</div>
@@ -59,14 +73,14 @@
                 <div class="card">
                     <a href="tables/{{$table['id']}}" target="_blank"></a>
                     <div class="text-center">
-                        <div class="tab_name"><a href="tables/{{$table['id']}}" target="_blank"> {{$table['table_name']}}</a></div>
+                        <div class="tab_name">
+                            <a href="tables/{{$table['id']}}" target="_blank"> {{$table['table_name']}}</a>
                     </div>
                 </div>
             </div>
-            @endforeach
+            </div>
+            @endforeach @endif
 
-            @endif
-           
         </div>
         
     </div>
@@ -75,8 +89,8 @@
 
     @section('pagescript')
     <script type="text/javascript">
-        jQuery(document).ready(function($){
-            $(".btn-sources").click(function(){
+        jQuery(document).ready(function ($) {
+            $(".btn-sources").click(function () {
                 var id = $(this).attr("dataid");
                 var cls = ".sources-" + id;
                 $("#table-sources").html($(cls).html());
@@ -88,15 +102,41 @@
         });
         $('#CreateTableSubmit').click(function () {
             if ($.trim($('#table_category').val()) == '') {
-                alert('Create New Table IN can not select.');
+                    //alert('Create New Table IN can not select.');
+                    $.toast({
+                        text: 'Create New Table IN can not select.',
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    });
+                    $('#table_category').addClass('has-error');
                 return false;
             } else if ($.trim($('#table_name').val()) == '') {
-                alert('Table Name can not be left blank.');
+                    //alert('Table Name can not be left blank.');
+                    $.toast({
+                        text: 'Table Name can not be left blank.',
+                        showHideTransition: 'fade',
+                        icon: 'error'
+                    });
+                    $('#table_name').addClass('has-error');
                 return false;
             } else {
-                var tableData= [];
-                tableData[0] = {'name':'Created At','type':'9','display':'0','ordering':'1','unique':'0','value':''};
-                tableData[1] = {'name':'Updated At','type':'9','display':'0','ordering':'2','unique':'0','value':''};
+                    var tableData = [];
+                    tableData[0] = {
+                        'name': 'Created At',
+                        'type': '9',
+                        'display': '0',
+                        'ordering': '1',
+                        'unique': '0',
+                        'value': ''
+                    };
+                    tableData[1] = {
+                        'name': 'Updated At',
+                        'type': '9',
+                        'display': '0',
+                        'ordering': '2',
+                        'unique': '0',
+                        'value': ''
+                    };
                 var tableName = $('#table_name').val();
                 var teamId = $('#table_category').val();
                 $.ajaxSetup({
@@ -105,13 +145,17 @@
                 $.ajax({
                     url: 'createTable',
                     type: 'POST',
-                    data: {tableName: tableName, teamId: teamId, tableData: tableData},
+                        data: {
+                            tableName: tableName,
+                            teamId: teamId,
+                            tableData: tableData
+                        },
                     dataType: 'json',
                     success: function (info) {
                         $('#createTable').attr("disabled", false);
-                        $('#createTable').html('<i class="glyphicon glyphicon-plus"></i> Create');
-                        if (info.error)
-                        {
+                            $('#createTable').html(
+                                '<i class="glyphicon glyphicon-plus"></i> Create');
+                            if (info.error) {
                             alert(info.msg);
                             return false;
                         }
@@ -180,7 +224,9 @@
                                 <div class="row">
                                 <div class="col-sm-6">
                                 <div class="form-group">
-                                    Table Name<input type="text" placeholder="Table Name" name="table_name" id="table_name" class="form-control order order-input" />
+                                        Table Name
+                                        <input type="text" placeholder="Table Name" name="table_name" id="table_name"
+                                            class="form-control order order-input" />
                                 </div>
                                 </div>
                             </div>

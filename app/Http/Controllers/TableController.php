@@ -20,14 +20,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use GuzzleHttp;
+use App\Repositories\TableRepository;
 
 class TableController extends Controller {
 
     protected $activity;
     protected $tableDetail;
+    public $tableRepository;
 
-    public function __construct(TableDetailRepositoryInterface $tableDetail) {
+    public function __construct(TableDetailRepositoryInterface $tableDetail, TableRepository $tableRepository) {
         $this->tableDetail = $tableDetail;
+        $this->tableRepository = $tableRepository;
     }
 
     public function createTable(Request $request) {
@@ -90,12 +93,16 @@ class TableController extends Controller {
         }
     }
 
-    public function getUserAllTables() {
+    public function getUserAllTables()
+    {
+        $response = $this->tableRepository->getUserAllTables();
+        return view('showTable', $response);
+        /*
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
 
-        $user = Auth::user();
+        $user =  Auth::user();
         $email = $user['email'];
         //print_r($email);
         $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
@@ -126,8 +133,9 @@ class TableController extends Controller {
             'teamsArr' => $teams,
             'source_arr' => $source_arr,
             'teamTables' => $teamTables,
-            'readOnlyTables' => $readOnlytableLst
+            'readOnlyTables'=> $readOnlytableLst
         ));
+        */
     }
 
     public function getAllTablesForSocket(Request $request) {
@@ -236,8 +244,8 @@ class TableController extends Controller {
 
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
-            $data = Tabs::getTabsByTableId($tableIdMain);
-            $tabs = json_decode(json_encode($data), true);
+            //$data = Tabs::getTabsByTableId($tableIdMain);
+            //$tabs = json_decode(json_encode($data), true);
             $filtercolumns = array();
             if ($tabName == "All") {
                 $tabArray = array();
@@ -272,7 +280,7 @@ class TableController extends Controller {
             $coltypes = TableStructure::getTableColumnTypesArray($tableIdMain);
 
             $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All", $coltypes);
-            $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
+            //$arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
             $d = strtotime("-3 days");
             $rangeStart = date('m/d/Y', $d);
             $d1 = strtotime("+3 days");
@@ -281,10 +289,10 @@ class TableController extends Controller {
                 'activeTab' => $tabName,
                 'date_columns' => $date_columns,
                 'other_columns' => $other_columns,
-                'tabs' => $tabs,
+                //'tabs' => $tabs,
                 'allTabs' => $tabData,
                 'allTabCount' => $allTabCount,
-                'arrTabCount' => $arrTabCount,
+                //'arrTabCount' => $arrTabCount,
                 'tableId' => $tableId,
                 'userTableName' => $tableNames['table_name'],
                 'filters' => $filters,
@@ -298,7 +306,32 @@ class TableController extends Controller {
                 'filtercolumns' => $filtercolumns);
         }
     }
-
+    public function getTableFilters($tableId, $activeTab) {
+        $tableNames = team_table_mapping::getUserTablesNameById($tableId);
+        $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
+        if (empty($tableNames['table_id'])) {
+            return array();
+        } else {
+            $tableIdMain = $tableNames['table_id'];
+            $tableAuth = $tableNames['auth'];
+            $orderNeed = Helpers::orderData($tableNames);
+            array_unshift($orderNeed, 'id');
+            $data = Tabs::getTabsByTableId($tableIdMain);
+            $tabs = json_decode(json_encode($data), true);
+            $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
+            $htmlData = "";
+            foreach ($arrTabCount as $tabDetail) {
+                foreach ($tabDetail as $tabName => $tabCount) {
+                    if ($activeTab == $tabName)
+                        $htmlData .= '<li role="presentation" class="active">';
+                    else
+                        $htmlData .= '<li role="presentation">';
+                    $htmlData .= '<a href="' . env('APP_URL') . '/tables/' . $tableId . '/filter/' . $tabName . '">' . $tabName . ' (' . $tabCount . ')</a></li>';
+                }
+            }
+            return response()->json($htmlData);
+        }
+    }
     public function processFilterData($req, $tableId, $coltype, $condition = 'and', $pageSize = 100) {
         $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
         usort($columnsonly, function ($a, $b) {
@@ -642,27 +675,27 @@ class TableController extends Controller {
         preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
         $chunks = array_chunk($data, 500);
         foreach ($chunks as $data) {
-        $insertParamArr = array();
-        $findArr = array();
-        foreach ($data as $key => $value) {
-            if (!isset($value[$email_column])) {
+            $insertParamArr = array();
+            $findArr = array();
+            foreach ($data as $key => $value) {
+                if (!isset($value[$email_column])) {
                     continue;
-            }
-            if (!empty($value)) {
-                $name = $value['name'];
-                $valArr = array();
-                foreach ($replaceKey[1] as $index => $strName) {
-                    if (isset($value[$strName])) {
-                        $valArr[$index] = $value[$strName];
-                        $findArr[$index] = "##$strName##";
-                    }
                 }
-                $actualMailContent = str_replace($findArr, $valArr, $mailContent);
+                if (!empty($value)) {
+                    $name = $value['name'];
+                    $valArr = array();
+                    foreach ($replaceKey[1] as $index => $strName) {
+                        if (isset($value[$strName])) {
+                            $valArr[$index] = $value[$strName];
+                            $findArr[$index] = "##$strName##";
+                        }
+                    }
+                    $actualMailContent = str_replace($findArr, $valArr, $mailContent);
                     $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId);
+                }
             }
-        }
             $this->postemail($value[$email_column], $from_email, $subject, $actualMailContent, $email_api_key);
-        $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
+            $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
         }
         if ($response) {
             return response(json_encode(array('message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
@@ -683,27 +716,27 @@ class TableController extends Controller {
 
         $chunks = array_chunk($data, 500);
         foreach ($chunks as $data) {
-        $insertParamArr = array();
+            $insertParamArr = array();
             $smsArrayJSON = array();
-        $findArr = array();
-        foreach ($data as $key => $value) {
-            if (!isset($value[$mobile_column])) {
+            $findArr = array();
+            foreach ($data as $key => $value) {
+                if (!isset($value[$mobile_column])) {
                     continue;
-            }
-            if (!empty($value)) {
-                $valArr = array();
-                foreach ($replaceKey[1] as $index => $strName) {
-                    if (isset($value[$strName])) {
-                        $valArr[$index] = $value[$strName];
-                        $findArr[$index] = "##$strName##";
-                    }
                 }
-                $actualMsg = str_replace($findArr, $valArr, $message);
+                if (!empty($value)) {
+                    $valArr = array();
+                    foreach ($replaceKey[1] as $index => $strName) {
+                        if (isset($value[$strName])) {
+                            $valArr[$index] = $value[$strName];
+                            $findArr[$index] = "##$strName##";
+                        }
+                    }
+                    $actualMsg = str_replace($findArr, $valArr, $message);
                     $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId);
                     $smsArrayJSON[] = array("message" => $actualMsg, "to" => array($value[$mobile_column]));
+                }
             }
-        }
-        $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
+            $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
             $smscontent = json_encode(array("sender" => $senderId, "route" => $route, "country" => 91, "sms" => $smsArrayJSON));
             $this->postsms($smscontent, $sms_api_key);
         }
@@ -724,7 +757,7 @@ class TableController extends Controller {
         } catch (\Guzzle\Http\Exception\ConnectException $e) {
             $response = json_encode((string) $e->getResponse()->getBody());
             return $response;
-}
+        }
     }
 
     private function postemail($to, $from, $subject, $email, $emailApiKey) {

@@ -31,6 +31,12 @@
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
         <script src="{{ url('js/bootstrap.min.js') }}"></script>
           <!-- <link rel="icon" type="image/png" href="{{url('img/logo.png')}}"> -->
+
+        <link rel="stylesheet" href="{{ url('css/toast.css')}}"><!--ToastCSS-->
+
+        <script type="text/javascript" src="{{url('js/toast.js')}}"></script> <!--Toast JS-->
+
+
     </head>
     <body>
             <!-- Google Tag Manager (noscript) -->

@@ -33,6 +33,10 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/tables', 'TableController@getUserAllTables')->name('tables');
 # To Show table data
     Route::get('/tables/{tableName}', 'TableController@loadSelectedTable');
+
+    Route::get('/getTableFilters/{tableId}/{activeTab}' , 'TableController@getTableFilters');
+
+
     Route::get('/graph/{tableName}', 'GraphController@showGraphForTable');
     Route::get('/graphdata', 'GraphController@getGraphDataForTable');
     Route::post('/graphdatafilter', 'GraphController@getGraphDataForTableFilter');
@@ -89,6 +93,9 @@ Route::group(['middleware' => ['socketMasterKey']], function() {
 Route::post('/add_update', 'TableController@add');
 
 Route::post('/addactivity/{tableId}','ActivityController@addLog')->name('addactivity');
+
+Route::post('/importTable' , 'TableController@importTable');
+
 
 //Auth::routes();
 // Authentication Routes...

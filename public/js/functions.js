@@ -498,9 +498,17 @@ function editUserData(type) {
                             }
                         });
                     }else{
-                        alert("Entry added successfully.");
+                        // alert("Entry added successfully.");
+                        $.toast({
+                            heading: 'Success',
+                            text: 'Entry added successfully.',
+                            showHideTransition: 'slide',
+                            icon: 'success',
+                            afterHidden: function() {
                         location.reload();
                     }
+                        });
+                }
                 }
             },
         });
