@@ -98,7 +98,8 @@ class TableStructure extends Model {
                 return $arr;
             }
 
-            $defaultValeArray = explode(',', $value['value']);
+            $defaultValeArrayOld = explode(',', $value['value']);
+            $defaultValeArray = array_map('trim', $defaultValeArrayOld);
 
             if(!empty($defaultValeArray))
                 $arr_tojson = json_encode(array('options'=>$defaultValeArray));
