@@ -3,6 +3,7 @@
 
     use App\Tables;
     use App\team_table_mapping;
+    use Illuminate\Support\Facades\Auth;
 
     class TableRepository
     {
@@ -12,9 +13,8 @@
             $teamIdArr = array();
             $teamNameArr = array();
     
-            // $user =  \Auth::user();
-            $email = 'harshwardhan@msg91.com';
-            //print_r($email);
+            $user =  Auth::user();
+            $email = $user['email'];
             $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
     
     
@@ -44,7 +44,7 @@
                 }
                 
             }
-            echo '</pre>';
+            
             $data = json_decode(json_encode(team_table_mapping::getTableSourcesByTableIncrId($table_incr_id_arr)), true);
     
             $source_arr = array();
