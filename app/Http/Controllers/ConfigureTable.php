@@ -51,6 +51,8 @@ class ConfigureTable extends Controller
         $tableId = $request->input('tableId');
         $paramArr['socket_api'] = $request->input('socketApi');
         $paramArr['new_entry_api'] = $request->input('newEntryApi');
+        $paramArr['sms_api_key'] = $request->input('smsApiKey');
+        $paramArr['email_api_key'] = $request->input('EmailApiKey');
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
 
         $tableAutoIncId = $tableNames['id'];

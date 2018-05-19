@@ -15,7 +15,7 @@ class TeamController extends Controller
         $this->tableDetail = $tableDetail;
     }
 
-    public function list($tableId)
+    public function listTables($tableId)
     {
         $table = $this->tableDetail->get($tableId);
         $parentTableId = $table->parent_table_id;

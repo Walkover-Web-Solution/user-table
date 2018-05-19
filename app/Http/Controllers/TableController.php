@@ -19,22 +19,21 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use GuzzleHttp;
 
-class TableController extends Controller
-{
+class TableController extends Controller {
+
     protected $activity;
     protected $tableDetail;
 
-    public function __construct(TableDetailRepositoryInterface $tableDetail)
-    {
+    public function __construct(TableDetailRepositoryInterface $tableDetail) {
         $this->tableDetail = $tableDetail;
     }
 
-    public function createTable(Request $request)
-    {
+    public function createTable(Request $request) {
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
-        if(!empty($data1)){
+        if (!empty($data1)) {
             $data = Helpers::aasort($data1, "ordering"); // Array sort by abhishek jain
 
             $resp = TableStructure::validateStructure($data);
@@ -42,7 +41,7 @@ class TableController extends Controller
             if (!empty($resp['error'])) {
                 return response()->json($resp);
             }
-        }else{
+        } else {
             $data = array();
         }
         $userTableName = $request->input('tableName');
@@ -75,7 +74,7 @@ class TableController extends Controller
 
             $response = team_table_mapping::makeNewTableEntry($paramArr);
             $autoIncId = $response->id;
-            if(!empty($resp['data'])){
+            if (!empty($resp['data'])) {
                 foreach ($resp['data'] as $key => $value) {
                     $value['table_id'] = $autoIncId;
                     $resp['data'][$key] = $value;
@@ -91,13 +90,12 @@ class TableController extends Controller
         }
     }
 
-    public function getUserAllTables()
-    {
+    public function getUserAllTables() {
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
 
-        $user =  Auth::user();
+        $user = Auth::user();
         $email = $user['email'];
         //print_r($email);
         $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
@@ -128,12 +126,11 @@ class TableController extends Controller
             'teamsArr' => $teams,
             'source_arr' => $source_arr,
             'teamTables' => $teamTables,
-            'readOnlyTables'=> $readOnlytableLst
+            'readOnlyTables' => $readOnlytableLst
         ));
     }
 
-    public function getAllTablesForSocket(Request $request)
-    {
+    public function getAllTablesForSocket(Request $request) {
         $team_ids = $request->input('teamIds');
         $team_id_array = explode(',', $team_ids);
         $table_data = $this->getUserTablesByTeamId($team_id_array);
@@ -156,38 +153,36 @@ class TableController extends Controller
         return response()->json($response_arr);
     }
 
-    function getUserTablesByTeamId($teamIdArr)
-    {
+    function getUserTablesByTeamId($teamIdArr) {
         $tableLst = team_table_mapping::getUserTablesByTeam($teamIdArr);
         $tableLstJson = json_decode(json_encode($tableLst), true);
         return $tableLstJson;
     }
 
-    public function loadSelectedTable($tableId, $tabName = 'All')
-    {
+    public function loadSelectedTable($tableId, $tabName = 'All') {
         //First Validate if the user has access to Table
         $teams = session()->get('team_array');
         $teamIdArr = array();
         $teamNameArr = array();
         $isGuestAccess = false;
-        
+
         foreach ($teams as $teamId => $teamName) {
             $teamNameArr[] = $teamName;
             $teamIdArr[] = $teamId;
         }
 
-        $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr,$tableId);
-       // print_r($tableLst);
-        if(count($tableLst) == 0){
-            $user =  Auth::user();
+        $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr, $tableId);
+        // print_r($tableLst);
+        if (count($tableLst) == 0) {
+            $user = Auth::user();
             $email = $user['email'];
-            $tableLst = team_table_mapping::getUserTablesByEmailAndTableId($email,$tableId);
-            if(!empty($tableLst[0]->parent_table_id)){
+            $tableLst = team_table_mapping::getUserTablesByEmailAndTableId($email, $tableId);
+            if (!empty($tableLst[0]->parent_table_id)) {
                 $isGuestAccess = true;
             }
         }
 
-        if(count($tableLst) == 0){
+        if (count($tableLst) == 0) {
             return redirect()->route('tables');
         }
 
@@ -196,14 +191,12 @@ class TableController extends Controller
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition)
-    {
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition) {
         $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition);
         return json_decode(json_encode($tabDataJson), true);
     }
 
-    public function processTableData($tableId, $tabName)
-    {
+    public function processTableData($tableId, $tabName) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
@@ -214,13 +207,13 @@ class TableController extends Controller
             $teamId = $tableNames['team_id'];
             $date_columns = array();
             $other_columns = array();
-            if(!empty($parentTableId)){
+            if (!empty($parentTableId)) {
                 $table = $this->tableDetail->get($parentTableId);
                 $subtable = $this->tableDetail->get($tableId);
-                $arrayAllowed = json_decode($subtable->table_structure,true);
+                $arrayAllowed = json_decode($subtable->table_structure, true);
                 $teammates = Teams::getTeamMembers($table->team_id);
-                $tableNames =team_table_mapping::getUserTablesNameById($parentTableId,$arrayAllowed);
-            }else{
+                $tableNames = team_table_mapping::getUserTablesNameById($parentTableId, $arrayAllowed);
+            } else {
                 $teammates = Teams::getTeamMembers($teamId);
             }
             $graphtableNames = team_table_mapping::getUserTablesNameById($tableId);
@@ -228,20 +221,19 @@ class TableController extends Controller
             foreach ($userTableStructure as $key => $value) {
                 if ($value['column_type']['column_name'] == 'date')
                     $date_columns[] = $value['column_name'];
-                else if ($value['is_unique'] == "false"){
+                else if ($value['is_unique'] == "false") {
                     $col = $value['column_name'];
                     $sql = "SELECT count(distinct `$col`) allrecords,count(`$col`) total  FROM $tableIdMain";
                     $tableData = Tables::getSQLData($sql);
                     $allrecords = $tableData[0]->allrecords;
                     $total = $tableData[0]->total;
-                    if(($allrecords != 1 && $allrecords != $total && ($total - $allrecords) > 5 ))
-                        $other_columns[] =  $col;
+                    if (($allrecords != 1 && $allrecords != $total && ($total - $allrecords) > 5))
+                        $other_columns[] = $col;
                 }
-
             }
-            
+
             $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
-            
+
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
             $data = Tabs::getTabsByTableId($tableIdMain);
@@ -255,18 +247,17 @@ class TableController extends Controller
                 $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition', 'id'])->toArray();
                 $tabArray = json_decode($tabSql['query'], true);
                 $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
-                if (isset($tabSql['id']) && !empty($tabSql['id']))
-                {
+                if (isset($tabSql['id']) && !empty($tabSql['id'])) {
                     $tab_id = $tabSql['id'];
                     $filter_columns = TableStructure::whereIn('id', function($query) use ($tab_id) {
-                        $query->select('column_id')->from('tab_column_mappings')
-                        ->Where('tab_id','=',$tab_id);
-                    })->get();
+                                $query->select('column_id')->from('tab_column_mappings')
+                                        ->Where('tab_id', '=', $tab_id);
+                            })->get();
                     foreach ($filter_columns as $value)
                         $filtercolumns[] = $value->column_name;
                 }
             }
-            
+
             $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition);
             $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
@@ -280,12 +271,12 @@ class TableController extends Controller
 
             $coltypes = TableStructure::getTableColumnTypesArray($tableIdMain);
 
-            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All",$coltypes);
+            $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All", $coltypes);
             $arrTabCount = Tables::getAllTabsCount($tableIdMain, $tabs);
-            $d=strtotime("-3 days");
-            $rangeStart = date('m/d/Y',$d);
-            $d1=strtotime("+3 days");
-            $rangeEnd = date('m/d/Y',$d1);
+            $d = strtotime("-3 days");
+            $rangeStart = date('m/d/Y', $d);
+            $d1 = strtotime("+3 days");
+            $rangeEnd = date('m/d/Y', $d1);
             return array(
                 'activeTab' => $tabName,
                 'date_columns' => $date_columns,
@@ -308,12 +299,13 @@ class TableController extends Controller
         }
     }
 
-    public function processFilterData($req, $tableId, $coltype, $condition='and', $pageSize = 100)
-    {
+    public function processFilterData($req, $tableId, $coltype, $condition = 'and', $pageSize = 100) {
         $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
-        usort($columnsonly, function ($a, $b) { return strnatcmp($a['ordering'], $b['ordering']); });
-        $colArr = array(0=>'id');
-        foreach ($columnsonly as $col){
+        usort($columnsonly, function ($a, $b) {
+            return strnatcmp($a['ordering'], $b['ordering']);
+        });
+        $colArr = array(0 => 'id');
+        foreach ($columnsonly as $col) {
             $colArr[] = $col['column_name'];
         }
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
@@ -332,10 +324,10 @@ class TableController extends Controller
         $teamId = $tableNames['team_id'];
         $teammates = Teams::getTeamMembers($teamId);
 
-        if(!empty($tableNames['parent_table_id'])){
+        if (!empty($tableNames['parent_table_id'])) {
             $isGuestAccess = true;
-        }else
-            $isGuestAccess =false;
+        } else
+            $isGuestAccess = false;
 
         return array(
             'allTabs' => $results,
@@ -344,52 +336,52 @@ class TableController extends Controller
             'pagination' => $data,
             'structure' => $userTableStructure,
             'tableAuth' => $tableAuth,
-            'isGuestAccess'=>$isGuestAccess);
+            'isGuestAccess' => $isGuestAccess);
     }
 
     # function get search for selected filters
 
-    public function applyFilters(Request $request)
-    {
-        $req = (array)($request->filter);
+    public function applyFilters(Request $request) {
+        $req = (array) ($request->filter);
         $coltype = ($request->coltype);
         $tableId = $request->tableId;
         $condition = $request->condition;
         $responseArray = $this->processFilterData($req, $tableId, $coltype, $condition, 100);
         if (request()->wantsJson()) {
             return response(json_encode(array('body' => $responseArray)), 400)
-                ->header('Content-Type', 'application/json');
+                            ->header('Content-Type', 'application/json');
         } else {
             return view('table.response', $responseArray);
         }
     }
 
-    public function deleteTableRecords($tableId, Request $request){
-        $ids =(array)$request->ids;
+    public function deleteTableRecords($tableId, Request $request) {
+        $ids = (array) $request->ids;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableIdMain = $tableNames['table_id'];
         Tables::markRecordsAsDeleted($tableIdMain, $ids);
     }
-    public static function getAppliedFiltersData($reqs, $tableId, $coltype, $condition, $colArr=array(), $pageSize = 100)
-    {
-        if(empty($colArr))
+
+    public static function getAppliedFiltersData($reqs, $tableId, $coltype, $condition, $colArr = array(), $pageSize = 100) {
+        if (empty($colArr))
             $users = DB::table($tableId)->selectRaw('*');
         else
-            $users = DB::table($tableId)->selectRaw("`".implode("`,`", $colArr)."`");
-        
+            $users = DB::table($tableId)->selectRaw("`" . implode("`,`", $colArr) . "`");
+
         $users = Tables::getConditionQuery($reqs, $coltype, $condition, $users, $tableId);
         //echo $users->toSql();die;
+        if ($pageSize == null)
+            $pageSize = $users->count();
+
         $data = $users->latest('id')->paginate($pageSize);
         return $data;
     }
-    
-    function getTableDetailsByAuth($table_auth)
-    {
+
+    function getTableDetailsByAuth($table_auth) {
         return team_table_mapping::getTableByAuth($table_auth);
     }
 
-    public function add(Request $request)
-    {
+    public function add(Request $request) {
         try {
             $add_entry_flag = False;
             $table_auth = $request->header('Auth-Key');
@@ -442,14 +434,14 @@ class TableController extends Controller
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                                'Content-Type: application/json',
-                                'Content-Length: ' . strlen($data_string))
+                            'Content-Type: application/json',
+                            'Content-Length: ' . strlen($data_string))
                         );
                         curl_exec($ch);
                     }
                 }
                 team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
-                $this->insertActivityData($table_name,$teamData);
+                $this->insertActivityData($table_name, $teamData);
                 $arr['teamData'] = $teamData;
                 $arr['user'] = $user;
                 return response()->json($arr);
@@ -457,25 +449,24 @@ class TableController extends Controller
         } catch (Exception $ex) {
             $arr['msg'] = "Error occurred";
             $arr['exception'] = $ex->getMessage();
-            return response()->json($arr,500);
+            return response()->json($arr, 500);
         }
     }
 
-    public function insertActivityData($table_name, $teamData)
-    {
-        if(empty($teamData['action']))
+    public function insertActivityData($table_name, $teamData) {
+        if (empty($teamData['action']))
             return false;
         $data['description'] = $teamData['success'];
         $data['action'] = $teamData['action'];
         $data['content_type'] = 'Entry';
         $data['content_id'] = $teamData['data']->id;
-        if($teamData['action'] =='Update')
+        if ($teamData['action'] == 'Update')
             $data['updated_at'] = date('Y-m-d H:i:s');
         else {
             $data['created_at'] = date('Y-m-d H:i:s');
         }
         $loggedInUser = Auth::user();
-        if($loggedInUser)
+        if ($loggedInUser)
             $data['userId'] = $loggedInUser->email;
         else
             $data['userId'] = '';
@@ -488,36 +479,33 @@ class TableController extends Controller
         $this->activity->addActivity($activityData);
     }
 
-    public function getSelectedTableStructure($tableName, Request $request)
-    {
+    public function getSelectedTableStructure($tableName, Request $request) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $tableNameArr = json_decode(json_encode($tableNames), true);
         $tableStructure = TableStructure::withColumns($tableNameArr['id']);
         $colDetails = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
         return response()->json(array(
-            'tableData' => $tableNameArr,
-            'structure' => $tableStructure,
-            'colDetails' => $colDetails
+                    'tableData' => $tableNameArr,
+                    'structure' => $tableStructure,
+                    'colDetails' => $colDetails
         ));
     }
 
-    public function getSearchedData($tableId, $query)
-    {
+    public function getSearchedData($tableId, $query) {
         $array = $this->getTableSearchData($tableId, $query, 100);
         return view('table.response', $array);
     }
 
-    public function getTableSearchData($tableId, $query, $pageSize = 100)
-    {
+    public function getTableSearchData($tableId, $query, $pageSize = 100) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
         $tableAuth = $tableNames['auth'];
-        if(!empty($tableNames['parent_table_id'])){
+        if (!empty($tableNames['parent_table_id'])) {
             $isGuestAccess = true;
-        }else
-            $isGuestAccess =false;
+        } else
+            $isGuestAccess = false;
         $userTableStructure = TableStructure::formatTableStructureData($tableStructure);
         if (empty($tableID)) {
             echo "no table found";
@@ -541,9 +529,9 @@ class TableController extends Controller
 
             $orderNeed = Helpers::orderData($tableNames);
             array_unshift($orderNeed, 'id');
-			
+
             if (!empty($allTabs))
-                $allTabs = Helpers::orderArray($allTabs, $orderNeed);			
+                $allTabs = Helpers::orderArray($allTabs, $orderNeed);
 
             unset($results['data']);
             $teamId = $tableNames['team_id'];
@@ -555,13 +543,12 @@ class TableController extends Controller
                 'tableAuth' => $tableAuth,
                 'pagination' => $results,
                 'structure' => $userTableStructure,
-                'isGuestAccess'=>$isGuestAccess
+                'isGuestAccess' => $isGuestAccess
             );
         }
     }
 
-    public function getAllTables(Request $request)
-    {
+    public function getAllTables(Request $request) {
         $authToken = $request->header('Authorization');
         $response = Viasocket::getUserTeam($authToken);
         $teamIdArr = Viasocket::getTeamIdArray($response);
@@ -574,24 +561,21 @@ class TableController extends Controller
       api function to search table details
      */
 
-    public function searchTableData(Request $request)
-    {
+    public function searchTableData(Request $request) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
         $query = empty($request->get('query')) ? "" : $request->get('query');
         return $this->getTableSearchData($tableDetails['id'], $query, $pageSize);
     }
 
-    public function filterTableData(Request $request)
-    {
+    public function filterTableData(Request $request) {
         $req = $request->all();
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
-        return $this->processFilterData($req, $tableDetails['id'],$condition='and', $pageSize);
+        return $this->processFilterData($req, $tableDetails['id'], $condition = 'and', $pageSize);
     }
 
-    public function getContacts(Request $request)
-    {
+    public function getContacts(Request $request) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
 
@@ -599,18 +583,18 @@ class TableController extends Controller
         return $this->loadContacts($tableDetails['table_id'], $tabName, $pageSize);
     }
 
-    public function getFilters(Request $request)
-    {
+    public function getFilters(Request $request) {
         $tableDetails = $this->getTableDetailsByAuth($request->header('Auth-Key'));
         $tabData = Tabs::getTabsByTableId($tableDetails['table_id']);
         $tabs = json_decode(json_encode($tabData), true);
         return Tables::getAllTabsCount($tableDetails['table_id'], $tabs);
     }
 
-    public function sendEmailSMS(Request $request)
-    {
-        $filter = (array)($request->filter);
-        $formData = (array)($request->formData);
+    public function sendEmailSMS(Request $request) {
+        $filter = (array) ($request->filter);
+        $formData = (array) ($request->formData);
+        $coltype = (array) ($request->coltype);
+        $condition = $request->condition;
         $type = ($request->type);
         $tableId = $request->tableId;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
@@ -618,36 +602,51 @@ class TableController extends Controller
             return array();
         }
 
-        $jsonData = $this->getAppliedFiltersData($filter, $tableNames['table_id'], 1000);
+        $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
+        usort($columnsonly, function ($a, $b) {
+            return strnatcmp($a['ordering'], $b['ordering']);
+        });
+        $colArr = array(0 => 'id');
+        foreach ($columnsonly as $col) {
+            $colArr[] = $col['column_name'];
+        }
+
+        if (!empty($filter))
+            $jsonData = $this->getAppliedFiltersData($filter, $tableNames['table_id'], $coltype, $condition, $colArr, null);
+        else
+            $jsonData = Tables::TabDataBySavedFilter($tableNames['table_id'], 'All', null, $condition);
+
         $data = json_decode(json_encode($jsonData), true);
         $results = $data['data'];
         if (empty($results)) {
             return response(json_encode(array('message' => 'No record found to send')), 200)->header('Content-Type', 'application/json');
         }
         if ($type == 'email') {
-            $response = $this->sendMail($formData, $results, $tableId);
+            $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key']);
         }
         if ($type == 'sms') {
-            $response = $this->sendSMS($formData, $results, $tableId);
+            $response = $this->sendSMS($formData, $results, $tableId, $tableNames['sms_api_key']);
         }
         return $response;
     }
 
-    public function sendMail($formData, $data, $tableId)
-    {
+    public function sendMail($formData, $data, $tableId, $email_api_key = false) {
+        if (empty($email_api_key))
+            return false;
+
         $from_email = $formData['from_email'];
         $from_name = $formData['from_name'];
         $email_column = $formData['email_column'];
         $subject = $formData['subject'];
         $mailContent = $formData['mailContent'];
         preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
+        $chunks = array_chunk($data, 500);
+        foreach ($chunks as $data) {
         $insertParamArr = array();
-        $i = 0;
         $findArr = array();
-        $mailKey = "testKey";
         foreach ($data as $key => $value) {
             if (!isset($value[$email_column])) {
-                return response(json_encode(array('message' => 'Email column not found')), 403)->header('Content-Type', 'application/json');
+                    continue;
             }
             if (!empty($value)) {
                 $name = $value['name'];
@@ -656,16 +655,15 @@ class TableController extends Controller
                     if (isset($value[$strName])) {
                         $valArr[$index] = $value[$strName];
                         $findArr[$index] = "##$strName##";
-                    } else {
                     }
-
                 }
                 $actualMailContent = str_replace($findArr, $valArr, $mailContent);
-                $insertParamArr[$i] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $mailKey, 'tableId' => $tableId);
+                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId);
             }
-            $i++;
         }
+            $this->postemail($value[$email_column], $from_email, $subject, $actualMailContent, $email_api_key);
         $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
+        }
         if ($response) {
             return response(json_encode(array('message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
         } else {
@@ -673,20 +671,24 @@ class TableController extends Controller
         }
     }
 
-    public function sendSMS($formData, $data, $tableId)
-    {
+    public function sendSMS($formData, $data, $tableId, $sms_api_key) {
+        if (empty($sms_api_key))
+            return false;
+
         $senderId = $formData['sender'];
         $route = $formData['route'];
         $mobile_column = $formData['mobile_columnn'];
         $message = $formData['message'];
         preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
+
+        $chunks = array_chunk($data, 500);
+        foreach ($chunks as $data) {
         $insertParamArr = array();
-        $i = 0;
+            $smsArrayJSON = array();
         $findArr = array();
-        $authkey = '125463';
         foreach ($data as $key => $value) {
             if (!isset($value[$mobile_column])) {
-                return response(json_encode(array('message' => 'SMS column not found')), 403)->header('Content-Type', 'application/json');
+                    continue;
             }
             if (!empty($value)) {
                 $valArr = array();
@@ -694,20 +696,64 @@ class TableController extends Controller
                     if (isset($value[$strName])) {
                         $valArr[$index] = $value[$strName];
                         $findArr[$index] = "##$strName##";
-                    } else {
                     }
-
                 }
                 $actualMsg = str_replace($findArr, $valArr, $message);
-                $insertParamArr[$i] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $authkey, 'route' => $route, 'status' => 0, 'tableId' => $tableId);
+                    $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId);
+                    $smsArrayJSON[] = array("message" => $actualMsg, "to" => array($value[$mobile_column]));
             }
-            $i++;
         }
         $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
+            $smscontent = json_encode(array("sender" => $senderId, "route" => $route, "country" => 91, "sms" => $smsArrayJSON));
+            $this->postsms($smscontent, $sms_api_key);
+        }
+
         if ($response) {
             return response(json_encode(array('message' => 'SMS Sent')), 200)->header('Content-Type', 'application/json');
         } else {
             return response(json_encode(array('message' => 'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
         }
     }
+
+    private function postsms($sms, $smsApiKey) {
+        try {
+            $client = new GuzzleHttp\Client();
+            $url = "http://api.msg91.com/api/v2/sendsms";
+            $request = $client->post($url, ['body' => $sms, 'headers' => ['authkey' => $smsApiKey, 'Content-type' => 'application/json']]);
+            return $request;
+        } catch (\Guzzle\Http\Exception\ConnectException $e) {
+            $response = json_encode((string) $e->getResponse()->getBody());
+            return $response;
+}
+    }
+
+    private function postemail($to, $from, $subject, $email, $emailApiKey) {
+        $url = 'http://control.msg91.com/api/sendmail.php?to=' . $to . '&from=' . $from . '&subject=' . $subject . '&body=' . $email . '&authkey=' . $emailApiKey;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "",
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0,
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            return $err;
+        } else {
+            return $response;
+        }
+    }
+
 }

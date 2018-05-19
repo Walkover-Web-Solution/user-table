@@ -752,18 +752,64 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
     function sendMailSMS(type) {
-        if (type == 'email') {
-            var formData = $("#emailForm").serializeArray();
-        }
-        if (type == 'sms') {
-            var formData = $("#smsForm").serializeArray();
-        }
         var result = {};
-        $.each(formData, function () {
-            result[this.name] = this.value;
-        });
-        var JsonData = makeFilterJsonData(tableId, 'returnData');
-        sendData(type, JsonData, result, tableId);
+        if (type == 'email') {
+            if($('#from_email').val() == '')
+            {
+                alert('Please enter from email.');
+                return false;
+        }
+            else if($('#email_column').val() == '')
+            {
+                alert('Please enter email Column.');
+                return false;
+        }
+            else if($('#subject').val() == '')
+            {
+                alert('Please enter subject.');
+                return false;
+    }
+            else if($('#mailContent').val() == '')
+            {
+                alert('Please enter mail Content.');
+                return false;
+            }
+            result['from_email'] = $('#from_email').val();
+            result['from_name'] = $('#from_name').val();
+            result['email_column'] = $('#email_column').val();
+            result['subject'] = $('#subject').val();
+            result['mailContent'] = $('#mailContent').val();
+        }
+        else if (type == 'sms') {
+            if($('#sender').val() == '')
+            {
+                alert('Please enter sender.');
+                return false;
+            }
+            else if($('#route').val() == '')
+            {
+                alert('Please enter route.');
+                return false;
+            }
+            else if($('#message').val() == '')
+            {
+                alert('Please enter message.');
+                return false;
+            }
+            else if($('#mobile_columnn').val() == '')
+            {
+                alert('Please enter mobile columnn.');
+                return false;
+            }
+            result['sender'] = $('#sender').val();
+            result['route'] = $('#route').val();
+            result['message'] = $('#message').val();
+            result['mobile_columnn'] = $('#mobile_columnn').val();
+        }
+
+        var returnData = makeFilterJsonData(tableId, 'returnData');
+        var filter_condition = $('#filter_condition').val();
+        sendData(type, returnData[1], result, tableId, filter_condition, returnData[0]);
     }
 
     function timeToSend(type) {
@@ -1101,7 +1147,7 @@
     $(document).ready(function(){
         $("#addBtn").click(function(){
             $(".addEntries").toggle();
-        })
+        });
         
     })
 </script>
@@ -1343,8 +1389,8 @@ console.log(window.location.href);
                 <li class="pull-right">
                     <a href="javascript:void(0);" onclick="event.stopPropagation();">
                         <label onclick="timeToSend('now')" class="radio-inline"><input type="radio" name="type"
-                                                                                       value="">Now</label>
-                        <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value=""
+                                                                                       value="now" checked="checked">Now</label>
+                        <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value="auto"
                                                                                         name="type">Auto</label>
                     </a>
                 </li>
@@ -1371,7 +1417,15 @@ console.log(window.location.href);
 
                             <div class="form-group">
                                 <label class="" for="">Email Column: </label>
-                                <input type="text" class="form-control" id="email_column" name="email_column"/>
+                                <select class="form-control" id="email_column" name="email_column">
+                                    @if(!empty($structure))
+                                    @foreach($structure as $key => $val)
+                                    @if($val['type'] == 'email')
+                                    <option value="{{$key}}">{{$key}}</option>
+                                    @endif
+                                    @endforeach
+                                    @endif
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -1385,8 +1439,7 @@ console.log(window.location.href);
                             </div>
 
                             <div class="form-group">
-                                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')"
-                                        data-dismiss="modal">Send
+                                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')">Send
                                 </button>
                             </div>
 
@@ -1412,11 +1465,18 @@ console.log(window.location.href);
 
                             <div class="form-group">
                                 <label class="" for="">Mobile Column : </label>
-                                <input type="" class="form-control " id="mobile_columnn" name="mobile_columnn">
+                                <select class="form-control" id="mobile_columnn" name="mobile_columnn">
+                                    @if(!empty($structure))
+                                    @foreach($structure as $key => $val)
+                                    @if($val['type'] == 'phone')
+                                    <option value="{{$key}}">{{$key}}</option>
+                                    @endif
+                                    @endforeach
+                                    @endif
+                                </select>
                             </div>
 
-                            <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')"
-                                    data-dismiss="modal">Send
+                            <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')" >Send
                             </button>
                         </form>
                     </div>
@@ -1426,7 +1486,7 @@ console.log(window.location.href);
                             <label class="" for="">URL : </label>
                             <input type="" class="form-control " id="url" name="mobile_columnn">
                         </div>
-                        <button type="button" class="btn btn-primary btn-md" onclick="" data-dismiss="modal">Send
+                        <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('webhook')">Send
                         </button>
                     </div>
 
@@ -1436,8 +1496,4 @@ console.log(window.location.href);
         </div>
     </div>
 </div>
-
 @stop
-
-
- 

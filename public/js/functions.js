@@ -150,7 +150,10 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var condition = $('#filter_condition').val();
     
     if (type == "returnData") {
-        return jsonObject;
+        var returnData = [];
+        returnData.push(coltypeObject);
+        returnData.push(jsonObject);
+        return returnData;
     }
     
     applyFilterData(jsonObject, tableId, coltypeObject, condition);
@@ -831,7 +834,7 @@ $(document).ready(function () {
     })
 });
 
-function sendData(type, JsonData, formData, tableId) {
+function sendData(type, JsonData, formData, tableId, condition, coltype) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -840,7 +843,7 @@ function sendData(type, JsonData, formData, tableId) {
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/sendEmailSMS", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId}, // Some data e.g. Valid JSON as a string
+        data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId, 'condition' : condition, 'coltype' : coltype}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
         success: function (data) {
         }

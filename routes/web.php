@@ -77,7 +77,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::get('/search/{tableId}/{query}', 'TableController@getSearchedData');
     Route::get('/profile', 'UserController@getKey')->name('profile');
     Route::post('/update', 'TableController@updateEntry');
-    Route::get('/getTeamMateList/{tableid}', 'TeamController@list');
+    Route::get('/getTeamMateList/{tableid}', 'TeamController@listTables');
     Route::post('/deleteFilter','UserController@deleteFilter');
 });
 

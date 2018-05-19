@@ -39,6 +39,14 @@
                                             <label for="newEntryApi">Webhook New Entry Notification</label>
                                             <input type="text" placeholder="Enter API" class="form-control" id="newEntryApi" name="newEntryApi" value="{{$tableData['new_entry_api']}}" >
                                         </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="newEntryApi">SMS API key</label>
+                                            <input type="text" placeholder="Enter SMS API key" class="form-control" id="smsApiKey" name="smsApiKey" value="{{$tableData['sms_api_key']}}" >
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="newEntryApi">Email API key</label>
+                                            <input type="text" placeholder="Enter Email API key" class="form-control" id="EmailApiKey" name="EmailApiKey" value="{{$tableData['email_api_key']}}" >
+                                        </div>
                                         <div class="col-md-6">
                                             &nbsp;
                                         </div>
@@ -76,6 +84,8 @@ $(document).ready(function(){
 
         var socketApi = $("#socketApi").val();
         var newEntryApi = $("#newEntryApi").val();
+        var smsApiKey = $("#smsApiKey").val();
+        var EmailApiKey = $("#EmailApiKey").val();
 
         $('#updateTable').attr("disabled", true);
         $('#updateTable').text("Please Wait...");
@@ -84,7 +94,7 @@ $(document).ready(function(){
         $.ajax({
             url: API_BASE_URL + '/updateTableStructure',
             type: 'POST',
-            data: {tableId: tableId, socketApi: socketApi , newEntryApi : newEntryApi},
+            data: {tableId: tableId, socketApi: socketApi , newEntryApi : newEntryApi, smsApiKey : smsApiKey, EmailApiKey : EmailApiKey},
             dataType: 'json',
             success: function (info) {
                 $('#updateTable').attr("disabled", false);

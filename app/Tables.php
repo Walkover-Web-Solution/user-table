@@ -124,7 +124,11 @@ class Tables extends Model
     public static function TabDataBySavedFilter($tableId, $tabName,$pageSize, $tabcondition)
     {
         if ($tabName == "All") {
-            $data = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted')->latest('id')->paginate($pageSize);
+            $sql = $countSql = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted');
+            if ($pageSize == null){
+                $pageSize = $countSql->count();
+            }
+            $data = $sql->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true);
