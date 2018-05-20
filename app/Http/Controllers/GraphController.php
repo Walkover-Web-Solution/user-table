@@ -77,6 +77,9 @@ class GraphController extends Controller {
         $tabName = $request->input('filter');
         $condition = $request->input('condition');
 
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
         $tableNames = team_table_mapping::getUserTablesNameById($tableName);
         $userTableName = $tableNames['table_id'];
 
@@ -102,6 +105,11 @@ class GraphController extends Controller {
 
         $users = DB::table($userTableName)->selectRaw($sql)->groupBy(DB::raw($groupby));
 
+        if(!empty($startDate) && !empty($endDate)){
+            $starttime = strtotime($startDate);
+            $endtime = strtotime($endDate);
+            $users->where($dateColumn, '>=', $starttime)->where($dateColumn, '<=', $endtime);
+        }
         if (!empty($tabName) && $tabName != 'All') {
             //$tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $userTableName]])->first(['query','condition']);
             $req = $tabName;

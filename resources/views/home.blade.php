@@ -514,13 +514,13 @@
 
                         </div>
 
-                        <!--<div class="form-group">
+                        <div class="form-group">
                             <label for="email"  class="control-caption">Date Range</label>
                             <input class="form-control" id="barDate" name="date" placeholder="MM/DD/YYY" type="text" value="{{$rangeStart}}"/>
                             To
                             <input class="form-control" id="barDate1" name="date1" placeholder="MM/DD/YYY" type="text" value="{{$rangeEnd}}"/>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>-->
+                        <button type="button" class="btn btn-primary" id="btnLoadGraph">Load Graph</button>
                     </form>
                     <div class="charts-container">
                         <div class="chart-first">
@@ -539,13 +539,13 @@
                             @endif
                         </select>
                     </div>
-                    <!--<div class="form-group">
+                    <div class="form-group">
                         <label for="email"  class="control-caption">Date Range</label>
                         <input class="form-control" id="pieDate" name="pieDate" placeholder="MM/DD/YYY" type="text"  value="{{$rangeStart}}"/>
                         To
                         <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
                     </div>
-                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>-->
+                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
                 </form>
 
                 <div class="charts-container">
@@ -945,6 +945,8 @@
         }
         function getGraphData(dateColumn, secondColumn) {
             var tableName = "{{$tableId}}";
+            var startDate = $("#barDate").val();
+            var endDate = $("#barDate1").val();
             var jsonObject = {};
             var coltypeObject = {};
             for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
@@ -978,7 +980,7 @@
             var condition = $('#filter_condition').val();
             
             var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
-            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn}, function (response) {
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : dateColumn, "startDate" : startDate, "endDate" : endDate}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -1004,6 +1006,8 @@
         }
         function getPieGraphData(dateColumn, secondColumn, element) {
             var tableName = "{{$tableId}}";
+            var startDate = $("#pieDate").val();
+            var endDate = $("#pieDate1").val();
             var jsonObject = {};
             var coltypeObject = {};
             for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
@@ -1037,7 +1041,7 @@
             var condition = $('#filter_condition').val();
             
             var dataUrl = "{{env('APP_URL')}}/graphdatafilter";
-            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : secondColumn}, function (response) {
+            $.post(dataUrl, {'filter' : jsonObject, 'condition' : condition, 'tableName' : tableName, 'dateColumn' : dateColumn, 'secondColumn' : secondColumn, "startDate" : startDate, "endDate" : endDate}, function (response) {
                 var data = JSON.parse(response);
                 var Total_data = 0;
                 for (index = 0; index < data.length; index++) {
@@ -1163,8 +1167,50 @@
     $(document).ready(function(){
         $("#addBtn").click(function(){
             $(".addEntries").toggle();
-        })
-        
+        });
+        $("#btnLoadGraph").click(function($){
+            loadGraph();
+        });
+        $("#btnLoadGraph1").click(function($){
+            createAllPieCharts();
+       });
+       var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+        $('#barDate').datepicker({
+            format: 'mm/dd/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+        }).on('changeDate', function(){
+            // set the "toDate" start to not be later than "fromDate" ends:
+            $('#barDate1').datepicker('setStartDate', new Date($(this).val()));
+        });
+        $('#barDate1').datepicker({
+            format: 'mm/dd/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+        }).on('changeDate', function(){
+            // set the "fromDate" end to not be later than "toDate" starts:
+            $('#barDate').datepicker('setEndDate', new Date($(this).val()));
+        });
+        $('#pieDate').datepicker({
+            format: 'mm/dd/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+        }).on('changeDate', function(){
+            // set the "fromDate" end to not be later than "toDate" starts:
+            $('#pieDate1').datepicker('setStartDate', new Date($(this).val()));
+        });
+        $('#pieDate1').datepicker({
+            format: 'mm/dd/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+        }).on('changeDate', function(){
+            // set the "fromDate" end to not be later than "toDate" starts:
+            $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
+        });
     })
 </script>
  <script>
