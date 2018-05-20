@@ -558,6 +558,7 @@
     });
     var table_incr_id = '<?php echo $tableId;?>';
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
+    var totalCount = '{{$allCount}}';
     var table_old_data = [];
     $(document).ready(function(){
         $(".delete-rows-btn").hide();

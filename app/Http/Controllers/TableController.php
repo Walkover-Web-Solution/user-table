@@ -285,14 +285,14 @@ class TableController extends Controller {
             $rangeStart = date('m/d/Y', $d);
             $d1 = strtotime("+3 days");
             $rangeEnd = date('m/d/Y', $d1);
+            $allCount = isset($tabPaginateData['total'])?$tabPaginateData['total']:$allTabCount;
             return array(
+                'allCount' =>$allCount,
                 'activeTab' => $tabName,
                 'date_columns' => $date_columns,
                 'other_columns' => $other_columns,
-                //'tabs' => $tabs,
                 'allTabs' => $tabData,
                 'allTabCount' => $allTabCount,
-                //'arrTabCount' => $arrTabCount,
                 'tableId' => $tableId,
                 'userTableName' => $tableNames['table_name'],
                 'filters' => $filters,
@@ -361,8 +361,11 @@ class TableController extends Controller {
             $isGuestAccess = true;
         } else
             $isGuestAccess = false;
-
+        
+        $allTabCount = Tables::getCountOfTabsData($tableNames['table_id'], "All", $coltype);
         return array(
+            'allTabCount' => $allTabCount,
+            'allCount' =>$data['total'],
             'allTabs' => $results,
             'tableId' => $tableId,
             'teammates' => $teammates,

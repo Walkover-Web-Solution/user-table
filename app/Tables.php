@@ -206,7 +206,7 @@ class Tables extends Model
     public static function getCountOfTabsData($tableId, $tabName,$coltypes)
     {
         if ($tabName == "All") {
-            $count = DB::table($tableId)->count();
+            $count = DB::table($tableId)->whereNull('is_deleted')->count();
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query','condition']);
             $req = (array)json_decode($tabSql->query,true);

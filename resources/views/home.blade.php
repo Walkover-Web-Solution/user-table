@@ -1166,9 +1166,7 @@
     var current = window.location.href;
     //if(window.location.href == $(#tablist li a[]))
 });
-
-console.log(window.location.href);
- </script>
+</script>
 
 
 @stop
