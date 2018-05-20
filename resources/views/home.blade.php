@@ -594,6 +594,7 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
     var allTabCount = '{{$allTabCount}}';
+    var view = 'table';
 </script>
 <!-- inline scripts -->
 <script>
@@ -612,12 +613,14 @@
     });
     function click_show_table()
     {
+        view = 'table';
         $('#show_table_div').attr("style", "display:block");
         $('#show_graph_div').attr("style", "display:none");
         $('.settingUl').attr("style", "display:flex");
     }
     function click_show_graph()
     {
+        view = 'graph';
         $('#show_graph_div').attr("style", "display:block");
         $('#show_table_div').attr("style", "display:none");
         $('.settingUl').attr("style", "display:none");
@@ -1122,8 +1125,11 @@
             }
             var a_html = '<span><i class="glyphicon glyphicon-stats"></i> '+col_name+' '+radioname+' '+radioButtonValue+' <i class="glyphicon glyphicon glyphicon-trash" onclick="delete_filter_div(\''+col_name+'\', \''+div_open+'\')"></i></span><input type="hidden" name="filter_done_column_name[]" value="'+col_name+'"/><input type="hidden" name="filter_done_column_type[]" value="'+radioname+'"/><input type="hidden" name="filter_done_column_input_type[]" value="'+coltype+'"/>'+inputRadioButtonValue;
             $('#delete_filter_'+div_open+'_'+col_name+' a:first').html(a_html);
-            loadGraph();
-            createAllPieCharts();
+            if(view == 'graph')
+            {
+                loadGraph();
+                createAllPieCharts();
+            }
         }
     </script>
   

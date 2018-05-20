@@ -226,8 +226,11 @@ function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
             $('body').removeClass('loader');
         }
     });
-    loadGraph();
-    createAllPieCharts();
+    if(view == 'graph')
+    {
+        loadGraph();
+        createAllPieCharts();
+    }
 }
 
 var inputTypeArr = ['text', 'text', 'tel', 'number', 'number', 'email', 'select', 'radio', 'checkbox', 'date', 'select', 'textarea'];
