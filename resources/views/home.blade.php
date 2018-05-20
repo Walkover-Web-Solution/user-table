@@ -56,7 +56,6 @@
         </ul>
     </ul>
 </div>
-
 <div class="mt20 mtb20">
     <div class="col-sm-10">
        <label class="label-filter-select">
@@ -762,24 +761,24 @@
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
-    function sendMailSMS(type) {
+    function sendMailSMS(type, test = false) {
         var result = {};
         if (type == 'email') {
             if($('#from_email').val() == '')
             {
                 alert('Please enter from email.');
                 return false;
-        }
+            }
             else if($('#email_column').val() == '')
             {
                 alert('Please enter email Column.');
                 return false;
-        }
+            }
             else if($('#subject').val() == '')
             {
                 alert('Please enter subject.');
                 return false;
-    }
+            }
             else if($('#mailContent').val() == '')
             {
                 alert('Please enter mail Content.');
@@ -790,6 +789,8 @@
             result['email_column'] = $('#email_column').val();
             result['subject'] = $('#subject').val();
             result['mailContent'] = $('#mailContent').val();
+            if(test !== false)
+                result['testemailid'] = $('#testemailid').val();
         }
         else if (type == 'sms') {
             if($('#sender').val() == '')
@@ -816,11 +817,13 @@
             result['route'] = $('#route').val();
             result['message'] = $('#message').val();
             result['mobile_columnn'] = $('#mobile_columnn').val();
+            if(test !== false)
+                result['testsmsno'] = $('#testsmsno').val();
         }
 
         var returnData = makeFilterJsonData(tableId, 'returnData');
         var filter_condition = $('#filter_condition').val();
-        sendData(type, returnData[1], result, tableId, filter_condition, returnData[0]);
+        sendData(type, returnData[1], result, tableId, filter_condition, returnData[0], test);
     }
 
     function timeToSend(type) {
@@ -1211,12 +1214,37 @@
             // set the "fromDate" end to not be later than "toDate" starts:
             $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
         });
-    })
-</script>
- <script>
-   $(function(){
+        $('#testemail').click(function() {
+            if ($(this).prop('checked'))
+            {
+                $('#testemailid').show();
+                $('#testemailidbutton').show();
+            }
+            else
+            {
+                $('#testemailid').hide();
+                $('#testemailidbutton').hide();
+            }
+            $('#testsmsno').hide();
+            $('#testsmsnobutton').hide();
+        });
+        $('#testsms').click(function() {
+            if ($(this).prop('checked'))
+            {
+                $('#testsmsno').show();
+                $('#testsmsnobutton').show();
+            }
+            else
+            {
+                $('#testsmsno').hide();
+                $('#testsmsnobutton').hide();
+            }
+            $('#testemailid').hide();
+            $('#testemailidbutton').hide();
+        });
+    });
+$(function(){
     var current = window.location.href;
-    //if(window.location.href == $(#tablist li a[]))
 });
 </script>
 
@@ -1465,6 +1493,7 @@
                 <div id="setTabs" class="tab-content">
                     <div class="tab-pane active" id="email">
                         <form class="" id="emailForm">
+                        @if (!empty($tableEmailApi))
                             <div class="form-group">
                                 <label class="" for="">From Email: </label>
                                 <input type="text" class="form-control" id="from_email" name="from_email"/>
@@ -1501,13 +1530,26 @@
                             <div class="form-group">
                                 <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('email')">Send
                                 </button>
+                                <label><input type="checkbox" id="testemail"/>Test</label>
+                                <table style="width: 70%; float: right;">
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" id="testemailid" style="display: none;" placeholder="Email Id"/>
+                                        </td>
+                                        <td>
+                                            <input type="button" class="btn btn-primary btn-md" value="Test" style="display: none;" id="testemailidbutton" onclick="sendMailSMS('email', 'test');"/>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
-
+                        @else
+                        <div class="form-group">Email API key does not exist, please enter your email api key <a href="{{env('APP_URL')}}/configure/{{$tableId}}">Configure</a></div>
+                        @endif
                         </form>
                     </div>
                     <div class="tab-pane" id="sms">
                         <form class="" id="smsForm">
-
+                        @if (!empty($tableSmsApi))
                             <div class="form-group">
                                 <label class="" for="">Sender Id : </label>
                                 <input type="" class="form-control " id="sender" name="sender">
@@ -1535,9 +1577,24 @@
                                     @endif
                                 </select>
                             </div>
-
-                            <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')" >Send
-                            </button>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary btn-md" onclick="sendMailSMS('sms')" >Send
+                                </button>
+                                <label><input type="checkbox" id="testsms"/>Test</label>
+                                <table style="width: 70%; float: right;">
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" id="testsmsno" style="display: none;" maxlength="10" placeholder="Mobile No"/>
+                                        </td>
+                                        <td>
+                                            <input type="button" class="btn btn-primary btn-md" style="display: none;" id="testsmsnobutton" value="Test" onclick="sendMailSMS('sms', 'test');"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        @else
+                        <div class="form-group">SMS API key does not exist, please enter your SMS api key <a href="{{env('APP_URL')}}/configure/{{$tableId}}">Configure</a></div>
+                        @endif
                         </form>
                     </div>
                     <div class="tab-pane" id="webhook">

@@ -211,6 +211,8 @@ class TableController extends Controller {
         } else {
             $tableIdMain = $tableNames['table_id'];
             $tableAuth = $tableNames['auth'];
+            $tableSmsApi = !empty($tableNames['sms_api_key']) ? $tableNames['sms_api_key'] : false;
+            $tableEmailApi = !empty($tableNames['email_api_key']) ? $tableNames['email_api_key'] : false;
             $parentTableId = $tableNames['parent_table_id'];
             $teamId = $tableNames['team_id'];
             $date_columns = array();
@@ -301,6 +303,8 @@ class TableController extends Controller {
                 'activeTabFilter' => $tabArray,
                 'tabcondition' => $tabcondition,
                 'tableAuth' => $tableAuth,
+                'tableSmsApi' => $tableSmsApi,
+                'tableEmailApi' => $tableEmailApi,
                 'rangeStart' => $rangeStart,
                 'rangeEnd' => $rangeEnd,
                 'filtercolumns' => $filtercolumns);
@@ -343,6 +347,8 @@ class TableController extends Controller {
         }
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         $tableAuth = $tableNames['auth'];
+        $tableSmsApi = !empty($tableNames['sms_api_key']) ? $tableNames['sms_api_key'] : false;
+        $tableEmailApi = !empty($tableNames['email_api_key']) ? $tableNames['email_api_key'] : false;
         $userTableStructure = TableStructure::formatTableStructureData($tableNames['table_structure']);
 
         if (empty($tableNames['table_id'])) {
@@ -372,6 +378,8 @@ class TableController extends Controller {
             'pagination' => $data,
             'structure' => $userTableStructure,
             'tableAuth' => $tableAuth,
+            'tableSmsApi' => $tableSmsApi,
+            'tableEmailApi' => $tableEmailApi,
             'isGuestAccess' => $isGuestAccess);
     }
 
@@ -538,6 +546,8 @@ class TableController extends Controller {
         $tableID = $tableNames['table_id'];
         $tableStructure = $tableNames['table_structure'];
         $tableAuth = $tableNames['auth'];
+        $tableSmsApi = !empty($tableNames['sms_api_key']) ? $tableNames['sms_api_key'] : false;
+        $tableEmailApi = !empty($tableNames['email_api_key']) ? $tableNames['email_api_key'] : false;
         if (!empty($tableNames['parent_table_id'])) {
             $isGuestAccess = true;
         } else
@@ -578,6 +588,8 @@ class TableController extends Controller {
                 'tableId' => $tableId,
                 'teammates' => $teammates,
                 'tableAuth' => $tableAuth,
+                'tableSmsApi' => $tableSmsApi,
+                'tableEmailApi' => $tableEmailApi,
                 'pagination' => $results,
                 'structure' => $userTableStructure,
                 'isGuestAccess' => $isGuestAccess
@@ -676,6 +688,7 @@ class TableController extends Controller {
         $email_column = $formData['email_column'];
         $subject = $formData['subject'];
         $mailContent = $formData['mailContent'];
+        $testEmailid = isset($formData['testemailid']) && !empty($formData['testemailid']) ? $formData['testemailid'] : false;
         preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
         $chunks = array_chunk($data, 500);
         foreach ($chunks as $data) {
@@ -696,15 +709,18 @@ class TableController extends Controller {
                     }
                     $actualMailContent = str_replace($findArr, $valArr, $mailContent);
                     $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId);
+                    if(!empty($testEmailid))
+                        break;
                 }
             }
-            $this->postemail($value[$email_column], $from_email, $subject, $actualMailContent, $email_api_key);
-            $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
+            $emailresponse = $this->postemail(!empty($testEmailid) ? $testEmailid : $value[$email_column], $from_email, $subject, $actualMailContent, $email_api_key);
+            if(empty($testEmailid))
+                $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
         }
-        if ($response) {
-            return response(json_encode(array('message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
+        if ($emailresponse) {
+            return response(json_encode(array('status' => 'success', 'message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
         } else {
-            return response(json_encode(array('message' => 'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+            return response(json_encode(array('status' => 'error', 'message' => 'Error in sending, Please contact to support')), 200)->header('Content-Type', 'application/json');
         }
     }
 
@@ -716,6 +732,7 @@ class TableController extends Controller {
         $route = $formData['route'];
         $mobile_column = $formData['mobile_columnn'];
         $message = $formData['message'];
+        $testSmsno = isset($formData['testsmsno']) && !empty($formData['testsmsno']) ? $formData['testsmsno'] : false;
         preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
 
         $chunks = array_chunk($data, 500);
@@ -737,18 +754,24 @@ class TableController extends Controller {
                     }
                     $actualMsg = str_replace($findArr, $valArr, $message);
                     $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId);
-                    $smsArrayJSON[] = array("message" => $actualMsg, "to" => array($value[$mobile_column]));
+                    $smsArrayJSON[] = array("message" => $actualMsg, "to" => !empty($testSmsno) ? array($testSmsno) : array($value[$mobile_column]));
                 }
+                if(!empty($testSmsno))
+                    break;
             }
-            $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
+            if(empty($testSmsno))
+                $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
+            else
+                $response = true;
+            
             $smscontent = json_encode(array("sender" => $senderId, "route" => $route, "country" => 91, "sms" => $smsArrayJSON));
             $this->postsms($smscontent, $sms_api_key);
         }
 
         if ($response) {
-            return response(json_encode(array('message' => 'SMS Sent')), 200)->header('Content-Type', 'application/json');
+            return response(json_encode(array('status' => 'success', 'message' => 'SMS Sent')), 200)->header('Content-Type', 'application/json');
         } else {
-            return response(json_encode(array('message' => 'Error in sending, Please contact to support')), 403)->header('Content-Type', 'application/json');
+            return response(json_encode(array('status' => 'error', 'message' => 'Error in sending, Please contact to support')), 200)->header('Content-Type', 'application/json');
         }
     }
 
@@ -756,8 +779,8 @@ class TableController extends Controller {
         try {
             $client = new GuzzleHttp\Client();
             $url = "http://api.msg91.com/api/v2/sendsms";
-            $request = $client->post($url, ['body' => $sms, 'headers' => ['authkey' => $smsApiKey, 'Content-type' => 'application/json']]);
-            return $request;
+            $response = $client->post($url, ['body' => $sms, 'headers' => ['authkey' => $smsApiKey, 'Content-type' => 'application/json']]);
+            return $response;
         } catch (\Guzzle\Http\Exception\ConnectException $e) {
             $response = json_encode((string) $e->getResponse()->getBody());
             return $response;
@@ -787,9 +810,13 @@ class TableController extends Controller {
         curl_close($curl);
 
         if ($err) {
-            return $err;
+            return false;
         } else {
-            return $response;
+            $response = json_decode($response);
+            if ($response->msgType == 'error')
+                return false;
+            else
+                return true;
         }
     }
 

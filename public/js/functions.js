@@ -845,7 +845,7 @@ $(document).ready(function () {
     })
 });
 
-function sendData(type, JsonData, formData, tableId, condition, coltype) {
+function sendData(type, JsonData, formData, tableId, condition, coltype, test = false) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -857,6 +857,26 @@ function sendData(type, JsonData, formData, tableId, condition, coltype) {
         data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId, 'condition' : condition, 'coltype' : coltype}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
         success: function (data) {
+            if(data.status == 'error')
+            {
+                $.toast({
+                    heading: 'Error',
+                    text: data.message,
+                    showHideTransition: 'slide',
+                    icon: 'error'
+                });
+            }
+            else
+            {
+                $.toast({
+                    heading: 'Success',
+                    text: data.message,
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                });
+            }
+            if (test === false)
+                $('#send_popup').modal('hide');
         }
     });
 }
