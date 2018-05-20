@@ -573,6 +573,7 @@ class TableController extends Controller {
             $teamId = $tableNames['team_id'];
             $teammates = Teams::getTeamMembers($teamId);
             return array(
+                'allCount'=> $results['total'],
                 'allTabs' => $allTabs,
                 'tableId' => $tableId,
                 'teammates' => $teammates,
