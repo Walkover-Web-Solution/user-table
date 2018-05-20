@@ -25,7 +25,8 @@ class ContactController extends Controller
         $newData = json_decode(json_encode($data), true);
         foreach($table->tableStructure as $k=>$v)
         {
-            $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
+            if($v['display'] == 1)
+                $inner_ordered[$v['column_name']] = $newData[$v['column_name']];
         }
 
         $inner_ordered['id'] = $newData['id'];
@@ -42,14 +43,17 @@ class ContactController extends Controller
     {
         $userTableStructure = array();
         foreach ($structure as $detail) {
-            $columnType = $detail->columnName;
-            $userTableStructure[$detail['column_name']] = array(
-                'type' => $columnType->column_name,
-                'column_type_id' => $columnType->id,
-                'unique' => $detail->is_unique,
-                'value' => $detail->default_value,
-                'value_arr' => json_decode($detail->default_value, TRUE)
-            );
+            if ($detail['display'] == 1)
+            {
+                $columnType = $detail->columnName;
+                $userTableStructure[$detail['column_name']] = array(
+                    'type' => $columnType->column_name,
+                    'column_type_id' => $columnType->id,
+                    'unique' => $detail->is_unique,
+                    'value' => $detail->default_value,
+                    'value_arr' => json_decode($detail->default_value, TRUE)
+                );
+            }
         }
         return $userTableStructure;
     }
