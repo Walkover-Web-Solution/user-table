@@ -47,6 +47,19 @@ class ConfigureTable extends Controller
             'tabData' => $tabs,
             'tabCount' => $tabCount));
     }
+    public function updatelistTableFilters(Request $request)
+    {
+        $tablearray = (array)$request->input('tablearray');
+        foreach($tablearray as $key => $value)
+        {
+            $tab = Tabs::where('id', $value)->first();
+            if (!empty($tab))
+                Tabs::where('id', $value)->update(['sequence' => $key+1]);
+        }
+        
+        return json_encode(array('status' => 'success', 'message' => 'Filter sequence updated successfully.'));
+    }
+
     public function updateTableStructure(Request $request) {
         $tableId = $request->input('tableId');
         $paramArr['socket_api'] = $request->input('socketApi');

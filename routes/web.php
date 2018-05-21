@@ -64,6 +64,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::Post('/addDropDown','ConfigureTable@addNewDropDownValue');
     Route::get('/configure/{tableName}', 'ConfigureTable@loadSelectedTableStructure');
     Route::get('/listFilters/{tableName}', 'ConfigureTable@listTableFilters');
+    Route::post('/updatelistFilters', 'ConfigureTable@updatelistTableFilters');
     Route::get('/tableaccess/{tableName}', 'TableAccess@configureTableAccess');
     Route::post('/tableaccessmanage', 'TableAccess@manageTableAccess');
     Route::get('/table/{tableid}/user_data/{id}','ContactController@show');

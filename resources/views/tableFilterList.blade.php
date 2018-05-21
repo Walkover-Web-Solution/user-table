@@ -1,6 +1,7 @@
 @extends('layouts.app-header')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/toast.css')}}"><!--ToastCSS-->
         <div class="container mt20">
             <div class="row">
                 <!--  new field form -->
@@ -22,24 +23,24 @@
                         <div class="panel-heading">Team Name :   <label>{{Session::get('teams')[$tableData['team_id']]}}</label></div>
                         <div class="panel-heading">Table Name :   <label>{{$tableData['table_name']}}</label></div>
                         <div class="panel-body">
-                            <div class="row">
-                                <div class="form-group col-xs-4">Name</div>
-                                <div class="form-group col-xs-4">Count</div>
-                                <div class="form-group col-xs-4">Delete</div>
+                            @if(!empty($tabData))
+                            <table id="table-filter" class="table basic table-bordred">
+                                <thead><tr id="0"><th>Name</th><th>Sequence</th><th>Count</th><th>Delete</th></tr></thead>
+                                @foreach($tabData as $key => $tab)
+                                <tr id="{{$tab['id']}}">
+                                    <td>{{$tab['tab_name']}}</td>
+                                    <td>{{($tab['sequence'] != 0) ? $tab['sequence'] : ($key+1)}}</td>
+                                    <td>{{$tabCount[$key][$tab['tab_name']]}}</td>
+                                    <td><a href="javascript:void(0)" class="remove-row" onclick="deleteFilter({{$tab['id']}})"><i class="glyphicon glyphicon-trash"></i></a></td>
+                                </tr>
+                                @endforeach
+                            </table>
+                            <div class="modal-footer">
+                                <button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="updateFilterSequence()">
+                                    Save
+                                </button>
                             </div>
-                            @foreach($tabData as $key => $tab)
-                            <div class="row" id="filter-{{$tab['id']}}">
-                                <div class="form-group col-xs-4">
-                                    {{$tab['tab_name']}}
-                                </div>
-                                <div class="form-group col-xs-4">
-                                    {{$tabCount[$key][$tab['tab_name']]}}
-                                </div>
-                                <div class="form-group col-xs-4">
-                                    <a href="javascript:void(0)" class="remove-row" onclick="deleteFilter({{$tab['id']}})"><i class="glyphicon glyphicon-trash"></i></a>
-                                </div>
-                            </div>
-                             @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -48,12 +49,49 @@
 @stop
 
 @section('pagescript')
+<script type="text/javascript" src="{{  asset('js/toast.js')}}"></script> <!--Toast JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
 <script type="text/javascript">
     var API_BASE_URL = '{{env('API_BASE_URL')}}';
     var tableId = '<?php echo $tableData['id'];?>';
     var rowIndex = 1;
 </script>
 <script>
+    $("#table-filter").tableDnD();
+    function updateFilterSequence(){
+        var tablearray = [];
+        $("#table-filter tr").each(function() {
+            if(this.id != 0)
+            {
+                tablearray.push(this.id);
+            }
+        });
+        if(tablearray.length > 1)
+        {
+            $.ajax({
+                url: API_BASE_URL + '/updatelistFilters',
+                type: 'POST',
+                data: {'tablearray' : tablearray},
+                dataType: 'json',
+                success: function (info) {
+                    if(info.status == 'error')
+                    {
+                        alert(info.error);
+                        return false;
+                    }
+                    $.toast({
+                        heading: 'Success',
+                        text: info.message,
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        afterHidden: function() {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }
+    }
     function deleteFilter(id){
         $.ajax({
             url: API_BASE_URL + '/deleteFilter',

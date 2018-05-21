@@ -17,19 +17,19 @@ class Tabs extends Model {
     }
 
     public static function tabsWithWebhookUrls() {
-        $data = Tabs::where('webhook', '<>', '')->pluck('tab_name')->toArray();
+        $data = Tabs::where('webhook', '<>', '')->orderBy('sequence', 'asc')->pluck('tab_name')->toArray();
         return $data;
     }
 
     # return tab query
 
     public static function getTabQuery($tab) {
-        $data = Tabs::where('tab_name', $tab)->first(['query']);
+        $data = Tabs::where('tab_name', $tab)->orderBy('sequence', 'asc')->first(['query']);
         return $data->query;
     }
 
     public static function getTabsWebhook($tab) {
-        $data = Tabs::where('tab_name', $tab)->first(['webhook']);
+        $data = Tabs::where('tab_name', $tab)->orderBy('sequence', 'asc')->first(['webhook']);
         return $data->webhook;
     }
  
@@ -37,6 +37,7 @@ class Tabs extends Model {
         $data = \DB::table('tabs')
                 ->select('tab_name')
                 ->where('table_id', $tableId)
+                ->orderBy('sequence', 'asc')
                 ->get();
         return $data;
     }
@@ -47,8 +48,9 @@ class Tabs extends Model {
     
     public static function getTabsListByTableId($tableId) {
         $data = \DB::table('tabs')
-                ->select(array('tab_name','table_id','id'))
+                ->select(array('tab_name','table_id','id', 'sequence'))
                 ->where('table_id', $tableId)
+                ->orderBy('sequence', 'asc')
                 ->get();
         return $data;
     }
