@@ -544,7 +544,7 @@
                         To
                         <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
                     </div>
-                    <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
+                    <button type="button" class="btn btn-primary" id="btnLoadCharts">Load Graph</button>
                 </form>
 
                 <div class="charts-container">
@@ -888,6 +888,7 @@
                     legend: {display: false}
                 }
             });
+            pieCharts.push(myPieChart);
         }
         function CreateBarChart(element, labels, values,colors,bColors) {
             if(window.mybarChart == undefined)
@@ -1090,8 +1091,10 @@
             $(".top-chart-container .ajax-loader-container").show();
             var column1 = $("#column1").val();
             getGraphData(column1, column1);
-        }       
+        }
+        var pieCharts = [];
         function createAllPieCharts(){
+            destroyAllPieCharts();
             var column3 = $("#column3").val();
             @if(isset($other_columns))
             @foreach($other_columns as $other_column)
@@ -1099,7 +1102,14 @@
             @endforeach
             @endif
         }
-    </script> 
+        function destroyAllPieCharts(){
+            pieCharts.forEach(function (pieChart) {
+                pieChart.destroy();
+            });
+            pieCharts = [];
+        }
+
+</script>
     <script>
         $(".tablist li").click(function() {
            if ($(".tablist li").removeClass("active")) {
@@ -1174,7 +1184,7 @@
         $("#btnLoadGraph").click(function($){
             loadGraph();
         });
-        $("#btnLoadGraph1").click(function($){
+        $("#btnLoadCharts").click(function($){
             createAllPieCharts();
        });
        var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";

@@ -124,7 +124,7 @@
                             To
                             <input class="form-control" id="pieDate1" name="pieDate1" placeholder="MM/DD/YYY" type="text"  value="{{$rangeEnd}}"/>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btnLoadGraph1">Load Graph</button>
+                        <button type="button" class="btn btn-primary" id="btnLoadCharts">Load Charts</button>
                     </form>
 
                     <div class="charts-container">
@@ -179,6 +179,7 @@
                     legend: {display: false}
                 }
             });
+            pieCharts.push(myPieChart)
         }
         function CreateBarChart(element, labels, values,colors,bColors) {
             if(window.mybarChart == undefined)
@@ -388,17 +389,27 @@
                 $('#pieDate').datepicker('setEndDate', new Date($(this).val()));
             });
 
-             $("#btnLoadGraph1").click(function($){
+             $("#btnLoadCharts").click(function($){
+                 destroyAllPieCharts();
                  createAllPieCharts();
             });
         });
-       
+
+        var pieCharts = [];
         function createAllPieCharts(){
             var column3 = $("#column3").val();
             @foreach($other_columns as $other_column)
             getPieGraphData(column3, "{{$other_column}}", "id_{{$other_column}}");
             @endforeach
         }
+
+        function destroyAllPieCharts(){
+            pieCharts.forEach(function (pieChart) {
+                pieChart.destroy();
+            });
+            pieCharts = [];
+        }
+
         createAllPieCharts();
 
     </script>
