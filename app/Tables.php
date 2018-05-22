@@ -318,9 +318,9 @@ class Tables extends Model
                 }
                 if (isset($req[$paramName]['not_contains'])) {
                     if($flag && $condition=='or'){
-                        $users->orWhere($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                        $users->orWhere($paramName, 'NOT LIKE', '%' . $req[$paramName]['not_contains'] . '%');
                     }else
-                        $users->where($paramName, 'LIKE', '%' . $req[$paramName]['not_contains'] . '%');
+                        $users->where($paramName, 'NOT LIKE', '%' . $req[$paramName]['not_contains'] . '%');
                     $flag=1;
                 } 
                 if (isset($req[$paramName]['is_unknown'])) {
