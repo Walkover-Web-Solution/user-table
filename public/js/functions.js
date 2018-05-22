@@ -845,7 +845,7 @@ $(document).ready(function () {
     })
 });
 
-function sendData(type, JsonData, formData, tableId, condition, coltype, test = false) {
+function sendData(type, JsonData, formData, tableId, condition, coltype, test = false, activeTab) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -854,7 +854,7 @@ function sendData(type, JsonData, formData, tableId, condition, coltype, test = 
     $.ajax({
         type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
         url: API_BASE_URL + "/sendEmailSMS", // A valid URL // headers: {"X-HTTP-Method-Override": "PUT"}, // X-HTTP-Method-Override set to PUT.
-        data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId, 'condition' : condition, 'coltype' : coltype}, // Some data e.g. Valid JSON as a string
+        data: {'filter': JsonData, 'type': type, 'formData': formData, 'tableId': tableId, 'condition' : condition, 'coltype' : coltype, 'activeTab' : activeTab}, // Some data e.g. Valid JSON as a string
         // headers: { 'token': tokenKey },
         success: function (data) {
             if(data.status == 'error')

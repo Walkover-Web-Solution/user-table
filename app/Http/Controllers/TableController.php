@@ -9,6 +9,7 @@ use App\Repositories\TableDetailRepositoryInterface;
 use App\Tables;
 use App\TableStructure;
 use App\Tabs;
+use App\CronTab;
 use App\TabColumnMappings;
 use App\team_table_mapping;
 use App\Teams;
@@ -646,11 +647,20 @@ class TableController extends Controller {
         $condition = $request->condition;
         $type = ($request->type);
         $tableId = $request->tableId;
+        $activeTab = $request->activeTab;
+        $tabId = false;
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
         }
 
+        if($activeTab != 'All')
+        {
+            $tabresult = Tabs::getTabQuerywithtable($activeTab, $tableNames['table_id']);
+            if(!empty($tabresult))
+                $tabId = $tabresult;
+        }
+        
         $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
         usort($columnsonly, function ($a, $b) {
             return strnatcmp($a['ordering'], $b['ordering']);
@@ -671,15 +681,15 @@ class TableController extends Controller {
             return response(json_encode(array('message' => 'No record found to send')), 200)->header('Content-Type', 'application/json');
         }
         if ($type == 'email') {
-            $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key']);
+            $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key'], $tabId);
         }
         if ($type == 'sms') {
-            $response = $this->sendSMS($formData, $results, $tableId, $tableNames['sms_api_key']);
+            $response = $this->sendSMS($formData, $results, $tableId, $tableNames['sms_api_key'], $tabId);
         }
         return $response;
     }
 
-    public function sendMail($formData, $data, $tableId, $email_api_key = false) {
+    public function sendMail($formData, $data, $tableId, $email_api_key = false, $tabId) {
         if (empty($email_api_key))
             return false;
 
@@ -689,6 +699,13 @@ class TableController extends Controller {
         $subject = $formData['subject'];
         $mailContent = $formData['mailContent'];
         $testEmailid = isset($formData['testemailid']) && !empty($formData['testemailid']) ? $formData['testemailid'] : false;
+        $sendAuto = isset($formData['send_auto']) && $formData['send_auto'] == 'yes' ? true : false;
+        if($sendAuto)
+        {
+            $matchThese = array('table_id' => $tableId, 'type' => 0, 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'message' => $mailContent, 'tab_column_type' => $email_column);
+            CronTab::updateOrCreate($matchThese,['tab_id' => $tabId]);
+        }
+        
         preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
         $chunks = array_chunk($data, 500);
         foreach ($chunks as $data) {
@@ -708,7 +725,7 @@ class TableController extends Controller {
                         }
                     }
                     $actualMailContent = str_replace($findArr, $valArr, $mailContent);
-                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId);
+                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId, 'tab_id' => $tabId);
                     if(!empty($testEmailid))
                         break;
                 }
@@ -724,7 +741,7 @@ class TableController extends Controller {
         }
     }
 
-    public function sendSMS($formData, $data, $tableId, $sms_api_key) {
+    public function sendSMS($formData, $data, $tableId, $sms_api_key = false, $tabId) {
         if (empty($sms_api_key))
             return false;
 
@@ -733,6 +750,12 @@ class TableController extends Controller {
         $mobile_column = $formData['mobile_columnn'];
         $message = $formData['message'];
         $testSmsno = isset($formData['testsmsno']) && !empty($formData['testsmsno']) ? $formData['testsmsno'] : false;
+        $sendAuto = isset($formData['send_auto']) && $formData['send_auto'] == 'yes' ? true : false;
+        if($sendAuto)
+        {
+            $matchThese = array('table_id' => $tableId, 'type' => 1, 'subject' => $senderId, 'message' => $message, 'tab_column_type' => $mobile_column);
+            CronTab::updateOrCreate($matchThese,['tab_id' => $tabId]);
+        }
         preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
 
         $chunks = array_chunk($data, 500);
@@ -753,7 +776,7 @@ class TableController extends Controller {
                         }
                     }
                     $actualMsg = str_replace($findArr, $valArr, $message);
-                    $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId);
+                    $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId, 'tab_id' => $tabId);
                     $smsArrayJSON[] = array("message" => $actualMsg, "to" => !empty($testSmsno) ? array($testSmsno) : array($value[$mobile_column]));
                 }
                 if(!empty($testSmsno))

@@ -28,6 +28,13 @@ class Tabs extends Model {
         return $data->query;
     }
 
+    # return tab query
+
+    public static function getTabQuerywithtable($tab, $table_id) {
+        $data = Tabs::where('tab_name', $tab)->where('table_id', $table_id)->orderBy('sequence', 'asc')->first(['id']);
+        return $data->id;
+    }
+
     public static function getTabsWebhook($tab) {
         $data = Tabs::where('tab_name', $tab)->orderBy('sequence', 'asc')->first(['webhook']);
         return $data->webhook;
