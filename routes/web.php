@@ -97,6 +97,7 @@ Route::post('/addactivity/{tableId}','ActivityController@addLog')->name('addacti
 
 Route::post('/importTable' , 'TableController@importTable');
 
+Route::post('/mapDataToTable' , 'TableController@mapDataToTable');
 
 //Auth::routes();
 // Authentication Routes...

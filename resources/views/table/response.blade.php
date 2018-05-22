@@ -390,28 +390,27 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" id="saveTable">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 <!-- Show Uploaded Contacts Modal -->
 
-<div id="columnsData">
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Select Column
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+<div id="columnsData" style="display:none;">
+    <div style="text-align: center;">
+        <select class="form-control">
+                <option value="">Select Column</option>
             @foreach($structure as $key => $val)
-                <a class="dropdown-item" href="#">{{ $key }}</a>
+                <option class="column_options" value="{{ $key }}">{{ $key }}</option>
             @endforeach
-        </div>
+        </select>
     </div>
 </div>
-
+<input type="hidden" id="fileName" />
 
 <script>
+    var tableId = '{{$tableId}}';
     $(document).ready(function(){
         $(".initiateUpload").click(function(){
             $("#uploadModal").modal('show');
@@ -428,6 +427,8 @@
                 success: function (data){
                     if(data.Message=="Success")
                     {
+                        var fileName = data.FileName;
+                        $("#fileName").val(fileName);
                         var columnsData = $("#columnsData").html();
                         $("#uploadModal").modal('hide');
                         $("#manageContactsModal").modal('show');
@@ -444,20 +445,26 @@
                             var dataArray = data.Data[i];
                             for(var j=0;j<dataArray.length;j++)
                             {
-                                dataToAppend+="<td class='text-center'>"+dataArray[j]+"</td>";
+                                dataToAppend+="<td class='text-center td-"+i+'_'+j+"'>"+dataArray[j]+"</td>";
                             }
                             dataToAppend+="</tr>";
                         }
                         dataToAppend+="<tr data-attr='"+i+"'>";
                         var dataArray = data.Data[0];
+                        var dataToPrepend = "";
                         for(var j=0;j<dataArray.length;j++)
                         {
-                            dataToAppend+="<td>";
-                                dataToAppend+=columnsData;
-                            dataToAppend+="</td>";   
+                            dataToPrepend+="<td style='overflow:visible;'>";
+                                dataToPrepend+='<select class="form-control col-select" data-col-sel="column-id-'+j+'"><option value="">Select Column</option>';
+                                    $(".column_options").each(function(){
+                                        dataToPrepend+='<option class="column_options" value="'+$(this).val()+'">'+$(this).val()+'</option>';
+                                    });
+                                dataToPrepend+='</select>';
+                            dataToPrepend+="</td>";   
                         }
                         dataToAppend+="</tr>";
                         $("#mapDataToTable").html(dataToAppend);
+                        $("#mapDataToTable").prepend('<tr>'+dataToPrepend+'</tr>');
                     }
                     else
                     {
@@ -474,6 +481,40 @@
                 }
             });
         }));
+        $("#saveTable").click(function(){
+            var mapArray= [];
+            var i=0;
+            $(".col-select").each(function(){
+                var attrVal = $(this).attr('data-col-sel');
+                mapArray[i] = $(this).val();
+                i++;
+            });
+            $.toast({
+                heading: 'Operation Started',
+                text: 'Import operation started please donot close or reload this page',
+                showHideTransition: 'slide',
+                icon: 'info',
+            });
+            $.ajax({
+                url:"/mapDataToTable",
+                method:"POST",
+                data:{'mappingValue':mapArray , 'fileName':$("#fileName").val() , 'tableId':tableId},
+                success:function(respData){
+                    if(respData.Message=="Success")
+                    {
+                        $.toast({
+                            heading: 'Success',
+                            text: 'Data import successful, realoding page.',
+                            showHideTransition: 'slide',
+                            icon: 'success',
+                            afterHidden: function() {
+                                location.reload();
+                            }
+                        });
+                    }
+                }
+            });
+        });
         $("#selectall").change(function(){  //"select all" change 
             $(".row-delete").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
             enableDelete();

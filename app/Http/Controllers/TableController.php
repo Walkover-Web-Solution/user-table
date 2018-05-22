@@ -819,5 +819,75 @@ class TableController extends Controller {
                 return true;
         }
     }
+    
+    public function importTable(Request $request) {
+        $file = $request->file('importTable');
+
+        $fileName = time() . '_' . rand(111111, 999999) . '.' . $file->getClientOriginalExtension();
+
+        if ($file->getClientOriginalExtension() == "csv") {
+            //Move Uploaded File
+            $destinationPath = 'uploads';
+            $file->move($destinationPath, $fileName);
+
+            $handle = fopen($destinationPath . '/' . $fileName, "r");
+
+            $i = 0;
+            $csvDataArray = array();
+            while ($csvLine = fgetcsv($handle)) {
+                $csvDataArray[$i] = $csvLine;
+                $i++;
+            }
+            $formattedArray = $csvDataArray;
+            return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => $formattedArray, 'FileName' => $fileName])->setStatusCode(200);
+        }
+    }
+
+    public function mapDataToTable(Request $request) {
+        $formData = $request->toArray();
+        $validator = \Validator::make($formData, [
+                    'mappingValue' => 'required',
+                    'fileName' => 'required'
+        ]);
+        if ($validator->fails())
+        {
+            return response()->json(['Message' => 'Failed', 'Status' => '422', 'Data' => $validator->errors()])->setStatusCode(422);
+        }
+
+
+        $tableNames = team_table_mapping::getUserTablesNameById($request->tableId);
+
+        $targetTableName = "";
+
+        if ($tableNames && isset($tableNames['table_id'])) {
+            $targetTableName = $tableNames['table_id'];
+        }
+
+
+        $destinationPath = 'uploads';
+
+        $handle = fopen($destinationPath . '/' . $request->fileName, "r");
+
+        $i = 0;
+        while ($csvLine = fgetcsv($handle)) {
+            $k = 0;
+
+            $insertData = array();
+
+            foreach ($request->mappingValue as $value) {
+                if ($value != "") {
+                    $insertData[$value] = $csvLine[$k];
+                }
+                $k++;
+            }
+
+            \DB::table($targetTableName)->insert([
+                $insertData
+            ]);
+            $i++;
+        }
+
+        return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
+    }
 
 }
