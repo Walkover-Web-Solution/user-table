@@ -111,11 +111,6 @@ class team_table_mapping extends Model {
     }
 
     public static function getTableById($tableId) {
-        // $data = team_table_mapping::with('tableStructure.columnType')
-        //         ->where('table_id', $tableId)
-        //         ->first()->toArray();
-        // return $data;
-
         $data = team_table_mapping::where('table_id' , $tableId)->first();
         print_r($data);
         $data = team_table_mapping::getTableByAuth($data->auth);

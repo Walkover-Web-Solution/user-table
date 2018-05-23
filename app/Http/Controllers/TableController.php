@@ -97,45 +97,6 @@ class TableController extends Controller {
     {
         $response = $this->tableRepository->getUserAllTables();
         return view('showTable', $response);
-        /*
-        $teams = session()->get('team_array');
-        $teamIdArr = array();
-        $teamNameArr = array();
-
-        $user =  Auth::user();
-        $email = $user['email'];
-        //print_r($email);
-        $readOnlytableLst = team_table_mapping::getUserTablesNameByEmail($email);
-
-
-
-        foreach ($teams as $teamId => $teamName) {
-            $teamNameArr[] = $teamName;
-            $teamIdArr[] = $teamId;
-        }
-        session()->put('teamNames', $teamNameArr);
-        session()->put('teams', $teams);
-
-        $tableLst = $this->getUserTablesByTeamId($teamIdArr);
-        $teamTables = $table_incr_id_arr = array();
-        foreach ($tableLst as $key => $value) {
-            $teamTables[$value['team_id']][] = $value;
-            $table_incr_id_arr[] = $value['id'];
-        }
-        $data = json_decode(json_encode(team_table_mapping::getTableSourcesByTableIncrId($table_incr_id_arr)), true);
-
-        $source_arr = array();
-        foreach ($data as $key => $value) {
-            $source_arr[$value['table_incr_id']][] = $value['source'];
-        }
-
-        return view('showTable', array(
-            'teamsArr' => $teams,
-            'source_arr' => $source_arr,
-            'teamTables' => $teamTables,
-            'readOnlyTables'=> $readOnlytableLst
-        ));
-        */
     }
 
     public function getAllTablesForSocket(Request $request) {
@@ -180,7 +141,7 @@ class TableController extends Controller {
         }
 
         $tableLst = team_table_mapping::getUserTablesByTeamAndTableId($teamIdArr, $tableId);
-        // print_r($tableLst);
+
         if (count($tableLst) == 0) {
             $user = Auth::user();
             $email = $user['email'];
@@ -854,29 +815,9 @@ class TableController extends Controller {
             return response()->json(['Message' => 'Failed', 'Status' => '422', 'Data' => $validator->errors()])->setStatusCode(422);
         }
 
-
-        // $tableNames = team_table_mapping::getUserTablesNameById($request->tableId);
-
-        // $targetTableName = "";
-
-        // if ($tableNames && isset($tableNames['table_id'])) {
-        //     $targetTableName = $tableNames['table_id'];
-        // }
-
-
         $destinationPath = 'uploads';
 
         $handle = fopen($destinationPath . '/' . $request->fileName, "r");
-        // \DB::enableQueryLog();  
-
-
-        // $columnsArray = array();
-        // $tableColumns = TableStructure::where('table_id' , $request->tableId)->get();
-
-        // foreach($tableColumns as $val)
-        // {
-        //     $columnsArray[$val->column_name] = $val->is_unique;
-        // }
 
         $response = $this->getTableDetailsByAuth($request->tableAuthKey);
 
@@ -889,7 +830,6 @@ class TableController extends Controller {
             $k = 0;
 
             $insertData = array();
-            $validateStatus = 1;
             foreach ($request->mappingValue as $value) {
                 if ($value != "") {                    
                     $insertData[$value] = $csvLine[$k];
@@ -902,39 +842,6 @@ class TableController extends Controller {
             team_table_mapping::makeNewEntryForSource($table_incr_id, 'CSV_IMPORT');
             $this->insertActivityData($table_name, $teamData);
 
-            // foreach($insertData as $key=>$value)
-            // {
-            //     if($columnsArray[$key]==1)
-            //     {
-            //         $extData = \DB::table($targetTableName)
-            //         ->where($key, $value)
-            //         ->first();
-            //         if($extData)
-            //             $validateStatus = 0;
-            //     }
-            //     if(!$validateStatus)
-            //         break;
-            // }
-
-            // if($validateStatus)
-            // {
-            //     $insertData['created_at'] = time();
-            //     $recordId = \DB::table($targetTableName)->insertGetId(
-            //         $insertData
-            //     );
-
-            //     $teamData['data'] = new \stdClass();
-
-            //     $teamData['action'] = "Create";
-            //     $teamData['success'] = "Entry Added";
-            //     $teamData['data']->id = $recordId;
-            //     $teamData['details'] = array();
-            //     $teamData['old_data'] = array();
-
-            //     $this->insertActivityData($targetTableName, $teamData);
-                
-            //     team_table_mapping::makeNewEntryForSource($request->tableId, "CSV_IMPORT");
-            // }
             $i++;
         }
 
