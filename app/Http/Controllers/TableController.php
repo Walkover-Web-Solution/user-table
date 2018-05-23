@@ -881,9 +881,22 @@ class TableController extends Controller {
                 $k++;
             }
 
-            \DB::table($targetTableName)->insert([
+            $recordId = \DB::table($targetTableName)->insertGetId(
                 $insertData
-            ]);
+            );
+
+            $teamData['data'] = new \stdClass();
+
+            $teamData['action'] = "Create";
+            $teamData['success'] = "Entry Added";
+            $teamData['data']->id = $recordId;
+            $teamData['details'] = array();
+            $teamData['old_data'] = array();
+
+            $this->insertActivityData($targetTableName, $teamData);
+            
+            team_table_mapping::makeNewEntryForSource($request->tableId, "CSV_IMPORT");
+
             $i++;
         }
 
