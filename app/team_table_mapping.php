@@ -110,6 +110,18 @@ class team_table_mapping extends Model {
         return $data;
     }
 
+    public static function getTableById($tableId) {
+        // $data = team_table_mapping::with('tableStructure.columnType')
+        //         ->where('table_id', $tableId)
+        //         ->first()->toArray();
+        // return $data;
+
+        $data = team_table_mapping::where('table_id' , $tableId)->first();
+        print_r($data);
+        $data = team_table_mapping::getTableByAuth($data->auth);
+        return $data;
+    }
+
     public static function makeNewEntryForSource($table_incr_id, $dataSource) {
         $match_this = array('table_incr_id' => $table_incr_id, 'source' => $dataSource);
         $exists = DB::table('user_data_source')->where($match_this)->get();

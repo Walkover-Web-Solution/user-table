@@ -498,7 +498,7 @@
             $.ajax({
                 url:"/mapDataToTable",
                 method:"POST",
-                data:{'mappingValue':mapArray , 'fileName':$("#fileName").val() , 'tableId':tableId},
+                data:{'mappingValue':mapArray , 'fileName':$("#fileName").val() , 'tableAuthKey':$("#tableAuthKey").val()},
                 success:function(respData){
                     if(respData.Message=="Success")
                     {
