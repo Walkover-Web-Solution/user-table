@@ -16,7 +16,7 @@
     }
 </style>
 <div class="" id="table_data" style="padding-bottom:200px;">
-<table class="table-custom table-bordred table-custom-res">
+<table class="table-custom table-bordred table-custom-res" id="userTableData">
     @if(count($structure) < 3 && !$isGuestAccess)
         <thead id="userThead">
             <tr><th><span></span></th><th><span><button class="btn btn-primary addcolumn fixedBtn">Add some column first</button></span></th></tr>
@@ -411,7 +411,24 @@
 
 <script>
     var tableId = '{{$tableId}}';
+    function sortTable(table, order) {
+        var asc   = order === 'asc',
+            tbody = table.find('tbody');
+    
+        tbody.find('tr').sort(function(a, b) {
+            if (asc) {
+                return $('td:first', a).text().localeCompare($('td:first', b).text());
+            } else {
+                return $('td:first', b).text().localeCompare($('td:first', a).text());
+            }
+        }).appendTo(tbody);
+    }
+
     $(document).ready(function(){
+        $("#userTableData").tablesorter();
+        /*$("#userTableData th").click(function(){
+            sortTable($('#userTableData'),'asc');
+        });*/
         $(".initiateUpload").click(function(){
             $("#uploadModal").modal('show');
         });

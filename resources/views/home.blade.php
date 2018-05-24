@@ -588,6 +588,7 @@
 <link href="{{ asset('css/bootstrap-datepicker3.css') }}" rel="stylesheet">
 <script type="text/javascript" src="{{  asset('js/toast.js')}}"></script> <!--Toast JS-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/plugins/jquery.tablednd.js"></script>
+<script type="text/javascript" src="{{ url('js/jquery.tablesorter.min.js') }}"></script>
 <script type="text/javascript">
     var API_BASE_URL = "{{env('API_BASE_URL')}}";
     var activeTab = '{{$activeTab}}';
