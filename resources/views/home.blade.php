@@ -792,6 +792,7 @@
             result['mailContent'] = $('#mailContent').val();
             if(test !== false)
                 result['testemailid'] = $('#testemailid').val();
+            //if($('#send_auto').)
         }
         else if (type == 'sms') {
             if($('#sender').val() == '')
@@ -821,10 +822,12 @@
             if(test !== false)
                 result['testsmsno'] = $('#testsmsno').val();
         }
-
+        if($("#send_auto").is(":checked"))
+            result['send_auto'] = 'yes';
+        
         var returnData = makeFilterJsonData(tableId, 'returnData');
         var filter_condition = $('#filter_condition').val();
-        sendData(type, returnData[1], result, tableId, filter_condition, returnData[0], test);
+        sendData(type, returnData[1], result, tableId, filter_condition, returnData[0], test, activeTab);
     }
 
     function timeToSend(type) {
@@ -1490,7 +1493,7 @@ $(function(){
                         <label onclick="timeToSend('now')" class="radio-inline"><input type="radio" name="type"
                                                                                        value="now" checked="checked">Now</label>
                         <label onclick="timeToSend('auto')" class="radio-inline"><input type="radio" value="auto"
-                                                                                        name="type">Auto</label>
+                                                                                        name="type" id="send_auto">Auto</label>
                     </a>
                 </li>
 
