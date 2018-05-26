@@ -10,18 +10,16 @@ use App\Tables;
 use App\TableStructure;
 use App\Tabs;
 use App\CronTab;
-use App\TabColumnMappings;
 use App\team_table_mapping;
 use App\Teams;
 use App\Viasocket;
-use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
-use GuzzleHttp;
 use App\Repositories\TableRepository;
+use App\SMS;
 
 class TableController extends Controller {
 
@@ -659,6 +657,8 @@ class TableController extends Controller {
             $tabresult = Tabs::getTabQuerywithtable($activeTab, $tableNames['table_id']);
             if(!empty($tabresult))
                 $tabId = $tabresult;
+        }else{
+            return response(json_encode(array('status' => 'error', 'message' => 'Please save your segment first.')), 200)->header('Content-Type', 'application/json');
         }
         
         $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
@@ -681,166 +681,12 @@ class TableController extends Controller {
             return response(json_encode(array('message' => 'No record found to send')), 200)->header('Content-Type', 'application/json');
         }
         if ($type == 'email') {
-            $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key'], $tabId);
+            $response = SMS::sendMail($formData, $results, $tableId, $tableNames['email_api_key'], $tabId);
         }
         if ($type == 'sms') {
-            $response = $this->sendSMS($formData, $results, $tableId, $tableNames['sms_api_key'], $tabId);
+            $response = SMS::sendSMS($formData, $results, $tableId, $tableNames['sms_api_key'], $tabId);
         }
         return $response;
-    }
-
-    public function sendMail($formData, $data, $tableId, $email_api_key = false, $tabId) {
-        if (empty($email_api_key))
-            return false;
-
-        $from_email = $formData['from_email'];
-        $from_name = $formData['from_name'];
-        $email_column = $formData['email_column'];
-        $subject = $formData['subject'];
-        $mailContent = $formData['mailContent'];
-        $testEmailid = isset($formData['testemailid']) && !empty($formData['testemailid']) ? $formData['testemailid'] : false;
-        $sendAuto = isset($formData['send_auto']) && $formData['send_auto'] == 'yes' ? true : false;
-        if($sendAuto)
-        {
-            $matchThese = array('table_id' => $tableId, 'type' => 0, 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'message' => $mailContent, 'tab_column_type' => $email_column);
-            CronTab::updateOrCreate($matchThese,['tab_id' => $tabId]);
-        }
-        
-        preg_match_all("~\##(.*?)\##~", $mailContent, $replaceKey);
-        $chunks = array_chunk($data, 500);
-        foreach ($chunks as $data) {
-            $insertParamArr = array();
-            $findArr = array();
-            foreach ($data as $key => $value) {
-                if (!isset($value[$email_column])) {
-                    continue;
-                }
-                if (!empty($value)) {
-                    $name = $value['name'];
-                    $valArr = array();
-                    foreach ($replaceKey[1] as $index => $strName) {
-                        if (isset($value[$strName])) {
-                            $valArr[$index] = $value[$strName];
-                            $findArr[$index] = "##$strName##";
-                        }
-                    }
-                    $actualMailContent = str_replace($findArr, $valArr, $mailContent);
-                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 1, 'mailKey' => $email_api_key, 'tableId' => $tableId, 'tab_id' => $tabId);
-                    if(!empty($testEmailid))
-                        break;
-                }
-            }
-            $emailresponse = $this->postemail(!empty($testEmailid) ? $testEmailid : $value[$email_column], $from_email, $subject, $actualMailContent, $email_api_key);
-            if(empty($testEmailid))
-                $response = \App\sendMailSMS::insertMailDetials($insertParamArr);
-        }
-        if ($emailresponse) {
-            return response(json_encode(array('status' => 'success', 'message' => 'Email Sent')), 200)->header('Content-Type', 'application/json');
-        } else {
-            return response(json_encode(array('status' => 'error', 'message' => 'Error in sending, Please contact to support')), 200)->header('Content-Type', 'application/json');
-        }
-    }
-
-    public function sendSMS($formData, $data, $tableId, $sms_api_key = false, $tabId) {
-        if (empty($sms_api_key))
-            return false;
-
-        $senderId = $formData['sender'];
-        $route = $formData['route'];
-        $mobile_column = $formData['mobile_columnn'];
-        $message = $formData['message'];
-        $testSmsno = isset($formData['testsmsno']) && !empty($formData['testsmsno']) ? $formData['testsmsno'] : false;
-        $sendAuto = isset($formData['send_auto']) && $formData['send_auto'] == 'yes' ? true : false;
-        if($sendAuto)
-        {
-            $matchThese = array('table_id' => $tableId, 'type' => 1, 'subject' => $senderId, 'message' => $message, 'tab_column_type' => $mobile_column, 'route' => $route);
-            CronTab::updateOrCreate($matchThese,['tab_id' => $tabId]);
-        }
-        preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
-
-        $chunks = array_chunk($data, 500);
-        foreach ($chunks as $data) {
-            $insertParamArr = array();
-            $smsArrayJSON = array();
-            $findArr = array();
-            foreach ($data as $key => $value) {
-                if (!isset($value[$mobile_column])) {
-                    continue;
-                }
-                if (!empty($value)) {
-                    $valArr = array();
-                    foreach ($replaceKey[1] as $index => $strName) {
-                        if (isset($value[$strName])) {
-                            $valArr[$index] = $value[$strName];
-                            $findArr[$index] = "##$strName##";
-                        }
-                    }
-                    $actualMsg = str_replace($findArr, $valArr, $message);
-                    $insertParamArr[] = array('senderId' => $senderId, 'message' => $actualMsg, 'number' => $value[$mobile_column], 'authkey' => $sms_api_key, 'route' => $route, 'status' => 1, 'tableId' => $tableId, 'tab_id' => $tabId);
-                    $smsArrayJSON[] = array("message" => $actualMsg, "to" => !empty($testSmsno) ? array($testSmsno) : array($value[$mobile_column]));
-                }
-                if(!empty($testSmsno))
-                    break;
-            }
-            if(empty($testSmsno))
-                $response = \App\sendMailSMS::insertMessageDetials($insertParamArr);
-            else
-                $response = true;
-            
-            $smscontent = json_encode(array("sender" => $senderId, "route" => $route, "country" => 91, "sms" => $smsArrayJSON));
-            $this->postsms($smscontent, $sms_api_key);
-        }
-
-        if ($response) {
-            return response(json_encode(array('status' => 'success', 'message' => 'SMS Sent')), 200)->header('Content-Type', 'application/json');
-        } else {
-            return response(json_encode(array('status' => 'error', 'message' => 'Error in sending, Please contact to support')), 200)->header('Content-Type', 'application/json');
-        }
-    }
-
-    private function postsms($sms, $smsApiKey) {
-        try {
-            $client = new GuzzleHttp\Client();
-            $url = "http://api.msg91.com/api/v2/sendsms";
-            $response = $client->post($url, ['body' => $sms, 'headers' => ['authkey' => $smsApiKey, 'Content-type' => 'application/json']]);
-            return $response;
-        } catch (\Guzzle\Http\Exception\ConnectException $e) {
-            $response = json_encode((string) $e->getResponse()->getBody());
-            return $response;
-        }
-    }
-
-    private function postemail($to, $from, $subject, $email, $emailApiKey) {
-        $url = 'http://control.msg91.com/api/sendmail.php?to=' . $to . '&from=' . $from . '&subject=' . $subject . '&body=' . $email . '&authkey=' . $emailApiKey;
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "",
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-            return false;
-        } else {
-            $response = json_decode($response);
-            if ($response->msgType == 'error')
-                return false;
-            else
-                return true;
-        }
     }
     
     public function importTable(Request $request) {
@@ -911,95 +757,5 @@ class TableController extends Controller {
         }
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
-    }
-    
-    public function SendSMSAuto($type = 'email')
-    {
-        if($type === false)
-            return false;
-        $cron_status = ($type == 'sms') ? 1 : 0;
-        $cron_tab = CronTab::where('type', $cron_status)->get();
-        foreach($cron_tab as $cron){
-            $tab = Tabs::where('id', $cron->tab_id)->first();
-            if(empty($tab->query))
-                continue;
-            
-            $tableNames = team_table_mapping::getUserTablesNameById($cron->table_id);
-            if (empty($tableNames['table_id'])) {
-                return array();
-            }
-            
-            $filter = json_decode($tab->query, true);
-            $coltype = array();
-            $tabId = $cron->tab_id;
-            $filter_columns = TableStructure::whereIn('id', function($query) use ($tabId) {
-                        $query->select('column_id')->from('tab_column_mappings')
-                                ->Where('tab_id', '=', $tabId);
-                    })->get();
-            foreach ($filter_columns as $value)
-            {
-                $exist = false;
-                foreach ($filter as $key => $val)
-                {
-                    if(!array_key_exists($value->column_name, $val))
-                        continue;
-                    
-                    $exist = true;
-                }
-                if($exist === false)
-                    continue;
-                
-                $column_type_name = \DB::table('column_types')->where('id', $value->column_type_id)->first();
-                $coltype[] = array($value->column_name => $column_type_name->column_name);
-            }
-            
-            $condition = $cron->condition;
-            $tableId = $cron->table_id;
-            $activeTab = $tab->tab_name;
-            
-            $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
-            usort($columnsonly, function ($a, $b) {
-                return strnatcmp($a['ordering'], $b['ordering']);
-            });
-            $colArr = array(0 => 'id');
-            foreach ($columnsonly as $col) {
-                $colArr[] = $col['column_name'];
-            }
-            $jsonData = $this->getAppliedFiltersData($filter, $tab->table_id, $coltype, $condition, $colArr, null);
-            
-            $data = json_decode(json_encode($jsonData), true);
-            $results = $data['data'];
-            if ($type == 'email') {
-                $formData = array('from_email' => $cron->from_email, 'from_name' => $cron->from_name, 'subject' => $cron->subject, 'mailContent' => $cron->message, 'email_column' => $cron->tab_column_type, 'testsmsno' => false, 'send_auto' => false);
-                $newresult = array();
-                foreach($results as $data)
-                {
-                    $sms = \DB::table('send_mail_details')->where('to_email', $data[$cron->tab_column_type])
-                            ->where('tableId', $cron->table_id)->where('tab_id', $cron->tab_id)
-                            ->where('status', 1)->first();
-                    if(!empty($sms))
-                        continue;
-                    
-                    $newresult[] = $data;
-                }
-                $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key'], $tabId);
-            }
-            if ($type == 'sms') {
-                $formData = array('sender' => $cron->subject, 'route' => $cron->route, 'message' => $cron->message, 'mobile_columnn' => $cron->tab_column_type, 'testsmsno' => false, 'send_auto' => false);
-                $newresult = array();
-                foreach($results as $data)
-                {
-                    $sms = \DB::table('send_sms_details')->where('number', $data[$cron->tab_column_type])
-                            ->where('tableId', $cron->table_id)->where('tab_id', $cron->tab_id)
-                            ->where('status', 1)->first();
-                    if(!empty($sms))
-                        continue;
-                    
-                    $newresult[] = $data;
-                }
-                $response = $this->sendSMS($formData, $newresult, $tableId, $tableNames['sms_api_key'], $tabId);
-            }
-            return $response;        
-        }
     }
 }

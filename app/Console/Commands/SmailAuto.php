@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\TableController;
+use App\Http\Controllers\SmsController;
 class SmailAuto extends Command
 {
     /**
@@ -37,6 +37,7 @@ class SmailAuto extends Command
      */
     public function handle()
     {
-        TableController::SendSMSAuto('email');
+        $sms = new SmsController();
+        $sms->SendSMSAuto('email');
     }
 }

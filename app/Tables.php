@@ -474,5 +474,5 @@ class Tables extends Model
         }
         return $users;
     }
-
+    
 }
