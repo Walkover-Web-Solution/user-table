@@ -84,6 +84,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     Route::post('/update', 'TableController@updateEntry');
     Route::get('/getTeamMateList/{tableid}', 'TeamController@listTables');
     Route::post('/deleteFilter','UserController@deleteFilter');
+    Route::get('/sendSMSAuto', 'TableController@SendSMSAuto');
 });
 
 Route::group(['middleware' => ['socketMasterKey']], function() {

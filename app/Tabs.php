@@ -30,6 +30,13 @@ class Tabs extends Model {
 
     # return tab query
 
+    public static function getTabQueryFromID($td) {
+        $data = Tabs::where('id', $td)->first(['query']);
+        return $data->query;
+    }
+
+    # return tab query
+
     public static function getTabQuerywithtable($tab, $table_id) {
         $data = Tabs::where('tab_name', $tab)->where('table_id', $table_id)->orderBy('sequence', 'asc')->first(['id']);
         return $data->id;

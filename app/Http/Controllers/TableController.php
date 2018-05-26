@@ -725,7 +725,7 @@ class TableController extends Controller {
                         }
                     }
                     $actualMailContent = str_replace($findArr, $valArr, $mailContent);
-                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 0, 'mailKey' => $email_api_key, 'tableId' => $tableId, 'tab_id' => $tabId);
+                    $insertParamArr[] = array('to_email' => $value[$email_column], 'from_email' => $from_email, 'from_name' => $from_name, 'subject' => $subject, 'content' => $actualMailContent, 'status' => 1, 'mailKey' => $email_api_key, 'tableId' => $tableId, 'tab_id' => $tabId);
                     if(!empty($testEmailid))
                         break;
                 }
@@ -753,7 +753,7 @@ class TableController extends Controller {
         $sendAuto = isset($formData['send_auto']) && $formData['send_auto'] == 'yes' ? true : false;
         if($sendAuto)
         {
-            $matchThese = array('table_id' => $tableId, 'type' => 1, 'subject' => $senderId, 'message' => $message, 'tab_column_type' => $mobile_column);
+            $matchThese = array('table_id' => $tableId, 'type' => 1, 'subject' => $senderId, 'message' => $message, 'tab_column_type' => $mobile_column, 'route' => $route);
             CronTab::updateOrCreate($matchThese,['tab_id' => $tabId]);
         }
         preg_match_all("~\##(.*?)\##~", $message, $replaceKey);
@@ -912,5 +912,94 @@ class TableController extends Controller {
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
     }
-
+    
+    public function SendSMSAuto($type = 'email')
+    {
+        if($type === false)
+            return false;
+        $cron_status = ($type == 'sms') ? 1 : 0;
+        $cron_tab = CronTab::where('type', $cron_status)->get();
+        foreach($cron_tab as $cron){
+            $tab = Tabs::where('id', $cron->tab_id)->first();
+            if(empty($tab->query))
+                continue;
+            
+            $tableNames = team_table_mapping::getUserTablesNameById($cron->table_id);
+            if (empty($tableNames['table_id'])) {
+                return array();
+            }
+            
+            $filter = json_decode($tab->query, true);
+            $coltype = array();
+            $tabId = $cron->tab_id;
+            $filter_columns = TableStructure::whereIn('id', function($query) use ($tabId) {
+                        $query->select('column_id')->from('tab_column_mappings')
+                                ->Where('tab_id', '=', $tabId);
+                    })->get();
+            foreach ($filter_columns as $value)
+            {
+                $exist = false;
+                foreach ($filter as $key => $val)
+                {
+                    if(!array_key_exists($value->column_name, $val))
+                        continue;
+                    
+                    $exist = true;
+                }
+                if($exist === false)
+                    continue;
+                
+                $column_type_name = \DB::table('column_types')->where('id', $value->column_type_id)->first();
+                $coltype[] = array($value->column_name => $column_type_name->column_name);
+            }
+            
+            $condition = $cron->condition;
+            $tableId = $cron->table_id;
+            $activeTab = $tab->tab_name;
+            
+            $columnsonly = team_table_mapping::getUserTablesColumnNameById($tableId);
+            usort($columnsonly, function ($a, $b) {
+                return strnatcmp($a['ordering'], $b['ordering']);
+            });
+            $colArr = array(0 => 'id');
+            foreach ($columnsonly as $col) {
+                $colArr[] = $col['column_name'];
+            }
+            $jsonData = $this->getAppliedFiltersData($filter, $tab->table_id, $coltype, $condition, $colArr, null);
+            
+            $data = json_decode(json_encode($jsonData), true);
+            $results = $data['data'];
+            if ($type == 'email') {
+                $formData = array('from_email' => $cron->from_email, 'from_name' => $cron->from_name, 'subject' => $cron->subject, 'mailContent' => $cron->message, 'email_column' => $cron->tab_column_type, 'testsmsno' => false, 'send_auto' => false);
+                $newresult = array();
+                foreach($results as $data)
+                {
+                    $sms = \DB::table('send_mail_details')->where('to_email', $data[$cron->tab_column_type])
+                            ->where('tableId', $cron->table_id)->where('tab_id', $cron->tab_id)
+                            ->where('status', 1)->first();
+                    if(!empty($sms))
+                        continue;
+                    
+                    $newresult[] = $data;
+                }
+                $response = $this->sendMail($formData, $results, $tableId, $tableNames['email_api_key'], $tabId);
+            }
+            if ($type == 'sms') {
+                $formData = array('sender' => $cron->subject, 'route' => $cron->route, 'message' => $cron->message, 'mobile_columnn' => $cron->tab_column_type, 'testsmsno' => false, 'send_auto' => false);
+                $newresult = array();
+                foreach($results as $data)
+                {
+                    $sms = \DB::table('send_sms_details')->where('number', $data[$cron->tab_column_type])
+                            ->where('tableId', $cron->table_id)->where('tab_id', $cron->tab_id)
+                            ->where('status', 1)->first();
+                    if(!empty($sms))
+                        continue;
+                    
+                    $newresult[] = $data;
+                }
+                $response = $this->sendSMS($formData, $newresult, $tableId, $tableNames['sms_api_key'], $tabId);
+            }
+            return $response;        
+        }
+    }
 }
