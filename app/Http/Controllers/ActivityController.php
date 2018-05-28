@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\TableDetailRepositoryInterface;
 use App\Entity\Activity;
+use App\User;
 //use Carbon\Carbon;
 
 class ActivityController extends Controller
@@ -35,8 +36,16 @@ class ActivityController extends Controller
             else
                 $carbonDate = $act->updated_at;
             
+            $userData = "Guest User ";
+
+            $userDetails = User::where('email',$act->user_id)->first();
+            
+            if($userDetails)
+                $userData = $userDetails->first_name." ".$userDetails->last_name;
+            
             $date = $carbonDate->diffForHumans();
             $act->activityDate = $date;
+            $act->userName = $userData;
             $activityData[$key] = $act;
         }
 

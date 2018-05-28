@@ -329,17 +329,20 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 var desc = '';
                 $("#activity_log").html('');
                 var logsLength = logs.length;
-                function getImg(user_id, log,logTime) {
+                function getImg(user_id, log,logTime , logData) {
                     $.get('https://picasaweb.google.com/data/entry/api/user/' + user_id + '?alt=json', function (result) {
                         img = result.entry.gphoto$thumbnail.$t;
                         var name = result.entry.gphoto$nickname.$t;
                         if (!name) {
                             name = user_id;
                         }
-                        desc = '<h3 style="font-weight:700;margin-left:25px">' + name + '('+user_id+')'+'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="' + img + '"><p style="margin-left:25px;width:450px">' + log + '</p><span>' + logTime + '</span><br><br>';
+                        // desc = '<h3 style="font-weight:700;margin-left:25px">' + name + '('+user_id+')'+'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="' + img + '"><p style="margin-left:25px;width:450px">' + log + '</p><span>' + logTime + '</span><br><br>';
+
+                        desc = '<h3 style="font-weight:700;margin-left:25px">' + name + '('+user_id+')'+'</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="' + img + '"><p style="margin-left:25px;width:450px">' + log + '<br /><br /><span>' + logTime + '</span></p><br><br>';
+
                         $("#activity_log").append(desc);
                     }).fail(function () {
-                        desc = '<h3 style="font-weight:700;margin-left:25px">' + user_id + '</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+API_BASE_URL+'/img/user_img.jpg"><p style="margin-left:25px;width:450px">' + log + '</p><span>' + logTime + '</span><br><br>';
+                        desc = '<h3 style="font-weight:700;margin-left:25px">' + logData.userName + '</h3><img style="height:30px;width:30px;border-radius:25em;float:left;margin-left:-18px;margin-right:10px" src="'+API_BASE_URL+'/img/user_img.jpg"><p style="margin-left:25px;width:450px">' + log + '<br /><br /><span>' + logTime + '</span></p><br><br>';
                         $("#activity_log").append(desc);
                     });
                 }
@@ -350,10 +353,11 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
 //                        } else {
 //                            var logTime = logs[i].created_at;
 //                        }
+                        console.log(logs[i]);
                         var logTime = logs[i].activityDate;
                         if(logs[i].user_id != '')
                         {
-                            getImg(logs[i].user_id,logs[i].log, logTime);
+                            getImg(logs[i].user_id,logs[i].log, logTime , logs[i]);
                         }
                         else
                         {

@@ -62,15 +62,22 @@ class Activity extends Model
         else {
             $desc .= 'Updated';//' '.$act->content_type.' from '.$act->old_data.' to '.$act->details;
             $oldData = json_decode($act->old_data, true);
+
             unset($oldData['is_deleted']);
+            unset($oldData['created_at']);
+            unset($oldData['updated_at']);
+            
+            
+            
             $newData = json_decode($act->details, true);
 
-            foreach ($oldData as $column => $value) {
+            foreach ($oldData as $column => $value) 
+            {
                 if(is_array($newData[$column]))
                     $newData[$column] = json_encode($newData[$column]);
                 if(is_array($value))
                     $value = json_encode($value);
-                if(empty($value))
+                if(empty($value) || is_null($value))
                     $value='NULL';
 
                 $desc .= ' <span class="column-name">' . $column . '</span><span class="new-val"> ' . $newData[$column] . '</span> from <span class="old-val"> ' . $value . '</span>, ';
