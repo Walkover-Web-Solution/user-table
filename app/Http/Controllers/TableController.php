@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use App\Repositories\TableRepository;
 use App\SMS;
+use App\ColumnType;
 
 use \App\Jobs\ImportUserData;
 
@@ -158,6 +159,11 @@ class TableController extends Controller {
 
         $results = $this->processTableData($tableId, $tabName);
         $results['isGuestAccess'] = $isGuestAccess;
+
+        $columnTypes = ColumnType::all();
+
+        $results['columnTypes'] = $columnTypes;
+
         return view('home', $results);
     }
 

@@ -812,8 +812,17 @@
                         alert(info.error);
                         return false;
                     }
-                    alert(info.msg);
-                    location.reload();
+                    //alert(info.msg);
+                    //location.reload();
+                    $.toast({
+                        heading: 'Success',
+                        text: 'Column Updated',
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    });
+                    setTimeout(function(){
+                        location.reload();
+                    },1000);
                 }
             });
         }

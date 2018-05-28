@@ -868,8 +868,17 @@
                         alert(info.error);
                         return false;
                     }
-                    alert(info.success);
-                    location.reload();
+                    $.toast({
+                        heading: 'Success',
+                        text: 'Table Structure Updated',
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    });
+                    setTimeout(function(){
+                        location.reload();
+                    },1000);
+                    /*alert(info.success);
+                    location.reload();*/
                 }
             });
         }
@@ -1259,6 +1268,33 @@
     });
 $(function(){
     var current = window.location.href;
+    $(".edit_column_value").click(function(){
+        var rowId = $(this).attr('data-value');
+        $(".show_field_"+rowId).removeClass('hidden');
+        $(".show_span_"+rowId).addClass('hidden');
+    });
+    $(".noedit_column_value").click(function(){
+        var rowId = $(this).attr('data-value');
+        $(".show_field_"+rowId).addClass('hidden');
+        $(".show_span_"+rowId).removeClass('hidden');
+    });
+    $(".update-column-data").click(function(){
+        var rowId = $(this).attr('data-value');
+        $("#edit_column_id").val(rowId);
+        $("#old_edit_column_name").val($("#edit_column_name_"+rowId).attr('data-column-name'));
+        $("#edit_column_name").val($("#edit_column_name_"+rowId).val());
+        $("#edit_column_type").val($("#edit_column_type_"+rowId).val());
+        $("#edit_column_display").val($("#edit_column_display_"+rowId).val());
+        $("#edit_column_fieldOrder").val($("#column_order_"+rowId).text().trim());
+
+
+        $("#edit_column_uniqe").val(0);
+        if($("#edit_column_uniqe_"+rowId).is(":checked"))
+            $("#edit_column_uniqe").val(1);
+
+
+            editColumnData();
+    });
 });
 </script>
 
@@ -1332,7 +1368,7 @@ $(function(){
 
 <!-- Modal -->
 <div id="column_sequence" class="modal fade" role="dialog">
-    <div class="modal-dialog" style="width:800px">
+    <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div style="background:rgb(237,239,240)" class="modal-content">
             <div class="modal-header">
@@ -1340,24 +1376,96 @@ $(function(){
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <form id="editColumnSequence">
-                <div class="modal-body">
+                <div class="modal-body modal-lg">
                     <div class="col-xs-8" id="edit_column_body"></div>
                     <div style="width:20px" class="col-xs-2">&nbsp;</div>
                     <div style="padding-right:0px;padding-left:0px" class="col-xs-4" id="sec_edit_users_body"></div>
                     <div class="col-xs-12">
                     @if(!empty($structure) && !$isGuestAccess)
-                    <table id="table-1q" class="table basic table-bordred" >
-                        <thead><tr id="0"><th>Sequence</th><th>Column Name</th><th>Hidden</th></tr></thead>
-                    @foreach($structure as $key => $val)
-                    <tr id="{{$val['id']}}"><td>{{$val['ordering']}}</td><td>{{$key}}</td><td><input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /></td></tr>
-                    @endforeach
-                    </table>
+                        <table id="table-1q" class="table basic table-bordred" >
+                            <thead>
+                                <tr id="0">
+                                    <th>Sequence</th>
+                                    <th>Column Name</th>
+                                    <th>Type</th>
+                                    <th>Display</th>
+                                    <th>Unique</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            @foreach($structure as $key => $val)
+                                @php
+                                    $i = $val['id'];
+                                @endphp
+                                <tr id="{{$val['id']}}">
+                                    <td id="column_order_{{ $i }}">{{$val['ordering']}}</td>
+                                    <td> 
+                                        <input type="text" class="form-control common-class-show-field show_field_{{ $i }} hidden" value="{{ $key }}" data-column-name="{{ $key }}" name="edit_column_name_{{ $i }}" id="edit_column_name_{{ $i }}" />
+                                        <span class="show_span_{{ $i }}">
+                                            {{ $key }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $columnTypeArray = array();
+                                        @endphp
+                                        <select class="form-control common-class-show-field show_field_{{ $i }} hidden" name="edit_column_type_{{ $i }}" id="edit_column_type_{{ $i }}">
+                                            <option value="">Select Column</option>
+                                            @foreach($columnTypes as $key => $value)
+                                                <option @if($value->id==$val['column_type_id']) {{ "selected='selected'" }}  @endif class="column_options" value="{{ $value->id }}">{{ $value->column_name }}</option>
+                                                @php $columnTypeArray[$value->id] = $value->column_name; @endphp
+                                            @endforeach
+                                        </select>
+                                        <span class="show_span_{{ $i }}">
+                                            {{ $columnTypeArray[$val['column_type_id']] }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{-- <input type="checkbox" id="reorder_column_{{$val['id']}}" name="reorder_column_{{$val['id']}}" @if($val['display'] == 0) checked="checked" @endif /> --}}
+                                        <select class="form-control display m-t-0 common-class-show-field show_field_{{ $i }} hidden" name="edit_column_display_{{ $i }}" id="edit_column_display_{{ $i }}">
+                                            <option value="1" @if($val['display'] == 1) {{ "selected='selected'" }} @endif>Show</option>
+                                            <option value="0" @if($val['display'] == 0) {{ "selected='selected'" }} @endif>Hide</option>
+                                        </select>
+                                        <span class="show_span_{{ $i }}">
+                                                @if($val['display'] == 1) {{ "Shown" }} @else {{ "Hidden" }} @endif
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input class="common-class-show-field show_field_{{ $i }} hidden" type="checkbox"  @if($val['unique'] == 0) checked="checked" @endif name="edit_column_uniqe_{{ $i }}" id="edit_column_uniqe_{{ $i }}"/>
+                                        <span class="show_span_{{ $i }}">
+                                                @if($val['unique'] == 1) {{ "Yes" }} @else {{ "No" }} @endif
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-small btn-primary show_span_{{ $i }} edit_column_value" data-value="{{ $i }}"><i class="glyphicon glyphicon-pencil"></i></button>
+                                        <button type="button" class="btn btn-small btn-success common-class-show-field show_field_{{ $i }} hidden update-column-data" data-value="{{ $i }}"><i class="glyphicon glyphicon-saved"></i></button>
+                                        <button type="button" class="btn btn-small btn-danger common-class-show-field show_field_{{ $i }} noedit_column_value hidden" data-value="{{ $i }}"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </table>
                     @endif
                     </div>
                 </div>
-                <div class="modal-footer" style="overflow: hidden;width:750px">
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success" onclick="updateColumnSequence()">
-                        Update
+                <div class="modal-footer" style="overflow: hidden;">
+                    <div class="hidden">
+                            <input type="text" id="edit_column_id" name="edit_column_id" class="form-control" />
+                            <input type="text" name="old_edit_column_name" id="old_edit_column_name" class="form-control" />
+                            <input type="text" id="edit_column_name" class="form-control" name="edit_column_name" />
+
+                            <input type="text" name="edit_column_type" id="edit_column_type" class="form-control" />
+
+                            <input type="text" name="edit_column_display" id="edit_column_display" class="form-control" />
+
+                            <input type="text" class="form-control order order-input" name="edit_column_fieldOrder" id="edit_column_fieldOrder" />
+
+                            <input type="text" class="value form-control" name="edit_column_uniqe" id="edit_column_uniqe" class="unique" />
+
+                            <textarea type="text" name="edit_column_default_value" id="edit_column_default_value" placeholder="Drop down values" class="value form-control"></textarea>
+
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="updateColumnSequence()">
+                        Update Order
                     </button>
                 </div>
             </form>
