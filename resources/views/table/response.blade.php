@@ -425,7 +425,10 @@
     }
 
     $(document).ready(function(){
-        //$("#userTableData").tablesorter();
+        $("#userTableData").tablesorter();
+        /*$("#userTableData th").click(function(){
+            sortTable($('#userTableData'),'asc');
+        });*/
         $(".initiateUpload").click(function(){
             $("#uploadModal").modal('show');
         });

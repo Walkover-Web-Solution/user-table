@@ -21,8 +21,6 @@ use Illuminate\Support\Facades\Schema;
 use App\Repositories\TableRepository;
 use App\SMS;
 
-use \App\Jobs\ImportUserData;
-
 class TableController extends Controller {
 
     protected $activity;
@@ -459,37 +457,6 @@ class TableController extends Controller {
         }
     }
 
-
-    static function insertActivityDataStatic($table_name, $teamData) {
-        if (empty($teamData['action']))
-            return false;
-        $data['description'] = $teamData['success'];
-        $data['action'] = $teamData['action'];
-        $data['content_type'] = 'Entry';
-        $data['content_id'] = $teamData['data']->id;
-        if ($teamData['action'] == 'Update')
-            $data['updated_at'] = date('Y-m-d H:i:s');
-        else {
-            $data['created_at'] = date('Y-m-d H:i:s');
-        }
-        $loggedInUser = Auth::user();
-        if ($loggedInUser)
-            $data['userId'] = $loggedInUser->email;
-        else
-            $data['userId'] = '';
-        $data['details'] = $teamData['details'];
-        $data['old_data'] = $teamData['old_data'];
-        $data['ipAddress'] = \Request::getClientIp(true);
-        $log_table = 'log' . substr($table_name, 4);
-
-        $activity = new Activity($log_table);
-        
-        $activityData = Act::getActivityData($data);
-        
-        $activity->addActivity($activityData);
-    }
-
-
     public function insertActivityData($table_name, $teamData) {
         if (empty($teamData['action']))
             return false;
@@ -707,13 +674,6 @@ class TableController extends Controller {
     }
 
     public function mapDataToTable(Request $request) {
-
-        $userId=0;
-        $loggedInUser = Auth::user();
-
-        if($loggedInUser)
-            $userId = $loggedInUser->id;
-
         $formData = $request->toArray();
         $validator = \Validator::make($formData, [
             'mappingValue' => 'required',
@@ -724,46 +684,35 @@ class TableController extends Controller {
             return response()->json(['Message' => 'Failed', 'Status' => '422', 'Data' => $validator->errors()])->setStatusCode(422);
         }
 
+        $destinationPath = 'uploads';
+
+        $handle = fopen($destinationPath . '/' . $request->fileName, "r");
+
         $response = $this->getTableDetailsByAuth($request->tableAuthKey);
 
         $table_name = $response['table_id'];
         $table_incr_id = $response['id'];
+        $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
 
+        $i = 0;
+        while ($csvLine = fgetcsv($handle)) {
+            $k = 0;
 
-        $destinationPath = 'uploads';
-
-        // $handle = fopen($destinationPath . '/' . $request->fileName, "r");
-
-        $jobsData = array('FileName'=>$destinationPath . '/' . $request->fileName , 'MapData'=>$request->mappingValue , 'UserId'=>$userId , 'TableAuthKey'=>$request->tableAuthKey);
-
-        ImportUserData::dispatch($jobsData)->onConnection('database');
-
-        
-        // $response = $this->getTableDetailsByAuth($request->tableAuthKey);
-
-        // $table_name = $response['table_id'];
-        // $table_incr_id = $response['id'];
-        // $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
-
-        // $i = 0;
-        // while ($csvLine = fgetcsv($handle)) {
-        //     $k = 0;
-
-        //     $insertData = array();
-        //     foreach ($request->mappingValue as $value) {
-        //         if ($value != "") {                    
-        //             $insertData[$value] = $csvLine[$k];
-        //         }
-        //         $k++;
-        //     }
+            $insertData = array();
+            foreach ($request->mappingValue as $value) {
+                if ($value != "") {                    
+                    $insertData[$value] = $csvLine[$k];
+                }
+                $k++;
+            }
             
-        //     $teamData = team_table_mapping::makeNewEntryInTable($table_name, $insertData, $table_structure);
+            $teamData = team_table_mapping::makeNewEntryInTable($table_name, $insertData, $table_structure);
 
-        //     team_table_mapping::makeNewEntryForSource($table_incr_id, 'CSV_IMPORT');
-        //     $this->insertActivityData($table_name, $teamData);
+            team_table_mapping::makeNewEntryForSource($table_incr_id, 'CSV_IMPORT');
+            $this->insertActivityData($table_name, $teamData);
 
-        //     $i++;
-        // }
+            $i++;
+        }
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
     }
