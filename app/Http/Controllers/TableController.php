@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Activity as Act;
 use App\Entity\Activity;
-use App\Entity\TableStructure as TblStr;
 use App\Http\Helpers;
 use App\Repositories\TableDetailRepositoryInterface;
 use App\Tables;
