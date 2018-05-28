@@ -353,7 +353,7 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
 //                        } else {
 //                            var logTime = logs[i].created_at;
 //                        }
-                        console.log(logs[i]);
+                        // console.log(logs[i]);
                         var logTime = logs[i].activityDate;
                         if(logs[i].user_id != '')
                         {

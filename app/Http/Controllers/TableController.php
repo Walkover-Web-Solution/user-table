@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Activity as Act;
 use App\Entity\Activity;
+use App\Entity\TableStructure as TblStr;
 use App\Http\Helpers;
 use App\Repositories\TableDetailRepositoryInterface;
 use App\Tables;
@@ -451,6 +452,30 @@ class TableController extends Controller {
                     }
                 }
                 team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
+                if($teamData['success']=="Entry Updated")
+                {
+                    $tableStructure = \DB::table('table_structures')->select('column_name' , 'column_type_id')->where('table_id' , $table_incr_id)->get();
+                    $columnDetails = array();
+                    foreach($tableStructure as $tabStr)
+                    {
+                        $columnDetails[$tabStr->column_name] = $tabStr->column_type_id;
+                    }
+                    foreach($teamData['details'] as $key => $value)
+                    {
+                        if(isset($columnDetails[$key]) && $columnDetails[$key]==9)
+                        {
+                            $teamData['details'][$key] = date('Y-m-d' , $value);
+                        }
+                    }
+                    foreach($teamData['old_data'] as $key => $value)
+                    {
+                        if(isset($columnDetails[$key]) && $columnDetails[$key]==9)
+                        {
+                            $teamData['old_data'][$key] = date('Y-m-d' , $value);
+                        }
+                    }
+                }
+                // return response()->json($teamData);
                 $this->insertActivityData($table_name, $teamData);
                 $arr['teamData'] = $teamData;
                 $arr['user'] = $user;
