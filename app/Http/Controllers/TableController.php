@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Repositories\TableRepository;
 use App\SMS;
 use App\ColumnType;
+use Illuminate\Support\Facades\Input;
 
 class TableController extends Controller {
 
@@ -155,22 +156,32 @@ class TableController extends Controller {
             return redirect()->route('tables');
         }
 
-        $results = $this->processTableData($tableId, $tabName);
+        $sortArray = array();
+
+        if(Input::get('sort-key')!=null && Input::get('sort-key')!="")
+            $sortArray['sort-key'] = Input::get('sort-key');
+
+        if(Input::get('sort-order')!=null && Input::get('sort-order')!="")
+            $sortArray['sort-order'] = Input::get('sort-order');
+
+        $results = $this->processTableData($tableId, $tabName , $sortArray);
         $results['isGuestAccess'] = $isGuestAccess;
 
         $columnTypes = ColumnType::all();
 
         $results['columnTypes'] = $columnTypes;
+        
+        $results['sortArray'] = $sortArray;
 
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition) {
-        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition);
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition , $sortArray = array()) {
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition , $sortArray);
         return json_decode(json_encode($tabDataJson), true);
     }
 
-    public function processTableData($tableId, $tabName) {
+    public function processTableData($tableId, $tabName , $sortArray) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
@@ -233,8 +244,8 @@ class TableController extends Controller {
                         $filtercolumns[] = $value->column_name;
                 }
             }
-
-            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition);
+            
+            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition , $sortArray);
             $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);

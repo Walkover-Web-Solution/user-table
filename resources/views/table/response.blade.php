@@ -31,10 +31,27 @@
                     @continue
                 @endif
                 @if($val['display'] != 0)
-                <th>
+                
+                @php
+                    $sortOrder = "ASC";
+                    $sortIcon = "";
+                @endphp
+                
+                @if(isset($sortArray['sort-key']) && $sortArray['sort-key']==$key ) 
+                    @if($sortArray['sort-order']=='ASC') 
+                        @php
+                            $sortOrder = "DESC";
+                            $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes"></i>';
+                        @endphp
+                    @else
+                        @php
+                            $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes-alt"></i>';
+                        @endphp
+                    @endif 
+                @endif
+                <th class="sort-table" data-sort-key="{{ $key }}" data-sort-order="{{ $sortOrder }}" data-target-id="{{ $tableId }}">
                     <div class="dropdowncolumn">
-                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
-                            <span class="caret"></span>
+                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{ $sortIcon }} {{ $key}}
                         </span>
                     <ul class="dropdown-menu">
                         <li><a href="Javascript:;" class="hidecolumn">Hide</a></li>
@@ -68,9 +85,29 @@
         @if($k!='id')
         @if(!$isGuestAccess)
         
-            <th style="position:relative;">
+            
+
+        @php
+            $sortOrder = "ASC";
+            $sortIcon = "";
+        @endphp
+        
+        @if(isset($sortArray['sort-key']) && $sortArray['sort-key']==$k ) 
+            @if($sortArray['sort-order']=='ASC') 
+                @php
+                    $sortOrder = "DESC";
+                    $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes"></i>';
+                @endphp
+            @else
+                @php
+                    $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes-alt"></i>';
+                @endphp
+            @endif 
+        @endif
+        <th style="position:relative;"  class="sort-table" data-sort-key="{{ $k }}" data-sort-order="{{ $sortOrder }}" data-target-id="{{ $tableId }}">
+            <!--<th style="position:relative;"  class="sort-table" data-sort-key="{{ $k }}" data-sort-order="@if(isset($sortArray[$k]) && $sortArray[$k]=='ASC') {{ 'ASC' }} @else {{ 'DESC' }} @endif" data-target-id="{{ $tableId }}">-->
             <div class="dropdowncolumn">
-                <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}
+                <span class="dropdown-toggle" data-toggle="dropdown">{!! $sortIcon !!} {{$k}}
                     {{-- <span class="caret"></span> --}}
                 </span>
             {{-- <ul class="dropdown-menu">
@@ -425,6 +462,23 @@
     }
 
     $(document).ready(function(){
+
+        $(".sort-table").click(function(){
+            var thisObj = $(this);
+            var sortKey = thisObj.attr('data-sort-key').trim();
+            var sortOrder = thisObj.attr('data-sort-order').trim();
+            var targetId = thisObj.attr('data-target-id').trim();
+
+            window.location.href="/tables/"+targetId+"?sort-key="+sortKey+"&sort-order="+sortOrder;
+
+            if(sortOrder=="ASC")
+                thisObj.attr('data-sort-order','DESC');
+            else
+                thisObj.attr('data-sort-order','ASC');
+
+        });
+
+
         /*$("#userTableData").tablesorter();*/
         /*$("#userTableData th").click(function(){
             sortTable($('#userTableData'),'asc');
