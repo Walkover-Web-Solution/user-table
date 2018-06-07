@@ -230,9 +230,11 @@ class TableController extends Controller {
                 $tabArray = array();
                 $tabcondition = 'and';
                 $filtercolumns = array();
+                $activeTabId = 0;
             } else {
                 $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition', 'id'])->toArray();
                 $tabArray = json_decode($tabSql['query'], true);
+                $activeTabId = json_decode($tabSql['id'], true);
                 $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
                 if (isset($tabSql['id']) && !empty($tabSql['id'])) {
                     $tab_id = $tabSql['id'];
@@ -265,7 +267,15 @@ class TableController extends Controller {
             $d1 = strtotime("+3 days");
             $rangeEnd = date('m/d/Y', $d1);
             $allCount = isset($tabPaginateData['total'])?$tabPaginateData['total']:$allTabCount;
+
+            $addAction = "no";
+
+            if($tabName!="All")
+                $addAction = "yes";
+
             return array(
+                'activeTabId' => $activeTabId,
+                'addAction' => $addAction,
                 'allCount' =>$allCount,
                 'activeTab' => $tabName,
                 'date_columns' => $date_columns,
@@ -304,7 +314,7 @@ class TableController extends Controller {
             foreach ($arrTabCount as $tabDetail) {
                 foreach ($tabDetail as $tabName => $tabCount) {
                     if ($activeTab == $tabName)
-                        $htmlData .= '<li role="presentation" class="active">';
+                        $htmlData .= '<li role="presentation" class="active" id="active-tab-filter">';
                     else
                         $htmlData .= '<li role="presentation">';
                     $htmlData .= '<a href="' . env('APP_URL') . '/tables/' . $tableId . '/filter/' . $tabName . '">' . $tabName . ' (' . $tabCount . ')</a></li>';
@@ -708,6 +718,8 @@ class TableController extends Controller {
             while ($csvLine = fgetcsv($handle)) {
                 $csvDataArray[$i] = $csvLine;
                 $i++;
+                if($i==5)
+                    break;
             }
             $formattedArray = $csvDataArray;
             return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => $formattedArray, 'FileName' => $fileName])->setStatusCode(200);
@@ -756,5 +768,17 @@ class TableController extends Controller {
         }
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
+    }
+
+    public function addActionToFilter(Request $request)
+    {
+        $tabs = Tabs::where('id' , $request->activeTabId)->first();
+        if($tabs)
+        {
+            $tabs->action_value     =   json_encode(array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField));
+            $tabs->save();
+            return response()->json(array('Message'=>'Success','Status'=>'200','Data'=>new \stdClass()));
+        }
+        return response()->json(array('Message'=>'Failed','Status'=>'422','Data'=>new \stdClass()));
     }
 }

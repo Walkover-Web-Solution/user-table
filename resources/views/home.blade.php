@@ -403,6 +403,13 @@
             
             </div>
             <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
+            
+            @if(isset($addAction) && $addAction=="yes")
+            
+                <a class="label label-filter label-filter-bordered bold add-action-filter" title="modal pop-up" data-target="#ifftModal" data-toggle="modal"><span><i class="glyphicon glyphicon-record"></i> Add Action </i></span></a>
+
+            @endif
+
             @if(!$isGuestAccess)
             <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
             @endif
@@ -566,6 +573,45 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- IFFT Modal -->
+    
+    <div class="modal fade" id="ifftModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Action on <span style="font-weight: bolder;font-style: italic;" id="filterTitle"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <form id="ifftInitForm" name="ifftInitForm">
+                        <div class="form-group">
+                            <label for="actionEmailField">Send Email To</label>
+                            <input type="text" class="form-control" id="actionEmailField" name="actionEmailField" placeholder="example@test.com,example1@test.com" style="margin-top: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label for="actionSmsField">Send SMS To</label>
+                            <br />
+                            <input type="text" class="form-control" id="actionSmsField" name="actionSmsField" placeholder="1234567890,0987654321" style="margin-top: 10px;" />
+                        </div>
+                        <button type="button" class="btn btn-default" onclick="saveActionToFilter()">Save Action</button>
+                        <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />
+                    </form>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+<!-- IFFT Modal -->
+
+
+
+
 <ul class="nav navbar-nav flex-ul settingUl">
 @if((count($structure) > 1) && !$isGuestAccess) 
 <li><a class="btn btn-primary" href="https://docs.usertable.in" target="_blank">Configure API</a></li>
