@@ -248,7 +248,9 @@ class TableController extends Controller {
             }
             
             $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition , $sortArray);
+            
             $tabData = $tabPaginateData['data'];
+            
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
@@ -257,7 +259,7 @@ class TableController extends Controller {
                 $teammatesOptions[] = $tvalue['name'];
             }
             $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
-
+            
             $coltypes = TableStructure::getTableColumnTypesArray($tableIdMain);
 
             $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All", $coltypes);
@@ -272,6 +274,12 @@ class TableController extends Controller {
 
             if($tabName!="All")
                 $addAction = "yes";
+
+
+            $columnsWithTypes = TableStructure::withColumns($tableId);
+
+            $actionValueData = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['action_value']);
+
 
             return array(
                 'activeTabId' => $activeTabId,
@@ -294,7 +302,10 @@ class TableController extends Controller {
                 'tableEmailApi' => $tableEmailApi,
                 'rangeStart' => $rangeStart,
                 'rangeEnd' => $rangeEnd,
-                'filtercolumns' => $filtercolumns);
+                'filtercolumns' => $filtercolumns,
+                'columnsWithTypes' => $columnsWithTypes,
+                'actionValueData' => $actionValueData
+            );
         }
     }
     public function getTableFilters($tableId, $activeTab) {
@@ -367,7 +378,8 @@ class TableController extends Controller {
             'tableAuth' => $tableAuth,
             'tableSmsApi' => $tableSmsApi,
             'tableEmailApi' => $tableEmailApi,
-            'isGuestAccess' => $isGuestAccess);
+            'isGuestAccess' => $isGuestAccess,
+        );
     }
 
     # function get search for selected filters
@@ -775,8 +787,62 @@ class TableController extends Controller {
         $tabs = Tabs::where('id' , $request->activeTabId)->first();
         if($tabs)
         {
-            $tabs->action_value     =   json_encode(array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField));
-            $tabs->save();
+            if($request->actionId=="ALERT")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->ALERT))
+                {
+                    $actionData->ALERT = array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField);
+                }
+                else
+                {
+                    $actionData->ALERT = array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="MODIFY_COLUMN")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->MODIFY_COLUMN))
+                {
+                    $actionData->MODIFY_COLUMN = array('column_name'=>$request->modifyColumnSelect , 'value'=>$request->actualModifiedValue);
+                }
+                else
+                {
+                    $actionData->MODIFY_COLUMN = array('column_name'=>$request->modifyColumnSelect , 'value'=>$request->actualModifiedValue);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="WEBHOOK")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->WEBHOOK))
+                {
+                    $actionData->WEBHOOK = array('webhook_url'=>$request->actionWebhookField);
+                }
+                else
+                {
+                    $actionData->WEBHOOK = array('webhook_url'=>$request->actionWebhookField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="ARCHIVE")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->ARCHIVE))
+                {
+                    $actionData->ARCHIVE = array('archive_status'=>$request->actionArchiveField);
+                }
+                else
+                {
+                    $actionData->ARCHIVE = array('archive_status'=>$request->actionArchiveField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
             return response()->json(array('Message'=>'Success','Status'=>'200','Data'=>new \stdClass()));
         }
         return response()->json(array('Message'=>'Failed','Status'=>'422','Data'=>new \stdClass()));
