@@ -34,6 +34,17 @@ class TableController extends Controller {
     }
 
     public function createTable(Request $request) {
+        $reservedKeywords = json_decode(file_get_contents('reserved_keywords.json'));
+
+        $tableName = strtolower($request->tableName);
+
+        if(in_array($tableName , $reservedKeywords))
+        {
+            $arr['msg'] = "Reserved Keyword. Please use different table name";
+            $arr["error"] = true;
+            return response()->json($arr);
+        }
+
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
         if (!empty($data1)) {
@@ -53,7 +64,10 @@ class TableController extends Controller {
             $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+        
         $userTableName = preg_replace('/\s+/', '_', $userTableName);
+
+        $userTableName = str_replace('-' , '_' , $userTableName);
 
         $teamId = $request->input('teamId');
 
