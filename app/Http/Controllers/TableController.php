@@ -35,6 +35,17 @@ class TableController extends Controller {
     }
 
     public function createTable(Request $request) {
+        $reservedKeywords = json_decode(file_get_contents('reserved_keywords.json'));
+
+        $tableName = strtolower($request->tableName);
+
+        if(in_array($tableName , $reservedKeywords))
+        {
+            $arr['msg'] = "Reserved Keyword. Please use different table name";
+            $arr["error"] = true;
+            return response()->json($arr);
+        }
+
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
         if (!empty($data1)) {
@@ -54,7 +65,10 @@ class TableController extends Controller {
             $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+        
         $userTableName = preg_replace('/\s+/', '_', $userTableName);
+
+        $userTableName = str_replace('-' , '_' , $userTableName);
 
         $teamId = $request->input('teamId');
 
@@ -438,6 +452,7 @@ class TableController extends Controller {
             $incoming_data = $request->all();
             $table_incr_id = $response['id'];
 
+
             if (isset($incoming_data['data_source'])) {
                 $dataSource = $incoming_data['data_source'];
             }
@@ -452,6 +467,8 @@ class TableController extends Controller {
             $table_name = $response['table_id'];
             $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
             $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
+
+            $this->_performActions($response['table_id'] , $incoming_data , $teamData['data']->id);
 
             if (isset($teamData['error'])) {
                 return response()->json($teamData, 400);
@@ -846,5 +863,199 @@ class TableController extends Controller {
             return response()->json(array('Message'=>'Success','Status'=>'200','Data'=>new \stdClass()));
         }
         return response()->json(array('Message'=>'Failed','Status'=>'422','Data'=>new \stdClass()));
+    }
+
+    private function _performActions($tableId , $tableData , $recordId)
+    {
+        $tabsData = Tabs::getTabsDataByTableId($tableId);
+        foreach($tabsData as $tabs)
+        {
+            $isAction = false;
+            $query = json_decode($tabs->query);
+
+            $queryCount = count((array)$query);
+            
+            $statusFlag = 0;
+
+            $actionData = json_decode($tabs->action_value);
+            
+            foreach($query as $q)
+            {
+                foreach($q as $key=>$value)
+                {
+                    $condition = key((array)$value);
+                    
+                    if(isset($tableData[$key]) && $tableData[$key]!="")
+                    {
+                        switch($condition)
+                        {
+                            case "is":
+                                if($tableData[$key]==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "is_not":
+                                if($tableData[$key]!=$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "starts_with":
+                                $conditionLength = strlen($value->$condition);
+                                if(substr($tableData[$key] , 0 , $conditionLength)==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "ends_with":
+                                $conditionLength = strlen($value->$condition);
+                                if(substr($tableData[$key] , (strlen($tableData[$key])-$conditionLength) , strlen($tableData[$key]))==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "contains":
+                                if(strpos($tableData[$key] , $value->$condition) || strpos($tableData[$key] , $value->$condition)>(-1))
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "not_contains":
+                                if(!strpos($tableData[$key] , $value->$condition) || strpos($tableData[$key] , $value->$condition)<0)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "is_unknown":
+
+                            break;
+                            case "has_any_value":
+                                if($tableData[$key]!="")
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "less_than":
+                                if($tableData[$key] < $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "greater_than":
+                                if($tableData[$key]>$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "equals_to":
+                                if($tableData[$key] == $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "days_after":
+                                // Compare Date from date column
+                                
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days > $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "days_before":
+                                // Compare Date from date column
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days < $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "between":
+                                // Compare Date from date column
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days > $value->$condition->before && $diff_in_days < $value->$condition->after)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "after":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                
+                                if($to < $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "on":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                if($to == $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "before":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                if($to > $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // echo PHP_EOL;
+
+            // echo "Status = ".$statusFlag."     Query Count = ".$queryCount;
+            
+            // echo PHP_EOL;
+            
+            // print_r($query);
+            
+            // echo PHP_EOL;
+
+            if($statusFlag == $queryCount)
+            {
+                if(isset($actionData->MODIFY_COLUMN))
+                {
+                    if(isset($actionData->MODIFY_COLUMN->column_name))
+                    {
+                        $this->_modifyActionFunction($tableId , $recordId , $actionData);
+                    }
+                }
+            }
+
+            echo "-------------------------------------------------";
+        }
+    }
+    private function _modifyActionFunction($tableId , $recordId , $actionData)
+    {
+        \DB::table($tableId)
+            ->where('id', $recordId)
+            ->update([$actionData->MODIFY_COLUMN->column_name => $actionData->MODIFY_COLUMN->value]);
     }
 }
