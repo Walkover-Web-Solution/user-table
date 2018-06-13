@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Repositories\TableRepository;
 use App\SMS;
 use App\ColumnType;
-
-use \App\Jobs\ImportUserData;
+use Illuminate\Support\Facades\Input;
 
 class TableController extends Controller {
 
@@ -36,6 +35,17 @@ class TableController extends Controller {
     }
 
     public function createTable(Request $request) {
+        $reservedKeywords = json_decode(file_get_contents('reserved_keywords.json'));
+
+        $tableName = strtolower($request->tableName);
+
+        if(in_array($tableName , $reservedKeywords))
+        {
+            $arr['msg'] = "Reserved Keyword. Please use different table name";
+            $arr["error"] = true;
+            return response()->json($arr);
+        }
+
         $randomAuth = str_random(15);
         $data1 = $request->input('tableData');
         if (!empty($data1)) {
@@ -55,7 +65,10 @@ class TableController extends Controller {
             $arr = array("msg" => "Table Name Can't be empty", "error" => true);
             return response()->json($arr);
         }
+        
         $userTableName = preg_replace('/\s+/', '_', $userTableName);
+
+        $userTableName = str_replace('-' , '_' , $userTableName);
 
         $teamId = $request->input('teamId');
 
@@ -157,22 +170,32 @@ class TableController extends Controller {
             return redirect()->route('tables');
         }
 
-        $results = $this->processTableData($tableId, $tabName);
+        $sortArray = array();
+
+        if(Input::get('sort-key')!=null && Input::get('sort-key')!="")
+            $sortArray['sort-key'] = Input::get('sort-key');
+
+        if(Input::get('sort-order')!=null && Input::get('sort-order')!="")
+            $sortArray['sort-order'] = Input::get('sort-order');
+
+        $results = $this->processTableData($tableId, $tabName , $sortArray);
         $results['isGuestAccess'] = $isGuestAccess;
 
         $columnTypes = ColumnType::all();
 
         $results['columnTypes'] = $columnTypes;
+        
+        $results['sortArray'] = $sortArray;
 
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition) {
-        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition);
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition , $sortArray = array()) {
+        $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition , $sortArray);
         return json_decode(json_encode($tabDataJson), true);
     }
 
-    public function processTableData($tableId, $tabName) {
+    public function processTableData($tableId, $tabName , $sortArray) {
         $tableNames = team_table_mapping::getUserTablesNameById($tableId);
         if (empty($tableNames['table_id'])) {
             return array();
@@ -235,8 +258,8 @@ class TableController extends Controller {
                         $filtercolumns[] = $value->column_name;
                 }
             }
-
-            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition);
+            
+            $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition , $sortArray);
             $tabData = $tabPaginateData['data'];
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
@@ -453,6 +476,30 @@ class TableController extends Controller {
                     }
                 }
                 team_table_mapping::makeNewEntryForSource($table_incr_id, $dataSource);
+                if($teamData['success']=="Entry Updated")
+                {
+                    $tableStructure = \DB::table('table_structures')->select('column_name' , 'column_type_id')->where('table_id' , $table_incr_id)->get();
+                    $columnDetails = array();
+                    foreach($tableStructure as $tabStr)
+                    {
+                        $columnDetails[$tabStr->column_name] = $tabStr->column_type_id;
+                    }
+                    foreach($teamData['details'] as $key => $value)
+                    {
+                        if(isset($columnDetails[$key]) && $columnDetails[$key]==9)
+                        {
+                            $teamData['details'][$key] = date('Y-m-d' , $value);
+                        }
+                    }
+                    foreach($teamData['old_data'] as $key => $value)
+                    {
+                        if(isset($columnDetails[$key]) && $columnDetails[$key]==9)
+                        {
+                            $teamData['old_data'][$key] = date('Y-m-d' , $value);
+                        }
+                    }
+                }
+                // return response()->json($teamData);
                 $this->insertActivityData($table_name, $teamData);
                 $arr['teamData'] = $teamData;
                 $arr['user'] = $user;
@@ -464,37 +511,6 @@ class TableController extends Controller {
             return response()->json($arr, 500);
         }
     }
-
-
-    static function insertActivityDataStatic($table_name, $teamData) {
-        if (empty($teamData['action']))
-            return false;
-        $data['description'] = $teamData['success'];
-        $data['action'] = $teamData['action'];
-        $data['content_type'] = 'Entry';
-        $data['content_id'] = $teamData['data']->id;
-        if ($teamData['action'] == 'Update')
-            $data['updated_at'] = date('Y-m-d H:i:s');
-        else {
-            $data['created_at'] = date('Y-m-d H:i:s');
-        }
-        $loggedInUser = Auth::user();
-        if ($loggedInUser)
-            $data['userId'] = $loggedInUser->email;
-        else
-            $data['userId'] = '';
-        $data['details'] = $teamData['details'];
-        $data['old_data'] = $teamData['old_data'];
-        $data['ipAddress'] = \Request::getClientIp(true);
-        $log_table = 'log' . substr($table_name, 4);
-
-        $activity = new Activity($log_table);
-        
-        $activityData = Act::getActivityData($data);
-        
-        $activity->addActivity($activityData);
-    }
-
 
     public function insertActivityData($table_name, $teamData) {
         if (empty($teamData['action']))
@@ -713,13 +729,6 @@ class TableController extends Controller {
     }
 
     public function mapDataToTable(Request $request) {
-
-        $userId=0;
-        $loggedInUser = Auth::user();
-
-        if($loggedInUser)
-            $userId = $loggedInUser->id;
-
         $formData = $request->toArray();
         $validator = \Validator::make($formData, [
             'mappingValue' => 'required',
@@ -730,46 +739,35 @@ class TableController extends Controller {
             return response()->json(['Message' => 'Failed', 'Status' => '422', 'Data' => $validator->errors()])->setStatusCode(422);
         }
 
+        $destinationPath = 'uploads';
+
+        $handle = fopen($destinationPath . '/' . $request->fileName, "r");
+
         $response = $this->getTableDetailsByAuth($request->tableAuthKey);
 
         $table_name = $response['table_id'];
         $table_incr_id = $response['id'];
+        $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
 
+        $i = 0;
+        while ($csvLine = fgetcsv($handle)) {
+            $k = 0;
 
-        $destinationPath = 'uploads';
-
-        // $handle = fopen($destinationPath . '/' . $request->fileName, "r");
-
-        $jobsData = array('FileName'=>$destinationPath . '/' . $request->fileName , 'MapData'=>$request->mappingValue , 'UserId'=>$userId , 'TableAuthKey'=>$request->tableAuthKey);
-
-        ImportUserData::dispatch($jobsData)->onConnection('database');
-
-        
-        // $response = $this->getTableDetailsByAuth($request->tableAuthKey);
-
-        // $table_name = $response['table_id'];
-        // $table_incr_id = $response['id'];
-        // $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
-
-        // $i = 0;
-        // while ($csvLine = fgetcsv($handle)) {
-        //     $k = 0;
-
-        //     $insertData = array();
-        //     foreach ($request->mappingValue as $value) {
-        //         if ($value != "") {                    
-        //             $insertData[$value] = $csvLine[$k];
-        //         }
-        //         $k++;
-        //     }
+            $insertData = array();
+            foreach ($request->mappingValue as $value) {
+                if ($value != "") {                    
+                    $insertData[$value] = $csvLine[$k];
+                }
+                $k++;
+            }
             
-        //     $teamData = team_table_mapping::makeNewEntryInTable($table_name, $insertData, $table_structure);
+            $teamData = team_table_mapping::makeNewEntryInTable($table_name, $insertData, $table_structure);
 
-        //     team_table_mapping::makeNewEntryForSource($table_incr_id, 'CSV_IMPORT');
-        //     $this->insertActivityData($table_name, $teamData);
+            team_table_mapping::makeNewEntryForSource($table_incr_id, 'CSV_IMPORT');
+            $this->insertActivityData($table_name, $teamData);
 
-        //     $i++;
-        // }
+            $i++;
+        }
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
     }

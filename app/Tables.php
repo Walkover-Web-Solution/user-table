@@ -121,14 +121,20 @@ class Tables extends Model
         return $data;
     }
 
-    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize, $tabcondition)
+    public static function TabDataBySavedFilter($tableId, $tabName,$pageSize, $tabcondition ,  $sortArray = array())
     {
         if ($tabName == "All") {
             $sql = $countSql = DB::table($tableId)->selectRaw('*')->whereNull('is_deleted');
             if ($pageSize == null){
                 $pageSize = $countSql->count();
             }
-            $data = $sql->latest('id')->paginate($pageSize);
+
+            if(isset($sortArray['sort-key']) && $sortArray['sort-key']!="")
+                $sql->orderBy($sortArray['sort-key'] , $sortArray['sort-order']);
+            else
+                $sql->latest('id');
+                
+            $data = $sql->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
             $req = (array)json_decode($tabSql->query,true);

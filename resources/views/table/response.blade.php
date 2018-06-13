@@ -31,10 +31,27 @@
                     @continue
                 @endif
                 @if($val['display'] != 0)
-                <th>
+                
+                @php
+                    $sortOrder = "ASC";
+                    $sortIcon = "";
+                @endphp
+                
+                @if(isset($sortArray['sort-key']) && $sortArray['sort-key']==$key ) 
+                    @if($sortArray['sort-order']=='ASC') 
+                        @php
+                            $sortOrder = "DESC";
+                            $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes"></i>';
+                        @endphp
+                    @else
+                        @php
+                            $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes-alt"></i>';
+                        @endphp
+                    @endif 
+                @endif
+                <th class="sort-table" data-sort-key="{{ $key }}" data-sort-order="{{ $sortOrder }}" data-target-id="{{ $tableId }}">
                     <div class="dropdowncolumn">
-                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{$key}}
-                            <span class="caret"></span>
+                        <span class="dropdown-toggle" data-toggle="dropdown"><span class="gluphicon glyphicon-email"></span>{{ $sortIcon }} {{ $key}}
                         </span>
                     <ul class="dropdown-menu">
                         <li><a href="Javascript:;" class="hidecolumn">Hide</a></li>
@@ -68,17 +85,37 @@
         @if($k!='id')
         @if(!$isGuestAccess)
         
-            <th style="position:relative;">
+            
+
+        @php
+            $sortOrder = "ASC";
+            $sortIcon = "";
+        @endphp
+        
+        @if(isset($sortArray['sort-key']) && $sortArray['sort-key']==$k ) 
+            @if($sortArray['sort-order']=='ASC') 
+                @php
+                    $sortOrder = "DESC";
+                    $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes"></i>';
+                @endphp
+            @else
+                @php
+                    $sortIcon = '<i class="glyphicon glyphicon-sort-by-attributes-alt"></i>';
+                @endphp
+            @endif 
+        @endif
+        <th style="position:relative;"  class="sort-table" data-sort-key="{{ $k }}" data-sort-order="{{ $sortOrder }}" data-target-id="{{ $tableId }}">
+            <!--<th style="position:relative;"  class="sort-table" data-sort-key="{{ $k }}" data-sort-order="@if(isset($sortArray[$k]) && $sortArray[$k]=='ASC') {{ 'ASC' }} @else {{ 'DESC' }} @endif" data-target-id="{{ $tableId }}">-->
             <div class="dropdowncolumn">
-                <span class="dropdown-toggle" data-toggle="dropdown">{{$k}}
-                    <span class="caret"></span>
+                <span class="dropdown-toggle" data-toggle="dropdown">{!! $sortIcon !!} {{$k}}
+                    {{-- <span class="caret"></span> --}}
                 </span>
-            <ul class="dropdown-menu">
+            {{-- <ul class="dropdown-menu">
                 <li><a href="Javascript:;" class="hidecolumn">Hide</a></li>
                 <li><a href="Javascript:;" onClick="editcolumn('{{$k}}');">Edit</a></li>
                 <li><a href="Javascript:;" class="addcolumnleft">Add to left</a></li>
                 <li><a href="Javascript:;" class="addcolumnright">Add to right</a></li>
-            </ul>
+            </ul> --}}
             </div>
         </th>
         @else
@@ -402,7 +439,7 @@
         <select class="form-control">
                 <option value="">Select Column</option>
             @foreach($structure as $key => $val)
-                <option class="column_options" value="{{ $key }}">{{ $key }}</option>
+                <option class="column_options_select" value="{{ $key }}">{{ $key }}</option>
             @endforeach
         </select>
     </div>
@@ -425,7 +462,27 @@
     }
 
     $(document).ready(function(){
-        //$("#userTableData").tablesorter();
+
+        $(".sort-table").click(function(){
+            var thisObj = $(this);
+            var sortKey = thisObj.attr('data-sort-key').trim();
+            var sortOrder = thisObj.attr('data-sort-order').trim();
+            var targetId = thisObj.attr('data-target-id').trim();
+
+            window.location.href="/tables/"+targetId+"?sort-key="+sortKey+"&sort-order="+sortOrder;
+
+            if(sortOrder=="ASC")
+                thisObj.attr('data-sort-order','DESC');
+            else
+                thisObj.attr('data-sort-order','ASC');
+
+        });
+
+
+        /*$("#userTableData").tablesorter();*/
+        /*$("#userTableData th").click(function(){
+            sortTable($('#userTableData'),'asc');
+        });*/
         $(".initiateUpload").click(function(){
             $("#uploadModal").modal('show');
         });
@@ -470,8 +527,8 @@
                         {
                             dataToPrepend+="<td style='overflow:visible;'>";
                                 dataToPrepend+='<select class="form-control col-select" data-col-sel="column-id-'+j+'"><option value="">Select Column</option>';
-                                    $(".column_options").each(function(){
-                                        dataToPrepend+='<option class="column_options" value="'+$(this).val()+'">'+$(this).val()+'</option>';
+                                    $(".column_options_select").each(function(){
+                                        dataToPrepend+='<option value="'+$(this).val()+'">'+$(this).val()+'</option>';
                                     });
                                 dataToPrepend+='</select>';
                             dataToPrepend+="</td>";   
