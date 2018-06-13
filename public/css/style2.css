@@ -247,7 +247,7 @@ p span.old-val{
     margin-bottom: 30px;
 }
 .panel-table input[type="text"], select{
-    margin-top:10px;
+    /* margin-top:10px; */
 }
 .label-filter{
     display: inline-block;

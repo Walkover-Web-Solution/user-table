@@ -77,7 +77,19 @@ class ConfigureTable extends Controller
     public function configureSelectedTable(Request $request)
     {
         $tableData = $request->input('tableData');
+        
         $tableOldData = $request->input('tableOldData');
+        $reservedKeywords = json_decode(file_get_contents('reserved_keywords.json') , true);
+
+        $columnName = strtolower($tableData[0]['name']);
+
+        if(in_array($columnName , $reservedKeywords))
+        {
+            $arr['error'] = "Reserved Keyword. Please use different column name";
+            // $arr["error"] = true;
+            return response()->json($arr);
+        }
+        
         if (!empty($tableData) && !empty($tableOldData))
             $newTableStructure = array_merge($tableData, $tableOldData);
         else if(empty($tableOldData))
@@ -105,6 +117,7 @@ class ConfigureTable extends Controller
                 foreach ($newTableStructure as $k => $value) {
                     if(isset($value['name_edit']) && $value['name_edit'] == 'true')
                     {
+                        $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
                         $table->renameColumn($value['old_name'], $value['name']);
                         $resp['data'][$k]['id'] = $value['id'];
                         $resp['data'][$k]['column_name'] = $value['name'];

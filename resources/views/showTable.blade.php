@@ -156,10 +156,20 @@
                             $('#createTable').html(
                                 '<i class="glyphicon glyphicon-plus"></i> Create');
                             if (info.error) {
-                            alert(info.msg);
+                            //alert(info.msg);
+                            $.toast({
+                                text: info.msg,
+                                showHideTransition: 'slide',
+                                icon: 'error'
+                            });
                             return false;
                         }
-                        alert(info.msg);
+                        //alert(info.msg);
+                        $.toast({
+                            text: info.msg,
+                            showHideTransition: 'slide',
+                            icon: 'succes'
+                        });
                         window.location.href = "tables";
                     }
 
@@ -232,7 +242,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" style="width:75px;height:40px" class="btn btn-success btn-submit" data-dismiss="modal" id="CreateTableSubmit">
+                    <button type="button" style="width:75px;height:40px" class="btn btn-success btn-submit" id="CreateTableSubmit">
                         Create
                     </button>
                 </div>
