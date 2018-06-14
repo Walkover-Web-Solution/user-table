@@ -928,7 +928,10 @@ class TableController extends Controller {
                                 }
                             break;
                             case "is_unknown":
-
+                                if($tableData[$key]=="")
+                                {
+                                    $statusFlag++;
+                                }
                             break;
                             case "has_any_value":
                                 if($tableData[$key]!="")
