@@ -588,8 +588,18 @@
                 <div class="modal-body">
 
                     @php
-                        $actionEmail = "";
-                        $actionSms = "";
+                        $actionEmailTo = "";
+                        $actionEmailSubject = "";
+                        $actionEmailFrom = "";
+                        $actionEmailFromName = "";
+                        $actionEmailContent = "";
+
+                        $actionSmsTo = "";
+                        $actionSmsSenderId = "";
+                        $actionSmsRoute = "";
+                        $actionSmsContent = "";
+
+
                         $actionColumnName = "";
                         $actionColumnVal = "";
                         $actionWebhookUrl = "";
@@ -606,12 +616,40 @@
 
                         @if(isset($actionValueParams->ALERT))
 
-                            @if(isset($actionValueParams->ALERT->email))
-                                @php $actionEmail = $actionValueParams->ALERT->email; @endphp
+                            @if(isset($actionValueParams->ALERT->email_to))
+                                @php $actionEmailTo = $actionValueParams->ALERT->email_to; @endphp
                             @endif
 
-                            @if(isset($actionValueParams->ALERT->sms))
-                                @php $actionSms = $actionValueParams->ALERT->sms; @endphp
+                            @if(isset($actionValueParams->ALERT->email_subject))
+                                @php $actionEmailSubject = $actionValueParams->ALERT->email_subject; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_from))
+                                @php $actionEmailFrom = $actionValueParams->ALERT->email_from; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_from_name))
+                                @php $actionEmailFromName = $actionValueParams->ALERT->email_from_name; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_content))
+                                @php $actionEmailContent = $actionValueParams->ALERT->email_content; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_to))
+                                @php $actionSmsTo = $actionValueParams->ALERT->sms_to; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_sender_id))
+                                @php $actionSmsSenderId = $actionValueParams->ALERT->sms_sender_id; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_route))
+                                @php $actionSmsRoute = $actionValueParams->ALERT->sms_route; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_content))
+                                @php $actionSmsContent = $actionValueParams->ALERT->sms_content; @endphp
                             @endif
 
                         @endif
@@ -662,14 +700,60 @@
                               <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="panel-body">
                                     <form id="ifftInitForm" name="ifftInitForm">
-                                        <div class="form-group">
-                                            <label for="actionEmailField">Send Email To</label>
-                                            <input type="text" class="form-control" id="actionEmailField" name="actionEmailField" placeholder="example@test.com,example1@test.com" style="margin-top: 10px;" value="{{ $actionEmail }}" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="actionSmsField">Send SMS To</label>
-                                            <br />
-                                            <input type="text" class="form-control" id="actionSmsField" name="actionSmsField" placeholder="1234567890,0987654321" style="margin-top: 10px;" value="{{ $actionSms }}" />
+                                        <div>
+                                            <!-- Nav tabs -->
+                                            <ul class="nav nav-tabs" role="tablist" style="margin: 0px !important;">
+                                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Email</a></li>
+                                                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">SMS</a></li>
+                                            </ul>
+                                            
+                                            <!-- Tab panes -->
+                                            <div class="tab-content" style="margin-top:10px;">
+                                                <div role="tabpanel" class="tab-pane active" id="home">
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email From</label>
+                                                        <input type="text" class="form-control" id="actionEmailFromField" name="actionEmailFromField" placeholder="example@test.com" style="margin-top: 10px;" value="{{$actionEmailFrom}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Name From</label>
+                                                        <input type="text" class="form-control" id="actionFromNameField" name="actionFromNameField" placeholder="Syestem Admin" style="margin-top: 10px;" value="{{$actionEmailFromName}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Send Email To</label>
+                                                        <input type="text" class="form-control" id="actionEmailField" name="actionEmailField" placeholder="example@test.com,example1@test.com" style="margin-top: 10px;" value="{{$actionEmailTo}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email Subject</label>
+                                                        <input type="text" class="form-control" id="actionEmailSubjectField" name="actionEmailSubjectField" placeholder="Action is here..." style="margin-top: 10px;" value="{{$actionEmailSubject}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email Content</label>
+                                                        <textarea class="form-control" id="actionEmailContentField" name="actionEmailContentField" placeholder="Mail Content Here..." style="margin-top: 10px;">{{$actionEmailContent}}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div role="tabpanel" class="tab-pane" id="profile">
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Sender ID</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsSenderIdField" name="actionSmsSenderIdField" placeholder="1234567890" style="margin-top: 10px;" value="{{$actionSmsSenderId}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Route</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsRouteField" name="actionSmsRouteField" placeholder="1" style="margin-top: 10px;" value="{{$actionSmsRoute}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">SMS Content</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsContentField" name="actionSmsContentField" placeholder="Hi, Action is here.." style="margin-top: 10px;" value="{{$actionSmsContent}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Send SMS To</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsField" name="actionSmsField" placeholder="1234567890,0987654321" style="margin-top: 10px;" value="{{$actionSmsTo}}" />
+                                                    </div>
+                                                </div>
+                                            </div> 
                                         </div>
                                         <button type="button" class="btn btn-default" onclick="saveActionToFilter()">Save Action</button>
                                         <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />

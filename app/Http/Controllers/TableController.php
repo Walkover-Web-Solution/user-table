@@ -809,11 +809,11 @@ class TableController extends Controller {
                 $actionData             =   json_decode($tabs->action_value);
                 if(isset($actionData->ALERT))
                 {
-                    $actionData->ALERT = array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField);
+                    $actionData->ALERT = array('email_to'=>$request->actionEmailField , 'email_subject'=>$request->actionEmailSubjectField , 'email_from'=>$request->actionEmailFromField , 'email_from_name'=>$request->actionFromNameField , 'email_subject'=>$request->actionEmailSubjectField , 'email_content'=>$request->actionEmailContentField , 'sms_to'=>$request->actionSmsField , 'sms_sender_id'=>$request->actionSmsSenderIdField , 'sms_route'=>$request->actionSmsRouteField , 'sms_content'=>$request->actionSmsContentField);
                 }
                 else
                 {
-                    $actionData->ALERT = array('email'=>$request->actionEmailField , 'sms'=>$request->actionSmsField);
+                    $actionData->ALERT = array('email_to'=>$request->actionEmailField , 'email_subject'=>$request->actionEmailSubjectField , 'email_from'=>$request->actionEmailFromField , 'email_from_name'=>$request->actionFromNameField , 'email_subject'=>$request->actionEmailSubjectField , 'email_content'=>$request->actionEmailContentField , 'sms_to'=>$request->actionSmsField , 'sms_sender_id'=>$request->actionSmsSenderIdField , 'sms_route'=>$request->actionSmsRouteField , 'sms_content'=>$request->actionSmsContentField);
                 }
                 $tabs->action_value     =   json_encode($actionData);
                 $tabs->save();
@@ -1047,9 +1047,30 @@ class TableController extends Controller {
                         $this->_modifyActionFunction($tableId , $recordId , $actionData);
                     }
                 }
+
+                if(isset($actionData->ALERT))
+                {
+                    $tabelDetails = \DB::table('team_table_mappings')->where('table_id',$tableId)->first();
+                    if(isset($actionData->ALERT->email_to))
+                    {
+                        $this->_sendEmailActionFunction($tabelDetails , $recordId , $actionData);
+                    }
+                    if(isset($actionData->ALERT->sms_to))
+                    {
+                        $this->_sendSmsActionFunction($tabelDetails , $recordId , $actionData);
+                    }
+                }
+
+                if(isset($actionData->WEBHOOK))
+                {
+                    if(isset($actionData->WEBHOOK->webhook_url))
+                    {
+                        $this->_sendWebhook($tabelDetails , $recordId , $actionData , $tableData);
+                    }
+                }
             }
 
-            echo "-------------------------------------------------";
+            // echo "-------------------------------------------------";
         }
     }
     private function _modifyActionFunction($tableId , $recordId , $actionData)
@@ -1057,5 +1078,64 @@ class TableController extends Controller {
         \DB::table($tableId)
             ->where('id', $recordId)
             ->update([$actionData->MODIFY_COLUMN->column_name => $actionData->MODIFY_COLUMN->value]);
+    }
+    private function _sendEmailActionFunction($tabelDetails , $recordId , $actionData)
+    {
+        $emailTo                =   $actionData->ALERT->email_to;
+        $emailFrom              =   $actionData->ALERT->email_from;
+        $emailFromName          =   $actionData->ALERT->email_from_name;
+        $emailSubject           =   $actionData->ALERT->email_subject;
+        $emailContent           =   $actionData->ALERT->email_content;
+
+        $toArray = array();
+
+        if(strpos($emailTo , ','))
+            $toArray = explode(',' , $emailTo);
+        else
+            $toArray[] = $emailTo;
+        foreach($toArray as $toEmail)
+        {
+            $emailresponse = SMS::postemail($toEmail, $emailFrom, $emailSubject, $emailContent, $tabelDetails->email_api_key);
+            // echo "Email Sent";
+            // print_r($emailresponse);
+        }
+    }
+    private function _sendSmsActionFunction($tabelDetails , $recordId , $actionData)
+    {
+        $smsTo                  =   $actionData->ALERT->sms_to;
+        $smsSenderId            =   $actionData->ALERT->sms_sender_id;
+        $smsRoute               =   $actionData->ALERT->sms_route;
+        $smsContent             =   $actionData->ALERT->sms_content;
+
+        if(strpos($smsTo , ','))
+            $toArray = explode(',' , $smsTo);
+        else
+            $toArray[] = $smsTo;
+
+        foreach($toArray as $toSms)
+        {
+            if(strlen($toSms)==10 || strlen($toSms)<14)
+            {
+                try {
+                    $client = new \GuzzleHttp\Client();
+                    $url = "http://api.msg91.com/api/sendhttp.php".'?sender='.$smsSenderId.'&route='.$smsRoute.'&message='.urlencode($smsContent).'&authkey='.$tabelDetails->sms_api_key.'&mobiles='.$toSms;
+                    $response = $client->get($url);
+                    // echo PHP_EOL;
+                    // echo $url;
+                    // echo PHP_EOL;
+                    // echo "SMS Sent";
+                    // print_r($response);
+                } catch (\Guzzle\Http\Exception\ConnectException $e) {
+                    $response = json_encode((string) $e->getResponse()->getBody());
+                    // print_r($response);
+                }
+            }
+        }
+    }
+    private function _sendWebhook($tabelDetails , $recordId , $actionData , $tableData)
+    {
+        $client = new \GuzzleHttp\Client();
+        $url = $actionData->WEBHOOK->webhook_url;
+        $response = $client->post($url , ['body'=>json_encode($tableData)]);
     }
 }
