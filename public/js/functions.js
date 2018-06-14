@@ -1086,3 +1086,7 @@ function sendData(type, JsonData, formData, tableId, condition, coltype, test = 
         }
     });
 }
+$('body').on('keyup', '.column-name-field', function() {
+    console.log("hi");
+    $(this).val($(this).val().replace(/[^a-z0-9 _ ]/gi, ''));
+});

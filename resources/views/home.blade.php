@@ -1796,7 +1796,7 @@ $(function(){
                                 <tr id="{{$val['id']}}">
                                     <td id="column_order_{{ $i }}">{{$val['ordering']}}</td>
                                     <td> 
-                                        <input type="text" class="form-control common-class-show-field show_field_{{ $i }} hidden" value="{{ $key }}" data-column-name="{{ $key }}" name="edit_column_name_{{ $i }}" id="edit_column_name_{{ $i }}" />
+                                        <input type="text" class="form-control column-name-field common-class-show-field show_field_{{ $i }} hidden" value="{{ $key }}" data-column-name="{{ $key }}" name="edit_column_name_{{ $i }}" id="edit_column_name_{{ $i }}" />
                                         <span class="show_span_{{ $i }}">
                                             {{ $key }}
                                         </span>
