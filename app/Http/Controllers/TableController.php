@@ -1068,6 +1068,13 @@ class TableController extends Controller {
                         $this->_sendWebhook($tabelDetails , $recordId , $actionData , $tableData);
                     }
                 }
+                if(isset($actionData->ARCHIVE))
+                {
+                    if(isset($actionData->ARCHIVE->archive_status) && $actionData->ARCHIVE->archive_status=="on")
+                    {
+                        $this->_setArchive($tableId , $recordId , $actionData);
+                    }
+                }
             }
 
             // echo "-------------------------------------------------";
@@ -1137,5 +1144,11 @@ class TableController extends Controller {
         $client = new \GuzzleHttp\Client();
         $url = $actionData->WEBHOOK->webhook_url;
         $response = $client->post($url , ['body'=>json_encode($tableData)]);
+    }
+    private function _setArchive($tableId , $recordId , $actionData)
+    {
+        \DB::table($tableId)
+            ->where('id', $recordId)
+            ->update(['is_deleted' => 1]);
     }
 }

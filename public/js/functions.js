@@ -670,6 +670,15 @@ function editUserData(type) {
     });
     
     if (is_valid) {
+
+        $.toast({
+            heading: 'Info',
+            text: 'Please wait processing Request.',
+            showHideTransition: 'slide',
+            icon: 'info'
+        });
+
+
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
         obj = jsonDoc;
@@ -703,12 +712,12 @@ function editUserData(type) {
                             heading: 'Success',
                             text: 'Entry added successfully.',
                             showHideTransition: 'slide',
-                            icon: 'success',
-                            afterHidden: function() {
-                        location.reload();
-                    }
+                            icon: 'success'
                         });
-                }
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
+                    }
                 }
             },
         });
