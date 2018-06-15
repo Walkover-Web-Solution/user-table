@@ -403,6 +403,13 @@
             
             </div>
             <a class="label label-filter label-filter-bordered bold" title="modal pop-up" data-target="#send_popup" data-toggle="modal"><span><i class="glyphicon glyphicon-send"></i> Message </i></span></a>
+            
+            @if(isset($addAction) && $addAction=="yes")
+            
+                <a class="label label-filter label-filter-bordered bold add-action-filter" title="modal pop-up" data-target="#ifftModal" data-toggle="modal"><span><i class="glyphicon glyphicon-record"></i> Add Action </i></span></a>
+
+            @endif
+
             @if(!$isGuestAccess)
             <a class="filter-link m-l-5 delete-rows-btn" href="#" data-toggle="dropdown" onclick="DeleteRecords(); return false;"><span> Delete</i></span></a>
             @endif
@@ -566,6 +573,390 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- IFFT Modal -->
+    
+    <div class="modal fade" id="ifftModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Action on <span style="font-weight: bolder;font-style: italic;" id="filterTitle"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    @php
+                        $actionEmailTo = "";
+                        $actionEmailSubject = "";
+                        $actionEmailFrom = "";
+                        $actionEmailFromName = "";
+                        $actionEmailContent = "";
+
+                        $actionSmsTo = "";
+                        $actionSmsSenderId = "";
+                        $actionSmsRoute = "";
+                        $actionSmsContent = "";
+
+
+                        $actionColumnName = "";
+                        $actionColumnVal = "";
+                        $actionWebhookUrl = "";
+                        $actionIsArchived = "";
+
+                        $actionColumnId = "";
+                    @endphp
+
+
+                    @if(isset($actionValueData->action_value))
+                        @php
+                            $actionValueParams = json_decode($actionValueData->action_value);
+                        @endphp
+
+                        @if(isset($actionValueParams->ALERT))
+
+                            @if(isset($actionValueParams->ALERT->email_to))
+                                @php $actionEmailTo = $actionValueParams->ALERT->email_to; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_subject))
+                                @php $actionEmailSubject = $actionValueParams->ALERT->email_subject; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_from))
+                                @php $actionEmailFrom = $actionValueParams->ALERT->email_from; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_from_name))
+                                @php $actionEmailFromName = $actionValueParams->ALERT->email_from_name; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->email_content))
+                                @php $actionEmailContent = $actionValueParams->ALERT->email_content; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_to))
+                                @php $actionSmsTo = $actionValueParams->ALERT->sms_to; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_sender_id))
+                                @php $actionSmsSenderId = $actionValueParams->ALERT->sms_sender_id; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_route))
+                                @php $actionSmsRoute = $actionValueParams->ALERT->sms_route; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->ALERT->sms_content))
+                                @php $actionSmsContent = $actionValueParams->ALERT->sms_content; @endphp
+                            @endif
+
+                        @endif
+
+                        @if(isset($actionValueParams->MODIFY_COLUMN))
+
+                            @if(isset($actionValueParams->MODIFY_COLUMN->column_name))
+                                @php $actionColumnName = $actionValueParams->MODIFY_COLUMN->column_name; @endphp
+                            @endif
+
+                            @if(isset($actionValueParams->MODIFY_COLUMN->value))
+                                @php $actionColumnVal = $actionValueParams->MODIFY_COLUMN->value; @endphp
+                            @endif
+
+                        @endif
+
+                        @if(isset($actionValueParams->WEBHOOK))
+
+                            @if(isset($actionValueParams->WEBHOOK->webhook_url))
+                                @php $actionWebhookUrl = $actionValueParams->WEBHOOK->webhook_url; @endphp
+                            @endif
+
+                        @endif
+
+                        @if(isset($actionValueParams->ARCHIVE))
+
+                            @if(isset($actionValueParams->ARCHIVE->archive_status))
+                                @php $actionIsArchived = $actionValueParams->ARCHIVE->archive_status; @endphp
+                            @endif
+
+                        @endif
+
+                    @endif
+
+
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+                            <!-- Add Alert to action -->
+
+                            <div class="panel panel-default">
+                              <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        Add Alert
+                                    </a>
+                                </h4>
+                              </div>
+                              <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <form id="ifftInitForm" name="ifftInitForm">
+                                        <div>
+                                            <!-- Nav tabs -->
+                                            <ul class="nav nav-tabs" role="tablist" style="margin: 0px !important;">
+                                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Email</a></li>
+                                                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">SMS</a></li>
+                                            </ul>
+                                            
+                                            <!-- Tab panes -->
+                                            <div class="tab-content" style="margin-top:10px;">
+                                                <div role="tabpanel" class="tab-pane active" id="home">
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email From</label>
+                                                        <input type="text" class="form-control" id="actionEmailFromField" name="actionEmailFromField" placeholder="example@test.com" style="margin-top: 10px;" value="{{$actionEmailFrom}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Name From</label>
+                                                        <input type="text" class="form-control" id="actionFromNameField" name="actionFromNameField" placeholder="Syestem Admin" style="margin-top: 10px;" value="{{$actionEmailFromName}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Send Email To</label>
+                                                        <input type="text" class="form-control" id="actionEmailField" name="actionEmailField" placeholder="example@test.com,example1@test.com" style="margin-top: 10px;" value="{{$actionEmailTo}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email Subject</label>
+                                                        <input type="text" class="form-control" id="actionEmailSubjectField" name="actionEmailSubjectField" placeholder="Action is here..." style="margin-top: 10px;" value="{{$actionEmailSubject}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionEmailField">Email Content</label>
+                                                        <textarea class="form-control" id="actionEmailContentField" name="actionEmailContentField" placeholder="Mail Content Here..." style="margin-top: 10px;">{{$actionEmailContent}}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div role="tabpanel" class="tab-pane" id="profile">
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Sender ID</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsSenderIdField" name="actionSmsSenderIdField" placeholder="1234567890" style="margin-top: 10px;" value="{{$actionSmsSenderId}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Route</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsRouteField" name="actionSmsRouteField" placeholder="1" style="margin-top: 10px;" value="{{$actionSmsRoute}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">SMS Content</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsContentField" name="actionSmsContentField" placeholder="Hi, Action is here.." style="margin-top: 10px;" value="{{$actionSmsContent}}" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="actionSmsField">Send SMS To</label>
+                                                        <br />
+                                                        <input type="text" class="form-control" id="actionSmsField" name="actionSmsField" placeholder="1234567890,0987654321" style="margin-top: 10px;" value="{{$actionSmsTo}}" />
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                        <button type="button" class="btn btn-default" onclick="saveActionToFilter()">Save Action</button>
+                                        <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />
+                                        <input type="hidden" name="actionId" id="actionId" value="ALERT" />
+                                    </form>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Add Alert to action -->
+
+                            <!-- Add Column Modify to action -->
+
+                            <div class="panel panel-default">
+                              <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Modify Column
+                                    </a>
+                                </h4>
+                              </div>
+                              <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                        <form id="ifftInitForm2" name="ifftInitForm2">
+                                            <div class="form-group">
+                                                <label for="actionEmailField">Select Column Type</label>
+                                                <div id="selectColumnTypes">
+                                                    <select class="modifyColumnSelect" name="modifyColumnSelect">
+                                                        <option value="0">Select Column</option>
+                                                        @foreach($columnsWithTypes as $key => $val)
+                                                            @if($val['column_name']==$actionColumnName)
+
+                                                                @php
+                                                                    $actionColumnId = $val['id'];
+                                                                @endphp
+                                                            
+                                                            @endif
+                                                            
+                                                            <option @if($val['column_name']==$actionColumnName) {{ "selected='selected'" }}  @endif class="modify_column_options" value="{{ $val['column_name'] }}" data-type="{{ $val['column_type']['column_name'] }}" data-id="{{ $val['id'] }}">
+                                                                {{ $val['column_name'] }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="actionSmsField">Assign Value</label>
+                                                <span id="assignColumnValues">
+                                                        @foreach($columnsWithTypes as $key => $val)
+                                                        {{-- <option class="modify_column_options" value="{{ $val['column_name'] }}" data-type="{{ $val['column_type']['column_name'] }}" data-id="{{ $val['id'] }}">
+                                                            {{ $val['column_name'] }}
+                                                        </option> --}}
+                                                        <span class="modifyColumnValues" id="column_val_type_{{ $val['id'] }}" style="display:none;">
+                                                            @switch($val['column_type']['column_name'])
+                                                                @case ("text")
+                                                                    <div class="form-group">
+                                                                        <input type="text" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif" />
+                                                                    </div>
+                                                                @break;
+                                                                @case ("phone")
+                                                                <div class="form-group">
+                                                                    <input type="tel" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif" />
+                                                                </div>
+                                                                @break;
+                                                                @case ("any number")
+                                                                    <div class="form-group">
+                                                                        <input type="number" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif" />
+                                                                    </div>
+                                                                @break;
+                                                                @case ("airthmatic number")
+                                                                    <div class="form-group">
+                                                                        <input type="number" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif" />
+                                                                    </div>
+                                                                @break;
+                                                                @case ("email")
+                                                                    <div class="form-group">
+                                                                        <input type="email" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif" />
+                                                                    </div>
+                                                                @break;
+                                                                @case ("dropdown")
+                                                                    <div class="form-group">
+                                                                        <select name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}">
+                                                                            <option> Choose Value</option>
+                                                                            @php
+                                                                                $defaultValues = json_decode($val['default_value']);
+                                                                            @endphp
+                                                                            @if(isset($defaultValues->options) && count($defaultValues->options)>0)
+                                                                                @foreach($defaultValues->options as $optVal)
+                                                                                    <option>{{ $optVal }}</option>
+                                                                                @endforeach
+                                                                            @endif
+                                                                        </select>
+                                                                    </div>
+                                                                @break;
+                                                                @case ("date")
+                                                                    <div class="form-group">
+                                                                        <input type="date" name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}" value="@if($actionColumnId==$val['id']){{$actionColumnVal}}@endif" />
+                                                                    </div>
+                                                                @break;
+                                                                @case ("my teammates")
+                                                                    @if(isset($teammates) && count($teammates)>0)
+                                                                        <select name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}">
+                                                                            <option value=""> Choose Value</option>
+                                                                        @foreach($teammates as $mates)
+                                                                            <option value="{{$mates['email']}}" @if($actionColumnId==$val['id'] && $mates['email']==$actionColumnVal) {{"selected='selected'"}} @endif>
+                                                                                {{ $mates['name'] }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                        </select>
+                                                                    @endif
+                                                                @break;
+                                                                @case ("long text")
+                                                                    <div class="form-group">
+                                                                        <textarea name="modify_column_vals" class="form-control" id="column_val_field_{{ $val['id'] }}">@if($actionColumnId==$val['id']) {{ $actionColumnVal }} @endif</textarea>
+                                                                    </div>
+                                                                @break;
+                                                            @endswitch
+                                                        </span>
+                                                    @endforeach
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn btn-default" onclick="saveColumnAction()">Save Action</button>
+                                            <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />
+                                            <input type="hidden" name="actionId" id="actionId" value="MODIFY_COLUMN" />
+                                            <input type="hidden" name="actualModifiedValue" id="actualModifiedValue" value="" />
+                                        </form>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Add Column Modify to action -->
+                            
+                            <!-- Add Webhook to action -->
+                            
+                            <div class="panel panel-default">
+                              <div class="panel-heading" role="tab" id="headingThree">
+                                <h4 class="panel-title">
+                                  <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        Add Webhook
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                <div class="panel-body">
+                                        <form id="ifftInitForm3" name="ifftInitForm3">
+                                            <div class="form-group">
+                                                <label for="actionWebhookField">Webhook Field</label>
+                                                <input type="text" class="form-control" id="actionWebhookField" name="actionWebhookField" placeholder="http://requestb.in/Xhyx" style="margin-top: 10px;" value="{{ $actionWebhookUrl }}"  />
+                                            </div>
+                                            <button type="button" class="btn btn-default" onclick="saveWebhookAction()">Save Action</button>
+                                            <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />
+                                            <input type="hidden" name="actionId" id="actionId" value="WEBHOOK" />
+                                        </form>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Add Webhook to action -->
+
+
+                            <!-- Add Archive to action -->
+                            
+                            <div class="panel panel-default">
+                              <div class="panel-heading" role="tab" id="headingThree">
+                                <h4 class="panel-title">
+                                  <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        Add To Archive
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                <div class="panel-body">
+                                        <form id="ifftInitForm4" name="ifftInitForm4">
+                                            <div class="form-group">
+                                                <label for="actionWebhookField">Webhook Field</label>
+                                                <br /><br />
+                                                <input type="checkbox" id="actionArchiveField" name="actionArchiveField" style="margin-top: 10px;" @if($actionIsArchived=="on") {{"checked='checked'"}} @endif /> Add to archive
+                                            </div>
+                                            <button type="button" class="btn btn-default" onclick="saveArchiveAction()">Save Action</button>
+                                            <input type="hidden" name="activeTabId" id="activeTabId" value="{{ $activeTabId }}" />
+                                            <input type="hidden" name="actionId" id="actionId" value="ARCHIVE" />
+                                        </form>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Add Archive to action -->
+
+
+                          </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+<!-- IFFT Modal -->
+
+
+
+
 <ul class="nav navbar-nav flex-ul settingUl">
 @if((count($structure) > 1) && !$isGuestAccess) 
 <li><a class="btn btn-primary" href="https://docs.usertable.in" target="_blank">Configure API</a></li>
@@ -594,6 +985,7 @@
     var activeTab = '{{$activeTab}}';
     var tableId = '{{$tableId}}';
     var allTabCount = '{{$allTabCount}}';
+    var actionColumnId = '{{ $actionColumnId }}';
     var view = 'table';
 </script>
 <!-- inline scripts -->
@@ -602,6 +994,10 @@
 </script>
 <script>
     $(document).ready(function(){
+        if(actionColumnId!="")
+        {
+            $("#column_val_type_"+actionColumnId).css('display','block');
+        }
         $.ajax({
             url:"/getTableFilters/{{ $tableId }}/{{ $activeTab }}",
             method:"GET",
@@ -1400,7 +1796,7 @@ $(function(){
                                 <tr id="{{$val['id']}}">
                                     <td id="column_order_{{ $i }}">{{$val['ordering']}}</td>
                                     <td> 
-                                        <input type="text" class="form-control common-class-show-field show_field_{{ $i }} hidden" value="{{ $key }}" data-column-name="{{ $key }}" name="edit_column_name_{{ $i }}" id="edit_column_name_{{ $i }}" />
+                                        <input type="text" class="form-control column-name-field common-class-show-field show_field_{{ $i }} hidden" value="{{ $key }}" data-column-name="{{ $key }}" name="edit_column_name_{{ $i }}" id="edit_column_name_{{ $i }}" />
                                         <span class="show_span_{{ $i }}">
                                             {{ $key }}
                                         </span>

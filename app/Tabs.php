@@ -69,4 +69,12 @@ class Tabs extends Model {
         return $data;
     }
 
+    public static function getTabsDataByTableId($tableId) {
+        $data = \DB::table('tabs')
+                ->where('table_id', $tableId)
+                ->orderBy('sequence', 'asc')
+                ->get();
+        return $data;
+    }
+
 }

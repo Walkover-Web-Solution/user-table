@@ -118,6 +118,7 @@ class ConfigureTable extends Controller
                     if(isset($value['name_edit']) && $value['name_edit'] == 'true')
                     {
                         $value['name'] = strtolower(preg_replace('/\s+/', '_', $value['name']));
+                        $value['name'] = preg_replace('/[^A-Za-z0-9\-  _ ]/', '', $value['name']);
                         $table->renameColumn($value['old_name'], $value['name']);
                         $resp['data'][$k]['id'] = $value['id'];
                         $resp['data'][$k]['column_name'] = $value['name'];

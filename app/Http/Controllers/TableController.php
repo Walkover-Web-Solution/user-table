@@ -244,9 +244,11 @@ class TableController extends Controller {
                 $tabArray = array();
                 $tabcondition = 'and';
                 $filtercolumns = array();
+                $activeTabId = 0;
             } else {
                 $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition', 'id'])->toArray();
                 $tabArray = json_decode($tabSql['query'], true);
+                $activeTabId = json_decode($tabSql['id'], true);
                 $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
                 if (isset($tabSql['id']) && !empty($tabSql['id'])) {
                     $tab_id = $tabSql['id'];
@@ -260,7 +262,9 @@ class TableController extends Controller {
             }
             
             $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition , $sortArray);
+            
             $tabData = $tabPaginateData['data'];
+            
             if (!empty($tabData))
                 $tabData = Helpers::orderArray($tabData, $orderNeed);
 
@@ -269,7 +273,7 @@ class TableController extends Controller {
                 $teammatesOptions[] = $tvalue['name'];
             }
             $filters = Tables::getFiltrableData($tableIdMain, $userTableStructure, $teammates);
-
+            
             $coltypes = TableStructure::getTableColumnTypesArray($tableIdMain);
 
             $allTabCount = Tables::getCountOfTabsData($tableIdMain, "All", $coltypes);
@@ -279,7 +283,21 @@ class TableController extends Controller {
             $d1 = strtotime("+3 days");
             $rangeEnd = date('m/d/Y', $d1);
             $allCount = isset($tabPaginateData['total'])?$tabPaginateData['total']:$allTabCount;
+
+            $addAction = "no";
+
+            if($tabName!="All")
+                $addAction = "yes";
+
+
+            $columnsWithTypes = TableStructure::withColumns($tableId);
+
+            $actionValueData = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['action_value']);
+
+
             return array(
+                'activeTabId' => $activeTabId,
+                'addAction' => $addAction,
                 'allCount' =>$allCount,
                 'activeTab' => $tabName,
                 'date_columns' => $date_columns,
@@ -298,7 +316,10 @@ class TableController extends Controller {
                 'tableEmailApi' => $tableEmailApi,
                 'rangeStart' => $rangeStart,
                 'rangeEnd' => $rangeEnd,
-                'filtercolumns' => $filtercolumns);
+                'filtercolumns' => $filtercolumns,
+                'columnsWithTypes' => $columnsWithTypes,
+                'actionValueData' => $actionValueData
+            );
         }
     }
     public function getTableFilters($tableId, $activeTab) {
@@ -318,7 +339,7 @@ class TableController extends Controller {
             foreach ($arrTabCount as $tabDetail) {
                 foreach ($tabDetail as $tabName => $tabCount) {
                     if ($activeTab == $tabName)
-                        $htmlData .= '<li role="presentation" class="active">';
+                        $htmlData .= '<li role="presentation" class="active" id="active-tab-filter">';
                     else
                         $htmlData .= '<li role="presentation">';
                     $htmlData .= '<a href="' . env('APP_URL') . '/tables/' . $tableId . '/filter/' . $tabName . '">' . $tabName . ' (' . $tabCount . ')</a></li>';
@@ -371,7 +392,8 @@ class TableController extends Controller {
             'tableAuth' => $tableAuth,
             'tableSmsApi' => $tableSmsApi,
             'tableEmailApi' => $tableEmailApi,
-            'isGuestAccess' => $isGuestAccess);
+            'isGuestAccess' => $isGuestAccess,
+        );
     }
 
     # function get search for selected filters
@@ -430,6 +452,7 @@ class TableController extends Controller {
             $incoming_data = $request->all();
             $table_incr_id = $response['id'];
 
+
             if (isset($incoming_data['data_source'])) {
                 $dataSource = $incoming_data['data_source'];
             }
@@ -444,6 +467,8 @@ class TableController extends Controller {
             $table_name = $response['table_id'];
             $table_structure = TableStructure::formatTableStructureData($response['table_structure']);
             $teamData = team_table_mapping::makeNewEntryInTable($table_name, $incoming_data, $table_structure);
+
+            $this->_performActions($response['table_id'] , $incoming_data , $teamData['data']->id);
 
             if (isset($teamData['error'])) {
                 return response()->json($teamData, 400);
@@ -722,6 +747,8 @@ class TableController extends Controller {
             while ($csvLine = fgetcsv($handle)) {
                 $csvDataArray[$i] = $csvLine;
                 $i++;
+                if($i==5)
+                    break;
             }
             $formattedArray = $csvDataArray;
             return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => $formattedArray, 'FileName' => $fileName])->setStatusCode(200);
@@ -770,5 +797,361 @@ class TableController extends Controller {
         }
 
         return response()->json(['Message' => 'Success', 'Status' => '200', 'Data' => new \stdClass()])->setStatusCode(200);
+    }
+
+    public function addActionToFilter(Request $request)
+    {
+        $tabs = Tabs::where('id' , $request->activeTabId)->first();
+        if($tabs)
+        {
+            if($request->actionId=="ALERT")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->ALERT))
+                {
+                    $actionData->ALERT = array('email_to'=>$request->actionEmailField , 'email_subject'=>$request->actionEmailSubjectField , 'email_from'=>$request->actionEmailFromField , 'email_from_name'=>$request->actionFromNameField , 'email_subject'=>$request->actionEmailSubjectField , 'email_content'=>$request->actionEmailContentField , 'sms_to'=>$request->actionSmsField , 'sms_sender_id'=>$request->actionSmsSenderIdField , 'sms_route'=>$request->actionSmsRouteField , 'sms_content'=>$request->actionSmsContentField);
+                }
+                else
+                {
+                    $actionData->ALERT = array('email_to'=>$request->actionEmailField , 'email_subject'=>$request->actionEmailSubjectField , 'email_from'=>$request->actionEmailFromField , 'email_from_name'=>$request->actionFromNameField , 'email_subject'=>$request->actionEmailSubjectField , 'email_content'=>$request->actionEmailContentField , 'sms_to'=>$request->actionSmsField , 'sms_sender_id'=>$request->actionSmsSenderIdField , 'sms_route'=>$request->actionSmsRouteField , 'sms_content'=>$request->actionSmsContentField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="MODIFY_COLUMN")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->MODIFY_COLUMN))
+                {
+                    $actionData->MODIFY_COLUMN = array('column_name'=>$request->modifyColumnSelect , 'value'=>$request->actualModifiedValue);
+                }
+                else
+                {
+                    $actionData->MODIFY_COLUMN = array('column_name'=>$request->modifyColumnSelect , 'value'=>$request->actualModifiedValue);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="WEBHOOK")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->WEBHOOK))
+                {
+                    $actionData->WEBHOOK = array('webhook_url'=>$request->actionWebhookField);
+                }
+                else
+                {
+                    $actionData->WEBHOOK = array('webhook_url'=>$request->actionWebhookField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            if($request->actionId=="ARCHIVE")
+            {
+                $actionData             =   json_decode($tabs->action_value);
+                if(isset($actionData->ARCHIVE))
+                {
+                    $actionData->ARCHIVE = array('archive_status'=>$request->actionArchiveField);
+                }
+                else
+                {
+                    $actionData->ARCHIVE = array('archive_status'=>$request->actionArchiveField);
+                }
+                $tabs->action_value     =   json_encode($actionData);
+                $tabs->save();
+            }
+            return response()->json(array('Message'=>'Success','Status'=>'200','Data'=>new \stdClass()));
+        }
+        return response()->json(array('Message'=>'Failed','Status'=>'422','Data'=>new \stdClass()));
+    }
+
+    private function _performActions($tableId , $tableData , $recordId)
+    {
+        $tabsData = Tabs::getTabsDataByTableId($tableId);
+        foreach($tabsData as $tabs)
+        {
+            $isAction = false;
+            $query = json_decode($tabs->query);
+
+            $queryCount = count((array)$query);
+            
+            $statusFlag = 0;
+
+            $actionData = json_decode($tabs->action_value);
+            
+            foreach($query as $q)
+            {
+                foreach($q as $key=>$value)
+                {
+                    $condition = key((array)$value);
+                    
+                    if(isset($tableData[$key]) && $tableData[$key]!="")
+                    {
+                        switch($condition)
+                        {
+                            case "is":
+                                if($tableData[$key]==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "is_not":
+                                if($tableData[$key]!=$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "starts_with":
+                                $conditionLength = strlen($value->$condition);
+                                if(substr($tableData[$key] , 0 , $conditionLength)==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "ends_with":
+                                $conditionLength = strlen($value->$condition);
+                                if(substr($tableData[$key] , (strlen($tableData[$key])-$conditionLength) , strlen($tableData[$key]))==$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "contains":
+                                if(strpos($tableData[$key] , $value->$condition) || strpos($tableData[$key] , $value->$condition)>(-1))
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "not_contains":
+                                if(!strpos($tableData[$key] , $value->$condition) || strpos($tableData[$key] , $value->$condition)<0)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "is_unknown":
+                                if($tableData[$key]=="")
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "has_any_value":
+                                if($tableData[$key]!="")
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "less_than":
+                                if($tableData[$key] < $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "greater_than":
+                                if($tableData[$key]>$value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "equals_to":
+                                if($tableData[$key] == $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "days_after":
+                                // Compare Date from date column
+                                
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days > $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "days_before":
+                                // Compare Date from date column
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days < $value->$condition)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "between":
+                                // Compare Date from date column
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', \Carbon\Carbon::now());
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+
+                                $diff_in_days = $to->diffInDays($from);
+                                if($diff_in_days > $value->$condition->before && $diff_in_days < $value->$condition->after)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "after":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                
+                                if($to < $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "on":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                if($to == $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                            case "before":
+                                // Compare Date
+                                $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($value->$condition)));
+                                
+                                $from = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s' , strtotime($tableData[$key])));
+                                if($to > $from)
+                                {
+                                    $statusFlag++;
+                                }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // echo PHP_EOL;
+
+            // echo "Status = ".$statusFlag."     Query Count = ".$queryCount;
+            
+            // echo PHP_EOL;
+            
+            // print_r($query);
+            
+            // echo PHP_EOL;
+
+            if($statusFlag == $queryCount)
+            {
+                if(isset($actionData->MODIFY_COLUMN))
+                {
+                    if(isset($actionData->MODIFY_COLUMN->column_name))
+                    {
+                        $this->_modifyActionFunction($tableId , $recordId , $actionData);
+                    }
+                }
+
+                if(isset($actionData->ALERT))
+                {
+                    $tabelDetails = \DB::table('team_table_mappings')->where('table_id',$tableId)->first();
+                    if(isset($actionData->ALERT->email_to))
+                    {
+                        $this->_sendEmailActionFunction($tabelDetails , $recordId , $actionData);
+                    }
+                    if(isset($actionData->ALERT->sms_to))
+                    {
+                        $this->_sendSmsActionFunction($tabelDetails , $recordId , $actionData);
+                    }
+                }
+
+                if(isset($actionData->WEBHOOK))
+                {
+                    if(isset($actionData->WEBHOOK->webhook_url))
+                    {
+                        $this->_sendWebhook($tabelDetails , $recordId , $actionData , $tableData);
+                    }
+                }
+                if(isset($actionData->ARCHIVE))
+                {
+                    if(isset($actionData->ARCHIVE->archive_status) && $actionData->ARCHIVE->archive_status=="on")
+                    {
+                        $this->_setArchive($tableId , $recordId , $actionData);
+                    }
+                }
+            }
+
+            // echo "-------------------------------------------------";
+        }
+    }
+    private function _modifyActionFunction($tableId , $recordId , $actionData)
+    {
+        \DB::table($tableId)
+            ->where('id', $recordId)
+            ->update([$actionData->MODIFY_COLUMN->column_name => $actionData->MODIFY_COLUMN->value]);
+    }
+    private function _sendEmailActionFunction($tabelDetails , $recordId , $actionData)
+    {
+        $emailTo                =   $actionData->ALERT->email_to;
+        $emailFrom              =   $actionData->ALERT->email_from;
+        $emailFromName          =   $actionData->ALERT->email_from_name;
+        $emailSubject           =   $actionData->ALERT->email_subject;
+        $emailContent           =   $actionData->ALERT->email_content;
+
+        $toArray = array();
+
+        if(strpos($emailTo , ','))
+            $toArray = explode(',' , $emailTo);
+        else
+            $toArray[] = $emailTo;
+        foreach($toArray as $toEmail)
+        {
+            $emailresponse = SMS::postemail($toEmail, $emailFrom, $emailSubject, $emailContent, $tabelDetails->email_api_key);
+            // echo "Email Sent";
+            // print_r($emailresponse);
+        }
+    }
+    private function _sendSmsActionFunction($tabelDetails , $recordId , $actionData)
+    {
+        $smsTo                  =   $actionData->ALERT->sms_to;
+        $smsSenderId            =   $actionData->ALERT->sms_sender_id;
+        $smsRoute               =   $actionData->ALERT->sms_route;
+        $smsContent             =   $actionData->ALERT->sms_content;
+
+        if(strpos($smsTo , ','))
+            $toArray = explode(',' , $smsTo);
+        else
+            $toArray[] = $smsTo;
+
+        foreach($toArray as $toSms)
+        {
+            if(strlen($toSms)==10 || strlen($toSms)<14)
+            {
+                try {
+                    $client = new \GuzzleHttp\Client();
+                    $url = "http://api.msg91.com/api/sendhttp.php".'?sender='.$smsSenderId.'&route='.$smsRoute.'&message='.urlencode($smsContent).'&authkey='.$tabelDetails->sms_api_key.'&mobiles='.$toSms;
+                    $response = $client->get($url);
+                    // echo PHP_EOL;
+                    // echo $url;
+                    // echo PHP_EOL;
+                    // echo "SMS Sent";
+                    // print_r($response);
+                } catch (\Guzzle\Http\Exception\ConnectException $e) {
+                    $response = json_encode((string) $e->getResponse()->getBody());
+                    // print_r($response);
+                }
+            }
+        }
+    }
+    private function _sendWebhook($tabelDetails , $recordId , $actionData , $tableData)
+    {
+        $client = new \GuzzleHttp\Client();
+        $url = $actionData->WEBHOOK->webhook_url;
+        $response = $client->post($url , ['body'=>json_encode($tableData)]);
+    }
+    private function _setArchive($tableId , $recordId , $actionData)
+    {
+        \DB::table($tableId)
+            ->where('id', $recordId)
+            ->update(['is_deleted' => 1]);
     }
 }

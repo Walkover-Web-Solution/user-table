@@ -36,6 +36,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 
     Route::get('/getTableFilters/{tableId}/{activeTab}' , 'TableController@getTableFilters');
 
+    Route::post('/addActionToFilter' , 'TableController@addActionToFilter');
+
 
     Route::get('/graph/{tableName}', 'GraphController@showGraphForTable');
     Route::get('/graphdata', 'GraphController@getGraphDataForTable');

@@ -36,6 +36,199 @@ $('body').on('focus', ".calendar_cls", function () {
     $(this).datepicker();
 });
 
+$(".add-action-filter").click(function(){
+    var filterText = $("#active-tab-filter a").text();
+    $("#filterTitle").text(filterText);
+    $(".column_options_select").each(function(){
+        console.log($(this).val()+"    "+$(this).text());
+    });
+});
+
+$(".modifyColumnSelect").change(function(){
+    $(".modifyColumnValues").css('display','none');
+    var optionId = $(".modifyColumnSelect option:selected").attr('data-id');
+    // console.log("#column_val_type_"+optionId);
+    $("#column_val_type_"+optionId).css('display','block');
+});
+
+function saveActionToFilter()
+{
+    if($("#actionEmailField").val()=="" && $("#actionSmsField").val()=="")
+    {
+        $.toast({
+            heading: 'Error',
+            text: "Please enter atleast one email id or one phone number",
+            showHideTransition: 'slide',
+            icon: 'error'
+        });
+        return false;
+    }
+    var formData = $("#ifftInitForm").serialize();
+    $.ajax({
+        url:"/addActionToFilter",
+        data:formData,
+        method:"POST",
+        success:function(respData){
+            if(respData.Status==200)
+            {
+                $.toast({
+                    heading: 'Success',
+                    text: "Action Values Saved",
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                });
+                $("#ifftModal").modal('hide');
+            }
+            else
+            {
+                $.toast({
+                    heading: 'Error',
+                    text: "Something went wrong",
+                    showHideTransition: 'slide',
+                    icon: 'error'
+                });
+                $("#ifftModal").modal('hide');
+            }
+        }
+    });
+}
+
+function saveColumnAction()
+{
+    if($("select[name=modifyColumnSelect]").val()==0)
+    {
+        $.toast({
+            heading: 'Error',
+            text: "Please select column",
+            showHideTransition: 'slide',
+            icon: 'error'
+        });
+        return false;
+    }
+    var selVal = $(".modifyColumnSelect option:selected").attr('data-id');
+    if($("#column_val_field_"+selVal).val()=="")
+    {
+        $.toast({
+            heading: 'Error',
+            text: "Please enter value",
+            showHideTransition: 'slide',
+            icon: 'error'
+        });
+        return false;
+    }
+    
+    $("#actualModifiedValue").val('');
+    $("#actualModifiedValue").val($("#column_val_field_"+selVal).val());
+    console.log("#column_val_field_"+selVal);
+    
+    var formData = $("#ifftInitForm2").serialize();
+    
+    
+    setTimeout(function(){
+        $.ajax({
+            url:"/addActionToFilter",
+            data:formData,
+            method:"POST",
+            success:function(respData){
+                if(respData.Status==200)
+                {
+                    $.toast({
+                        heading: 'Success',
+                        text: "Action Values Saved",
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    });
+                    $("#ifftModal").modal('hide');
+                }
+                else
+                {
+                    $.toast({
+                        heading: 'Error',
+                        text: "Something went wrong",
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    });
+                    $("#ifftModal").modal('hide');
+                }
+            }
+        });
+    },50);
+}
+
+function saveWebhookAction()
+{
+    if($("#actionWebhookField").val()=="")
+    {
+        $.toast({
+            heading: 'Error',
+            text: "Please enter value",
+            showHideTransition: 'slide',
+            icon: 'error'
+        });
+        return false;
+    }
+    var formData = $("#ifftInitForm3").serialize();
+    $.ajax({
+        url:"/addActionToFilter",
+        data:formData,
+        method:"POST",
+        success:function(respData){
+            if(respData.Status==200)
+            {
+                $.toast({
+                    heading: 'Success',
+                    text: "Action Values Saved",
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                });
+                $("#ifftModal").modal('hide');
+            }
+            else
+            {
+                $.toast({
+                    heading: 'Error',
+                    text: "Something went wrong",
+                    showHideTransition: 'slide',
+                    icon: 'error'
+                });
+                $("#ifftModal").modal('hide');
+            }
+        }
+    });
+}
+
+function saveArchiveAction()
+{
+    var formData = $("#ifftInitForm4").serialize();
+    $.ajax({
+        url:"/addActionToFilter",
+        data:formData,
+        method:"POST",
+        success:function(respData){
+            if(respData.Status==200)
+            {
+                $.toast({
+                    heading: 'Success',
+                    text: "Action Values Saved",
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                });
+                $("#ifftModal").modal('hide');
+            }
+            else
+            {
+                $.toast({
+                    heading: 'Error',
+                    text: "Something went wrong",
+                    showHideTransition: 'slide',
+                    icon: 'error'
+                });
+                $("#ifftModal").modal('hide');
+            }
+        }
+    });
+}
+
 function drawUserTable(user_data) {
     var usersArr = [];
     var userDetails = '';
@@ -60,7 +253,7 @@ function drawUserTable(user_data) {
 function showFilterInputText(ths, val, tableId) {
     $(".filterinput" + val).hide();
     dataid = $(ths).attr('dataid');
-    if (dataid != "has_any_value" && dataid != 'is_unknown') {
+    if (dataid != "has_any_value" && dataid != 'is_unknown' && dataid!='ifft') {
         $(ths).parent().find("input:text").show();
         $(ths).parent().find("input.date-filter-input").show();
         $(ths).parent().find("select").show();
@@ -477,6 +670,15 @@ function editUserData(type) {
     });
     
     if (is_valid) {
+
+        $.toast({
+            heading: 'Info',
+            text: 'Please wait processing Request.',
+            showHideTransition: 'slide',
+            icon: 'info'
+        });
+
+
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         jsonDoc['_token'] = CSRF_TOKEN;
         obj = jsonDoc;
@@ -510,12 +712,12 @@ function editUserData(type) {
                             heading: 'Success',
                             text: 'Entry added successfully.',
                             showHideTransition: 'slide',
-                            icon: 'success',
-                            afterHidden: function() {
-                        location.reload();
-                    }
+                            icon: 'success'
                         });
-                }
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
+                    }
                 }
             },
         });
@@ -884,3 +1086,7 @@ function sendData(type, JsonData, formData, tableId, condition, coltype, test = 
         }
     });
 }
+$('body').on('keyup', '.column-name-field', function() {
+    console.log("hi");
+    $(this).val($(this).val().replace(/[^a-z0-9 _ ]/gi, ''));
+});

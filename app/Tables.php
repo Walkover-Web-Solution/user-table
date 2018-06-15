@@ -29,7 +29,8 @@ class Tables extends Model
             'contains' => null,
             'not_contains' => null,
             'is_unknown' => null,
-            'has_any_value' => null
+            'has_any_value' => null,
+            // 'ifft' => null
         );
         $forInt = array('less_than' => null,
             'greater_than' => null,
@@ -37,7 +38,8 @@ class Tables extends Model
             'is_not' => null,
             'equals_to' => null,
             'is_unknown' => null,
-            'has_any_value' => null
+            'has_any_value' => null,
+            // 'ifft' => null
         );
         $forDate = array('Relative' => 'group',
             'days_after' => null,
