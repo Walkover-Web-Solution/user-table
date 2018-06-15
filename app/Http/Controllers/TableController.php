@@ -813,6 +813,7 @@ class TableController extends Controller {
                 }
                 else
                 {
+                    $actionData->MODIFY_COLUMN = new \stdClass();
                     $actionData->ALERT = array('email_to'=>$request->actionEmailField , 'email_subject'=>$request->actionEmailSubjectField , 'email_from'=>$request->actionEmailFromField , 'email_from_name'=>$request->actionFromNameField , 'email_subject'=>$request->actionEmailSubjectField , 'email_content'=>$request->actionEmailContentField , 'sms_to'=>$request->actionSmsField , 'sms_sender_id'=>$request->actionSmsSenderIdField , 'sms_route'=>$request->actionSmsRouteField , 'sms_content'=>$request->actionSmsContentField);
                 }
                 $tabs->action_value     =   json_encode($actionData);
@@ -827,6 +828,7 @@ class TableController extends Controller {
                 }
                 else
                 {
+                    $actionData->MODIFY_COLUMN = new \stdClass();
                     $actionData->MODIFY_COLUMN = array('column_name'=>$request->modifyColumnSelect , 'value'=>$request->actualModifiedValue);
                 }
                 $tabs->action_value     =   json_encode($actionData);
@@ -841,6 +843,7 @@ class TableController extends Controller {
                 }
                 else
                 {
+                    $actionData->MODIFY_COLUMN = new \stdClass();
                     $actionData->WEBHOOK = array('webhook_url'=>$request->actionWebhookField);
                 }
                 $tabs->action_value     =   json_encode($actionData);
@@ -855,6 +858,7 @@ class TableController extends Controller {
                 }
                 else
                 {
+                    $actionData->MODIFY_COLUMN = new \stdClass();
                     $actionData->ARCHIVE = array('archive_status'=>$request->actionArchiveField);
                 }
                 $tabs->action_value     =   json_encode($actionData);
