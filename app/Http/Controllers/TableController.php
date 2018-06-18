@@ -1076,6 +1076,7 @@ class TableController extends Controller {
                 {
                     if(isset($actionData->WEBHOOK->webhook_url))
                     {
+                        $tabelDetails = \DB::table('team_table_mappings')->where('table_id',$tableId)->first();
                         $this->_sendWebhook($tabelDetails , $recordId , $actionData , $tableData);
                     }
                 }
