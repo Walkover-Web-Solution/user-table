@@ -842,7 +842,7 @@
                                                                             @endphp
                                                                             @if(isset($defaultValues->options) && count($defaultValues->options)>0)
                                                                                 @foreach($defaultValues->options as $optVal)
-                                                                                    <option>{{ $optVal }}</option>
+                                                                                    <option @if($actionColumnVal==$optVal) {{'selected="selected"'}} @endif>{{ $optVal }}</option>
                                                                                 @endforeach
                                                                             @endif
                                                                         </select>
