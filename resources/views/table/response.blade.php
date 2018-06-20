@@ -397,7 +397,7 @@
 </div>
 <!-- Show Uploaded Contacts Modal -->
 
-<div id="columnsData">
+<div id="columnsData" style="display:none;">
     <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Select Column
