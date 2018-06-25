@@ -18,7 +18,38 @@ class Tables extends Model
     }
 
     public static function markRecordsAsDeleted($tableId, $records){
-        DB::table($tableId)->whereIn('id',$records)->update(['is_deleted' => 1]);
+        // DB::table($tableId)->whereIn('id',$records)->update(['is_deleted' => 1]);
+        $recordsData = DB::table($tableId)->whereIn('id',$records)->get();
+        $logTableName = str_replace('main' , 'log' , $tableId);
+        
+        // echo '<pre>';
+        $userDetails = $user = Auth::user();
+
+        $emailId = $userDetails->email;
+
+        $insertArray = array();
+        $i = 0;
+        foreach($recordsData as $val)
+        {
+            $insertArray[$i]['user_id'] = $userDetails->email;
+            $insertArray[$i]['content_type'] = "Exit";
+            $insertArray[$i]['content_id'] = $val->id;
+            $insertArray[$i]['action'] = "Delete";
+            $insertArray[$i]['description'] = "Entry Deleted";
+            // $insertArray[$i]['details'] = "";
+            $insertArray[$i]['old_data'] = json_encode($val);
+            $insertArray[$i]['ip_address'] = \Request::getClientIp(true);
+            $insertArray[$i]['user_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'No User Agent';
+            $i++;
+        }
+        // print_r($insertArray);
+        // echo '</pre>';
+
+        DB::table($logTableName)->insert($insertArray);
+        // DB::connection()->enableQueryLog();
+        DB::table($tableId)->whereIn('id',$records)->delete();
+        // $queries = DB::getQueryLog();
+        // print_r($queries);
     }
     public static function getFiltrableData($tableId, $userTableStructure, $teammates)
     {

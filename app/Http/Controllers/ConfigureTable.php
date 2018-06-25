@@ -203,6 +203,7 @@ class ConfigureTable extends Controller
         }else if($type == 'edit'){
             $rows = DB::table($tablename)->select($columnName, DB::raw('COUNT(*) as `count`'))
             ->groupBy($columnName)
+            ->where('is_deleted','!=','1')
             ->having('count', '>', 1)->get()->toArray();
             $count = count($rows);
             if($count)

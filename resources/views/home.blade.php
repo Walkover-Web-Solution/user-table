@@ -1678,18 +1678,28 @@ $(function(){
         var rowId = $(this).attr('data-value');
         $("#edit_column_id").val(rowId);
         $("#old_edit_column_name").val($("#edit_column_name_"+rowId).attr('data-column-name'));
+        
         $("#edit_column_name").val($("#edit_column_name_"+rowId).val());
         $("#edit_column_type").val($("#edit_column_type_"+rowId).val());
         $("#edit_column_display").val($("#edit_column_display_"+rowId).val());
         $("#edit_column_fieldOrder").val($("#column_order_"+rowId).text().trim());
 
 
-        $("#edit_column_uniqe").val(0);
+
+        console.log("Old Name - "+$("#old_edit_column_name").val());
+        console.log("New Name - "+$("#edit_column_name").val());
+
+
+        /*$("#edit_column_uniqe").val(0);
         if($("#edit_column_uniqe_"+rowId).is(":checked"))
+        {
             $("#edit_column_uniqe").val(1);
+        }*/
+
+        $("#edit_column_uniqe").val($("#edit_column_uniqe_"+rowId).is(":checked"));
 
 
-            editColumnData();
+        editColumnData();
     });
 });
 </script>
@@ -1827,7 +1837,7 @@ $(function(){
                                         </span>
                                     </td>
                                     <td>
-                                        <input class="common-class-show-field show_field_{{ $i }} hidden" type="checkbox"  @if($val['unique'] == 0) checked="checked" @endif name="edit_column_uniqe_{{ $i }}" id="edit_column_uniqe_{{ $i }}"/>
+                                        <input class="common-class-show-field show_field_{{ $i }} hidden" type="checkbox"  @if($val['unique'] == 1) checked="checked" @endif name="edit_column_uniqe_{{ $i }}" id="edit_column_uniqe_{{ $i }}"/>
                                         <span class="show_span_{{ $i }}">
                                                 @if($val['unique'] == 1) {{ "Yes" }} @else {{ "No" }} @endif
                                         </span>

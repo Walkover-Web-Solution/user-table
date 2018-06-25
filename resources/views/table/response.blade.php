@@ -853,7 +853,16 @@
             updateData['type']=$('#edit_column_type').val();
             updateData['display']=$('#edit_column_display').val();
             updateData['ordering']=$('#edit_column_fieldOrder').val();
-            updateData['unique']=$('#edit_column_uniqe:checked').val()?true:false;
+            //updateData['unique']=$('#edit_column_uniqe:checked').val()?true:false;
+
+
+            /*if($('#edit_column_uniqe:checked').val())
+                updateData['unique']=true;
+            else
+                updateData['unique']=false;*/
+                
+            updateData['unique']=$('#edit_column_uniqe').val();
+
             updateData['value']=$('#edit_column_default_value').val();
             var newArr = [];
             newArr.push(updateData);
