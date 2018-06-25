@@ -29,6 +29,8 @@
         <link type="text/css" href="{{url('css/jquery-ui.css')}}" rel="Stylesheet" />
         <script type="text/javascript" src="{{url('js/jquery3.2.1.min.js')}}"></script>
         <script type="text/javascript" src="{{url('js/jquery-ui.min.js')}}"></script>
+        <script type="text/javascript" src="{{url('js/sweetalert2.all.js')}}"></script> <!--Sweet Alert JS-->
+        <link type="text/css" href="{{url('css/sweetalert2.min.css')}}" rel="Stylesheet" /> <!--Sweet Alert CSS-->
         <link rel="icon" type="image/png" href="{{url('favicon.png')}}" />
     </head>
     <body>

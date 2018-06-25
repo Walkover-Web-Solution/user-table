@@ -904,15 +904,38 @@
     function DeleteRecords(){
           var elements = $(".row-delete:checked");
           var deletedRecords = [];
+          var counter = 0;
           $(elements).each((index,item) => {
               deletedRecords.push(item.value);
+              counter++;
           });
-          var url = API_BASE_URL + "/deleterecords/{{$tableId}}";
-          $.post(url,{"ids":deletedRecords},(response) => {
-              //console.log(response);
-             $(elements).each((index,item) => {
-            $(item).parent().parent().hide(); 
-          });
+
+          swal({
+            title: 'Are you sure to delete '+counter+' records?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.value) {
+                    var url = API_BASE_URL + "/deleterecords/{{$tableId}}";
+                    $.post(url,{"ids":deletedRecords},(response) => {
+                        //console.log(response);
+                        $(elements).each((index,item) => {
+                            $(item).parent().parent().hide(); 
+                        });
+                        swal(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        );
+                        setTimeout(function(){
+                            window.location.reload();
+                        },500);
+                    });
+            }
           });
     }
     function updateData(ths, method) {
