@@ -393,19 +393,18 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">Import Table</h4>
         </div>
-        <div class="modal-body">
-            <form id="importTableForm" name="importTableForm">
+        <form id="importTableForm" name="importTableForm">
+            <div class="modal-body">
                 <div class="form-group">
-                    <label for="importTable">Example file input</label>
-                    <input type="file" class="form-control-file" id="importTable" name="importTable" />
-                    <br />
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <label for="importTable">Select File to import</label>
+                    <input type="file" id="importTable" name="importTable" class="form-control" style="border: 0px; box-shadow: none;" />
                 </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+            </div>
+            <div class="modal-footer">
+                {{--  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>  --}}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
