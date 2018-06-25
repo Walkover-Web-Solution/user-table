@@ -554,36 +554,65 @@
         $("#saveTable").click(function(){
             var mapArray= [];
             var i=0;
+            var status = 0;
+            var duplicateStatus = 0;
             $(".col-select").each(function(){
                 var attrVal = $(this).attr('data-col-sel');
+                if($.inArray($(this).val(), mapArray))
+                    duplicateStatus++;
+                
                 mapArray[i] = $(this).val();
+                if($(this).val()!="")
+                    status++;
                 i++;
             });
-            $.toast({
-                heading: 'Operation Started',
-                text: 'Import operation started please donot close or reload this page',
-                showHideTransition: 'slide',
-                icon: 'info',
-            });
-            $.ajax({
-                url:"/mapDataToTable",
-                method:"POST",
-                data:{'mappingValue':mapArray , 'fileName':$("#fileName").val() , 'tableAuthKey':$("#tableAuthKey").val()},
-                success:function(respData){
-                    if(respData.Message=="Success")
-                    {
-                        $.toast({
-                            heading: 'Success',
-                            text: 'Data import successful, realoding page.',
-                            showHideTransition: 'slide',
-                            icon: 'success',
-                            afterHidden: function() {
-                                location.reload();
-                            }
-                        });
+            
+            if(status==0)
+            {
+                $.toast({
+                    heading: 'Error!',
+                    text: 'Please map atleast one column to continue the import',
+                    showHideTransition: 'slide',
+                    icon: 'error',
+                });
+            }
+            else if(duplicateStatus>0)
+            {
+                $.toast({
+                    heading: 'Error!',
+                    text: 'You are trying to map multiple columns of sheet to one column of table.',
+                    showHideTransition: 'slide',
+                    icon: 'error',
+                });
+            }
+            else
+            {
+                $.toast({
+                    heading: 'Operation Started',
+                    text: 'Import operation started please donot close or reload this page',
+                    showHideTransition: 'slide',
+                    icon: 'info',
+                });
+                $.ajax({
+                    url:"/mapDataToTable",
+                    method:"POST",
+                    data:{'mappingValue':mapArray , 'fileName':$("#fileName").val() , 'tableAuthKey':$("#tableAuthKey").val()},
+                    success:function(respData){
+                        if(respData.Message=="Success")
+                        {
+                            $.toast({
+                                heading: 'Success',
+                                text: 'Data import successful, realoding page.',
+                                showHideTransition: 'slide',
+                                icon: 'success',
+                                afterHidden: function() {
+                                    location.reload();
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
         });
         $("#selectall").change(function(){  //"select all" change 
             $(".row-delete").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status

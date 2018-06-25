@@ -283,10 +283,12 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var coltypeObject = {};
     for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
     {
+        console.log($("input[name='filter_done_column_type[]']")[i].value);
         if($("input[name='filter_done_column_name[]']")[i])
         {
             if($("input[name='filter_done_column_type[]']")[i].value == "between")
             {
+                console.log("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before");
                 var between = {};
                 between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
                 between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();

@@ -404,7 +404,7 @@ text-decoration:none;
     text-decoration:none;
     }
 .fixedBtn{
-    position: fixed;
+    /* position: fixed; */
     left: 50%;
     top: 50%;
 }
