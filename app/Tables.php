@@ -434,15 +434,18 @@ class Tables extends Model
                 } 
                 if (isset($req[$paramName]['on'])) {
                     $d = $req[$paramName]['on'];
-                    $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
-                    $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
-                    $sttimestamp = strtotime($st);
-                    $endtimestamp = strtotime($enddt);
-                    if($flag && $condition=='or'){
-                        $users->orWhere($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
-                    }else
-                        $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
-                    $flag=1;
+                    if($d!="")
+                    {
+                        $st = Carbon::createFromFormat('Y-m-d', $d)->startOfDay()->toDateTimeString();
+                        $enddt = Carbon::createFromFormat('Y-m-d', $d)->endOfDay()->toDateTimeString();
+                        $sttimestamp = strtotime($st);
+                        $endtimestamp = strtotime($enddt);
+                        if($flag && $condition=='or'){
+                            $users->orWhere($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                        }else
+                            $users->where($paramName, '>=', $sttimestamp)->where($paramName, '<=', $endtimestamp);
+                        $flag=1;
+                    }
                 }
                 if (isset($req[$paramName]['before'])) {
                     if ($colomntype == 'date') {
