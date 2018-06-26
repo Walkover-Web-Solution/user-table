@@ -397,7 +397,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="importTable">Select File to import</label>
-                    <input type="file" id="importTable" name="importTable" class="form-control" style="border: 0px; box-shadow: none;" />
+                    <input type="file" id="importTable" name="importTable" class="form-control" style="border: 0px; box-shadow: none;" accept=".csv" />
                 </div>
             </div>
             <div class="modal-footer">

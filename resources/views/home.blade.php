@@ -1777,7 +1777,7 @@ $(function(){
                         <input type="hidden" id="eId"/>
                         <input type="hidden" id="tokenKey"/>
                         <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> -->
-                        <button type="button" id="actionBtnTableData" class="btn btn-success" data-dismiss="modal" onclick="editUserData('edit')">
+                        <button type="button" id="actionBtnTableData" class="btn btn-success" onclick="editUserData('edit')">
                             Update
                         </button>
                     </div>

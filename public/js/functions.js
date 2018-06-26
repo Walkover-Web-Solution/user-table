@@ -662,6 +662,12 @@ function editUserData(type) {
         val = $(this).val();
         type = $(this).attr('type');
         if (required && val === "") {
+            $.toast({
+                heading: 'Error',
+                text: 'Required ' + dataid,
+                showHideTransition: 'slide',
+                icon: 'error'
+            });
             errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
             $('#add_users_body').append(errMsg);
             is_valid = false;
