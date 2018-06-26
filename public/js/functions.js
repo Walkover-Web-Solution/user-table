@@ -283,7 +283,7 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var coltypeObject = {};
     for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
     {
-        console.log($("input[name='filter_done_column_type[]']")[i].value);
+        console.log($("#login_filter_val_between_before").value);
         if($("input[name='filter_done_column_name[]']")[i])
         {
             if($("input[name='filter_done_column_type[]']")[i].value == "between")
