@@ -463,7 +463,7 @@
     $(document).ready(function(){
 
         $(".row-delete").click(function(){
-            $("#selectall").removeAttr('checked');
+            $("#selectall").prop('checked',false);
             var allItems = $(".row-delete").length;
             var checkedItems = 0;
             $(".row-delete").each(function(){
@@ -471,7 +471,7 @@
                     checkedItems++;
             });
             if(allItems==checkedItems)
-                $("#selectall").attr('checked','checked');
+                $("#selectall").prop('checked',true)
         });
 
 
