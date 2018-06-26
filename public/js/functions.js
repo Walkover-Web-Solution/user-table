@@ -673,9 +673,22 @@ function editUserData(type) {
             is_valid = false;
         }
 
+        if ($(this).attr('data-change') && $(this).attr('data-change')==false) {
+            $.toast({
+                heading: 'Error',
+                text: 'Required ' + dataid,
+                showHideTransition: 'slide',
+                icon: 'error'
+            });
+            errMsg = '<div class="invalid_msg col-xs-12">Required ' + dataid + '</div>';
+            $('#add_users_body').append(errMsg);
+            is_valid = false;
+        }
+
         if (type === "date") {
             val = val;
         }
+        
         jsonDoc[dataid] = val;
     });
     
