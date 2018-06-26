@@ -462,6 +462,20 @@
 
     $(document).ready(function(){
 
+        $(".row-delete").click(function(){
+            $("#selectall").removeAttr('checked');
+            var allItems = $(".row-delete").length;
+            var checkedItems = 0;
+            $(".row-delete").each(function(){
+                if($(this).is(':checked'))
+                    checkedItems++;
+            });
+            if(allItems==checkedItems)
+                $("#selectall").attr('checked','checked');
+        });
+
+
+
         $(".sort-table").click(function(){
             var thisObj = $(this);
             var sortKey = thisObj.attr('data-sort-key').trim();
@@ -558,15 +572,15 @@
             var duplicateStatus = 0;
             $(".col-select").each(function(){
                 var attrVal = $(this).attr('data-col-sel');
-                if($.inArray($(this).val(), mapArray))
+
+                if($.inArray($(this).val(), mapArray)>0)
                     duplicateStatus++;
-                
+
                 mapArray[i] = $(this).val();
                 if($(this).val()!="")
                     status++;
                 i++;
             });
-            
             if(status==0)
             {
                 $.toast({
