@@ -673,7 +673,7 @@ function editUserData(type) {
             is_valid = false;
         }
 
-        if ($(this).attr('data-change') && $(this).attr('data-change')==false) {
+        if (!$(this).attr('data-change') || $(this).attr('data-change')==false) {
             $.toast({
                 heading: 'Error',
                 text: 'Required ' + dataid,
