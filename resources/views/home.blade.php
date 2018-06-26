@@ -1678,29 +1678,54 @@ $(function(){
     $(".update-column-data").click(function(){
         var rowId = $(this).attr('data-value');
         $("#edit_column_id").val(rowId);
-        $("#old_edit_column_name").val($("#edit_column_name_"+rowId).attr('data-column-name'));
-        
-        $("#edit_column_name").val($("#edit_column_name_"+rowId).val());
-        $("#edit_column_type").val($("#edit_column_type_"+rowId).val());
-        $("#edit_column_display").val($("#edit_column_display_"+rowId).val());
-        $("#edit_column_fieldOrder").val($("#column_order_"+rowId).text().trim());
 
+        var totalRowCounts = 0;
+        var hiddenCount = 0;
 
+        $('#table-1q tr').each(function(){
+            var thisRowId = $(this).attr('id');
+            totalRowCounts++;
+            
+            if($("#edit_column_display_"+thisRowId+" option:selected").val()==0)
+                hiddenCount++
+        });
 
-        console.log("Old Name - "+$("#old_edit_column_name").val());
-        console.log("New Name - "+$("#edit_column_name").val());
-
-
-        /*$("#edit_column_uniqe").val(0);
-        if($("#edit_column_uniqe_"+rowId).is(":checked"))
+        totalRowCounts = totalRowCounts-1;
+        if(totalRowCounts==hiddenCount)
         {
-            $("#edit_column_uniqe").val(1);
-        }*/
+            $.toast({
+                heading: 'Error',
+                text: 'Atleast one column should be visible',
+                showHideTransition: 'slide',
+                icon: 'error'
+            });
+        }
+        else
+        {
+            $("#old_edit_column_name").val($("#edit_column_name_"+rowId).attr('data-column-name'));
+        
+            $("#edit_column_name").val($("#edit_column_name_"+rowId).val());
+            $("#edit_column_type").val($("#edit_column_type_"+rowId).val());
+            $("#edit_column_display").val($("#edit_column_display_"+rowId).val());
+            $("#edit_column_fieldOrder").val($("#column_order_"+rowId).text().trim());
 
-        $("#edit_column_uniqe").val($("#edit_column_uniqe_"+rowId).is(":checked"));
 
 
-        editColumnData();
+            //console.log("Old Name - "+$("#old_edit_column_name").val());
+            //console.log("New Name - "+$("#edit_column_name").val());
+
+
+            /*$("#edit_column_uniqe").val(0);
+            if($("#edit_column_uniqe_"+rowId).is(":checked"))
+            {
+                $("#edit_column_uniqe").val(1);
+            }*/
+
+            $("#edit_column_uniqe").val($("#edit_column_uniqe_"+rowId).is(":checked"));
+
+
+            editColumnData();
+        }
     });
 });
 </script>
