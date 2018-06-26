@@ -513,6 +513,7 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                     $('#is_edit').val(1);
                     $('#follow_up_date').attr('type', 'date');
                     //$('#edit_user').modal('show');
+                    $("#actionBtnTableData").text("Update Entry");
                 }
             }
         });
@@ -600,6 +601,7 @@ function getUserDetails(event, id, tableId, mod_head_edit = false) {
                 $("#edit_users_body").html(editForm);
                 $('#is_edit').val(0);
                 $('#follow_up_date').attr('type', 'date');
+                $("#actionBtnTableData").text("Add Entry");
                 return false;
             }
         });
