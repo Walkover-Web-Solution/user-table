@@ -1245,7 +1245,8 @@
         $("#table-1q tr").each(function() {
             if(this.id != 0)
             {
-                var val = $('#reorder_column_'+this.id+':checked').val() ? 0 : 1
+                //var val = $('#reorder_column_'+this.id+':checked').val() ? 1 : 0
+                var val = $("#edit_column_display_"+this.id).val();
                 var obj = {'key':this.id,'val':val};
                 displayarray.push(obj);
                 tablearray.push(this.id);
