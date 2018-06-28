@@ -281,92 +281,107 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
-    console.log("In function");
-    for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
-    {   
-        console.log("In Loop 1");
-        if($("input[name='filter_done_column_name[]']")[i])
-        {
-            console.log("In if statement");
-            if($("input[name='filter_done_column_type[]']")[i].value == "between")
+    setTimeout(function(){
+        console.log("In function");
+        for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
+        {   
+            console.log("In Loop 1");
+            if($("input[name='filter_done_column_name[]']")[i])
             {
-                console.log("In between clause");
-                var columnName = $("input[name='filter_done_column_name[]']")[i].value;
-                
-                console.log("Data 1 - #filter_done_column_type_val_"+columnName+"_before");
+                console.log("In if statement");
+                console.log("Before Between - "+$("input[name='filter_done_column_type[]']")[i].value);
+                if($("input[name='filter_done_column_type[]']")[i].value == "between")
+                {
+                    console.log("In between clause");
+                    var columnName = $("input[name='filter_done_column_name[]']")[i].value;
+                    
+                    console.log("Data 1 - #filter_done_column_type_val_"+columnName+"_before");
 
+                    var between = {};
+                    
+                    // $("#"+columnName+"_filter_val_between_before").val();
+
+                    // between['before'] = $("#filter_done_column_type_val_"+columnName+"_before").val();
+                    // between['after'] = $("#filter_done_column_type_val_"+columnName+"_after").val();
+
+                    var from = $("#"+columnName+"_filter_val_between_before").val();
+                    var to = $("#"+columnName+"_filter_val_between_after").val()
+
+
+                    between['before'] = from;
+                    between['after'] = to;
+
+                    $("#filter_done_column_type_val_"+columnName+"_before").val(from);
+                    $("#filter_done_column_type_val_"+columnName+"_after").val(to);
+
+                    var filter_done_column_type_val = between;
+                    
+                    console.log("Data 2 - "+JSON.stringify(filter_done_column_type_val));
+                }
+                else
+                {
+                    var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                }
+                if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
+                    var filter_done_column_type_val = 1;
+                }
+                var subDoc = {};
+                subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+
+                var subjsonObject = {};
+                subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+                
+                jsonObject[i] = subjsonObject;
+                
+                var subcoltypeObject = {};
+                
+                subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+                
+                coltypeObject[i] = subcoltypeObject;
+            }
+        }
+        if($("#delete_filter_"+div_open+"_"+column_name).length){
+            var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
+            var radioname = radio_type.attr('dataid');
+            var coltype = radio_type.attr('datacoltype');
+            if (radioname == 'between')
+            {
                 var between = {};
-                
-                between['before'] = $("#filter_done_column_type_val_"+columnName+"_before").val();
-                between['after'] = $("#filter_done_column_type_val_"+columnName+"_after").val();
-
-                var filter_done_column_type_val = between;
-                
-                console.log("Data 2 - "+filter_done_column_type_val);
+                between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                var radioButtonValue = between;
             }
             else
             {
-                var filter_done_column_type_val = $("input[name='filter_done_column_type_val[]']")[i].value;
+                var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
             }
-            if ($("input[name='filter_done_column_type[]']")[i].value == "has_any_value" || $("input[name='filter_done_column_type[]']")[i].value == 'is_unknown') {
-                var filter_done_column_type_val = 1;
-            }
-            var subDoc = {};
-            subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+            
+            var dataid = column_name;
 
+            if (radioname == "has_any_value" || radioname == 'is_unknown') {
+                radioButtonValue = "1";
+            }
+
+            var subDoc = {};
+            subDoc[radioname] = radioButtonValue;
             var subjsonObject = {};
-            subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
-            
-            jsonObject[i] = subjsonObject;
-            
+            subjsonObject[dataid] = subDoc;
+            jsonObject[div_open] = subjsonObject;
             var subcoltypeObject = {};
-            
-            subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
-            
-            coltypeObject[i] = subcoltypeObject;
+            subcoltypeObject[dataid] = coltype;
+            coltypeObject[div_open] = subcoltypeObject;
         }
-    }
-    if($("#delete_filter_"+div_open+"_"+column_name).length){
-        var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
-        var radioname = radio_type.attr('dataid');
-        var coltype = radio_type.attr('datacoltype');
-        if (radioname == 'between')
-        {
-            var between = {};
-            between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
-            between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
-            var radioButtonValue = between;
-        }
-        else
-        {
-            var radioButtonValue = $('#'+column_name+'_filter_val_'+radioname+'-'+div_open).val();
+        var condition = $('#filter_condition').val();
+        
+        if (type == "returnData") {
+            var returnData = [];
+            returnData.push(coltypeObject);
+            returnData.push(jsonObject);
+            return returnData;
         }
         
-        var dataid = column_name;
-
-        if (radioname == "has_any_value" || radioname == 'is_unknown') {
-            radioButtonValue = "1";
-        }
-
-        var subDoc = {};
-        subDoc[radioname] = radioButtonValue;
-        var subjsonObject = {};
-        subjsonObject[dataid] = subDoc;
-        jsonObject[div_open] = subjsonObject;
-        var subcoltypeObject = {};
-        subcoltypeObject[dataid] = coltype;
-        coltypeObject[div_open] = subcoltypeObject;
-    }
-    var condition = $('#filter_condition').val();
-    
-    if (type == "returnData") {
-        var returnData = [];
-        returnData.push(coltypeObject);
-        returnData.push(jsonObject);
-        return returnData;
-    }
-    
-    applyFilterData(jsonObject, tableId, coltypeObject, condition);
+        applyFilterData(jsonObject, tableId, coltypeObject, condition);
+    },50);
 }
 
 function changeFilterJsonData(tableId, type) {

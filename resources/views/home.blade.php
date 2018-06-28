@@ -1536,8 +1536,14 @@
             if (radioname == 'between')
             {
                 var between = [];
-                between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
-                between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                login_filter_val_between_before
+                //between['before'] = $('#'+col_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                //between['after'] = $('#'+col_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+
+                console.log('#delete_filter_'+div_open+'_'+col_name+' input[id='+col_name+'_filter_val_'+radioname+'_before]');
+
+                between['before'] = $('#delete_filter_'+div_open+'_'+col_name+' input[id='+col_name+'_filter_val_'+radioname+'_before]').val();
+                between['after'] = $('#delete_filter_'+div_open+'_'+col_name+' input[id='+col_name+'_filter_val_'+radioname+'_after]').val();
                 var radioButtonValue = 'last '+between['before']+' days to next '+between['after']+' days';
                 var inputRadioButtonValue = '<input type="hidden" name="filter_done_column_type_val[]" id="filter_done_column_type_val_'+col_name+'_before" value="'+between['before']+'"/><input type="hidden" id="filter_done_column_type_val_'+col_name+'_after" value="'+between['after']+'"/>';
             }
