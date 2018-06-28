@@ -281,15 +281,19 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var filterChecked = [];
     var jsonObject = {};
     var coltypeObject = {};
+    console.log("In function");
     for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
     {   
+        console.log("In Loop 1");
         if($("input[name='filter_done_column_name[]']")[i])
         {
+            console.log("In if statement");
             if($("input[name='filter_done_column_type[]']")[i].value == "between")
             {
+                console.log("In between clause");
                 var columnName = $("input[name='filter_done_column_name[]']")[i].value;
                 
-                console.log("#filter_done_column_type_val_"+columnName+"_before");
+                console.log("Data 1 - #filter_done_column_type_val_"+columnName+"_before");
 
                 var between = {};
                 
@@ -298,7 +302,7 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
 
                 var filter_done_column_type_val = between;
                 
-                console.log(filter_done_column_type_val);
+                console.log("Data 2 - "+filter_done_column_type_val);
             }
             else
             {
@@ -309,11 +313,16 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
             }
             var subDoc = {};
             subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+
             var subjsonObject = {};
             subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
+            
             jsonObject[i] = subjsonObject;
+            
             var subcoltypeObject = {};
+            
             subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
+            
             coltypeObject[i] = subcoltypeObject;
         }
     }
