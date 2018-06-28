@@ -305,7 +305,7 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
                     // between['after'] = $("#filter_done_column_type_val_"+columnName+"_after").val();
 
                     var from = $("#"+columnName+"_filter_val_between_before").val();
-                    var to = $("#"+columnName+"_filter_val_between_after").val()
+                    var to = $("#"+columnName+"_filter_val_between_after").val();
 
 
                     between['before'] = from;
@@ -315,8 +315,6 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
                     $("#filter_done_column_type_val_"+columnName+"_after").val(to);
 
                     var filter_done_column_type_val = between;
-                    
-                    console.log("Data 2 - "+JSON.stringify(filter_done_column_type_val));
                 }
                 else
                 {
@@ -326,29 +324,60 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
                     var filter_done_column_type_val = 1;
                 }
                 var subDoc = {};
+
+
+                console.log("Data 2 Final - "+JSON.stringify(filter_done_column_type_val));
+
+
+
                 subDoc[$("input[name='filter_done_column_type[]']")[i].value] = filter_done_column_type_val;
+
+                console.log("Data subDoc - "+JSON.stringify(subDoc));
+
+
 
                 var subjsonObject = {};
                 subjsonObject[$("input[name='filter_done_column_name[]']")[i].value] = subDoc;
                 
+                console.log("Data subJsonObj - "+JSON.stringify(subjsonObject));
+
+
                 jsonObject[i] = subjsonObject;
                 
+                console.log("Data JsonObj - "+JSON.stringify(jsonObject[i]));
+
+
                 var subcoltypeObject = {};
                 
                 subcoltypeObject[$("input[name='filter_done_column_name[]']")[i].value] = $("input[name='filter_done_column_input_type[]']")[i].value;
                 
                 coltypeObject[i] = subcoltypeObject;
+
+                console.log("ColTypeObj - "+JSON.stringify(coltypeObject[i]));
+
+
+
             }
         }
         if($("#delete_filter_"+div_open+"_"+column_name).length){
             var radio_type = $("#delete_filter_"+div_open+"_"+column_name+" input[type='radio']:checked");
             var radioname = radio_type.attr('dataid');
             var coltype = radio_type.attr('datacoltype');
+            console.log('radio_type - '+radio_type+' , radioname - '+radioname+' , coltype - '+coltype);
             if (radioname == 'between')
             {
                 var between = {};
-                between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
-                between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+                //between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
+                //between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
+
+                var from = $("#"+columnName+"_filter_val_between_before").val();
+                var to = $("#"+columnName+"_filter_val_between_after").val();
+
+
+                between['before'] = from;
+                between['after'] = to;
+
+
                 var radioButtonValue = between;
             }
             else
@@ -426,6 +455,10 @@ function changeFilterJsonData(tableId, type) {
 }
 
 function applyFilterData(jsonObject, tableId, coltypeObject, condition) {
+
+    console.log("Data In Apply Filter - "+JSON.stringify(jsonObject)+" , "+JSON.stringify(tableId)+" , "+JSON.stringify(coltypeObject)+" , "+JSON.stringify(condition));
+
+
     id = $("#eId").val();
     clearInterval(myInterval);
     var obj;
