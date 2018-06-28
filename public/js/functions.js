@@ -304,8 +304,23 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
                     // between['before'] = $("#filter_done_column_type_val_"+columnName+"_before").val();
                     // between['after'] = $("#filter_done_column_type_val_"+columnName+"_after").val();
 
-                    var from = $("#"+columnName+"_filter_val_between_before").val();
-                    var to = $("#"+columnName+"_filter_val_between_after").val();
+                    //var from = $("#"+columnName+"_filter_val_between_before-"+div_open).val();
+                    //var to = $("#"+columnName+"_filter_val_between_after-"+div_open).val();
+
+                    var from = "";
+                    var to = "";
+
+                    if($("#"+columnName+"_filter_val_between_before-"+div_open).val())
+                        from = $("#"+columnName+"_filter_val_between_before-"+div_open).val();
+                    else
+                        from = $("#"+columnName+"_filter_val_between_before").val();
+
+
+                    if($("#"+columnName+"_filter_val_between_after-"+div_open).val())
+                        to = $("#"+columnName+"_filter_val_between_after-"+div_open).val();
+                    else
+                        to = $("#"+columnName+"_filter_val_between_after").val();
+
 
 
                     between['before'] = from;
@@ -370,12 +385,33 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
                 //between['before'] = $('#'+column_name+'_filter_val_'+radioname+'_before-'+div_open).val();
                 //between['after'] = $('#'+column_name+'_filter_val_'+radioname+'_after-'+div_open).val();
 
-                var from = $("#"+columnName+"_filter_val_between_before").val();
-                var to = $("#"+columnName+"_filter_val_between_after").val();
+                //var from = $("#"+columnName+"_filter_val_between_before").val();
+                //var to = $("#"+columnName+"_filter_val_between_after").val();
+
+
+
+                var from = "";
+                var to = "";
+
+                if($("#"+columnName+"_filter_val_between_before-"+div_open).val())
+                    from = $("#"+columnName+"_filter_val_between_before-"+div_open).val();
+                else
+                    from = $("#"+columnName+"_filter_val_between_before").val();
+
+
+                if($("#"+columnName+"_filter_val_between_after-"+div_open).val())
+                    to = $("#"+columnName+"_filter_val_between_after-"+div_open).val();
+                else
+                    to = $("#"+columnName+"_filter_val_between_after").val();
 
 
                 between['before'] = from;
                 between['after'] = to;
+
+
+                $("#filter_done_column_type_val_"+columnName+"_before").val(from);
+                $("#filter_done_column_type_val_"+columnName+"_after").val(to);
+
 
 
                 var radioButtonValue = between;
