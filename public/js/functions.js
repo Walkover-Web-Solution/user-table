@@ -282,18 +282,23 @@ function makeFilterJsonData(tableId, type,column_name, div_open) {
     var jsonObject = {};
     var coltypeObject = {};
     for(var i = 0; i < $("input[name='filter_done_column_name[]']").length; i++)
-    {
-        console.log($("#login_filter_val_between_before").value);
-        
+    {   
         if($("input[name='filter_done_column_name[]']")[i])
         {
             if($("input[name='filter_done_column_type[]']")[i].value == "between")
             {
-                console.log("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before");
+                var columnName = $("input[name='filter_done_column_name[]']")[i].value;
+                
+                console.log("#filter_done_column_type_val_"+columnName+"_before");
+
                 var between = {};
-                between['before'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_before").val();
-                between['after'] = $("#filter_done_column_type_val_"+$("input[name='filter_done_column_name[]']")[i].value+"_after").val();
+                
+                between['before'] = $("#filter_done_column_type_val_"+columnName+"_before").val();
+                between['after'] = $("#filter_done_column_type_val_"+columnName+"_after").val();
+
                 var filter_done_column_type_val = between;
+                
+                console.log(filter_done_column_type_val);
             }
             else
             {
