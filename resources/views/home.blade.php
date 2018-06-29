@@ -1,6 +1,13 @@
 @extends('layouts.app')
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/toast.css')}}"><!--ToastCSS-->
+<style>
+    .pagination-div .pagination
+    {
+        float: right;
+        padding-right: 20px;
+    }
+</style>
 <div class="tablist">
     <ul id="tablist" class="table-filter-ul">
         <!-- <li><a href="javascript:void(0);" class="cd-btn">+ Filter</a></li> -->
@@ -472,12 +479,22 @@
 <div class="nav-and-table  from-right nav-table-custom-response" id="show_table_div">
     <div id="user-board" class="user-dashboard user-custom-dashboard">
         <!-- Tab panes -->
+        <div class="row">
+            <div class="col-lg-6 pull-right pagination-div">
+                {{$paginationLinks}}
+            </div>
+        </div>
         <div class="scroll-x flex" style="overflow:visible;">
             <div class="scroll-y flex w-100per" id="def_response">
                 @include('table.response')
             </div>
             <div class="scroll-y flex" id="response">
 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 pull-right pagination-div">
+                {{$paginationLinks}}
             </div>
         </div>
     </div>

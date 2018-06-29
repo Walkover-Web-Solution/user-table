@@ -192,7 +192,8 @@ class TableController extends Controller {
 
     public function loadContacts($tableIdMain, $tabName, $pageSize, $condition , $sortArray = array()) {
         $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition , $sortArray);
-        return json_decode(json_encode($tabDataJson), true);
+        return $tabDataJson;
+        // return json_decode(json_encode($tabDataJson), true);
     }
 
     public function processTableData($tableId, $tabName , $sortArray) {
@@ -263,6 +264,10 @@ class TableController extends Controller {
             
             $tabPaginateData = $this->loadContacts($tableIdMain, $tabName, 100, $tabcondition , $sortArray);
             
+            $paginationLinks = $tabPaginateData->links();
+
+            $tabPaginateData = json_decode(json_encode($tabPaginateData), true);
+
             $tabData = $tabPaginateData['data'];
             
             if (!empty($tabData))
@@ -318,7 +323,8 @@ class TableController extends Controller {
                 'rangeEnd' => $rangeEnd,
                 'filtercolumns' => $filtercolumns,
                 'columnsWithTypes' => $columnsWithTypes,
-                'actionValueData' => $actionValueData
+                'actionValueData' => $actionValueData,
+                'paginationLinks' => $paginationLinks
             );
         }
     }
@@ -669,7 +675,8 @@ class TableController extends Controller {
         $pageSize = empty($request->get('pageSize')) ? 100 : $request->get('pageSize');
 
         $tabName = empty($request->get('filter')) ? 'All' : $request->get('filter');
-        return $this->loadContacts($tableDetails['table_id'], $tabName, $pageSize);
+        $tabPaginateData = $this->loadContacts($tableDetails['table_id'], $tabName, $pageSize);
+        return json_decode(json_encode($tabPaginateData), true);
     }
 
     public function getFilters(Request $request) {
