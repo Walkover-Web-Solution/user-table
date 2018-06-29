@@ -815,6 +815,13 @@ function editUserData(type) {
                                 $("#tr_" + id + " ." + idx).text(val);
                             }
                         });
+                        $.toast({
+                            heading: 'Success',
+                            text: 'Entry updated successfully.',
+                            showHideTransition: 'slide',
+                            icon: 'success'
+                        });
+                        $("#edit_user").modal('hide');
                     }else{
                         // alert("Entry added successfully.");
                         $.toast({
