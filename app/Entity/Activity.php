@@ -66,6 +66,7 @@ class Activity extends Model
             $newData = json_decode($act->details, true);
 
             foreach ($oldData as $column => $value) {
+                // Activity log check enabled for deleted column - Harsh Wardhan Gaur 30/06/2018
                 if(isset($newData[$column]))
                 {
                     if(is_array($newData[$column]))
