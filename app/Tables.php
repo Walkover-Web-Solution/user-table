@@ -264,7 +264,8 @@ class Tables extends Model
         $errorFlag = 0;
         foreach ($reqs as $k => $req)
         {
-            print_r($req);
+            $req = json_decode($req);
+            // print_r($req);
             foreach (array_keys($req) as $paramName) {
                 $colomntype = $coltype[$k][$paramName];
                 if (!Schema::hasColumn($tableName, $paramName)) //check whether table has this column
