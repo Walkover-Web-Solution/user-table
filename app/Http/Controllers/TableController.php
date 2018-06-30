@@ -190,7 +190,7 @@ class TableController extends Controller {
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition , $sortArray = array()) {
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition = "and" , $sortArray = array()) {
         $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition , $sortArray);
         return $tabDataJson;
         // return json_decode(json_encode($tabDataJson), true);
