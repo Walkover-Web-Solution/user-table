@@ -213,7 +213,8 @@ class TableController extends Controller {
         return view('home', $results);
     }
 
-    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition) {
+    // public function loadContacts($tableIdMain, $tabName, $pageSize, $condition) {
+    public function loadContacts($tableIdMain, $tabName, $pageSize, $condition = "and" , $sortArray = array()) {
         $tabDataJson = Tables::TabDataBySavedFilter($tableIdMain, $tabName, $pageSize, $condition);
         return json_decode(json_encode($tabDataJson), true);
     }
