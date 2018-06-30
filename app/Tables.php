@@ -264,7 +264,7 @@ class Tables extends Model
         $errorFlag = 0;
         foreach ($reqs as $k => $req)
         {
-            $req = json_decode($req);
+            $req = json_decode($req , true);
             // print_r($req);
             foreach (array_keys($req) as $paramName) {
                 $colomntype = $coltype[$k][$paramName];
