@@ -210,7 +210,7 @@ class Tables extends Model
             $count = DB::table($tableId)->whereNull('is_deleted')->count();
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query','condition']);
-            $req = (array)json_decode($tabSql->query,true);
+            $req = (array)json_decode($tabSql,true);
             $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
             $count = Tables::getCountOfFilteredData($req, $tableId, $coltypes, $tabcondition);
         }
