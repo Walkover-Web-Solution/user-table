@@ -131,8 +131,7 @@ class Tables extends Model
             $data = $sql->latest('id')->paginate($pageSize);
         } else {
             $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableId]])->first(['query']);
-            // $req = (array)json_decode($tabSql->query,true);
-            $req = (array)json_decode($tabSql,true);
+            $req = (array)json_decode($tabSql->query,true);
             $data = Tables::getFilteredUsersDetailsData($req, $tableId,$pageSize, $tabcondition);
         }
         return $data;

@@ -270,7 +270,9 @@ class TableController extends Controller {
                 $filtercolumns = array();
             } else {
                 $tabSql = Tabs::where([['tab_name', $tabName], ['table_id', $tableIdMain]])->first(['query', 'condition', 'id'])->toArray();
+                
                 $tabArray = json_decode($tabSql['query'], true);
+                
                 $tabcondition = isset($tabSql['condition']) && !empty($tabSql['condition']) ? $tabSql['condition'] : 'and';
                 if (isset($tabSql['id']) && !empty($tabSql['id'])) {
                     $tab_id = $tabSql['id'];
