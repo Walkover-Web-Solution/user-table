@@ -66,7 +66,7 @@ class Activity extends Model
             $newData = json_decode($act->details, true);
 
             foreach ($oldData as $column => $value) {
-                if(is_array($newData[$column]))
+                if(isset($newData[$column]) && is_array($newData[$column]))
                     $newData[$column] = json_encode($newData[$column]);
                 if(is_array($value))
                     $value = json_encode($value);
