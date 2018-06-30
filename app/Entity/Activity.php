@@ -66,14 +66,17 @@ class Activity extends Model
             $newData = json_decode($act->details, true);
 
             foreach ($oldData as $column => $value) {
-                if(isset($newData[$column]) && is_array($newData[$column]))
-                    $newData[$column] = json_encode($newData[$column]);
-                if(is_array($value))
-                    $value = json_encode($value);
-                if(empty($value))
-                    $value='NULL';
+                if(isset($newData[$column]))
+                {
+                    if(is_array($newData[$column]))
+                        $newData[$column] = json_encode($newData[$column]);
+                    if(is_array($value))
+                        $value = json_encode($value);
+                    if(empty($value))
+                        $value='NULL';
 
-                $desc .= ' <span class="column-name">' . $column . '</span><span class="new-val"> ' . $newData[$column] . '</span> from <span class="old-val"> ' . $value . '</span>, ';
+                    $desc .= ' <span class="column-name">' . $column . '</span><span class="new-val"> ' . $newData[$column] . '</span> from <span class="old-val"> ' . $value . '</span>, ';
+                }
             }
 
             $desc = rtrim($desc, ',');
