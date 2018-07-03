@@ -203,7 +203,7 @@ class team_table_mapping extends Model {
                             unset($update_data[$key]);
                             unset($old_data[$key]);
                         }
-                        if($column['column_type_id']==4 && $input_param[$key]!=$old_data[$key] && $input_param[$key]!=1)
+                        if($column['column_type_id']==4 && $input_param[$key]==$old_data[$key] && $input_param[$key]!=1)
                         {
                             unset($update_data[$key]);
                             unset($old_data[$key]);
