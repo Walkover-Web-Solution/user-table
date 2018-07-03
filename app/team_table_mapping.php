@@ -178,7 +178,14 @@ class team_table_mapping extends Model {
                             }
                             else
                             {
-                                $update_data[$key] = DB::raw($key . ' + ' . $input_param[$key]);
+                                if($old_data[$key]==1 && $input_param[$key]==1)
+                                {
+                                    $update_data[$key] = 2;
+                                }
+                                else
+                                {
+                                    $update_data[$key] = DB::raw($key . ' + ' . $input_param[$key]);
+                                }
                             }
                         }
                         if($column['column_type_id'] == 10 && !empty($input_param[$key])){
@@ -191,8 +198,11 @@ class team_table_mapping extends Model {
                     if ($old_data[$key] != $input_param[$key]) {
                         $updatedData[$key] = $input_param[$key];
                     } else {
-                        unset($update_data[$key]);
-                        unset($old_data[$key]);
+                        if($column['column_type_id'] !=4)
+                        {
+                            unset($update_data[$key]);
+                            unset($old_data[$key]);
+                        }
                     }
                 } else {
                     unset($old_data[$key]);
