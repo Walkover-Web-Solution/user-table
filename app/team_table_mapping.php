@@ -164,6 +164,8 @@ class team_table_mapping extends Model {
             $old_data = json_decode(json_encode($responseObj),true);
         }
         
+        
+
         if(!empty($old_data)) {
             foreach ($structure as $key => $column) {
                 if (isset($input_param[$key])) {
@@ -182,7 +184,7 @@ class team_table_mapping extends Model {
                             }
                             else
                             {
-                                $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
+                                $update_data[$key] = DB::raw($key . ' + ' . $input_param[$key]);
                             }
                         }
                         if($column['column_type_id'] == 10 && !empty($input_param[$key])){
@@ -206,14 +208,19 @@ class team_table_mapping extends Model {
             $message = 'Entry Updated';
             $action = '';
             if(!empty($update_data)) {
+                DB::connection()->enableQueryLog();
                 $action = 'Update';
                 $update_data['updated_at']=strtotime(now());
                 $table->where($unique_key, $input_param[$unique_key])
                     ->update($update_data);
+                print_r(DB::getQueryLog());
             }
+            
             $update_data = $table->select('*')
                 ->where($unique_key, $input_param[$unique_key])
                 ->first();
+
+                
         }else{
             $message = 'Entry Added';
             $action = 'Create';
