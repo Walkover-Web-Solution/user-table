@@ -198,11 +198,11 @@ class team_table_mapping extends Model {
                     if ($old_data[$key] != $input_param[$key]) {
                         $updatedData[$key] = $input_param[$key];
                     } else {
-                        // if($column['column_type_id'] !=4)
-                        // {
+                        if($column['column_type_id'] !=4 && $input_param[$key]==1)
+                        {
                             unset($update_data[$key]);
                             unset($old_data[$key]);
-                        // }
+                        }
                     }
                 } else {
                     unset($old_data[$key]);
