@@ -168,8 +168,18 @@ class team_table_mapping extends Model {
                             $update_data[$key] = $input_param[$key];
                         }
                     } else {
+                        // if ($column['column_type_id'] ==4 && !empty($input_param[$key])) {
+                        //     $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
+                        // }
                         if ($column['column_type_id'] ==4 && !empty($input_param[$key])) {
-                            $update_data[$key] = DB::raw($key . ' + (' . $input_param[$key] . ')');
+                            if(isset($old_data) && $old_data[$key]==null)
+                            {
+                                $update_data[$key] = DB::raw($input_param[$key]);
+                            }
+                            else
+                            {
+                                $update_data[$key] = DB::raw($key . ' + ' . $input_param[$key]);
+                            }
                         }
                         if($column['column_type_id'] == 10 && !empty($input_param[$key])){
                             if($input_param[$key] == 'me' && $loggedInUser = Auth::user())
